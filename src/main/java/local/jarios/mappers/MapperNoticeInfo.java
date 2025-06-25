@@ -14,6 +14,7 @@ import org.dgpe.codice.common.cbclib.DocumentTypeCodeType;
 import org.dgpe.codice.common.cbclib.IssueDateType;
 import org.dgpe.codice.common.cbclib.NameType;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -139,7 +140,7 @@ public final class MapperNoticeInfo {
         if (additionalPublicationRequestType.getSendDate() != null &&
                 additionalPublicationRequestType.getSendTime() != null) {
             additionalPublicationRequest.setSendDateTime(
-                    FechaHelper.getLocalDateTime(
+                    LocalDateTime.of(
                             GregorianCalendarHelper.getDateFromXMLGregorianCalendar(
                                     additionalPublicationRequestType.getSendDate().getValue()),
                             GregorianCalendarHelper.getTimeFromXMLGregorianCalendar(
