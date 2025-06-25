@@ -1,0 +1,43 @@
+package local.jarios.adapters;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import local.jarios.entity.placsp.Location;
+
+import java.lang.reflect.Type;
+
+/**
+ * Description: Juan
+ * Author: juan
+ * Date: 09/07/2024
+ * Team: Juan
+ */
+public record LocationAdapter(boolean imprimirHijos) implements JsonSerializer<Location> {
+
+    @Override
+    public JsonElement serialize(
+            Location location,
+            Type typeOfSrc, JsonSerializationContext context) {
+
+        //
+        JsonObject jsonObject = new JsonObject();
+
+        //
+        jsonObject.addProperty("CountrySubentity", location.getCountrySubentity());
+        jsonObject.addProperty("CountrySubentityCode", location.getCountrySubentityCode());
+
+        //
+        if (imprimirHijos) {
+
+            //
+            jsonObject.add(
+                    "Address",
+                    context.serialize(location.getAddress()));
+        }
+
+        //
+        return jsonObject;
+    }
+}

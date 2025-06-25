@@ -1,0 +1,21 @@
+package local.jarios.enums;
+
+import lombok.Getter;
+
+/**
+ * Description: Determina si el contrato es MAYOR o MENOR
+ * Author: juan
+ * Date: 03/03/2024
+ * Team: Juan Antonio Ríos Peláez
+ */
+@Getter
+public enum TipoConexion {
+
+    //
+    PRINCIPAL,
+    FILTRO_SQL;
+
+    TipoConexion() {
+
+    }
+}
