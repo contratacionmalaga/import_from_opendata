@@ -95,7 +95,7 @@ public final class EntryHelper {
 
         // FILTRO FECHAS
         var filtroFechaInicial = propertiesManagerService.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_FECHAINICIALLECTURA);
-        if (DateTimeHelper.esFechaInvalida(filtroFechaInicial)) {
+        if (LocalDateTimeHelper.esFechaInvalida(filtroFechaInicial)) {
             msg = String.format("[entryCumpleConLosFiltros] - Fecha inicial inválida: %s", filtroFechaInicial);
             log.error(msg);
             throw new MiInvalidDateFormatException (msg);

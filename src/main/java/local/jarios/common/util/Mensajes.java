@@ -2,6 +2,13 @@ package local.jarios.common.util;
 
 public final class Mensajes {
 
+    /** Mensaje indicando un error general en la aplicación. */
+    public static final String FINAL_ERRONEO = "Error";
+
+    /** Mensaje que indica el final del log. */
+    public static final String FINAL =
+            "**** Final del log";
+
     public static final String PERSISTIDO_ESTADISTICA =
             "Se ha persistido correctamente, la entidad Estadistica en la base de datos.";
 
@@ -168,7 +175,7 @@ public final class Mensajes {
             "Asignada la fecha y hora de inicio del parseo al objeto Estadísitica.";
 
     public static final String ASIGN_FECHA_HORA_FINAL_PARSEO_TO_ESTADISTICA =
-            "Asignada la fecha y hora final del parseo al objeto Estadísitica.";
+            "Asignada la fecha y hora final del parseo al objeto Estadísitica. {}";
 
     public static final String ASIGN_FECHA_HORA_INICIAL_BASE_DATOS_TO_ESTADISTICA =
             "Asignada la fecha y hora de inicio de la persistencia en base de datos al objeto Estadísitica.";

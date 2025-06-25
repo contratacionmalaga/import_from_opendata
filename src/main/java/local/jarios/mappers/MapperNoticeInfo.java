@@ -6,7 +6,6 @@ import ext.place.codice.common.caclib.AdditionalPublicationStatusType;
 import ext.place.codice.common.caclib.NoticeInfoType;
 import local.jarios.entity.placsp.*;
 import local.jarios.helpers.ComunHelper;
-import local.jarios.helpers.FechaHelper;
 import local.jarios.helpers.GregorianCalendarHelper;
 import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;

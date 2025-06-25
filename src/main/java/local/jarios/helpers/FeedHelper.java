@@ -28,7 +28,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +146,7 @@ public final class FeedHelper {
                             log.info(Mensajes.FECHAS_FEED_LOCAL,
                                     Constantes.TABULADOR_1,
                                     feed.getUpdated(),
-                                    Timestamp.valueOf(fechaHoraFinalLectura));
+                                    fechaHoraFinalLectura);
                         }
                         salirBucle = true;
                     }
@@ -303,20 +302,7 @@ public final class FeedHelper {
         return getFechaFromProperty(PropertiesKeys.FILTRO_FECHAFINALLECTURA);
     }
 
-    /**
-     *
-     * @return Valor con la fecha donde finaliza la importación de los datos
-     */
-    private static LocalDateTime getFechaFromProperty(String campo) {
 
-        PropertiesManagerService propertiesManagerService = PropertiesManagerServiceImpl.getInstance();
-
-        //
-        var fechaFromProperty = propertiesManagerService.getProperty(Constantes.FILTER_PROPERTIES, campo);
-
-        //
-        return DateTimeHelper.parsearFecha(fechaFromProperty, Constantes.FECHA_FINAL_LECTURA, TipoFecha.FINAL);
-    }
 
     private static Path getPathBaseLocal() {
 

@@ -3,7 +3,7 @@ package local.jarios.entity.auxiliares;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
-import local.jarios.helpers.DateTimeHelper;
+import local.jarios.helpers.LocalDateTimeHelper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,6 +28,6 @@ public class Auditable {
     protected void onCreate() {
 
         //
-        createdAt = DateTimeHelper.getLocalDateTimeNow();
+        createdAt = LocalDateTimeHelper.getLocalDateTimeNow();
     }
 }

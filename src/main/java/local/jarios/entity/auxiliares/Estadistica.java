@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.Log;
 import local.jarios.exceptions.MiUnknownHostException;
 import local.jarios.helpers.ComunHelper;
-import local.jarios.helpers.DateTimeHelper;
+import local.jarios.helpers.LocalDateTimeHelper;
 import local.jarios.common.util.TamanoCampos;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -97,7 +97,7 @@ public class Estadistica extends Auditable {
 
         this.id = Generators.timeBasedEpochGenerator().generate();
         this.miLog = miLog;
-        this.fechaHoraInicial = DateTimeHelper.getLocalDateTimeNow();
+        this.fechaHoraInicial = LocalDateTimeHelper.getLocalDateTimeNow();
         this.equipo = ComunHelper.getHostName();
     }
 

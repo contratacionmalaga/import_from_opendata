@@ -79,39 +79,5 @@ public final class ComunHelper {
                 .forEach(log::info);
     }
 
-    /**
-     * Método que devuelve un String con el formato de duración establecido
-     * @param fechaHoraInicial Timestamp con la fecha inicial
-     * @param fechaHoraFinal Timestamp con la fecha final
-     * @return Cadena de texto con la duración en el formato establecido
-     */
-    public static String calcularTiempoEjecucion(LocalDateTime fechaHoraInicial, LocalDateTime fechaHoraFinal) {
 
-        // Defino las variables locales y le asigno los valores que utilizaré
-        int milesimas = 1000;
-        int minutos = 60;
-        int segundos = 60;
-        String formatoDuracion = "%sh %sm %ss %sml";
-
-        // Calculamos la diferencia en milisegundos
-        long diffInMillis = fechaHoraFinal.getTime() - fechaHoraInicial.getTime();
-
-        // Calculamos las horas, minutos, segundos y milisegundos
-        long hours = diffInMillis / (milesimas * segundos * minutos);
-        long minutes = (diffInMillis % (milesimas * segundos * minutos)) / (milesimas * segundos);
-        long seconds = (diffInMillis % (milesimas * segundos)) / milesimas;
-        long milliseconds = diffInMillis % milesimas;
-
-        // Devolvemos el tiempo transcurrido en formato "hh:mm:ss:SSS"
-        return String.format(formatoDuracion, hours, minutes, seconds, milliseconds);
-    }
-
-    public static String getFechaHoraFormateada(LocalDateTime fechaHora) {
-
-        // Usar LocalDateTime.now() si el timestamp es null
-        LocalDateTime fecha = (fechaHora != null) ? fechaHora.toLocalDateTime() : LocalDateTime.now();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return fecha.format(formatter);
-    }
 }
