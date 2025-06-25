@@ -3,7 +3,6 @@ package local.jarios.mappers;
 import local.jarios.entity.placsp.DurationMeasure;
 import local.jarios.entity.placsp.*;
 import local.jarios.helpers.ComunHelper;
-import local.jarios.helpers.FechaHelper;
 import local.jarios.helpers.GregorianCalendarHelper;
 import local.jarios.helpers.StringHelper;
 import local.jarios.mappers.auxiliares.MapperStringFromList;
@@ -11,8 +10,8 @@ import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.PeriodType;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 /**
@@ -40,26 +39,27 @@ public final class MapperPeriod {
 
         // StartDate + StartTime
         Optional.ofNullable(periodType.getStartDate())
-                .ifPresent(startDateType -> {
-                    Date startDate = GregorianCalendarHelper
-                            .getDateFromXMLGregorianCalendar(startDateType.getValue());
-                    Time startTime = Optional.ofNullable(periodType.getStartTime())
-                            .map(startTimeType -> GregorianCalendarHelper
-                                    .getTimeFromXMLGregorianCalendar(startTimeType.getValue()))
-                            .orElse(null);
-                    period.setStartDateTime(FechaHelper.getLocalDateTime(startDate, startTime));
+                .map(startDateType ->
+                        GregorianCalendarHelper.getDateFromXMLGregorianCalendar(startDateType.getValue()))
+                .ifPresent(startDate -> {
+                    LocalTime startTime = Optional.ofNullable(periodType.getStartTime())
+                            .map(startTimeType ->
+                                    GregorianCalendarHelper.getTimeFromXMLGregorianCalendar(startTimeType.getValue()))
+                            .orElse(LocalTime.MIDNIGHT);
+
+                    period.setStartDateTime(LocalDateTime.of(startDate, startTime));
                 });
 
         // EndDate + EndTime
         Optional.ofNullable(periodType.getEndDate())
-                .ifPresent(endDateType -> {
-                    Date endDate = GregorianCalendarHelper
-                            .getDateFromXMLGregorianCalendar(endDateType.getValue());
-                    Time endTime = Optional.ofNullable(periodType.getEndTime())
-                            .map(endTimeType -> GregorianCalendarHelper
-                                    .getTimeFromXMLGregorianCalendar(endTimeType.getValue()))
-                            .orElse(null);
-                    period.setEndDateTime(FechaHelper.getLocalDateTime(endDate, endTime));
+                .map(endDateType ->
+                        GregorianCalendarHelper.getDateFromXMLGregorianCalendar(endDateType.getValue()))
+                .ifPresent(endDate -> {
+                    LocalTime endTime = Optional.ofNullable(periodType.getEndTime())
+                            .map(endTimeType ->
+                                    GregorianCalendarHelper.getTimeFromXMLGregorianCalendar(endTimeType.getValue()))
+                            .orElse(LocalTime.MIDNIGHT);
+                    period.setEndDateTime(LocalDateTime.of(endDate, endTime));
                 });
 
         // Description

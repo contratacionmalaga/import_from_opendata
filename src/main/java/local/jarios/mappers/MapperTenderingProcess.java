@@ -1,6 +1,7 @@
 package local.jarios.mappers;
 
 import local.jarios.entity.placsp.ContractFolderStatus;
+import local.jarios.entity.placsp.Period;
 import local.jarios.entity.placsp.TenderingProcess;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.helpers.StringHelper;
@@ -90,10 +91,25 @@ public final class MapperTenderingProcess {
                                 MapperEconomicOperatorShortList.getEconomicOperatorShortList(
                                         tenderingProcess, economicOperatorShortList)));
 
+        Optional.ofNullable(tenderingProcessType.getDocumentAvailabilityPeriod())
+                .ifPresent(period -> {
+                            Period miPeriod = MapperPeriod.getPeriod(
+                                    null,
+                                    tenderingProcess,
+                                    null,
+                                    period);
+                            tenderingProcess.setDocumentAvailabilityPeriod(miPeriod.getEndDateTime());
+                        });
+
         Optional.ofNullable(tenderingProcessType.getTenderSubmissionDeadlinePeriod())
-                .ifPresent(period ->
-                        tenderingProcess.setTenderSubmissionDeadlinePeriod(
-                                MapperPeriod.getPeriod(null, tenderingProcess, null, period)));
+                .ifPresent(period -> {
+                        Period miPeriod = MapperPeriod.getPeriod(
+                                null,
+                                tenderingProcess,
+                                null,
+                                period);
+                        tenderingProcess.setTenderSubmissionDeadlinePeriod(miPeriod.getEndDateTime());
+                });
 
         tenderingProcess.setListProcessJustification(
                 MapperProcessJustification.getListProcessJustificationFromType(
