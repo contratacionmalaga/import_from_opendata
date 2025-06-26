@@ -1,9 +1,12 @@
 package local.jarios.helpers;
 
+import local.jarios.common.util.PropertiesKeys;
 import local.jarios.entity.atom.Entry;
 import local.jarios.enums.TipoConexion;
-import local.jarios.exceptions.MiInvalidDateFormatException;
+import local.jarios.exceptions.MiServiceException;
 import local.jarios.models.FiltroOrganoContratacion;
+
+import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.services.Service;
 import local.jarios.services.ServiceImpl;
 import local.jarios.common.util.Constantes;
@@ -12,6 +15,7 @@ import local.jarios.common.util.VariablesGlobales;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -29,48 +33,34 @@ public final class FiltroHelper {
      */
     private FiltroHelper() {/* CONSTRUCTOR VACÍO */}
 
-
-
     /**
      *
      * @return Devuelve un Map del tipo Map<IdPlataforma, NombreOrganoContratacion>
-     * @throws MiSessionFactoryProviderException Excepción a la hora de generar el objeto Session de Hibernate
+     * @throws MiServiceException Excepción a la hora de generar el objeto Session de Hibernate
      */
-    public static Map<String, String> getMapFiltroSql()
-            throws  MiSessionFactoryProviderException {
-
-        //
-        PropertyManager propertyManager = PropertyManager.getInstance();
+    public static Map<String, String> getMapFiltroSql(String sql) throws MiServiceException {
 
         //
         Map<String, String> mapFiltro = new HashMap<>();
+        log.debug("[getMapFiltroSql] - Creado el HashMap que almacenará el filtro.");
 
         // Creo el objeto Servicio
-        Service filterService = new ServiceImpl(PropertyManager.getInstance(), TipoConexion.FILTRO_SQL);
-
-        // Obtengo la consulta
-        String filtroSQL = propertyManager.getProperty(PropertyConstantes.FILTRO_SQL);
+        Service filterService = new ServiceImpl(TipoConexion.FILTRO_SQL);
+        log.debug("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
 
         // Llamar al método para la obtención de la lista con el filtro
-        List<FiltroOrganoContratacion> listFiltroOCs = filterService.getListFiltroOcsFromFiltroSql(filtroSQL);
+        List<FiltroOrganoContratacion> listFiltroOCs = filterService.getListFiltroOcsFromFiltroSql(sql);
+        log.debug("[getMapFiltroSql] - Lista de Órganos de Contratación: {}", listFiltroOCs);
 
         // Analizo si la lista con el filtro es vacía
         //     (lo que implicaría que ningún ENTRY podría pertenecer al filtro)
         if (!listFiltroOCs.isEmpty()) {
             // Filtro no vacío
 
-            // Muestro en el LOG el contenido del filtro (NO VACÍO)
-            log.info(Mensajes.FILTRO_SQL_LISTADO, listFiltroOCs.size());
-            listFiltroOCs.forEach(
-                    item -> log.info("{}{}", Constantes.TABULADOR_1, item));
-
             // Paso de una Lista a un Map (para mejorar la eficiencia a la hora de realizar la búsqueda)
             mapFiltro = MapHelper.getMapFromList(listFiltroOCs);
+            log.info("[getMapFiltroSql] - Pasada la lista a un Map para acelerar las búsquedas.");
 
-            //
-            if (log.isDebugEnabled()) {
-                log.info("Convertida la Lista a Map");
-            }
         }
 
         //
@@ -86,7 +76,7 @@ public final class FiltroHelper {
      *                      TRUE --> No aplica filtro || Tiene idPlataforma y pertenece al filtro
      *                      FALSE -> En cualquier otra situación
      */
-    public static boolean getIfFiltroSqlContainsEntry(Entry entry) {
+    public static boolean hasEntryInFiltroSql(Entry entry) {
 
         // Discrimino si existe o no filtro de carga
         if (VariablesGlobales.getMapFiltro().isEmpty()) {
@@ -111,10 +101,7 @@ public final class FiltroHelper {
 
             // Comprobamos si el idPlataforma está en el mapa de filtros
             boolean encontrado = VariablesGlobales.getMapFiltro().containsKey(idPlataforma);
-
-            if (log.isDebugEnabled()) {
-                log.info("{}IdPlataforma del Entry: {}", Constantes.TABULADOR_1, idPlataforma);
-            }
+            log.debug("[getIfFiltroSqlContainsEntry] - Encontrado el IdPlataforma del Entry en el Map de OC: {}", idPlataforma);
 
             //
             return encontrado;
@@ -122,9 +109,7 @@ public final class FiltroHelper {
         } else {
 
             // Si no tiene IdPlataforma, logueamos el mensaje correspondiente
-            if (log.isDebugEnabled()) {
-                log.info(Mensajes.ENTRY_NO_TIENE_IDPLATAFORMA, Constantes.TABULADOR_1, entry.getIdEntry());
-            }
+            log.debug("[getIfFiltroSqlContainsEntry] - No tiene IdPlataforma el entry. Devuelvo false.");
             return false;
         }
     }
@@ -138,144 +123,207 @@ public final class FiltroHelper {
      *                      TRUE --> No aplica filtro || Tiene idPlataforma y pertenece al filtro
      *                      FALSE -> En cualquier otra situación
      */
-    public static boolean getIfFiltroNutsContainsEntry(Entry entry) {
+    public static boolean hasEntryContainsNuts(Entry entry) {
 
-        //
-        var propertyReader = PropertyManager.getInstance();
+        String filtroNuts = VariablesGlobales.getFiltroNuts();
 
-        //
-        var filtroNuts = propertyReader.getProperty(PropertyConstantes.FILTRO_NUTS);
-
-        // Discrimino si existe o no filtro de NUTS
-        if (filtroNuts.isEmpty()) {
-            // En caso de NO APLIAR FILTRO DE NUTS --> Devuelvo TRUE
-
-            log.info(Mensajes.FILTRO, Constantes.TABULADOR_2, Constantes.NO, "NUTS", true);
+        if (filtroNuts == null || filtroNuts.isBlank()) {
+            log.debug("[hasEntryContainsNuts] - El filtro Nuts es NULL o BLANK. Se acepta el Entry.");
             return true;
         }
 
-        //
-        // En caso de APLICAR FILTRO DE CARGA
-        //
+        Optional<String> nutsEntryOptional = EntryHelper.getNutsFromEntry(entry);
 
-        // Compruebo si el ENTRY tiene IdPlataforma
-        Optional<String> nutsOptional = EntryHelper.getNutsFromEntry(entry);
-
-        // Si el Entry tiene Nuts
-        if (nutsOptional.isPresent()) {
-
-            //
-            var nuts = nutsOptional.get();
-
-            // Comprobamos si el idPlataforma está en el mapa de filtros
-            boolean encontrado = nuts.equalsIgnoreCase(filtroNuts);
-
-            if (log.isDebugEnabled()) {
-                log.info(Mensajes.FILTRO, Constantes.TABULADOR_2, Constantes.SI, "NUTS", encontrado);
-                log.info("{}Nuts del Entry: {}", Constantes.TABULADOR_3, nuts);
-                log.info("{}Nuts del Filtro: {}", Constantes.TABULADOR_3, filtroNuts);
-            }
-
-            //
-            return encontrado;
-
-        } else {
-
-            if (log.isDebugEnabled()) {
-                // Si no tiene Nuts, logueamos el mensaje correspondiente
-                log.info(Mensajes.FILTRO, Constantes.TABULADOR_2, Constantes.SI, "NUTS", false);
-                log.info(Mensajes.ENTRY_NO_TIENE_NUTS, Constantes.TABULADOR_3, entry.getIdEntry());
-            }
-
+        if (nutsEntryOptional.isEmpty() || nutsEntryOptional.get().isBlank()) {
+            log.debug("[hasEntryContainsNuts] - Nuts del Entry es NULL o BLANK. No cumple.");
             return false;
         }
-    }
 
-    public static boolean getIfFiltroFechasContainsEntry(Entry entry)
-            throws MiInvalidDateFormatException {
+        String nutsEntry = nutsEntryOptional.get();
+        boolean encontrado = nutsEntry.contains(filtroNuts);
 
-        var propertyReader = PropertyManager.getInstance();
+        log.debug("[hasEntryContainsNuts] - ¿Filtro figura en Nuts?: {}.", encontrado);
 
-        var filtroFechaInicial = propertyReader.getProperty(PropertyConstantes.FILTRO_FECHAINICIALLECTURA);
-        var filtroFechaFinal = propertyReader.getProperty(PropertyConstantes.FILTRO_FECHAFINALLECTURA);
-
-        //
-        if ((filtroFechaInicial.isEmpty()) && (filtroFechaFinal.isEmpty())) {
-            // Si ambas fechas son VACÍAS --> No aplica filtro de fecha --> Devuelvo TRUE
-            if (log.isDebugEnabled()) {
-                log.info(Mensajes.FILTRO, Constantes.TABULADOR_1, Constantes.NO, "FECHAS", true);
-            }
-            return true;
-        }
-
-        // Obtener la fecha actual
-        var fechaActual = LocalDate.now();
-
-        // Formatear la fecha en el formato aaaa-MM-dd
-        var formatter = DateTimeFormatter.ofPattern(Constantes.FORMATO_FECHA);
-        var fechaHoyFormateada = fechaActual.format(formatter);
-
-        // Si la fecha inicial es VACÍA --> Establezco la fecha de hoy
-        if (filtroFechaInicial.isEmpty()) {
-            // En caso de NO APLIAR FILTRO DE OBJETO --> Devuelvo TRUE
-            filtroFechaInicial = fechaHoyFormateada;
-        }
-
-        // Si la fecha final es VACÍA --> Estblezco la fecha definida como FINAL_LECTURA
-        if (filtroFechaFinal.isEmpty()) {
-            // En caso de NO APLIAR FILTRO DE OBJETO --> Devuelvo TRUE
-            filtroFechaFinal = Constantes.FECHA_FINAL_LECTURA;
-        }
-
-        // Comprobamos si filtroObjeto se encuentra dentro de objetoEntry
-        boolean encontrado = FechaHelper.esFechaValida(filtroFechaInicial, filtroFechaFinal, entry.getUpdated());
-
-        // Si el Entry tiene IdPlataforma, comprobar si está en el mapa de filtros
-        if (log.isDebugEnabled()) {
-            log.info(Mensajes.FILTRO, Constantes.TABULADOR_1, Constantes.SI, "FECHA", encontrado);
-            log.info("{}Fecha Inicial del filtro: {}", Constantes.TABULADOR_2, filtroFechaInicial);
-            log.info("{}Fecha Final del filtro: {}", Constantes.TABULADOR_2, filtroFechaFinal);
-            log.info("{}Fecha del Entry: {}", Constantes.TABULADOR_2, entry.getUpdated());
-        }
-
-        //
         return encontrado;
+
     }
 
-    public static boolean getIfFiltroObjetoContainsEntry(Entry entry) {
+    public static boolean hasEntryInFechas(Entry entry) throws PropertiesManagerException {
 
-        //
-        var propertyReader = PropertyManager.getInstance();
+        LocalDateTime fechaEntry = entry.getUpdated();
+        LocalDateTime fechaInicio = VariablesGlobales.getFiltroFechaInicial();
+        LocalDateTime fechaFin = VariablesGlobales.getFiltroFechaFinal();
 
-        //
-        var filtroObjeto = propertyReader.getProperty(PropertyConstantes.FILTRO_OBJETO);
-
-        // Discrimino si existe o no filtro de OBJETO
-        if (filtroObjeto.isEmpty()) {
-            // En caso de NO APLIAR FILTRO DE OBJETO --> Devuelvo TRUE
-            log.info(Mensajes.FILTRO, Constantes.TABULADOR_2, Constantes.NO, "OBJETO", true);
-            return true;
+        if (fechaEntry == null) {
+            log.debug("[hasEntryFechaEnRango] - La fecha del Entry es NULL. No cumple.");
+            return false;
         }
 
-        //
-        // En caso de APLICAR FILTRO OBJETO
-        //
+        boolean enRango = ( !fechaEntry.isBefore(fechaInicio) ) && ( !fechaEntry.isAfter(fechaFin) );
+
+        log.debug("[hasEntryFechaEnRango] - Fecha del Entry: {}. Inicio: {}, Fin: {}, ¿Está en rango?: {}",
+                fechaEntry, fechaInicio, fechaFin, enRango);
+
+        return enRango;
+    }
+
+    public static boolean hasEntryContaninsObject(Entry entry) {
+
+        String filtroObjeto = VariablesGlobales.getFiltroObjeto();
+
+        if ((filtroObjeto == null) || (filtroObjeto.isBlank())) {
+            log.debug("[hasEntryContaninsObject] - El filtro Objeto es NULL | BLANK. Cumple.");
+            return true;
+        }
 
         // Compruebo si el ENTRY tiene IdPlataforma
         var objetoEntry = EntryHelper.getObjetoFromEntry(entry);
+        log.debug("[getIfFiltroObjetoContainsEntry] - Objeto del Entry: {}.", objetoEntry);
+
+        if (objetoEntry == null || objetoEntry.isBlank()) {
+            log.debug("[hasEntryContainsObject] - Objeto del Entry es NULL o BLANK. No cumple.");
+            return false;
+        }
 
         // Comprobamos si filtroObjeto se encuentra dentro de objetoEntry
         boolean encontrado = StringHelper.contieneCadena(objetoEntry, filtroObjeto);
-
-        // Si el Entry tiene IdPlataforma, comprobar si está en el mapa de filtros
-        log.info(Mensajes.FILTRO, Constantes.TABULADOR_2, Constantes.SI, "OBJETO", encontrado);
-
-        var lineaLog = StringHelper.limitarLineaLog(objetoEntry);
-
-        log.info("{}Objeto del Entry: {}", Constantes.TABULADOR_3, lineaLog);
-        log.info("{}Objeto del Filtro: {}", Constantes.TABULADOR_3, filtroObjeto);
+        log.debug("[getIfFiltroObjetoContainsEntry] - ¿Filtro figura en objeto?: {}.", encontrado);
 
         //
         return encontrado;
     }
+
+    private static void loadFilterFechas() throws PropertiesManagerException {
+
+        // Leo la fecha inicial de lectura
+        String filtroFechaInicialStr = PropertiesHelper.getProperty(
+                Constantes.FILTER_PROPERTIES,
+                PropertiesKeys.FILTRO_FECHAINICIALLECTURA);
+
+        // Leo la fecha final de lectura
+        String filtroFechaFinalStr = PropertiesHelper.getProperty(
+                Constantes.FILTER_PROPERTIES,
+                PropertiesKeys.FILTRO_FECHAFINALLECTURA);
+
+        // Si ambas fechas vienen informadas y no están en blanco
+        if (!filtroFechaInicialStr.isBlank() && !filtroFechaFinalStr.isBlank()) {
+
+            LocalDate fechaInicial = LocalDate.parse(filtroFechaInicialStr, DateTimeFormatter.ISO_LOCAL_DATE);
+            LocalDate fechaFinal = LocalDate.parse(filtroFechaFinalStr, DateTimeFormatter.ISO_LOCAL_DATE);
+
+            VariablesGlobales.setFiltroFechaInicial(fechaInicial.atStartOfDay());
+            VariablesGlobales.setFiltroFechaFinal(fechaFinal.atTime(23, 59, 59));
+
+            log.debug("[loadFilterFechas] - Filtro de fechas aplicado. FechaInicial: {}, FechaFinal: {}",
+                    VariablesGlobales.getFiltroFechaInicial(), VariablesGlobales.getFiltroFechaFinal());
+
+        } else {
+            // Si alguna está vacía, asigno los valores por defecto
+            log.debug("[loadFilterFechas] - Alguna de las fechas es Blank. Se aplican valores por defecto.");
+
+            VariablesGlobales.setFiltroFechaInicial(LocalDate.parse(Constantes.FECHA_FINAL_LECTURA, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
+            VariablesGlobales.setFiltroFechaFinal(LocalDate.now().atTime(23, 59, 59));
+
+            log.debug("[loadFilterFechas] - Fechas por defecto aplicadas. FechaInicial: {}, FechaFinal: {}",
+                    VariablesGlobales.getFiltroFechaInicial(), VariablesGlobales.getFiltroFechaFinal());
+        }
+    }
+
+    private static void loadFilterNuts() throws PropertiesManagerException {
+
+        String filter = PropertiesHelper.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_NUTS);
+
+        if ((filter != null) && (!filter.isBlank())) {
+            VariablesGlobales.setFiltroNuts(filter);
+        }
+    }
+
+    private static void loadFilterObjeto() throws PropertiesManagerException {
+
+        String filter = PropertiesHelper.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_OBJETO);
+
+        if ((filter != null) && (!filter.isBlank())) {
+            VariablesGlobales.setFiltroObjeto(filter);
+        }
+    }
+
+    private static void loadFilterSql() throws PropertiesManagerException {
+
+        String filter = PropertiesHelper.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_OBJETO);
+
+        if ((filter != null) && (!filter.isBlank())) {
+            VariablesGlobales.setFiltroSql(filter);
+
+            VariablesGlobales.setMapFiltro(getMapFiltroSql(filter));
+        }
+    }
+
+    public static void loadFilters() throws PropertiesManagerException {
+
+        loadFilterFechas();
+        log.debug("[loadFilters] - FilterFechas cargado correctamente.");
+
+        loadFilterNuts();
+        log.debug("[loadFilters] - FilterNuts cargado correctamente.");
+
+        loadFilterObjeto();
+        log.debug("[loadFilters] - FilterObjeto cargado correctamente.");
+
+        loadFilterSql();
+        log.debug("[loadFilters] - FilterSql cargado correctamente.");
+
+    }
+
+    public static void printFilters() {
+
+        log.info(
+                "[printFilters] - Filtro fechas. Fecha Inicial: '{}', Fecha Final: '{}'.",
+                VariablesGlobales.getFiltroFechaInicial(),
+                VariablesGlobales.getFiltroFechaFinal());
+
+        log.info("[printFilters] - Filtro Nuts. Nuts: '{}'.", VariablesGlobales.getFiltroNuts());
+
+        log.info("[printFilters] - Filtro Objeto. Objeto: '{}'.", VariablesGlobales.getFiltroObjeto());
+
+        log.info("[printFilters] - Filtro Sql. Sql: '{}'.", VariablesGlobales.getFiltroSql());
+
+        VariablesGlobales.getMapFiltro().forEach((key, value) -> {
+            log.info("[printFilters] - IdPlataforma: '{}' - ÓrganoContratacion: {}", key, value);
+        });
+    }
+
+    public static boolean entryCumpleFiltros(Entry entry) {
+
+        // Si existe filtro SQL y no lo cumple, descarto el Entry
+        if (!VariablesGlobales.getMapFiltro().isEmpty() && !hasEntryInFiltroSql(entry)) {
+            log.debug("[entryCumpleFiltros] - No cumple filtro SQL.");
+            return false;
+        }
+
+        // Si existe filtro NUTS y no lo cumple, descarto el Entry
+        String filtroNuts = VariablesGlobales.getFiltroNuts();
+        if (filtroNuts != null && !filtroNuts.isBlank() && !hasEntryContainsNuts(entry)) {
+            log.debug("[entryCumpleFiltros] - No cumple filtro NUTS.");
+            return false;
+        }
+
+        // Si existe filtro Objeto y no lo cumple, descarto el Entry
+        String filtroObjeto = VariablesGlobales.getFiltroObjeto();
+        if (filtroObjeto != null && !filtroObjeto.isBlank() && !hasEntryContaninsObject(entry)) {
+            log.debug("[entryCumpleFiltros] - No cumple filtro Objeto.");
+            return false;
+        }
+
+        // Si existe filtro de fechas y no lo cumple, descarto el Entry
+        LocalDateTime fechaInicio = VariablesGlobales.getFiltroFechaInicial();
+        LocalDateTime fechaFin = VariablesGlobales.getFiltroFechaFinal();
+        if (fechaInicio != null && fechaFin != null && !hasEntryInFechas(entry)) {
+            log.debug("[entryCumpleFiltros] - No cumple filtro Fechas.");
+            return false;
+        }
+
+        log.debug("[entryCumpleFiltros] - El Entry cumple todos los filtros.");
+        return true;
+    }
+
 }

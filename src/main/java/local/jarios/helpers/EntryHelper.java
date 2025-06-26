@@ -1,15 +1,11 @@
 package local.jarios.helpers;
 
-import local.jarios.common.util.PropertiesKeys;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.placsp.*;
 import local.jarios.exceptions.MiInvalidDateFormatException;
 import local.jarios.common.util.Constantes;
-import local.jarios.common.util.Mensajes;
 import local.jarios.common.util.VariablesGlobales;
-import local.jarios.properties.api.PropertiesManagerService;
-import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
@@ -69,57 +65,6 @@ public final class EntryHelper {
     }
 
     /**
-     * Función que devuelve TRUE | FALSE para indicar SI |NO cumple, el Entry, con todos los filtros definidos
-     *
-     * @param entry Entry que analizamos
-     * @return Valor TRUE | FALSE
-     */
-    private static String entryCumpleConLosFiltros(Entry entry)
-            throws MiInvalidDateFormatException {
-
-        PropertiesManagerService propertiesManagerService = PropertiesManagerServiceImpl.getInstance();
-
-        String msg;
-
-        // FILTRO SQL
-        var filtroSql = propertiesManagerService.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_SQL);
-        if (!filtroSql.isBlank() && !FiltroHelper.getIfFiltroSqlContainsEntry(entry)) {
-            return Mensajes.FILTROS_NO_SQL;
-        }
-
-        // FILTRO NUTS
-        var filtroNuts = propertiesManagerService.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_NUTS);
-        if (!filtroNuts.isBlank() && !FiltroHelper.getIfFiltroNutsContainsEntry(entry)) {
-            return Mensajes.FILTROS_NO_NUTS;
-        }
-
-        // FILTRO FECHAS
-        var filtroFechaInicial = propertiesManagerService.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_FECHAINICIALLECTURA);
-        if (LocalDateTimeHelper.esFechaInvalida(filtroFechaInicial)) {
-            msg = String.format("[entryCumpleConLosFiltros] - Fecha inicial inválida: %s", filtroFechaInicial);
-            log.error(msg);
-            throw new MiInvalidDateFormatException (msg);
-        }
-
-
-
-        var filtroFechaFinal = propertiesManagerService.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_FECHAFINALLECTURA);
-        if (filtroFechaFinal.isBlank()) {
-            filtroFechaFinal = Constantes.FECHA_FINAL_LECTURA;
-        }
-
-
-        // FILTRO OBJETO
-        var filtroObjeto = propertiesManagerService.getProperty(Constantes.FILTER_PROPERTIES, PropertyConstantes.FILTRO_OBJETO);
-        if (!filtroObjeto.isBlank() && !FiltroHelper.getIfFiltroObjetoContainsEntry(entry)) {
-            return Mensajes.FILTROS_NO_OBJETO;
-        }
-
-        // Todos los filtros pasan
-        return Mensajes.FILTROS_OK;
-    }
-
-    /**
      * Función que actualiza en Entry en la base de datos (MAP de VariablesGlobales)
      *
      * @param newEntry Entry que estamos analizando y que vamos a actualizar en el MAP
@@ -146,33 +91,19 @@ public final class EntryHelper {
      * @param estadistica Objeto Estadistica
      * @throws MiInvalidDateFormatException Excepción en caso de error
      */
-    public static void procesarEntry(
-            Entry entry,
-            Estadistica estadistica) throws MiInvalidDateFormatException {
+    public static void procesarEntry(Entry entry, Estadistica estadistica) {
 
-        if (VariablesGlobales.isExistenFiltros()) {
-            // Existen filtros activos en la ejecución
-
-            String respuesta = entryCumpleConLosFiltros(entry);
-
-            if (!respuesta.equals(Mensajes.FILTROS_OK)) {
-                // Entry no cumple con los filtros
-
-                estadistica.aumentarNEntryRechazados();
-
-            } else {
-                // Entry cumple con los filtros
-
-                estadistica.aumentarNEntryProcesados();
-                procesarEntrySegunExistencia(entry, estadistica);
-            }
-
-        } else {
-            // No existen filtros activos en la ejecución
+        if (FiltroHelper.entryCumpleFiltros(entry)) {
 
             estadistica.aumentarNEntryProcesados();
             procesarEntrySegunExistencia(entry, estadistica);
+
+        } else {
+
+            estadistica.aumentarNEntryRechazados();// Entry cumple con los filtros
+
         }
+
     }
 
     // Método para procesar el entry según su existencia en el MAP
@@ -208,7 +139,7 @@ public final class EntryHelper {
             Estadistica estadistica) {
 
         //
-        if (entryEnMemoria.getUpdated().before(entryEnMap.getUpdated())) {
+        if (entryEnMemoria.getUpdated().isBefore(entryEnMap.getUpdated())) {
             // La fecha del entry en el MAP es más nueva, descartamos el Entry
 
             estadistica.aumentarNEntryRechazados();

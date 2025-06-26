@@ -1,8 +1,6 @@
 package local.jarios.helpers;
 
 import local.jarios.common.util.Constantes;
-import local.jarios.properties.api.PropertiesManagerService;
-import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
@@ -11,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 /**
  * Clase utilitaria para operaciones relacionadas con tiempo y fechas.
@@ -25,7 +23,6 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class LocalDateTimeHelper {
 
-    private static final Pattern FECHA_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -45,18 +42,6 @@ public final class LocalDateTimeHelper {
         return LocalDateTime.now(zonaMadrid);
     }
 
-    public static LocalDate parseLocalDate(String fechaStr) throws DateTimeParseException {
-        if (fechaStr == null || fechaStr.isBlank()) {
-            return null;
-        }
-        try {
-            return LocalDate.parse(fechaStr, DATE_FORMATTER);
-        } catch (DateTimeParseException e) {
-            log.error("[parseLocalDate] - Error al parser la fecha: {}", fechaStr);
-            return null;
-        }
-    }
-
     /**
      * Calcula la diferencia entre dos instantes {@link LocalDateTime} y devuelve
      * una cadena con la duración en formato "Xh Ym Zs Wms".
@@ -74,26 +59,29 @@ public final class LocalDateTimeHelper {
         return String.format("%dh %dm %ds %dms", horas, minutos, segundos, milisegundos);
     }
 
-    /**
-     *
-     * @return Valor con la fecha donde finaliza la importación de los datos
-     */
-    private static LocalDateTime getFechaFromProperty(String campo, ) {
-
-        PropertiesManagerService propertiesManagerService = PropertiesManagerServiceImpl.getInstance();
-
-        //
-        var fechaFromProperty = propertiesManagerService.getProperty(Constantes.FILTER_PROPERTIES, campo);
-
-        //
-        LocalDate localDate = LocalDateTimeHelper.parseLocalDate(fechaFromProperty);
-    }
-
     public static String getFechaHoraFormateada(LocalDateTime fechaHora) {
 
-        LocalDateTime fecha = (fechaHora != null) ? fechaHora.toLocalDateTime() : LocalDateTime.now();
+        LocalDateTime fecha = (fechaHora != null) ? fechaHora: LocalDateTime.now();
+        return fecha.format(DATE_TIME_FORMATTER);
+    }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return fecha.format(formatter);
+    public static Optional<LocalDate> parseFechaSiValida(String fechaStr) {
+
+        if (fechaStr == null || fechaStr.isBlank()) {
+            log.debug("[parseFechaSiValida] - El parámetro es NULL o vacío.");
+            return Optional.empty();
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Constantes.FORMATO_FECHA);
+        log.debug("[parseFechaSiValida] - Usando formato: {}", Constantes.FORMATO_FECHA);
+
+        try {
+            LocalDate fecha = LocalDate.parse(fechaStr, formatter);
+            log.debug("[parseFechaSiValida] - La fecha es válida: {}", fecha);
+            return Optional.of(fecha);
+        } catch (DateTimeParseException ex) {
+            log.debug("[parseFechaSiValida] - La fecha NO es válida: {}. Detalle: {}", fechaStr, ex.getMessage());
+            return Optional.empty();
+        }
     }
 }

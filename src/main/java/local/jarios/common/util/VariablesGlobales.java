@@ -4,6 +4,8 @@ import local.jarios.entity.atom.Entry;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,11 +27,23 @@ public final class VariablesGlobales {
 
     @Getter
     @Setter
-    private static boolean existenFiltros;
+    private static LocalDateTime filtroFechaInicial;
 
     @Getter
     @Setter
-    private static String schemaName;
+    private static LocalDateTime filtroFechaFinal;
+
+    @Getter
+    @Setter
+    private static String filtroObjeto;
+
+    @Getter
+    @Setter
+    private static String filtroNuts;
+
+    @Getter
+    @Setter
+    private static String filtroSql;
 
     private VariablesGlobales() { }
 

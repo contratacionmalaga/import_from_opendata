@@ -1,6 +1,5 @@
 package local.jarios;
 
-import local.jarios.common.util.PropertiesKeys;
 import local.jarios.email.api.EmailSender;
 import local.jarios.email.api.EmailSenderImpl;
 import local.jarios.email.api.EmailService;
@@ -22,6 +21,7 @@ import local.jarios.exceptions.MiParseException;
 import local.jarios.exceptions.MiServiceException;
 import local.jarios.exceptions.MiUnknownHostException;
 import local.jarios.helpers.ComunHelper;
+import local.jarios.helpers.FeedHelper;
 import local.jarios.helpers.FiltroHelper;
 import local.jarios.helpers.LocalDateTimeHelper;
 import local.jarios.helpers.OrganoContratacionHelper;
@@ -134,24 +134,11 @@ public abstract class AbstractOpenData {
             Estadistica estadistica = new Estadistica(miLog);
             log.info(Mensajes.ESTADISTICA_CREACION);
 
-            // Imprimo los filtros que se aplican
-            imprimirFiltros();
+            // Cargo los filtros que se amplican
+            FiltroHelper.loadFilters();
 
             //
-            //     CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
-            //
-            log.info(Mensajes.SERVICE_CREACION_INICIO);
-            log.info(propertiesManager.getProperty(Constantes.HIBERNATE_PROPERTIES, Constantes.LOCAL_URL));
-            Service service = new ServiceImpl(TipoConexion.PRINCIPAL);
-            log.info(Mensajes.SERVICE_CREACION_CREADO, TipoConexion.PRINCIPAL);
-
-            //
-            //     CREO LA INSTANCIA DEL SERVICIO DEL FILTRO SQL EN CASO DE NO SER VACÍA LA VARIABLE
-            //
-            if (!propertiesManager.getProperty(Constantes.FILTER_PROPERTIES, Constantes.FILTRO_SQL).isBlank()) {
-                VariablesGlobales.setMapFiltro(FiltroHelper.getMapFiltroSql());
-                log.info("Asignado el Map a Variables Globales");
-            }
+            FiltroHelper.printFilters();
 
             // Creo el objeto Configuracion
             Configuracion configuracion = new Configuracion(miLog);
@@ -162,7 +149,8 @@ public abstract class AbstractOpenData {
             log.info(Mensajes.ASIGN_CONFIGURACION_TO_LOG);
 
             // Obtengo el NewestFeed para el caso en que esté importando desde INTERNET
-            Feed newestFeed = service.getNewestFeed(tipoSindicacion);
+            Feed newestFeed = FeedHelper.getNewestFeed(tipoSindicacion);
+            log.info("Obtenido el Newest feed: {}", newestFeed);
 
             //
             //     COMIENZO EL PARSEO DE LOS FEEDS
@@ -200,12 +188,25 @@ public abstract class AbstractOpenData {
             estadistica.setDuracion(duracion);
             log.info("Asignada la duracion de la ejecución a 'Estadistica.duracion': {}", duracion);
 
+
+            log.info("FINALIZACIÓN DE LA PRUEBA");
+
+            System.exit(0);
+
             //
             //     PERSISTENCIA EN LA BASE DE DATOS
             //
 
             // Persistir en la base de datos
             log.info(Mensajes.INICIO_PERSISTENCIA_FICHEROS_ATOM);
+
+            //
+            //     CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
+            //
+            log.info(Mensajes.SERVICE_CREACION_INICIO);
+            log.info(propertiesManager.getProperty(Constantes.HIBERNATE_PROPERTIES, Constantes.LOCAL_URL));
+            Service service = new ServiceImpl(TipoConexion.PRINCIPAL);
+            log.info(Mensajes.SERVICE_CREACION_CREADO, TipoConexion.PRINCIPAL);
 
             // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
             service.persistirLog(miLog, VariablesGlobales.getMapBaseDatos(), lugarImportacion);
@@ -452,45 +453,5 @@ public abstract class AbstractOpenData {
 
         log.info(Mensajes.FINAL); // Se asume que FINAL es una constante tipo String
         System.exit(exitCode);
-    }
-
-    /**
-     *
-     */
-    public static void imprimirFiltros() {
-
-        //
-        String filtroSql = propertiesManager.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_SQL);
-        String filtroNuts = propertiesManager.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_NUTS);
-        String filtroObjeto = propertiesManager.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_OBJETO);
-        String filtroFechaInicialLectura = propertiesManager.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_FECHAINICIALLECTURA);
-        String filtroFechaFinalLectura = propertiesManager.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_FECHAFINALLECTURA);
-
-        //
-        boolean existenFiltros =
-                filtroSql.isBlank() ||
-                        filtroNuts.isBlank() ||
-                        filtroObjeto.isBlank() ||
-                        filtroFechaInicialLectura.isBlank() ||
-                        filtroFechaFinalLectura.isBlank();
-
-        //
-        VariablesGlobales.setExistenFiltros(existenFiltros);
-
-        //
-        if (existenFiltros) {
-
-            log.info(Mensajes.FILTROS);
-            log.info("{}Filtro SQL: {}", Constantes.TABULADOR_1, filtroSql);
-            log.info("{}Filtro Nuts: {}", Constantes.TABULADOR_1, filtroNuts);
-            log.info("{}Filtro Objeto del Contrato: {}", Constantes.TABULADOR_1, filtroObjeto);
-            log.info("{}Filtro Fecha Inicio Lectura: {}", Constantes.TABULADOR_1, filtroFechaInicialLectura);
-            log.info("{}Filtro Fecha Fin Lectura: {}", Constantes.TABULADOR_1, filtroFechaFinalLectura);
-
-        } else {
-
-            log.info(Mensajes.FILTROS_NO);
-
-        }
     }
 }

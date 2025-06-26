@@ -1,18 +1,19 @@
 package local.jarios.helpers;
 
-import local.jarios.common.util.PropertiesKeys;
+import local.jarios.common.util.VariablesGlobales;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.enums.TipoFecha;
+import local.jarios.enums.TipoConexion;
+import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.*;
 import local.jarios.mappers.MapperFeed;
-import local.jarios.properties.api.PropertiesManagerService;
-import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import local.jarios.common.util.Constantes;
 import local.jarios.common.util.Mensajes;
 import local.jarios.properties.exception.PropertiesManagerException;
+import local.jarios.services.Service;
+import local.jarios.services.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.w3._2005.atom.FeedType;
 
@@ -46,11 +47,11 @@ public final class FeedHelper {
      *
      * @param feed Objeto JAVA que será analizado para la obtención de la lista de Entry
      */
-    private static void procesarFeed(Feed feed, Estadistica estadistica)
-                throws MiInvalidDateFormatException {
+    private static void procesarFeed(Feed feed, Estadistica estadistica) throws MiInvalidDateFormatException {
 
         //
         List<Entry> entries = feed.getListEntry();
+        log.debug("[procesarFeed] - Leídos los Entry asociados al Feed. Nº: {}, Lista: {}", entries.size(), entries);
 
         // Compruebo si la lista de Entry asociada al Feed es NO VACÍA
         if (!entries.isEmpty()) {
@@ -64,10 +65,6 @@ public final class FeedHelper {
                 //
                 EntryHelper.procesarEntry(entry, estadistica);
             }
-
-        } else {
-
-            log.info("La lista de entries asociada al Feed ({}) se encuentra VACÍA.", feed.getLinkSelf());
 
         }
     }
@@ -105,9 +102,13 @@ public final class FeedHelper {
             var unmarshaller = getValidUnmarshaller();
 
             String nextLink = getInitialLink(isLocal);
+            log.debug("[parsearFeeds] - NextLink: {}", nextLink);
 
-            var fechaHoraFinalLectura = getFechaFinalLectura();
-            var fechaHoraInicialLectura = getFechaInicialLectura();
+            var fechaHoraInicialLectura = VariablesGlobales.getFiltroFechaInicial();
+            log.debug("[parsearFeeds] - fechaHoraInicialLectura: {}", fechaHoraInicialLectura);
+
+            var fechaHoraFinalLectura = VariablesGlobales.getFiltroFechaFinal();
+            log.debug("[parsearFeeds] - fechaHoraFinalLectura: {}", fechaHoraFinalLectura);
 
             boolean salirBucle = false;
 
@@ -118,15 +119,18 @@ public final class FeedHelper {
                 ) {
 
                     estadistica.aumentarNFicheros();
+                    log.debug("[parsearFeeds] - Nº de fichero: {}", estadistica.getNFicheros());
 
                     var feedType = getFeedType(unmarshaller, bufferedReader);
+                    log.debug("[parsearFeeds] - Obtenido el FeedType correspondientes asociado al fichero.");
 
                     if (feedType == null) {
-                        log.info(Mensajes.FEED_TYPE_NULL, Constantes.TABULADOR_2, true);
+                        log.debug("[parseFeeds] - El FeedType es null.");
                         break;
                     }
 
                     var feed = MapperFeed.getFeed(miLog, feedType);
+                    log.debug("[parseFeeds] - Feed: {}", feed);
 
                     if (isFechaValida(feed, fechaHoraInicialLectura, fechaHoraFinalLectura, newestFeed, isLocal)) {
 
@@ -155,36 +159,30 @@ public final class FeedHelper {
 
             return listFeedEntities;
 
-        } catch (IOException | URISyntaxException | MiInvalidDateFormatException |
+        } catch (IOException | URISyntaxException | MiInvalidDateFormatException | PropertiesManagerException |
                  MiUnmarshallerException | JAXBException | MiUrlException ex) {
 
             throw new MiParseException(ex);
         }
     }
 
-    private static String getInitialLink(boolean isLocal) throws PropertiesManagerException {
+    private static String getInitialLink(boolean isLocal) throws PropertiesManagerException, URISyntaxException {
 
-        PropertiesManagerService propertiesManagerService = PropertiesManagerServiceImpl.getInstance();
+        if (isLocal) {
+            String filename = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, Constantes.CONFIG_FILENAME);
+            log.debug("[getInitialLink] - Importando desde Local. Link inicial: {}", filename);
+            Path resolvedPath = getPathBaseLocal().resolve(filename).normalize();
+            log.debug("[getInitialLink] - Path absoluto: {}", resolvedPath);
 
-        try {
-            if (isLocal) {
-                String filename = propertiesManagerService.getProperty(Constantes.APP_PROPERTIES, Constantes.CONFIG_FILENAME);
-                Path resolvedPath = getPathBaseLocal().resolve(filename).normalize();
-
-                if (!resolvedPath.startsWith(getPathBaseLocal())) {
-                    throw new PropertiesManagerException("Ruta inicial no permitida: " + resolvedPath);
-                }
-
-                return resolvedPath.toString();
-            } else {
-                String url = propertiesManagerService.getProperty(Constantes.APP_PROPERTIES, Constantes.CONFIG_URL);
-                validateRemoteUrl(url);
-                return url;
+            if (!resolvedPath.startsWith(getPathBaseLocal())) {
+                throw new PropertiesManagerException("Ruta inicial no permitida: " + resolvedPath);
             }
-        } catch (PropertiesManagerException ex) {
-            log.error("[getInitialNextLink] - Error al leer desde Properties.");
-            log.error(ex.getMessage());
-            throw ex;
+
+            return resolvedPath.toString();
+        } else {
+            String url = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, Constantes.CONFIG_URL);
+            UrlHelper.validateRemoteUrl(url);
+            return url;
         }
     }
 
@@ -196,7 +194,7 @@ public final class FeedHelper {
         }
     }
 
-    private static String getNextLink(Feed feed, boolean isLocal) throws PropertiesManagerException {
+    private static String getNextLink(Feed feed, boolean isLocal) throws PropertiesManagerException, URISyntaxException {
         if (isLocal) {
             Path resolvedPath = getPathBaseLocal().resolve(feed.getLinkNext()).normalize();
             if (!resolvedPath.startsWith(getPathBaseLocal())) {
@@ -205,49 +203,12 @@ public final class FeedHelper {
             return resolvedPath.toString();
         } else {
             String url = feed.getLinkNext();
-            validateRemoteUrl(url);  // Esto lo defines abajo
+            UrlHelper.validateRemoteUrl(url);  // Esto lo defines abajo
             return url;
         }
     }
 
-    private static void validateRemoteUrl(String urlStr) throws PropertiesManagerException {
 
-        log.debug("[validateRemoteUrl]: urlStr: {}", urlStr);
-
-        PropertiesManagerService propertiesManagerService = PropertiesManagerServiceImpl.getInstance();
-        String miScheme = propertiesManagerService.getProperty(Constantes.VALIDATION_PROPERTIES, Constantes.PARAMETRO_URI_SCHEME);
-        log.debug("[validateRemoteUrl]: Scheme de validación: {}", miScheme);
-        String miHost = propertiesManagerService.getProperty(Constantes.VALIDATION_PROPERTIES, Constantes.PARAMETRO_URI_HOST);
-        log.debug("[validateRemoteUrl]: Host de validación: {}", miHost);
-        String msg;
-        //
-        try {
-            URI uri = new URI(urlStr);
-            log.debug("[validateRemoteUrl] - Uri: {}", uri);
-            String scheme = uri.getScheme();
-            log.debug("[validateRemoteUrl] - Scheme: {}", scheme);
-            String host = uri.getHost();
-            log.debug("[validateRemoteUrl] - Host: {}", host);
-
-            if (!miScheme.equalsIgnoreCase(scheme)) {
-                msg = String.format ("[validateRemoteUrl] - Solo se permiten URLs HTTPS. Esquema encontrado: %s", scheme);
-                log.error(msg);
-                throw new PropertiesManagerException(msg);
-            }
-
-            // Restringe si quieres el host o dominio
-            if (host == null || !host.endsWith(miHost)) {
-                msg = String.format ("[validateRemoteUrl] - Solo se permiten URLs HTTPS. Esquema encontrado: %s", scheme);
-                log.error(msg);
-                throw new PropertiesManagerException("[validateRemoteUrl] - Host no permitido: " + host);
-            }
-
-        } catch (URISyntaxException ex) {
-            msg = String.format ("[validateRemoteUrl] - URL remota inválida: %s", urlStr);
-            log.error(msg, ex);
-            throw new PropertiesManagerException(msg, ex);
-        }
-    }
 
     private static Unmarshaller getValidUnmarshaller() throws MiUnmarshallerException {
         var unmarshaller = UnmarshallerHelper.getUnmarshaller();
@@ -265,53 +226,42 @@ public final class FeedHelper {
         }
     }
 
-    private static boolean isFechaValida(
-            Feed feed,
-            LocalDateTime fechaHoraInicialLectura,
-            LocalDateTime fechaHoraFinalLectura,
-            Feed newestFeed,
-            boolean isLocal) {
+    private static boolean isFechaValida(LocalDateTime updatedFeed, LocalDateTime updatedNewestFeed) {
 
-        boolean fechaValida =
-                (feed.getUpdated().isAfter(fechaHoraFinalLectura)) &&
-                        (feed.getUpdated().isBefore(fechaHoraInicialLectura));
-
-        if (!isLocal && newestFeed != null) {
-            fechaValida = fechaValida && (feed.getUpdated().isAfter(newestFeed.getUpdated()));
-        }
-        return fechaValida;
-    }
-
-    /**
-     *
-     * @return Valor con la fecha donde comienza la importación de los datos
-     */
-    private static LocalDateTime getFechaInicialLectura() {
-
+        // La fecha updatedFeed es válida si:
         //
-        return getFechaFromProperty(PropertiesKeys.FILTRO_FECHAINICIALLECTURA);
+        //  Es posterior a updatedNewestFeed.
+        //  Está entre VariablesGlobales.filtroFechaInicial y VariablesGlobales.filtroFechaFinal
+        //          (ambos extremos incluidos o excluidos, como tú quieras).
+        boolean esFechaValida = updatedFeed != null
+                && updatedNewestFeed != null
+                && updatedFeed.isAfter(updatedNewestFeed)
+                && (VariablesGlobales.getFiltroFechaInicial() == null ||
+                        !updatedFeed.isBefore(VariablesGlobales.getFiltroFechaInicial()))
+                && (VariablesGlobales.getFiltroFechaFinal() == null ||
+                        !updatedFeed.isAfter(VariablesGlobales.getFiltroFechaFinal()));
+        log.debug("[isFechaValida] - Fecha: {}, FechaUpdatedNewestFeed: {}, FechaInicial: {}, FechaFinal: {}",
+                updatedFeed,
+                updatedNewestFeed,
+                VariablesGlobales.getFiltroFechaInicial(),
+                VariablesGlobales.getFiltroFechaFinal());
+
+        return esFechaValida;
     }
 
-    /**
-     *
-     * @return Valor con la fecha donde finaliza la importación de los datos
-     */
-    private static LocalDateTime getFechaFinalLectura() {
+    private static Path getPathBaseLocal() throws PropertiesManagerException {
 
-        //
-        return getFechaFromProperty(PropertiesKeys.FILTRO_FECHAFINALLECTURA);
+        return Paths
+                .get(PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, Constantes.CONFIG_PATH))
+                .toAbsolutePath()
+                .normalize();
     }
 
+    public static Feed getNewestFeed(TipoSindicacion tipoSindicacion) throws MiServiceException {
 
+        Service service = new ServiceImpl(TipoConexion.PRINCIPAL);
+        log.info(Mensajes.SERVICE_CREACION_CREADO, TipoConexion.PRINCIPAL);
 
-    private static Path getPathBaseLocal() {
-
-        PropertiesManagerService propertiesManagerService = PropertiesManagerServiceImpl.getInstance();
-
-        return Paths.get(
-                propertiesManagerService
-                        .getProperty(Constantes.APP_PROPERTIES, Constantes.CONFIG_PATH))
-                        .toAbsolutePath()
-                        .normalize();
+        return service.getNewestFeed(tipoSindicacion);
     }
 }

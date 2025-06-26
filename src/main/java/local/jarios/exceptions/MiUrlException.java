@@ -1,7 +1,5 @@
 package local.jarios.exceptions;
 
-import java.net.URISyntaxException;
-
 /**
  * Description:
  * Author: juan
@@ -10,8 +8,28 @@ import java.net.URISyntaxException;
  */
 public class MiUrlException extends Exception {
 
-    public MiUrlException(URISyntaxException ex) {
+    /**
+     * Constructor que crea una excepción {@code MiServiceException} con un mensaje
+     * y una causa especificada.
+     *
+     * @param message Mensaje descriptivo del error ocurrido.
+     * @param cause   Causa original que produjo esta excepción.
+     */
+    public MiUrlException(String message, Throwable cause) {
 
-        super(ex);
+
+        super(message, cause);
+    }
+
+    /**
+     * Constructor que crea una excepción {@code MiServiceException} con solo un mensaje
+     * descriptivo del error ocurrido.
+     *
+     * @param message Mensaje descriptivo del error.
+     */
+    public MiUrlException(String message) {
+
+
+        super(message);
     }
 }
