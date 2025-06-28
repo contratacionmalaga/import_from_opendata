@@ -24,39 +24,113 @@ public record ContractFolderStatusAdapter(boolean imprimirHijos)
             Type typeOfSrc,
             JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("ContractFolderId", contractFolderStatus.getContractFolderId());
-        jsonObject.addProperty("ContractFolderStatusCode", contractFolderStatus.getContractFolderStatusCode());
+
+        //
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ContractFolderId",
+                        contractFolderStatus.getContractFolderId());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ContractFolderStatusCode",
+                        contractFolderStatus.getContractFolderStatusCode());
 
         if (imprimirHijos) {
 
-            JsonSerializationHelper.addIfNotEmpty(
-                    jsonObject,
-                    "List<Uuid>",
-                    contractFolderStatus.getListUuid(),
-                    context);
+            JsonSerializationHelper
+                    .addIfNotEmpty(
+                            jsonObject,
+                            "List<Uuid>",
+                            contractFolderStatus.getListUuid(),
+                            context);
 
-            JsonSerializationHelper.addIfNotNull(jsonObject, "LocatedContractingParty", contractFolderStatus.getLocatedContractingParty(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "ProcurementProject", contractFolderStatus.getProcurementProject(), context);
+            JsonSerializationHelper
+                    .addIfNotNull(
+                            jsonObject,
+                            "LocatedContractingParty",
+                            contractFolderStatus.getLocatedContractingParty(),
+                            context);
 
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ProcurementProjectLot>", contractFolderStatus.getListProcurementProjectLot(), context);
+            JsonSerializationHelper
+                    .addIfNotNull(
+                            jsonObject,
+                            "ProcurementProject",
+                            contractFolderStatus.getProcurementProject(),
+                            context);
 
+            JsonSerializationHelper
+                    .addIfNotEmpty(
+                            jsonObject,
+                            "List<ProcurementProjectLot>",
+                            contractFolderStatus.getListProcurementProjectLot(),
+                            context);
 
-            JsonSerializationHelper.addIfNotNull(jsonObject, "TenderingTerms", contractFolderStatus.getTenderingTerms(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "TenderingProcess", contractFolderStatus.getTenderingProcess(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "LegalDocumentReference", contractFolderStatus.getLegalDocumentReference(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "TechnicalDocumentReference", contractFolderStatus.getTechnicalDocumentReference(), context);
+            JsonSerializationHelper
+                    .addIfNotNull(
+                            jsonObject,
+                            "TenderingTerms",
+                            contractFolderStatus.getTenderingTerms(),
+                            context);
 
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<AdditionalDocumentReference>", contractFolderStatus.getListAdditionalDocumentReference(), context);
+            JsonSerializationHelper
+                    .addIfNotNull(
+                            jsonObject,
+                            "TenderingProcess",
+                            contractFolderStatus.getTenderingProcess(),
+                            context);
 
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<NoticeInfo>", contractFolderStatus.getListNoticeInfo(), context);
+            JsonSerializationHelper
+                    .addIfNotNull(
+                            jsonObject,
+                            "LegalDocumentReference",
+                            contractFolderStatus.getLegalDocumentReference(),
+                            context);
 
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<GeneralDocument>", contractFolderStatus.getListGeneralDocument(), context);
+            JsonSerializationHelper
+                    .addIfNotNull(
+                            jsonObject,
+                            "TechnicalDocumentReference",
+                            contractFolderStatus.getTechnicalDocumentReference(),
+                            context);
 
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<TenderResult>", contractFolderStatus.getListTenderResult(), context);
+            JsonSerializationHelper
+                    .addIfNotEmpty(
+                            jsonObject,
+                            "List<AdditionalDocumentReference>",
+                            contractFolderStatus.getListAdditionalDocumentReference(),
+                            context);
 
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ContractModification>", contractFolderStatus.getListContractModification(), context);
+            JsonSerializationHelper
+                    .addIfNotEmpty(
+                            jsonObject,
+                            "List<NoticeInfo>",
+                            contractFolderStatus.getListNoticeInfo(),
+                            context);
+
+            JsonSerializationHelper
+                    .addIfNotEmpty(jsonObject,
+                            "List<GeneralDocument>",
+                            contractFolderStatus.getListGeneralDocument(),
+                            context);
+
+            JsonSerializationHelper
+                    .addIfNotEmpty(
+                            jsonObject,
+                            "List<TenderResult>",
+                            contractFolderStatus.getListTenderResult(),
+                            context);
+
+            JsonSerializationHelper
+                    .addIfNotEmpty(jsonObject,
+                            "List<ContractModification>",
+                            contractFolderStatus.getListContractModification(),
+                            context);
 
         }
 

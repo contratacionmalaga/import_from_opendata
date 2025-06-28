@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.AwardingCriteria;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,11 +26,30 @@ public record AwardingCriteriaAdapter() implements JsonSerializer<AwardingCriter
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("AwardingCriteriaTypeCode", awardingCriteria.getAwardingCriteriaTypeCode());
-        jsonObject.addProperty("AwardingCriteriaSubTypeCode", awardingCriteria.getAwardingCriteriaSubTypeCode());
-        jsonObject.addProperty("Description", awardingCriteria.getDescription());
-        jsonObject.addProperty("Note", awardingCriteria.getNote());
-        jsonObject.addProperty("WeightNumeric", awardingCriteria.getWeightNumeric());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "AwardingCriteriaTypeCode",
+                awardingCriteria.getAwardingCriteriaTypeCode());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "AwardingCriteriaSubTypeCode",
+                awardingCriteria.getAwardingCriteriaSubTypeCode());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Description",
+                awardingCriteria.getDescription());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Note",
+                awardingCriteria.getNote());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "WeightNumeric",
+                awardingCriteria.getWeightNumeric());
 
         //
         return jsonObject;

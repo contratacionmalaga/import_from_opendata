@@ -30,10 +30,12 @@ public record ContractExecutionRequirementAdapter() implements JsonSerializer<Co
                 jsonObject,
                 "Name",
                 contractExecutionRequirement.getName());
+
         JsonSerializationHelper.addProperty(
                 jsonObject,
                 "ExecutionRequirementCode",
                 contractExecutionRequirement.getExecutionRequirementCode());
+
         JsonSerializationHelper.addProperty(
                 jsonObject,
                 "Description",

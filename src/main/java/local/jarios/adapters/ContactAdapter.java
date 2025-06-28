@@ -30,14 +30,17 @@ public record ContactAdapter() implements JsonSerializer<Contact> {
                 jsonObject,
                 "Name",
                 contact.getName());
+
         JsonSerializationHelper.addProperty(
                 jsonObject,
                 "Telephone",
                 contact.getTelephone());
+
         JsonSerializationHelper.addProperty(
                 jsonObject,
                 "Telefax",
                 contact.getTelefax());
+
         JsonSerializationHelper.addProperty(
                 jsonObject,
                 "ElectronicMail",

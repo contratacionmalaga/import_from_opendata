@@ -29,7 +29,7 @@ public record AdditionalPublicationStatusAdapter(boolean imprimirHijos)
         //
         JsonSerializationHelper.addProperty(
                 jsonObject,
-                "SendDateTime",
+                "PublicationMediaName",
                 additionalPublicationStatus.getPublicationMediaName());
 
         //

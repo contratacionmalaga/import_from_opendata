@@ -31,6 +31,7 @@ public record AdditionalPublicationRequestAdapter()
                 jsonObject,
                 "AgencyId",
                 additionalPublicationRequest.getAgencyId());
+
         JsonSerializationHelper.addProperty(
                 jsonObject,
                 "SendDateTime",

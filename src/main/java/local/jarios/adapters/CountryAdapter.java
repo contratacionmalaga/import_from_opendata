@@ -30,6 +30,7 @@ public record CountryAdapter() implements JsonSerializer<Country> {
                 jsonObject,
                 "IdentificationCode",
                 country.getIdentificationCode());
+
         JsonSerializationHelper.addProperty(
                 jsonObject,
                 "Name",

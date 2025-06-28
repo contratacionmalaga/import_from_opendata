@@ -22,11 +22,23 @@ public record ContractAdapter() implements JsonSerializer<Contract> {
             Contract contract,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        JsonSerializationHelper.addProperty(jsonObject, "Id_Contract", contract.getIdContract());
-        JsonSerializationHelper.addProperty(jsonObject, "IssueDate", contract.getIssueDate());
+        //
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Id_Contract",
+                        contract.getIdContract());
 
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "IssueDate",
+                        contract.getIssueDate());
+
+        //
         return jsonObject;
     }
 }

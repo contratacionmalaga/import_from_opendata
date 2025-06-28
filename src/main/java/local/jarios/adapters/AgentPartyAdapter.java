@@ -30,6 +30,7 @@ public record AgentPartyAdapter(boolean imprimirHijos) implements JsonSerializer
                 jsonObject,
                 "WebsitURI",
                 party.getWebSiteUri());
+
         JsonSerializationHelper.addProperty(
                 jsonObject,
                 "Name",
