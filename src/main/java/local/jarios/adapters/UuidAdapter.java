@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Uuid;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -23,8 +24,17 @@ public record UuidAdapter() implements JsonSerializer<Uuid> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("scheme_name", uuid.getSchemeName());
-        jsonObject.addProperty("uuid", uuid.getUuid());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "SchemeName",
+                        uuid.getSchemeName());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Uuid",
+                        uuid.getUuid());
 
         //
         return jsonObject;

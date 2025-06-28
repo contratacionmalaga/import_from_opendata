@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.LegalMonetaryTotal;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,9 +26,20 @@ public record LegalMonetaryTotalAdapter() implements JsonSerializer<LegalMonetar
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("TaxExclusiveAmount", legalMonetaryTotal.getTaxExclusiveAmount());
-        jsonObject.addProperty("TaxInclusiveAmount", legalMonetaryTotal.getTaxInclusiveAmount());
-        jsonObject.addProperty("PayableAmount", legalMonetaryTotal.getPayableAmount());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "TaxExclusiveAmount",
+                legalMonetaryTotal.getTaxExclusiveAmount());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "TaxInclusiveAmount",
+                legalMonetaryTotal.getTaxInclusiveAmount());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "PayableAmount",
+                legalMonetaryTotal.getPayableAmount());
 
         //
         return jsonObject;

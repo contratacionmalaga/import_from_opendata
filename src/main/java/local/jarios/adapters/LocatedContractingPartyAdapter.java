@@ -28,11 +28,22 @@ public record LocatedContractingPartyAdapter(boolean imprimirHijos)
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("ContractingPartyTypeCode", locatedContractingParty.getContractingPartyTypeCode());
-        jsonObject.addProperty("BuyerProfileURIID", locatedContractingParty.getBuyerProfileUriId());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "ContractingPartyTypeCode",
+                locatedContractingParty.getContractingPartyTypeCode());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "BuyerProfileURIID",
+                locatedContractingParty.getBuyerProfileUriId());
 
         //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "Party", locatedContractingParty.getParty(), context);
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "Party",
+                locatedContractingParty.getParty(),
+                context);
 
         //
         return jsonObject;

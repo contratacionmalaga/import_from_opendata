@@ -28,13 +28,39 @@ public record TendererQualificationRequestAdapter(boolean imprimirHijos)
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("PersonalSituation", tendererQualificationRequest.getPersonalSituation());
-        jsonObject.addProperty("Description", tendererQualificationRequest.getDescription());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "PersonalSituation",
+                        tendererQualificationRequest.getPersonalSituation());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        tendererQualificationRequest.getDescription());
 
         //
-        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<EvaluationCriteria>", tendererQualificationRequest.getEvaluationCriteria(), context);
-        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<RequiredBusinessClassificationScheme>", tendererQualificationRequest.getRequiredBusinessClassificationScheme(), context);
-        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<SpecificTendererRequirement>", tendererQualificationRequest.getSpecificTendererRequirement(), context);
+        JsonSerializationHelper
+                .addIfNotEmpty(
+                        jsonObject,
+                        "List<EvaluationCriteria>",
+                        tendererQualificationRequest.getEvaluationCriteria(),
+                        context);
+
+        JsonSerializationHelper
+                .addIfNotEmpty(
+                        jsonObject,
+                        "List<RequiredBusinessClassificationScheme>",
+                        tendererQualificationRequest.getRequiredBusinessClassificationScheme(),
+                        context);
+
+        JsonSerializationHelper
+                .addIfNotEmpty(
+                        jsonObject,
+                        "List<SpecificTendererRequirement>",
+                        tendererQualificationRequest.getSpecificTendererRequirement(),
+                        context);
 
         //
         return jsonObject;

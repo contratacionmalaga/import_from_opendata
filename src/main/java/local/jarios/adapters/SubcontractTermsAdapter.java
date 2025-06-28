@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.SubcontractTerms;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,8 +26,11 @@ public record SubcontractTermsAdapter() implements JsonSerializer<SubcontractTer
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("Rate", subcontractTerms.getRate());
-        jsonObject.addProperty("Description", subcontractTerms.getDescription());
+        JsonSerializationHelper
+                .addProperty(jsonObject,"Rate", subcontractTerms.getRate());
+
+        JsonSerializationHelper
+                .addProperty(jsonObject,"Description", subcontractTerms.getDescription());
 
         //
         return jsonObject;

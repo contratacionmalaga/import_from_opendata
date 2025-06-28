@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.TendererRequirement;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,8 +26,17 @@ public record TendererRequirementAdapter() implements JsonSerializer<TendererReq
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("RequirementTypeCode", tendererRequirement.getRequirementTypeCode());
-        jsonObject.addProperty("Description", tendererRequirement.getDescription());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "RequirementTypeCode",
+                        tendererRequirement.getRequirementTypeCode());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        tendererRequirement.getDescription());
 
         //
         return jsonObject;

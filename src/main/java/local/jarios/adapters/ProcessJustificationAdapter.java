@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.ProcessJustification;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,8 +26,11 @@ public record ProcessJustificationAdapter() implements JsonSerializer<ProcessJus
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("ReasonCode", processJustification.getReasonCode());
-        jsonObject.addProperty("Description", processJustification.getDescription());
+        JsonSerializationHelper
+                .addProperty(jsonObject,"ReasonCode",processJustification.getReasonCode());
+
+        JsonSerializationHelper
+                .addProperty(jsonObject,"Description",processJustification.getDescription());
 
         //
         return jsonObject;

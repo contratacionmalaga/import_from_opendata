@@ -32,10 +32,33 @@ public record WinningPartyAdapter(boolean imprimirHijos) implements JsonSerializ
                 winningParty.getPartyName());
 
         //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", winningParty.getPartyIdentification(), context);
-        JsonSerializationHelper.addIfNotNull(jsonObject, "PhysicalLocation", winningParty.getPhysicalLocation(), context);
-        JsonSerializationHelper.addIfNotNull(jsonObject, "Contact", winningParty.getContact(), context);
-        JsonSerializationHelper.addIfNotNull(jsonObject, "Addres", winningParty.getPostalAddress(), context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "PartyIdentification",
+                        winningParty.getPartyIdentification(),
+                        context);
+
+        JsonSerializationHelper.
+                addIfNotNull(
+                        jsonObject,
+                        "PhysicalLocation",
+                        winningParty.getPhysicalLocation(),
+                        context);
+
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "Contact",
+                        winningParty.getContact(),
+                        context);
+
+        JsonSerializationHelper.
+                addIfNotNull(
+                        jsonObject,
+                        "Address",
+                        winningParty.getPostalAddress(),
+                        context);
 
         //
         return jsonObject;

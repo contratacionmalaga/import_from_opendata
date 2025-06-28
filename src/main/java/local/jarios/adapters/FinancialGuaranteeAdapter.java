@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.FinancialGuarantee;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -21,12 +22,26 @@ public record FinancialGuaranteeAdapter() implements JsonSerializer<FinancialGua
             FinancialGuarantee financialGuarantee,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("GuaranteeTypeCode", financialGuarantee.getGuaranteeTypeCode());
-        jsonObject.addProperty("AmountRate", financialGuarantee.getAmountRate());
-        jsonObject.addProperty("LiabilityAmount", financialGuarantee.getLiabilityAmount());
+        //
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "GuaranteeTypeCode",
+                financialGuarantee.getGuaranteeTypeCode());
 
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "AmountRate",
+                financialGuarantee.getAmountRate());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "LiabilityAmount",
+                financialGuarantee.getLiabilityAmount());
+
+        //
         return jsonObject;
     }
 }

@@ -27,8 +27,8 @@ public record ProcurementProjectLotAdapter(boolean imprimirHijos)
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("IdLote",
-                procurementProjectLot.getIdLote());
+        JsonSerializationHelper
+                .addProperty(jsonObject,"IdLote", procurementProjectLot.getIdLote());
 
         //
         jsonObject.add(

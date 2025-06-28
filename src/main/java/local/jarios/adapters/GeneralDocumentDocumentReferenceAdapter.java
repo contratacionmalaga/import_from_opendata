@@ -26,7 +26,11 @@ public record GeneralDocumentDocumentReferenceAdapter() implements JsonSerialize
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "DocumentReference", generalDocumentDocumentReference.getDocumentReference(), context);
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "DocumentReference",
+                generalDocumentDocumentReference.getDocumentReference(),
+                context);
 
         //
         return jsonObject;

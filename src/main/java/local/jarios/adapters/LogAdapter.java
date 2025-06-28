@@ -27,8 +27,8 @@ public record LogAdapter(boolean imprimirHijos) implements JsonSerializer<Log> {
         JsonObject logContent = new JsonObject();
 
         //
-        logContent.addProperty("lugarImportacion", String.valueOf(log.getLugarImportacion()));
-        logContent.addProperty("tipoSindicacion", String.valueOf(log.getTipoSindicacion()));
+        logContent.addProperty("LugarImportacion", String.valueOf(log.getLugarImportacion()));
+        logContent.addProperty("TipoSindicacion", String.valueOf(log.getTipoSindicacion()));
 
 
         // Evitar serializar recursivamente las relaciones bidireccionales

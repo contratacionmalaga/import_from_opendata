@@ -27,21 +27,57 @@ public record ProcurementProjectAdapter(boolean imprimirHijos)
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("Name", procurementProject.getName());
-        jsonObject.addProperty("Description", procurementProject.getDescription());
-        jsonObject.addProperty("TypeCode", procurementProject.getTypeCode());
-        jsonObject.addProperty("SubtypeCode", procurementProject.getSubtypeCode());
-        jsonObject.addProperty("MixContractIndicator", procurementProject.getMixContractIndicator());
+        JsonSerializationHelper
+                .addProperty(jsonObject,"Name",procurementProject.getName());
 
-        JsonSerializationHelper.addIfNotNull(jsonObject, "BudgetAmount", procurementProject.getBudgetAmount(), context);
+        JsonSerializationHelper
+                .addProperty(jsonObject,"Description",procurementProject.getTypeCode());
 
-        JsonSerializationHelper.addIfNotEmpty(jsonObject, "RequiredCommodityClassification", procurementProject.getRequiredCommodityClassification(), context);
+        JsonSerializationHelper
+                .addProperty(jsonObject,"SubtypeCode",procurementProject.getSubtypeCode());
 
-        JsonSerializationHelper.addIfNotNull(jsonObject, "RealizedLocation", procurementProject.getRealizedLocation(), context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,"MixContractIndicator",procurementProject.getMixContractIndicator());
 
-        JsonSerializationHelper.addIfNotNull(jsonObject, "PlannedPeriod", procurementProject.getPlannedPeriod(), context);
+        JsonSerializationHelper
+                .addProperty(jsonObject,"Description",procurementProject.getDescription());
 
-        JsonSerializationHelper.addIfNotNull(jsonObject, "ContractExtension", procurementProject.getContractExtension(), context);
+        //
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "BudgetAmount",
+                        procurementProject.getBudgetAmount(),
+                        context);
+
+        JsonSerializationHelper
+                .addIfNotEmpty(
+                        jsonObject,
+                        "RequiredCommodityClassification",
+                        procurementProject.getRequiredCommodityClassification(),
+                        context);
+
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "RealizedLocation",
+                        procurementProject.getRealizedLocation(),
+                        context);
+
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "PlannedPeriod",
+                        procurementProject.getPlannedPeriod(),
+                        context);
+
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "ContractExtension",
+                        procurementProject.getContractExtension(),
+                        context);
 
         //
         return jsonObject;

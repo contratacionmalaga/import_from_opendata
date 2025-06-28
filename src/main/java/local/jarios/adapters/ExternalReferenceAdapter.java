@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.ExternalReference;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,9 +26,20 @@ public record ExternalReferenceAdapter() implements JsonSerializer<ExternalRefer
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("Uri", String.valueOf(externalReference.getUri()));
-        jsonObject.addProperty("DocumentHash", externalReference.getDocumentHash());
-        jsonObject.addProperty("Filename", externalReference.getFilename());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Uri",
+                externalReference.getUri());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "DocumentHash",
+                externalReference.getDocumentHash());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "AuctionConstraintIndicator",
+                externalReference.getFilename());
 
         //
         return jsonObject;

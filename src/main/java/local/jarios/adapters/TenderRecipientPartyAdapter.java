@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.TenderRecipientParty;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -24,7 +25,11 @@ public record TenderRecipientPartyAdapter() implements JsonSerializer<TenderReci
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("endpointId", String.valueOf(tenderRecipientParty.getEndpointId()));
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "EndPointId",
+                        tenderRecipientParty.getEndpointId());
 
         //
         return jsonObject;

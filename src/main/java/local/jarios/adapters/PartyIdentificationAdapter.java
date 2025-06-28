@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.PartyIdentification;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,11 +26,20 @@ public record PartyIdentificationAdapter() implements JsonSerializer<PartyIdenti
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("idPlataforma", partyIdentification.getIdPlataforma());
-        jsonObject.addProperty("dir3", partyIdentification.getDir3());
-        jsonObject.addProperty("nif", partyIdentification.getNif());
-        jsonObject.addProperty("idOcPlat", partyIdentification.getIdOcPlat());
-        jsonObject.addProperty("otros", partyIdentification.getOtros());
+        JsonSerializationHelper
+                .addProperty(jsonObject,"IdPlataforma",partyIdentification.getIdPlataforma());
+
+        JsonSerializationHelper
+                .addProperty(jsonObject,"Dir3",partyIdentification.getDir3());
+
+        JsonSerializationHelper
+                .addProperty(jsonObject,"Nif",partyIdentification.getNif());
+
+        JsonSerializationHelper
+                .addProperty(jsonObject,"IdOcPlat",partyIdentification.getIdOcPlat());
+
+        JsonSerializationHelper
+                .addProperty(jsonObject,"Otros",partyIdentification.getOtros());
 
         //
         return jsonObject;

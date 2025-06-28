@@ -26,23 +26,28 @@ public record PartyAdapter(boolean imprimirHijos) implements JsonSerializer<Part
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("WebsitURI", party.getWebSiteUri());
+        JsonSerializationHelper
+                .addProperty(jsonObject,"WebsitURI",party.getWebSiteUri());
 
         //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", party.getPartyIdentification(), context);
+        JsonSerializationHelper
+                .addProperty(jsonObject,"PartyName",party.getPartyName());
 
         //
-        jsonObject.addProperty("PartyName",party.getPartyName());
+        JsonSerializationHelper
+                .addIfNotNull(jsonObject, "PartyIdentification", party.getPartyIdentification(), context);
 
-        //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "PostalAddress", party.getPostalAddress(), context);
-        //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "PhysicalLocation", party.getPhysicalLocation(), context);
-        //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "Contact", party.getContact(), context);
-        //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "AgentParty", party.getAgentParty(), context);
+        JsonSerializationHelper
+                .addIfNotNull(jsonObject, "PostalAddress", party.getPostalAddress(), context);
 
+        JsonSerializationHelper
+                .addIfNotNull(jsonObject, "PhysicalLocation", party.getPhysicalLocation(), context);
+
+        JsonSerializationHelper
+                .addIfNotNull(jsonObject, "Contact", party.getContact(), context);
+
+        JsonSerializationHelper
+                .addIfNotNull(jsonObject, "AgentParty", party.getAgentParty(), context);
 
         //
         return jsonObject;
