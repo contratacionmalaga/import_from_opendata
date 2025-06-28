@@ -21,39 +21,119 @@ public record TenderingTermsAdapter(boolean imprimirHijos) implements JsonSerial
     public JsonElement serialize(
             TenderingTerms tenderingTerms, Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("RequiredCurriculaIndicator",
-                tenderingTerms.getRequiredCurriculaIndicator());
-        jsonObject.addProperty("VariantConstraintIndicator",
-                tenderingTerms.getVariantConstraintIndicator());
-        jsonObject.addProperty("PriceRevisionFormulaDescription",
-                tenderingTerms.getPriceRevisionFormulaDescription());
-        jsonObject.addProperty("FundingProgramCode",
-                tenderingTerms.getFundingProgramCode());
-        jsonObject.addProperty("FundingProgram",
-                tenderingTerms.getFundingProgram());
-        jsonObject.addProperty("ProcurementNationalLegislationCode",
-                tenderingTerms.getProcurementNationalLegislationCode());
-        jsonObject.addProperty("ProcurementLegislationDocumentReference",
-                tenderingTerms.getProcurementLegislationDocumentReference());
-        jsonObject.addProperty("ReceivedAppealQuantity",
-                tenderingTerms.getReceivedAppealQuantity());
-        jsonObject.addProperty("EorderingIndicator",
-                tenderingTerms.getEorderingIndicator());
-        jsonObject.addProperty("EpaymentMeansIndicator",
-                tenderingTerms.getEpaymentMeansIndicator());
-        jsonObject.addProperty("ElectronicInvoicingIndicator",
-                tenderingTerms.getElectronicInvoicingIndicator());
+        //
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "RequiredCurriculaIndicator",
+                        tenderingTerms.getReceivedAppealQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "VariantConstraintIndicator",
+                        tenderingTerms.getVariantConstraintIndicator());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "PriceRevisionFormulaDescription",
+                        tenderingTerms.getPriceRevisionFormulaDescription());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "FundingProgramCode",
+                        tenderingTerms.getFundingProgramCode());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "FundingProgram",
+                        tenderingTerms.getFundingProgram());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ProcurementNationalLegislationCode",
+                        tenderingTerms.getProcurementNationalLegislationCode());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ProcurementLegislationDocumentReference",
+                        tenderingTerms.getProcurementLegislationDocumentReference());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ReceivedAppealQuantity",
+                        tenderingTerms.getReceivedAppealQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "EorderingIndicator",
+                        tenderingTerms.getEorderingIndicator());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "EpaymentMeansIndicator",
+                        tenderingTerms.getEpaymentMeansIndicator());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ElectronicInvoicingIndicator",
+                        tenderingTerms.getElectronicInvoicingIndicator());
 
         if (imprimirHijos) {
 
-            JsonSerializationHelper.addIfNotNull(jsonObject, "TendererQualificationRequest", tenderingTerms.getTendererQualificationRequest(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ContractExecutionRequirement>", tenderingTerms.getListContractExecutionRequirement(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "AwardingTerms", tenderingTerms.getAwardingTerms(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<FinancialGuarantee>", tenderingTerms.getListFinancialGuarantee(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<SubcontractTerms>", tenderingTerms.getListAllowedSubcontractTerms(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "TenderRecipientParty", tenderingTerms.getTenderRecipientParty(), context);
+            JsonSerializationHelper
+                    .addIfNotNull(
+                            jsonObject,
+                            "TendererQualificationRequest",
+                            tenderingTerms.getTendererQualificationRequest(),
+                            context);
+
+            JsonSerializationHelper
+                    .addIfNotEmpty(
+                            jsonObject,
+                            "List<ContractExecutionRequirement>",
+                            tenderingTerms.getListContractExecutionRequirement(),
+                            context);
+
+            JsonSerializationHelper
+                    .addIfNotNull(
+                            jsonObject,
+                            "AwardingTerms",
+                            tenderingTerms.getAwardingTerms(),
+                            context);
+
+            JsonSerializationHelper
+                    .addIfNotEmpty(
+                            jsonObject,
+                            "List<FinancialGuarantee>",
+                            tenderingTerms.getListFinancialGuarantee(),
+                            context);
+
+            JsonSerializationHelper
+                    .addIfNotEmpty(
+                            jsonObject,
+                            "List<SubcontractTerms>",
+                            tenderingTerms.getListAllowedSubcontractTerms(),
+                            context);
+
+            JsonSerializationHelper
+                    .addIfNotNull(
+                            jsonObject,
+                            "TenderRecipientParty",
+                            tenderingTerms.getTenderRecipientParty(),
+                            context);
 
         }
 

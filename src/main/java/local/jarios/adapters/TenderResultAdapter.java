@@ -25,32 +25,82 @@ public record TenderResultAdapter(boolean imprimirHijos) implements JsonSerializ
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("ResultCode",
-                tenderResult.getResultCode());
-        jsonObject.addProperty("ReceivedTenderQuantity",
-                tenderResult.getReceivedTenderQuantity());
-        jsonObject.addProperty("Description",
-                tenderResult.getDescription());
-        jsonObject.addProperty("AwardDate",
-                String.valueOf(tenderResult.getAwardDate()));
-        jsonObject.addProperty("LowerTenderAmountQuantity",
-                tenderResult.getLowerTenderAmountQuantity());
-        jsonObject.addProperty("HigherTenderAmountQuantity",
-                tenderResult.getHigherTenderAmountQuantity());
-        jsonObject.addProperty("AbnormallyLowTendersIndicator",
-                tenderResult.getAbnormallyLowTendersIndicator());
-        jsonObject.addProperty("SMEsReceivedTenderQuantity",
-                tenderResult.getSMEsReceivedTenderQuantity());
-        jsonObject.addProperty("SMEAwardedIndicator",
-                tenderResult.getSMEAwardedIndicator());
-        jsonObject.addProperty("EUNationalsReceivedTenderQuantity",
-                tenderResult.getEUNationalsReceivedTenderQuantity());
-        jsonObject.addProperty("NonEUNationalsReceivedTenderQuantity", 
-                tenderResult.getNonEUNationalsReceivedTenderQuantity());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ResultCode",
+                        tenderResult.getResultCode());
 
-        JsonSerializationHelper.addProperty(jsonObject, "StartDate", tenderResult.getStartDate());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ReceivedTenderQuantity",
+                        tenderResult.getReceivedTenderQuantity());
 
-        jsonObject.addProperty("AwardedOwnerNationalityCode", tenderResult.getAwardedOwnerNationalityCode());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        tenderResult.getDescription());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "AwardDate",
+                        tenderResult.getAwardDate());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "LowerTenderAmountQuantity",
+                        tenderResult.getLowerTenderAmountQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "HigherTenderAmountQuantity",
+                        tenderResult.getHigherTenderAmountQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "AbnormallyLowTendersIndicator",
+                        tenderResult.getAbnormallyLowTendersIndicator());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "SMEsReceivedTenderQuantity",
+                        tenderResult.getSMEsReceivedTenderQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "SMEAwardedIndicator",
+                        tenderResult.getSMEAwardedIndicator());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "EUNationalsReceivedTenderQuantity",
+                        tenderResult.getEUNationalsReceivedTenderQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "NonEUNationalsReceivedTenderQuantity",
+                        tenderResult.getNonEUNationalsReceivedTenderQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "StartDate",
+                        tenderResult.getStartDate());
+
+        jsonObject
+                .addProperty(
+                        "AwardedOwnerNationalityCode",
+                        tenderResult.getAwardedOwnerNationalityCode());
 
         //
         if (imprimirHijos) {

@@ -21,40 +21,102 @@ public record TenderingProcessAdapter(boolean imprimirHijos) implements JsonSeri
     public JsonElement serialize(
             TenderingProcess tenderingProcess, Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("ProcedureCode",
-                tenderingProcess.getProcedureCode());
-        jsonObject.addProperty("ContractingSystemCode",
-                tenderingProcess.getContractingSystemCode());
-        jsonObject.addProperty("UrgencyCode",
-                tenderingProcess.getUrgencyCode());
-        jsonObject.addProperty("SubmissionMethodCode",
-                tenderingProcess.getSubmissionMethodCode());
-        jsonObject.addProperty("PartPresentationCode",
-                tenderingProcess.getPartPresentationCode());
-        jsonObject.addProperty("MaximumLotPresentationQuantity",
-                tenderingProcess.getMaximumLotPresentationQuantity());
-        jsonObject.addProperty("MaximunTendererAwardedLotQuantity",
-                tenderingProcess.getMaximunTendererAwardedLotQuantity());
-        jsonObject.addProperty("LotsCombinationContractingAuthorityRights",
-                tenderingProcess.getLotsCombinationContractingAuthorityRights());
-        jsonObject.addProperty("OverThresholdIndicator",
-                tenderingProcess.getOverThresholdIndicator());
-        jsonObject.addProperty("Description",
-                tenderingProcess.getDescription());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ProcedureCode",
+                        tenderingProcess.getProcedureCode());
 
-        jsonObject.addProperty("documentAvailabilityPeriod",
-                String.valueOf(tenderingProcess.getDocumentAvailabilityPeriod()));
-        jsonObject.addProperty("TenderSubmissionDeadlinePeriod",
-                String.valueOf(tenderingProcess.getTenderSubmissionDeadlinePeriod()));
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ContractingSystemCode",
+                        tenderingProcess.getContractingSystemCode());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "UrgencyCode",
+                        tenderingProcess.getUrgencyCode());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "SubmissionMethodCode",
+                        tenderingProcess.getSubmissionMethodCode());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "PartPresentationCode",
+                        tenderingProcess.getPartPresentationCode());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "MaximumLotPresentationQuantity",
+                        tenderingProcess.getMaximumLotPresentationQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "MaximunTendererAwardedLotQuantity",
+                        tenderingProcess.getMaximunTendererAwardedLotQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "LotsCombinationContractingAuthorityRights",
+                        tenderingProcess.getLotsCombinationContractingAuthorityRights());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "OverThresholdIndicator",
+                        tenderingProcess.getOverThresholdIndicator());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "RequirementTypeCode",
+                        tenderingProcess.getDescription());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "DocumentAvailabilityPeriod",
+                        tenderingProcess.getDocumentAvailabilityPeriod());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "TenderSubmissionDeadlinePeriod",
+                        tenderingProcess.getTenderSubmissionDeadlinePeriod());
 
         //
-        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ProcessJustification>", tenderingProcess.getListProcessJustification(), context);
+        JsonSerializationHelper
+                .addIfNotEmpty(
+                        jsonObject,
+                        "List<ProcessJustification>",
+                        tenderingProcess.getListProcessJustification(),
+                        context);
 
-        JsonSerializationHelper.addIfNotNull(jsonObject, "EconomicOperatorShortList", tenderingProcess.getEconomicOperatorShortList(), context);
-        JsonSerializationHelper.addIfNotNull(jsonObject, "AuctionTerms", tenderingProcess.getAuctionTerms(), context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "EconomicOperatorShortList",
+                        tenderingProcess.getEconomicOperatorShortList(),
+                        context);
 
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "AuctionTerms",
+                        tenderingProcess.getAuctionTerms(),
+                        context);
 
         //
         return jsonObject;
