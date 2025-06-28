@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Contract;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -23,8 +24,8 @@ public record ContractAdapter() implements JsonSerializer<Contract> {
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id_Contract", String.valueOf(contract.getIdContract()));
-        jsonObject.addProperty("IssueDate", String.valueOf(contract.getIssueDate()));
+        JsonSerializationHelper.addProperty(jsonObject, "Id_Contract", contract.getIdContract());
+        JsonSerializationHelper.addProperty(jsonObject, "IssueDate", contract.getIssueDate());
 
         return jsonObject;
     }

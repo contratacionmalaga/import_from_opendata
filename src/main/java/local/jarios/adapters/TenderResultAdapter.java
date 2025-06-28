@@ -47,7 +47,9 @@ public record TenderResultAdapter(boolean imprimirHijos) implements JsonSerializ
                 tenderResult.getEUNationalsReceivedTenderQuantity());
         jsonObject.addProperty("NonEUNationalsReceivedTenderQuantity", 
                 tenderResult.getNonEUNationalsReceivedTenderQuantity());
-        jsonObject.addProperty("StartDate", String.valueOf(tenderResult.getStartDate()));
+
+        JsonSerializationHelper.addProperty(jsonObject, "StartDate", tenderResult.getStartDate());
+
         jsonObject.addProperty("AwardedOwnerNationalityCode", tenderResult.getAwardedOwnerNationalityCode());
 
         //

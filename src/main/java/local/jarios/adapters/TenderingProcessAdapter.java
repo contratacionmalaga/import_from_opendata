@@ -43,6 +43,7 @@ public record TenderingProcessAdapter(boolean imprimirHijos) implements JsonSeri
                 tenderingProcess.getOverThresholdIndicator());
         jsonObject.addProperty("Description",
                 tenderingProcess.getDescription());
+
         jsonObject.addProperty("documentAvailabilityPeriod",
                 String.valueOf(tenderingProcess.getDocumentAvailabilityPeriod()));
         jsonObject.addProperty("TenderSubmissionDeadlinePeriod",

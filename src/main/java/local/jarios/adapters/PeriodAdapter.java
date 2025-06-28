@@ -26,9 +26,9 @@ public record PeriodAdapter() implements JsonSerializer<Period> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("startDateTime", String.valueOf(period.getStartDateTime()));
-        jsonObject.addProperty("endDateTime", String.valueOf(period.getEndDateTime()));
-        jsonObject.addProperty("description", String.valueOf(period.getDescription()));
+        JsonSerializationHelper.addProperty(jsonObject, "startDateTime", period.getStartDateTime());
+        JsonSerializationHelper.addProperty(jsonObject, "endDateTime", period.getEndDateTime());
+        JsonSerializationHelper.addProperty(jsonObject, "description", period.getDescription());
 
         JsonSerializationHelper.addIfNotNull(
                 jsonObject,

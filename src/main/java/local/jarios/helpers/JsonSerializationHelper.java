@@ -26,4 +26,16 @@ public final class JsonSerializationHelper {
             jsonObject.add(propertyName, context.serialize(obj));
         }
     }
+
+    public static void addProperty(JsonObject jsonObject, String propertyName, Object value) {
+        if (value == null) return;
+
+        if (value instanceof String strValue) {
+            if (!strValue.isBlank()) {
+                jsonObject.addProperty(propertyName, strValue);
+            }
+        } else {
+            jsonObject.addProperty(propertyName, String.valueOf(value));
+        }
+    }
 }
