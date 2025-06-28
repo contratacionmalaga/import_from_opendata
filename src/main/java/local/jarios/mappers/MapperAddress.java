@@ -61,8 +61,6 @@ public final class MapperAddress {
                 .map(countryType -> MapperCountry.getCountry(address, countryType))
                 .ifPresent(address::setCountry);
 
-
-        log.debug(address.toString());
         //
         return address;
     }

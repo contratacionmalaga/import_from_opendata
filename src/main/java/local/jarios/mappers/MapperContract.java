@@ -42,9 +42,6 @@ public final class MapperContract {
                 .ifPresent(contract::setIssueDate);
 
         //
-        log.debug(contract.toString());
-
-        //
         return contract;
     }
 }

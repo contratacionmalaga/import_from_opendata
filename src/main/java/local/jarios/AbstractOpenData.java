@@ -11,6 +11,7 @@ import local.jarios.email.model.EmailData;
 import local.jarios.email.validator.EmailRequestValidator;
 import local.jarios.encryptor.exception.EncryptorException;
 import local.jarios.entity.Log;
+import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
@@ -21,11 +22,7 @@ import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.exceptions.MiServiceException;
 import local.jarios.exceptions.MiUnknownHostException;
-import local.jarios.helpers.ComunHelper;
-import local.jarios.helpers.FeedHelper;
-import local.jarios.helpers.FiltroHelper;
-import local.jarios.helpers.LocalDateTimeHelper;
-import local.jarios.helpers.OrganoContratacionHelper;
+import local.jarios.helpers.*;
 import local.jarios.properties.api.PropertiesManagerService;
 import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import local.jarios.properties.exception.PropertiesManagerException;
@@ -41,10 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 public abstract class AbstractOpenData {
@@ -175,13 +169,13 @@ public abstract class AbstractOpenData {
 
             // Asignar lista de feeds al log
             miLog.setListFeed(listFeedEntities);
-            log.info(Mensajes.ASIGN_LIST_FEED_TO_LOG);
+            log.info("Feeds asignadas al Log: {}", listFeedEntities.size());
 
             // Asignar la lista de Órganos de Contratación del Filtro al log
             List<OrganoContratacion> listOrganosContratacion =
                     OrganoContratacionHelper.getListOrganoContratacion(miLog, VariablesGlobales.getMapFiltro());
             miLog.setListOrganoContratacion(listOrganosContratacion);
-            log.info(Mensajes.ASIGN_LIST_ORGANOS_CONTRATACION_TO_LOG);
+            log.info("Órganos de Contratación asignados al Log: {}", listOrganosContratacion.size());
 
             //
             //     FINAL DEL PARSEO DE LOS FEEDS
@@ -190,21 +184,19 @@ public abstract class AbstractOpenData {
             // Asigno la fecha y hora final del parseo
             LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();
             estadistica.setFechaHoraFinal(localDateTime);
-            log.info(
-                    Mensajes.ASIGN_FECHA_HORA_FINAL_PARSEO_TO_ESTADISTICA,
-                    LocalDateTimeHelper.getFechaHoraFormateada(localDateTime));
 
             // Calculo el tiempo de ejecución del parseo
             String duracion = LocalDateTimeHelper.getDiferenciaLocalDateTime(
                     estadistica.getFechaHoraInicial(),
                     estadistica.getFechaHoraFinal());
             estadistica.setDuracion(duracion);
-            log.info("Asignada la duracion de la ejecución a 'Estadistica.duracion': {}", duracion);
+            log.info("Duración del parseo: {}", duracion);
 
-
-            log.info("FINALIZACIÓN DE LA PRUEBA");
-
-            System.exit(0);
+            //
+            //     VERIFICACIÓN DEL MAP
+            //
+            Map<String, Entry> map = VariablesGlobales.getMapBaseDatos();
+            MapHelper.printMap(map);
 
             //
             //     PERSISTENCIA EN LA BASE DE DATOS

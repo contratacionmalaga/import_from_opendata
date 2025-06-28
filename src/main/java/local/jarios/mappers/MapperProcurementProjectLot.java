@@ -57,8 +57,6 @@ public final class MapperProcurementProjectLot {
                         MapperTenderingTerms.getTenderingTermsFromType(null, procurementProjectLot, tenderingTerms))
         );
 
-        log.debug(procurementProjectLot.toString());
-
         return procurementProjectLot;
     }
 }

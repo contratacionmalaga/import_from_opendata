@@ -43,13 +43,14 @@ public final class FeedHelper {
     public static List<Feed> parsearFeeds(Log miLog, Feed newestFeed, Estadistica estadistica, boolean isLocal)
             throws MiParseException {
 
-        log.info("[parsearFeeds] - Inicio el parseo de los Feeds.");
+        log.trace("[parsearFeeds] - Inicio el parseo de los Feeds.");
         List<Feed> listFeeds = new ArrayList<>();
+        int nTotalEntries = 0;
 
         try {
             var unmarshaller = getValidUnmarshaller();
             String nextLink = getInitialLink(isLocal);
-            log.debug("[parsearFeeds] - NextLink: {}", nextLink);
+            log.trace("[parsearFeeds] - NextLink: {}", nextLink);
 
             boolean enBucle = true;
 
@@ -57,30 +58,39 @@ public final class FeedHelper {
                 try (var reader = openBufferedReader(nextLink, isLocal)) {
 
                     estadistica.aumentarNFicheros();
-                    log.debug("[parsearFeeds] - Nº de fichero: {}", estadistica.getNFicheros());
+                    log.trace("[parsearFeeds] - Nº de fichero: {}", estadistica.getNFicheros());
 
                     var feedType = getFeedType(unmarshaller, reader);
                     if (feedType == null) {
-                        log.debug("[parseFeeds] - FeedType es null.");
+                        log.trace("[parseFeeds] - FeedType es null.");
                         break;
                     }
 
                     var feed = MapperFeed.getFeed(miLog, feedType);
-                    log.debug("[parseFeeds] - Parseado correctamente {}", feed);
+                    log.trace("[parseFeeds] - Parseado correctamente {}", feed);
 
                     if (isLocal || isFechaValida(feed.getUpdated(), newestFeed)) {
 
-                        log.info(Mensajes.FEED_INFO, nextLink, Mensajes.FEED_FECHAS_OK);
+                        log.trace(Mensajes.FEED_INFO, nextLink, Mensajes.FEED_FECHAS_OK);
                         procesarFeed(feed, estadistica);
+                        log.trace("[parseFeeds] - Parseado {}", feed);
                         listFeeds.add(feed);
-                        ComunHelper.imprimir(feed);
-
+                        log.trace("[parseFeeds] - Nº de feeds parseados: {}", listFeeds.size());
+                        log.trace("[parseFeeds] - Nº de Entrys parseados en este Feed: {}", feed.getListEntry().size());
+                        nTotalEntries += feed.getListEntry().size();
+                        log.trace("[parseFeeds] - Nº de Entrys totales parseados: {}", nTotalEntries);
                         nextLink = getNextLink(feed, isLocal);
+                        log.trace("[parseFeeds] - NextLink: {}", nextLink);
                         enBucle = isNextLinkValid(nextLink, isLocal);
+
                     } else {
-                        log.info(Mensajes.FEED_INFO, nextLink, Mensajes.FEED_FECHAS_NO_OK);
+
+                        log.trace(Mensajes.FEED_INFO, nextLink, Mensajes.FEED_FECHAS_NO_OK);
                         enBucle = false;
+
                     }
+
+                    log.trace("[parseFeeds] - ¿En bucle?: {}", enBucle);
                 }
             }
 
@@ -97,7 +107,7 @@ public final class FeedHelper {
      */
     public static Feed getNewestFeed(TipoSindicacion tipoSindicacion) throws MiServiceException {
         Service service = new ServiceImpl(TipoConexion.PRINCIPAL);
-        log.info(Mensajes.SERVICE_CREACION_CREADO, TipoConexion.PRINCIPAL);
+        log.trace(Mensajes.SERVICE_CREACION_CREADO, TipoConexion.PRINCIPAL);
         return service.getNewestFeed(tipoSindicacion);
     }
 

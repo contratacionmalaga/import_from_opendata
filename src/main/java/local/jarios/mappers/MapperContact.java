@@ -56,9 +56,6 @@ public final class MapperContact {
                 .ifPresent(contact::setTelefax);
 
         //
-        log.debug(contact.toString());
-
-        //
         return contact;
     }
 }

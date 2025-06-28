@@ -43,9 +43,6 @@ public final class MapperLegalMonetaryTotal {
                 .map(amount -> amount.getValue().doubleValue())
                 .ifPresent(legalMonetaryTotal::setTaxInclusiveAmount);
 
-        //
-        log.debug(legalMonetaryTotal.toString());
-
         return legalMonetaryTotal;
     }
 }

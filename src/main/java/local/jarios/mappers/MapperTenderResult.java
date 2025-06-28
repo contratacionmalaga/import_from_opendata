@@ -10,7 +10,6 @@ import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.TenderResultType;
 import org.dgpe.codice.common.cbclib.AbnormallyLowTendersIndicatorType;
-import org.dgpe.codice.common.cbclib.IssueDateType;
 import org.dgpe.codice.common.cbclib.ResultCodeType;
 import org.dgpe.codice.common.cbclib.SMEAwardedIndicatorType;
 import org.dgpe.codice.common.cbclib.StartDateType;
@@ -115,7 +114,6 @@ public final class MapperTenderResult {
         tenderResult.setListSubcontractTerms(
                 MapperSubcontractTerms.getListSubcontractTerms(null, tenderResult, tenderResultType.getSubcontractTerms()));
 
-        log.debug(tenderResult.toString());
         return tenderResult;
     }
 }

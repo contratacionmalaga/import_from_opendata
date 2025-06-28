@@ -55,8 +55,6 @@ public final class MapperTendererRequirement {
                         Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(tendererRequirement::setRequirementTypeCode);
 
-        log.debug(tendererRequirement.toString());
-
         //
         return tendererRequirement;
     }

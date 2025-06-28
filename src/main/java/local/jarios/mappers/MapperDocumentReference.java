@@ -46,7 +46,6 @@ public final class MapperDocumentReference {
                 .ifPresent(attachmentType -> documentReference.setAttachment(
                         MapperAttachment.getAttachment(documentReference, null, attachmentType)));
 
-        log.debug(documentReference.toString());
         return documentReference;
     }
 }

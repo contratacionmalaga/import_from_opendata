@@ -35,8 +35,6 @@ public final class MapperTechnicalDocumentReference {
                                 technicalDocumentReference,
                                 docRefType)));
 
-        log.debug(technicalDocumentReference.toString());
-
         //
         return technicalDocumentReference;
     }

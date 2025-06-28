@@ -50,7 +50,6 @@ public final class MapperLocation {
                 .map(addr -> MapperAddress.getAddress(null, location, null, addr))
                 .ifPresent(location::setAddress);
 
-        log.debug(location.toString());
         return location;
     }
 }

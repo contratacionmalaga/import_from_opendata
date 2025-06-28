@@ -67,9 +67,6 @@ public final class MapperPeriod {
                         MapperStringFromList.getStringFromListDescriptionType(
                                 periodType.getDescription())));
 
-        //
-        log.debug(period.toString());
-
         // Duration Measure
         Optional.ofNullable(periodType.getDurationMeasure())
                 .ifPresent(measure -> period.setDurationMeasure(
@@ -85,9 +82,6 @@ public final class MapperPeriod {
         Optional.ofNullable(durationMeasureType.getValue()).ifPresent(measure::setValue);
 
         Optional.ofNullable(durationMeasureType.getUnitCode()).ifPresent(measure::setUnitCode);
-
-        //
-        log.debug(measure.toString());
 
         return measure;
     }

@@ -37,9 +37,6 @@ public final class MapperCountry {
                 .ifPresent(country::setIdentificationCode);
 
         //
-        log.debug(country.toString());
-
-        //
         return country;
     }
 }

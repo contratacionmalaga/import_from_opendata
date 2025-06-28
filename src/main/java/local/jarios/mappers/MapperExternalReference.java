@@ -46,9 +46,6 @@ public final class MapperExternalReference {
         externalReference.setFilename(filename);
 
         //
-        log.debug(externalReference.toString());
-
-        //
         return externalReference;
     }
 }

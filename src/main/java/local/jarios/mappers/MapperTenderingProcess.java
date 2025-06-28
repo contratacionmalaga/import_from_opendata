@@ -116,8 +116,6 @@ public final class MapperTenderingProcess {
                         tenderingProcess,
                         tenderingProcessType.getProcessJustification()));
 
-        log.debug(tenderingProcess.toString());
-
         return tenderingProcess;
     }
 }

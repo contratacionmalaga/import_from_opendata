@@ -31,7 +31,6 @@ public final class MapperAuctionTerms {
         auctionTerms.setAuctionConstraintIndicator(
                 auctionTermsType.getAuctionConstraintIndicator().isValue());
 
-        log.debug(auctionTerms.toString());
         //
         return auctionTerms;
     }

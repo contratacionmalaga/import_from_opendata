@@ -115,8 +115,6 @@ public final class MapperTenderingTerms {
                 .ifPresent(party -> tenderingTerms.setTenderRecipientParty(
                         MapperTenderRecipientParty.getTenderRecipientParty(tenderingTerms, party)));
 
-        log.debug(tenderingTerms.toString());
-
         return tenderingTerms;
     }
 

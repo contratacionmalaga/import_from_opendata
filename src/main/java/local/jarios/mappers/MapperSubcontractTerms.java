@@ -60,9 +60,6 @@ public final class MapperSubcontractTerms {
                 .ifPresent(subcontractTerms::setRate);
 
         //
-        log.debug(subcontractTerms.toString());
-
-        //
         return subcontractTerms;
 
     }

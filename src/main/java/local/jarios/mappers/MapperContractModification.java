@@ -99,9 +99,6 @@ public final class MapperContractModification {
         Optional.ofNullable(finalDurationMeasureType.getUnitCode())
                 .ifPresent(measure::setUnitCode);
 
-        //
-        log.debug(measure.toString());
-
         return measure;
     }
 }

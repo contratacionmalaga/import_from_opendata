@@ -40,8 +40,6 @@ public final class MapperTenderedProject {
                                 null,
                                 legalMonetaryTotal)));
 
-        log.debug(tenderedProject.toString());
-
         //
         return tenderedProject;
     }

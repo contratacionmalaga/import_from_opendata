@@ -49,9 +49,6 @@ public final class MapperProcessJustification {
                         MapperStringFromList.getStringFromListDescriptionType(
                                 processJustificationType.getDescription())));
 
-        //
-        log.debug(processJustification.toString());
-
         return processJustification;
     }
 }

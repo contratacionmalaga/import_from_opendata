@@ -62,9 +62,6 @@ public final class MapperClassificationScheme {
                         classificationSchemeType.getClassificationCategory()));
 
         //
-        log.debug(classificationScheme.toString());
-
-        //
         return classificationScheme;
     }
 }

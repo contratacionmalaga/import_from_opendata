@@ -43,8 +43,6 @@ public final class MapperAgentParty {
         agentParty.setPartyName(
                 ComunHelper.limitarRegistro(partyName, Constantes.TAMANO_MAXIMO_CAMPO_250));
 
-        log.debug(agentParty.toString());
-
         // Party Identification
         agentParty.setPartyIdentification(
                 MapperPartyIdentification.getPartyIdentification(

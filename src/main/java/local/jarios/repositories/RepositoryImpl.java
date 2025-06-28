@@ -61,15 +61,14 @@ public class RepositoryImpl implements Repository {
     @Override
     public void persistirLog(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion) throws MiRepositoryException {
 
+        log.info("[persistirLog] - Inicio.");
+
         ejecutarDentroDeTransaccion(
 
             session -> {
 
                 session.persist(miLog);
                 log.debug("[persistirLog] - Persistidas las Entidades Log, Estadística y Configuracion. {}", miLog.toString());
-
-                session.flush();
-                log.debug("[persistirLog] - Flush de la sesión en base de datos");
 
                 grabarMap(session, mapBaseDatos, lugarImportacion);
                 log.debug("[persistirLog] - Map de Entrys persistido correctamente. Registros: {}", mapBaseDatos.size());
@@ -81,11 +80,13 @@ public class RepositoryImpl implements Repository {
 
         boolean esLocal = lugarImportacion.isLocalImport();
 
-        for (Entry newEntry : mapBaseDatos.values()) {
+        for (Entry entry : mapBaseDatos.values()) {
 
             if (esLocal) {
+
                 // En importación local grabamos todo directamente sin comprobar
-                session.persist(newEntry);
+                session.persist(entry);
+                log.info("[grabarMap] - {}", entry.toString());
 
             } else {
                 // Importación Internet: chequeamos existencia y fecha updated
@@ -93,18 +94,19 @@ public class RepositoryImpl implements Repository {
                 // Buscar por idEntry (asumo que clave idEntry es el identificador único de negocio)
                 Entry existingEntry = session.createQuery(
                                 "FROM Entry e WHERE e.idEntry = :idEntry", Entry.class)
-                        .setParameter("idEntry", newEntry.getIdEntry())
+                        .setParameter("idEntry", entry.getIdEntry())
                         .uniqueResult();
 
                 if (existingEntry == null) {
+
                     // No existe, persisto nuevo
-                    session.persist(newEntry);
+                    session.persist(entry);
 
                 } else {
 
                     // Existe, comparar updated
                     LocalDateTime existingUpdated = existingEntry.getUpdated();
-                    LocalDateTime newUpdated = newEntry.getUpdated();
+                    LocalDateTime newUpdated = entry.getUpdated();
 
                     if (newUpdated != null && (existingUpdated == null || newUpdated.isAfter(existingUpdated))) {
                         // Nuevo es más reciente
@@ -113,7 +115,7 @@ public class RepositoryImpl implements Repository {
                         session.remove(existingEntry);
 
                         // Persistir el nuevo
-                        session.persist(newEntry);
+                        session.persist(entry);
 
                     }
                 }

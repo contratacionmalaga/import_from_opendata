@@ -61,7 +61,7 @@
     <Loggers>
 
         <!-- Busqueda de entidades en la ruta seleccionada -->
-        <Logger name="local.jarios.properties" level="DEBUG" additivity="false">
+        <Logger name="local.jarios.properties" level="INFO" additivity="false">
             <AppenderRef ref="PropertiesHelper"/>
             <AppenderRef ref="Console"/>
         </Logger>
@@ -69,11 +69,21 @@
         <!-- Busqueda de entidades en la ruta seleccionada -->
         <Logger name="local.jarios.email" level="INFO" additivity="false">
             <AppenderRef ref="EmailHelper"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Logger name="OkPacket" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <Logger name="StandardClient" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
         </Logger>
 
         <!-- Busqueda de entidades en la ruta seleccionada -->
         <Logger name="local.jarios.encrypt" level="INFO" additivity="false">
             <AppenderRef ref="EncryptHelper"/>
+            <AppenderRef ref="Console"/>
         </Logger>
 
         <!-- Busqueda de entidades en la ruta seleccionada -->
@@ -111,19 +121,14 @@
         <!-- Busqueda de entidades en la ruta seleccionada -->
         <Logger name="local.jarios.properties" level="INFO" additivity="false">
             <AppenderRef ref="PropertiesHelper"/>
+            <AppenderRef ref="Console"/>
         </Logger>
 
         <!-- Busqueda de entidades en la ruta seleccionada -->
-        <Logger name="local.jarios" level="INFO" additivity="false">
+        <Logger name="local.jarios" level="TRACE" additivity="false">
             <AppenderRef ref="MainAppLogFile"/>
             <AppenderRef ref="Console"/>
         </Logger>
-
-        <!-- Redirección del log del aplicativo. Por consola y almacenado en fichero. -->
-        <Root level="INFO">
-            <AppenderRef ref="MainAppLogFile"/>
-            <AppenderRef ref="Console"/>
-        </Root>
 
     </Loggers>
 </Configuration>

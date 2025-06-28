@@ -52,17 +52,19 @@ public final class MapperNoticeInfo {
         noticeInfo.setContractFolderStatus(contractFolderStatus);
 
         // NoticeTypeCode es obligatorio, sin Optional porque se asume que no es null
-        noticeInfo.setNoticeTypeCode(ComunHelper.limitarRegistro(
-                noticeInfoType.getNoticeTypeCode().getValue(),
-                Constantes.TAMANO_MAXIMO_CAMPO_50));
+        noticeInfo
+                .setNoticeTypeCode(ComunHelper.limitarRegistro(
+                        noticeInfoType.getNoticeTypeCode().getValue(),
+                        Constantes.TAMANO_MAXIMO_CAMPO_50));
 
-        //
-        log.debug(noticeInfo.toString());
-
-        noticeInfo.setListAdditionalPublicationStatus(getListAdditionalPublicationStatusFromType(
-                noticeInfo,
-                Optional.ofNullable(noticeInfoType.getAdditionalPublicationStatus())
-                        .orElse(Collections.emptyList())));
+        noticeInfo
+                .setListAdditionalPublicationStatus(
+                        getListAdditionalPublicationStatusFromType(
+                                noticeInfo,
+                                Optional
+                                        .ofNullable(noticeInfoType
+                                        .getAdditionalPublicationStatus())
+                                        .orElse(Collections.emptyList())));
 
 
         return noticeInfo;
@@ -75,9 +77,11 @@ public final class MapperNoticeInfo {
         List<AdditionalPublicationStatus> listAdditionalPublicationStatus = new ArrayList<>();
 
         for (AdditionalPublicationStatusType additionalPublicationStatusType : listAdditionalPublicationStatusType) {
-            listAdditionalPublicationStatus.add(getAdditionalPublicationStatusFromType(
-                    noticeInfo,
-                    additionalPublicationStatusType));
+            listAdditionalPublicationStatus
+                    .add(
+                            getAdditionalPublicationStatusFromType(
+                                    noticeInfo,
+                                    additionalPublicationStatusType));
         }
 
         return listAdditionalPublicationStatus;
@@ -95,9 +99,6 @@ public final class MapperNoticeInfo {
                 .map(NameType::getValue)
                 .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_250))
                 .ifPresent(additionalPublicationStatus::setPublicationMediaName);
-
-        //
-        log.debug(additionalPublicationStatus.toString());
 
         additionalPublicationStatus.setAdditionalPublicationRequestList(
                 getListAdditionalPublicationRequestFromType(
@@ -154,9 +155,6 @@ public final class MapperNoticeInfo {
         }
 
         //
-        log.debug(additionalPublicationRequest.toString());
-
-        //
         return additionalPublicationRequest;
     }
 
@@ -194,9 +192,6 @@ public final class MapperNoticeInfo {
                                      .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                                      .orElse(Constantes.CADENA_VACIA);
         additionalPublicationDocumentReference.setDocumentTypeCode(docTypeCode);
-
-        //
-        log.debug(additionalPublicationDocumentReference.toString());
 
         Optional.ofNullable(additionalPublicationDocumentReferenceType.getAttachment())
                 .map(att -> MapperAttachment.getAttachment(null, additionalPublicationDocumentReference, att))

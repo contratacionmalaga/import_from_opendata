@@ -83,8 +83,6 @@ public final class MapperTendererQualificationRequest {
                         MapperTendererRequirement.getListTendererRequirement(
                                 tendererQualificationRequest, list)));
 
-        log.debug(tendererQualificationRequest.toString());
-
         //
         return tendererQualificationRequest;
     }

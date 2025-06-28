@@ -27,19 +27,19 @@ public final class FileHelper {
 
         // Verificación de existencia del archivo
         if (!filePathFichero.exists()) {
-            log.error(Mensajes.FILE_NOT_EXIST, strPathFichero);
+            log.debug(Mensajes.FILE_NOT_EXIST, strPathFichero);
             return false;
         }
 
         // Verificación de si es un archivo
         if (!filePathFichero.isFile()) {
-            log.error(Mensajes.NOT_FILE, strPathFichero);
+            log.debug(Mensajes.NOT_FILE, strPathFichero);
             return false;
         }
 
         // Verificación de permisos de lectura
         if (!filePathFichero.canRead()) {
-            log.error(Mensajes.FILE_NOT_READ, strPathFichero);
+            log.debug(Mensajes.FILE_NOT_READ, strPathFichero);
             return false;
         }
 

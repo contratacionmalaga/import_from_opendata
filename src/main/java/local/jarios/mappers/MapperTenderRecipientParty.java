@@ -25,8 +25,6 @@ public final class MapperTenderRecipientParty {
         tenderRecipientParty.setTenderingTerms(tenderingTerms);
         tenderRecipientParty.setEndpointId(partyType.getEndpointID().getValue());
 
-        log.debug(tenderRecipientParty.toString());
-
         //
         return tenderRecipientParty;
     }

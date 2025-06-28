@@ -73,7 +73,6 @@ public final class MapperAwardingCriteria {
                 MapperStringFromList.getStringFromListNoteType(
                         awardingCriteriaType.getNote()));
 
-        log.debug(awardingCriteria.toString());
         //
         return awardingCriteria;
     }

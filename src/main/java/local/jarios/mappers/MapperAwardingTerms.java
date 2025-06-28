@@ -35,7 +35,6 @@ public final class MapperAwardingTerms {
                 .map(list -> MapperAwardingCriteria.getListAwardingCriteria(awardingTerms, list))
                 .ifPresent(awardingTerms::setListAwardingCriteria);
 
-        log.debug(awardingTerms.toString());
         //
         return awardingTerms;
     }

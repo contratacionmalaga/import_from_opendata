@@ -34,9 +34,6 @@ public final class MapperWinningParty {
                         MapperStringFromList.getStringFromListPartyNameType(partyType.getPartyName()),
                         Constantes.TAMANO_MAXIMO_CAMPO_250));
 
-        //
-        log.debug(winningParty.toString());
-
         Optional.ofNullable(partyType.getPostalAddress())
                 .ifPresent(postalAddress -> winningParty.setPostalAddress(
                         MapperAddress.getAddress(null, null, winningParty, postalAddress)));

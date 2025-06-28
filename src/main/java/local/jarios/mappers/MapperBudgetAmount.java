@@ -43,8 +43,6 @@ public final class MapperBudgetAmount {
                 .map(amount -> amount.getValue().doubleValue())
                 .ifPresent(budgetAmount::setTaxExclusiveAmount);
 
-        log.debug(budgetAmount.toString());
-
         return budgetAmount;
     }
 }

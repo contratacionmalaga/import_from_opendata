@@ -29,7 +29,6 @@ public final class MapperUuid {
                     uuid.setContractFolderStatus(contractFolderStatus);
                     uuid.setUuid(uuidType.getValue());
                     uuid.setSchemeName(uuidType.getSchemeName());
-                    log.debug(uuid.toString());
                     return uuid;
                 })
                 .toList();

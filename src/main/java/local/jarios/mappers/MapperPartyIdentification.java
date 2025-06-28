@@ -55,7 +55,6 @@ public final class MapperPartyIdentification {
                     });
         }
 
-        log.debug(partyIdentification.toString());
         return partyIdentification;
     }
 }

@@ -44,9 +44,6 @@ public final class MapperLocatedContractingParty {
                         Constantes.TAMANO_MAXIMO_CAMPO_2500))
                 .ifPresent(locatedContractingParty::setBuyerProfileUriId);
 
-        //
-        log.debug(locatedContractingParty.toString());
-
         locatedContractingParty.setParty(
                 MapperParty.getPartyFromType(
                         locatedContractingParty,

@@ -44,9 +44,6 @@ public final class MapperClassificationCategory {
                 .ifPresent(classificationCategory::setCodeValue);
 
         //
-        log.debug(classificationCategory.toString());
-
-        //
         return classificationCategory;
     }
 }
