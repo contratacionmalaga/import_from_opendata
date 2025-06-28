@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.NoticeInfo;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -20,18 +21,16 @@ public record NoticeInfoAdapter(boolean imprimirHijos) implements JsonSerializer
     public JsonElement serialize(
             NoticeInfo noticeInfo, Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id", String.valueOf(noticeInfo.getId()));
+        //
         jsonObject.addProperty("NoticeTypeCode", noticeInfo.getNoticeTypeCode());
 
-        if (imprimirHijos && !noticeInfo.getListAdditionalPublicationStatus().isEmpty()) {
+        //
+        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<AdditionalPublicationStatus>", noticeInfo.getListAdditionalPublicationStatus(), context);
 
-            jsonObject.add(
-                    "AdditionalPublicationStatus",
-                    context.serialize(noticeInfo.getListAdditionalPublicationStatus()));
-        }
-
+        //
         return jsonObject;
     }
 }

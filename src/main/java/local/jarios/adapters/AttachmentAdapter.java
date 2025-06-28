@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Attachment;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,13 +26,7 @@ public record AttachmentAdapter(boolean imprimirHijos) implements JsonSerializer
         JsonObject jsonObject = new JsonObject();
 
         //
-        if (imprimirHijos && attachment.getExternalReference() != null) {
-
-            //
-            jsonObject.add(
-                    "ExternalReference",
-                    context.serialize(attachment.getExternalReference()));
-        }
+        JsonSerializationHelper.addIfNotNull(jsonObject, "ExternalReference", attachment.getExternalReference(), context);
 
         //
         return jsonObject;

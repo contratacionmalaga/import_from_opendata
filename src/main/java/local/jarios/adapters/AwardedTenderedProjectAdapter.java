@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.TenderedProject;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -24,13 +25,7 @@ public record AwardedTenderedProjectAdapter(boolean imprimirHijos) implements Js
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("ProcurementProjectLotId", awardedTenderedProject.getProcurementProjectLotId());
 
-        if ((imprimirHijos) && (awardedTenderedProject.getLegalMonetaryTotal() != null)) {
-
-            // Serializar Contract
-            jsonObject.add(
-                    "LegalMonetaryTotal",
-                    context.serialize(awardedTenderedProject.getLegalMonetaryTotal()));
-        }
+        JsonSerializationHelper.addIfNotNull(jsonObject, "LegalMonetaryTotal", awardedTenderedProject.getLegalMonetaryTotal(), context);
 
         //
         return jsonObject;

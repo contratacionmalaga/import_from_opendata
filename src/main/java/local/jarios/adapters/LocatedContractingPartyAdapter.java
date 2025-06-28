@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.LocatedContractingParty;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,19 +26,13 @@ public record LocatedContractingPartyAdapter(boolean imprimirHijos)
 
         //
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("Id",
-                String.valueOf(locatedContractingParty.getId()));
-        jsonObject.addProperty("ContractingPartyTypeCode",
-                locatedContractingParty.getContractingPartyTypeCode());
-        jsonObject.addProperty("BuyerProfileURIID",
-                locatedContractingParty.getBuyerProfileUriId());
 
-        if ((imprimirHijos) && (locatedContractingParty.getParty() != null)) {
+        //
+        jsonObject.addProperty("ContractingPartyTypeCode", locatedContractingParty.getContractingPartyTypeCode());
+        jsonObject.addProperty("BuyerProfileURIID", locatedContractingParty.getBuyerProfileUriId());
 
-            jsonObject.add(
-                    "Party",
-                    context.serialize(locatedContractingParty.getParty()));
-        }
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "Party", locatedContractingParty.getParty(), context);
 
         //
         return jsonObject;

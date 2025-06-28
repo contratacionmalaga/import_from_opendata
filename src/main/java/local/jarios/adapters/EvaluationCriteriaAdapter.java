@@ -23,16 +23,10 @@ public record EvaluationCriteriaAdapter() implements JsonSerializer<EvaluationCr
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(evaluationCriteria.getId()));
-        jsonObject.addProperty("EvaluationCriteriaTypeCode",
-                evaluationCriteria.getEvaluationCriteriaTypeCode());
-        jsonObject.addProperty("Description",
-                evaluationCriteria.getDescription());
-        jsonObject.addProperty("ThresholdQuantity",
-                evaluationCriteria.getThresholdQuantity());
-        jsonObject.addProperty("TipoSolvencia",
-                evaluationCriteria.getTipoSolvencia().toString());
+        jsonObject.addProperty("EvaluationCriteriaTypeCode", evaluationCriteria.getEvaluationCriteriaTypeCode());
+        jsonObject.addProperty("Description", evaluationCriteria.getDescription());
+        jsonObject.addProperty("ThresholdQuantity", evaluationCriteria.getThresholdQuantity());
+        jsonObject.addProperty("TipoSolvencia", evaluationCriteria.getTipoSolvencia().toString());
 
         return jsonObject;
     }

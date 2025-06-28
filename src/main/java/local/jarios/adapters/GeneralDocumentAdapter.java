@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.GeneralDocument;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -21,17 +22,13 @@ public record GeneralDocumentAdapter() implements JsonSerializer<GeneralDocument
             GeneralDocument generalDocument,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty(
-                "Id",
-                String.valueOf(generalDocument.getId()));
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "GeneralDocumentDocumentReference", generalDocument.getGeneralDocumentDocumentReference(), context);
 
-        if (generalDocument.getGeneralDocumentDocumentReference() != null) {
-            jsonObject.add(
-                    "GeneralDocumentDocumentReference",
-                    context.serialize(generalDocument.getGeneralDocumentDocumentReference()));
-        }
+        //
         return jsonObject;
     }
 }

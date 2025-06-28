@@ -24,8 +24,6 @@ public record DocumentReferenceAdapter(boolean imprimirHijos) implements JsonSer
         //
         JsonObject jsonObject = new JsonObject();
 
-        //
-        jsonObject.addProperty("id", String.valueOf(documentReference.getId()));
         jsonObject.addProperty("id_documentreference", documentReference.getIdDocumentReference());
 
         // Attachment

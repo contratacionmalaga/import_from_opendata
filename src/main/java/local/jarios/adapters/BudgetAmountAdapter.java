@@ -25,12 +25,9 @@ public record BudgetAmountAdapter() implements JsonSerializer<BudgetAmount> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("EstimatedOverallContratAmount",
-                budgetAmount.getEstimatedOverallContractAmount());
-        jsonObject.addProperty("TotalAmount",
-                budgetAmount.getTotalAmount());
-        jsonObject.addProperty("TaxExclusiveAmount",
-                budgetAmount.getTaxExclusiveAmount());
+        jsonObject.addProperty("EstimatedOverallContratAmount", budgetAmount.getEstimatedOverallContractAmount());
+        jsonObject.addProperty("TotalAmount", budgetAmount.getTotalAmount());
+        jsonObject.addProperty("TaxExclusiveAmount", budgetAmount.getTaxExclusiveAmount());
 
         //
         return jsonObject;

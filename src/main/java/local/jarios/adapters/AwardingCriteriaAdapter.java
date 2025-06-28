@@ -23,16 +23,11 @@ public record AwardingCriteriaAdapter() implements JsonSerializer<AwardingCriter
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("AwardingCriteriaTypeCode",
-                awardingCriteria.getAwardingCriteriaTypeCode());
-        jsonObject.addProperty("AwardingCriteriaSubTypeCode",
-                awardingCriteria.getAwardingCriteriaSubTypeCode());
-        jsonObject.addProperty("Description",
-                awardingCriteria.getDescription());
-        jsonObject.addProperty("Note",
-                awardingCriteria.getNote());
-        jsonObject.addProperty("WeightNumeric",
-                awardingCriteria.getWeightNumeric());
+        jsonObject.addProperty("AwardingCriteriaTypeCode", awardingCriteria.getAwardingCriteriaTypeCode());
+        jsonObject.addProperty("AwardingCriteriaSubTypeCode", awardingCriteria.getAwardingCriteriaSubTypeCode());
+        jsonObject.addProperty("Description", awardingCriteria.getDescription());
+        jsonObject.addProperty("Note", awardingCriteria.getNote());
+        jsonObject.addProperty("WeightNumeric", awardingCriteria.getWeightNumeric());
 
         return jsonObject;
     }

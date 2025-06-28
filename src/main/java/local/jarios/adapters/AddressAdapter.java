@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Address;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -30,13 +31,8 @@ public record AddressAdapter(boolean imprimirHijos) implements JsonSerializer<Ad
         jsonObject.addProperty("AddressLine", address.getAddressLine());
 
         //
-        if (imprimirHijos) {
+        JsonSerializationHelper.addIfNotNull(jsonObject, "Country", address.getCountry(), context);
 
-            //
-            jsonObject.add(
-                    "Country",
-                    context.serialize(address.getCountry()));
-        }
         //
         return jsonObject;
     }

@@ -21,15 +21,14 @@ public record TendererRequirementAdapter() implements JsonSerializer<TendererReq
             TendererRequirement tendererRequirement,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(tendererRequirement.getId()));
-        jsonObject.addProperty("RequirementTypeCode",
-                tendererRequirement.getRequirementTypeCode());
-        jsonObject.addProperty("Description",
-                tendererRequirement.getDescription());
+        //
+        jsonObject.addProperty("RequirementTypeCode", tendererRequirement.getRequirementTypeCode());
+        jsonObject.addProperty("Description", tendererRequirement.getDescription());
 
+        //
         return jsonObject;
     }
 }

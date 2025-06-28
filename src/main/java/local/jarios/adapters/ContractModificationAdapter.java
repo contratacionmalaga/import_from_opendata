@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.ContractModification;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -21,10 +22,10 @@ public record ContractModificationAdapter(boolean imprimirHijos) implements Json
             ContractModification contractModification,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(contractModification.getId()));
+        //
         jsonObject.addProperty("ContractId",
                 contractModification.getContractId());
         jsonObject.addProperty("IdModificacion",
@@ -36,24 +37,26 @@ public record ContractModificationAdapter(boolean imprimirHijos) implements Json
         jsonObject.addProperty("ContractModificationLotId",
                 contractModification.getContractModificationLotId());
 
-        if (imprimirHijos) {
+        //
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "LegalMonetaryTotal",
+                contractModification.getContractModificationLegalMonetaryTotal(),
+                context);
 
-            //
-            jsonObject.add(
-                    "LegalMonetaryTotal",
-                    context.serialize(contractModification.getContractModificationLegalMonetaryTotal()));
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "FinalLegalMonetaryTotal",
+                contractModification.getContractModificationFinalLegalMonetaryTotal(),
+                context);
 
-            //
-            jsonObject.add(
-                    "FinalLegalMonetaryTotal",
-                    context.serialize(contractModification.getContractModificationFinalLegalMonetaryTotal()));
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "FinalDurationMeasure",
+                contractModification.getFinalDurationMeasure(),
+                context);
 
-            //
-            jsonObject.add(
-                    "FinalDurationMeasure",
-                    context.serialize(contractModification.getFinalDurationMeasure()));
-        }
-
+        //
         return jsonObject;
     }
 }

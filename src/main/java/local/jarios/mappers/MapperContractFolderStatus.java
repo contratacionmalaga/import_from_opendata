@@ -28,9 +28,15 @@ public final class MapperContractFolderStatus {
     public static List<ContractFolderStatus> getListContractFolderStatusFromListType(
             Entry entry, EntryType entryType) {
 
-        //
         return entryType.getAny().stream()
-                .map(obj -> getContractFolderStatusFromType(entry, (JAXBElement<ContractFolderStatusType>) obj))
+                .filter(JAXBElement.class::isInstance)
+                .map(JAXBElement.class::cast)
+                .filter(elem -> elem.getDeclaredType().equals(ContractFolderStatusType.class))
+                .map(elem -> {
+                    @SuppressWarnings("unchecked")
+                    JAXBElement<ContractFolderStatusType> typedElem = (JAXBElement<ContractFolderStatusType>) elem;
+                    return getContractFolderStatusFromType(entry, typedElem);
+                })
                 .toList();
     }
 

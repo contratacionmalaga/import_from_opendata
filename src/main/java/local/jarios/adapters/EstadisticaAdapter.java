@@ -22,7 +22,6 @@ public record EstadisticaAdapter() implements JsonSerializer<Estadistica> {
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("id", String.valueOf(estadistica.getId()));
         jsonObject.addProperty("nFicheros", estadistica.getNFicheros());
         jsonObject.addProperty("nEntriesLeidos", estadistica.getNEntryLeidos());
         jsonObject.addProperty("nEntriesProcesados", estadistica.getNEntryProcesados());

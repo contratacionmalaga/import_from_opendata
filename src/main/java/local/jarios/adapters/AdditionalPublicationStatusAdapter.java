@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.AdditionalPublicationStatus;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -22,31 +23,25 @@ public record AdditionalPublicationStatusAdapter(boolean imprimirHijos)
             AdditionalPublicationStatus additionalPublicationStatus,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
+        //
         jsonObject.addProperty("PublicationMediaName",
                 additionalPublicationStatus.getPublicationMediaName());
 
-        if (imprimirHijos) {
-            //
-            if (!additionalPublicationStatus.getAdditionalPublicationRequestList().isEmpty()) {
-                //
-                jsonObject.add(
-                        "AdditionalPublicationRequest",
-                        context.serialize(
-                                additionalPublicationStatus.getAdditionalPublicationRequestList()));
-            }
+        //
+        JsonSerializationHelper.addIfNotEmpty(
+                jsonObject,
+                "AdditionalPublicationRequest",
+                additionalPublicationStatus.getAdditionalPublicationRequestList(),
+                context);
 
-            if (!additionalPublicationStatus.getAdditionalPublicationDocumentReferenceList().isEmpty()) {
-                //
-                jsonObject.add(
-                        "AdditionalPublicationDocumentReference",
-                        context.serialize(
-                                additionalPublicationStatus
-                                        .getAdditionalPublicationDocumentReferenceList()));
-            }
-
-        }
+        JsonSerializationHelper.addIfNotEmpty(
+                jsonObject,
+                "AdditionalPublicationDocumentReference",
+                additionalPublicationStatus.getAdditionalPublicationDocumentReferenceList(),
+                context);
 
         return jsonObject;
     }

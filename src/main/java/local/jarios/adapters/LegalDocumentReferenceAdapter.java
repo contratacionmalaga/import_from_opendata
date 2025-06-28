@@ -25,9 +25,6 @@ public record LegalDocumentReferenceAdapter(boolean imprimirHijos) implements Js
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("id", String.valueOf(legalDocumentReference.getId()));
-
-        //
         if (imprimirHijos) {
 
             //

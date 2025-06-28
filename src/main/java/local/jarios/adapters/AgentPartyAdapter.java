@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Party;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -23,13 +24,13 @@ public record AgentPartyAdapter(boolean imprimirHijos) implements JsonSerializer
 
         //
         JsonObject jsonObject = new JsonObject();
+
+        //
         jsonObject.addProperty("WebsitURI", party.getWebSiteUri());
         jsonObject.addProperty("Name", party.getPartyName());
 
         //
-        if (imprimirHijos && party.getPartyIdentification() != null) {
-            jsonObject.add("PartyIdentification", context.serialize(party.getPartyIdentification()));
-        }
+        JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", party.getPartyIdentification(), context);
 
         //
         return jsonObject;

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.AwardingTerms;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -23,12 +24,7 @@ public record AwardingTermsAdapter(boolean imprimirHijos) implements JsonSeriali
 
         JsonObject jsonObject = new JsonObject();
 
-        if (!awardingTerms.getListAwardingCriteria().isEmpty()) {
-
-            jsonObject.add(
-                    "AwardingCriteria",
-                    context.serialize(awardingTerms.getListAwardingCriteria()));
-        }
+        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<AwardingCriteria>", awardingTerms.getListAwardingCriteria(), context);
 
         return jsonObject;
     }

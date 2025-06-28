@@ -23,22 +23,23 @@ public record AdditionalPublicationDocumentReferenceAdapter(boolean imprimirHijo
             AdditionalPublicationDocumentReference additionalPublicationDocumentReference,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
+        //
         jsonObject.addProperty("IssueDate",
                 String.valueOf(additionalPublicationDocumentReference.getIssueDate()));
         jsonObject.addProperty("DocumentTypeCode",
                 additionalPublicationDocumentReference.getDocumentTypeCode());
 
-        if (imprimirHijos) {
+        //
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "Attachment",
+                additionalPublicationDocumentReference.getAttachment(),
+                context);
 
-            JsonSerializationHelper.addIfNotNull(
-                    jsonObject,
-                    "Attachment",
-                    additionalPublicationDocumentReference.getAttachment(),
-                    context);
-        }
-
+        //
         return jsonObject;
     }
 }

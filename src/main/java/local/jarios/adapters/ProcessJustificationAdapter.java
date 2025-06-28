@@ -23,12 +23,8 @@ public record ProcessJustificationAdapter() implements JsonSerializer<ProcessJus
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(processJustification.getId()));
-        jsonObject.addProperty("ReasonCode",
-                processJustification.getReasonCode());
-        jsonObject.addProperty("Description",
-                processJustification.getDescription());
+        jsonObject.addProperty("ReasonCode", processJustification.getReasonCode());
+        jsonObject.addProperty("Description", processJustification.getDescription());
 
         return jsonObject;
     }

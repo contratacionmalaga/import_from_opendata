@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.atom.Feed;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -21,20 +22,13 @@ public record FeedAdapter(boolean imprimirHijos) implements JsonSerializer<Feed>
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id", String.valueOf(feed.getId()));
         jsonObject.addProperty("LinkFirst", feed.getLinkFirst());
         jsonObject.addProperty("LinkPrev", feed.getLinkPrev());
         jsonObject.addProperty("LinkSelf", feed.getLinkSelf());
         jsonObject.addProperty("LinkNext", feed.getLinkNext());
         jsonObject.addProperty("Updated", String.valueOf(feed.getUpdated()));
 
-        if (imprimirHijos && !feed.getListEntry().isEmpty()) {
-
-            //
-            jsonObject.add(
-                    "Entrys",
-                    context.serialize(feed.getListEntry()));
-        }
+        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<Entry>", feed.getListEntry(), context);
 
         return jsonObject;
     }

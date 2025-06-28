@@ -25,13 +25,10 @@ public record AdditionalDocumentReferenceAdapter(boolean imprimirHijos) implemen
         JsonObject jsonObject = new JsonObject();
 
         //
-        if (imprimirHijos) {
+        jsonObject.add(
+                "DocumentReference",
+                context.serialize(additionalDocumentReference.getDocumentReference()));
 
-            //
-            jsonObject.add(
-                    "DocumentReference",
-                    context.serialize(additionalDocumentReference.getDocumentReference()));
-        }
         //
         return jsonObject;
     }

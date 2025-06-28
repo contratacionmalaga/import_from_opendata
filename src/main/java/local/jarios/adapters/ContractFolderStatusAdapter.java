@@ -26,7 +26,6 @@ public record ContractFolderStatusAdapter(boolean imprimirHijos)
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id", String.valueOf(contractFolderStatus.getId()));
         jsonObject.addProperty("ContractFolderId", contractFolderStatus.getContractFolderId());
         jsonObject.addProperty("ContractFolderStatusCode", contractFolderStatus.getContractFolderStatusCode());
 
