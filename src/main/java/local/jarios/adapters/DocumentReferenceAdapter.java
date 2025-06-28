@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.DocumentReference;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -24,15 +25,13 @@ public record DocumentReferenceAdapter(boolean imprimirHijos) implements JsonSer
         //
         JsonObject jsonObject = new JsonObject();
 
+        //
         jsonObject.addProperty("id_documentreference", documentReference.getIdDocumentReference());
 
-        // Attachment
-        if (imprimirHijos && documentReference.getAttachment() != null) {
-            jsonObject.add(
-                    "Attachment",
-                    context.serialize(documentReference.getAttachment()));
-        }
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "Attachment", documentReference.getAttachment(), context);
 
+        //
         return jsonObject;
     }
 }

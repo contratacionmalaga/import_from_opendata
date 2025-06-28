@@ -33,16 +33,17 @@ public record AdditionalPublicationStatusAdapter(boolean imprimirHijos)
         //
         JsonSerializationHelper.addIfNotEmpty(
                 jsonObject,
-                "AdditionalPublicationRequest",
-                additionalPublicationStatus.getAdditionalPublicationRequestList(),
+                "List<AdditionalPublicationDocumentReference>",
+                additionalPublicationStatus.getAdditionalPublicationDocumentReferenceList(),
                 context);
 
         JsonSerializationHelper.addIfNotEmpty(
                 jsonObject,
-                "AdditionalPublicationDocumentReference",
-                additionalPublicationStatus.getAdditionalPublicationDocumentReferenceList(),
+                "List<AdditionalPublicationRequest>",
+                additionalPublicationStatus.getAdditionalPublicationRequestList(),
                 context);
 
+        //
         return jsonObject;
     }
 }

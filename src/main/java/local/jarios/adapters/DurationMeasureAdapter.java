@@ -21,13 +21,14 @@ public record DurationMeasureAdapter() implements JsonSerializer<Measure> {
             Measure durationMeasure,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Value",
-                durationMeasure.getValue());
-        jsonObject.addProperty("UnitCode",
-                durationMeasure.getUnitCode());
+        //
+        jsonObject.addProperty("Value", durationMeasure.getValue());
+        jsonObject.addProperty("UnitCode", durationMeasure.getUnitCode());
 
+        //
         return jsonObject;
     }
 }

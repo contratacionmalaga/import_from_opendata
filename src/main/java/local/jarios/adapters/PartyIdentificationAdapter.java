@@ -21,20 +21,16 @@ public record PartyIdentificationAdapter() implements JsonSerializer<PartyIdenti
             PartyIdentification partyIdentification,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("schemeName",
-                partyIdentification.getSchemeName());
-        jsonObject.addProperty("idPlataforma",
-                partyIdentification.getIdPlataforma());
-        jsonObject.addProperty("dir3",
-                partyIdentification.getDir3());
-        jsonObject.addProperty("nif",
-                partyIdentification.getNif());
-        jsonObject.addProperty("idOcPlat",
-                partyIdentification.getIdOcPlat());
-        jsonObject.addProperty("otros",
-                partyIdentification.getOtros());
+        //
+        jsonObject.addProperty("idPlataforma", partyIdentification.getIdPlataforma());
+        jsonObject.addProperty("dir3", partyIdentification.getDir3());
+        jsonObject.addProperty("nif", partyIdentification.getNif());
+        jsonObject.addProperty("idOcPlat", partyIdentification.getIdOcPlat());
+        jsonObject.addProperty("otros", partyIdentification.getOtros());
+
         //
         return jsonObject;
     }

@@ -49,10 +49,10 @@ public record TenderingTermsAdapter(boolean imprimirHijos) implements JsonSerial
         if (imprimirHijos) {
 
             JsonSerializationHelper.addIfNotNull(jsonObject, "TendererQualificationRequest", tenderingTerms.getTendererQualificationRequest(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "ContractExecutionRequirement", tenderingTerms.getListContractExecutionRequirement(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ContractExecutionRequirement>", tenderingTerms.getListContractExecutionRequirement(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "AwardingTerms", tenderingTerms.getAwardingTerms(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "FinancialGuarantee", tenderingTerms.getListFinancialGuarantee(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "SubcontractTerms", tenderingTerms.getListAllowedSubcontractTerms(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<FinancialGuarantee>", tenderingTerms.getListFinancialGuarantee(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<SubcontractTerms>", tenderingTerms.getListAllowedSubcontractTerms(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "TenderRecipientParty", tenderingTerms.getTenderRecipientParty(), context);
 
         }

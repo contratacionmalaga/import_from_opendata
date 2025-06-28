@@ -21,8 +21,10 @@ public record TenderResultAdapter(boolean imprimirHijos) implements JsonSerializ
     public JsonElement serialize(
             TenderResult tenderResult, Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
+        //
         jsonObject.addProperty("ResultCode",
                 tenderResult.getResultCode());
         jsonObject.addProperty("ReceivedTenderQuantity",
@@ -48,13 +50,14 @@ public record TenderResultAdapter(boolean imprimirHijos) implements JsonSerializ
         jsonObject.addProperty("StartDate", String.valueOf(tenderResult.getStartDate()));
         jsonObject.addProperty("AwardedOwnerNationalityCode", tenderResult.getAwardedOwnerNationalityCode());
 
+        //
         if (imprimirHijos) {
 
             JsonSerializationHelper.addIfNotNull(jsonObject, "Contract", tenderResult.getContract(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "WinningParty", tenderResult.getWinningParty(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "AwardedTenderedProject", tenderResult.getAwardedTenderedProject(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "AwardedTenderedProject", tenderResult.getAwardedTenderedProject(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "SubcontractTerms", tenderResult.getListSubcontractTerms(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<SubcontractTerms>", tenderResult.getListSubcontractTerms(), context);
 
         }
 

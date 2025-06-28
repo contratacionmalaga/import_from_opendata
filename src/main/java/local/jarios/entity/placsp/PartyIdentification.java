@@ -2,7 +2,6 @@ package local.jarios.entity.placsp;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
@@ -31,9 +30,6 @@ public class PartyIdentification extends Auditable {
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-
-    @Column(name = "scheme_name", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
-    private String schemeName;
 
     @Column(name = "id_plataforma", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String idPlataforma;
@@ -96,8 +92,7 @@ public class PartyIdentification extends Auditable {
     public String toString() {
 
         return "PartyIdentification: " +
-                "[schemeName='" + schemeName + "', " +
-                "idPlataforma='" + idPlataforma + "', " +
+                "[idPlataforma='" + idPlataforma + "', " +
                 "dir3='" + dir3 + "', " +
                 "nif='" + nif + "', " +
                 "idOcPlat='" + idOcPlat + "', " +

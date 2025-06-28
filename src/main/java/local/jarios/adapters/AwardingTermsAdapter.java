@@ -22,10 +22,17 @@ public record AwardingTermsAdapter(boolean imprimirHijos) implements JsonSeriali
             AwardingTerms awardingTerms,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<AwardingCriteria>", awardingTerms.getListAwardingCriteria(), context);
+        //
+        JsonSerializationHelper.addIfNotEmpty(
+                jsonObject,
+                "List<AwardingCriteria>",
+                awardingTerms.getListAwardingCriteria(),
+                context);
 
+        //
         return jsonObject;
     }
 }

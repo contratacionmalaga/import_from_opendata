@@ -29,10 +29,9 @@ public record ContractExtensionAdapter(boolean imprimirHijos) implements JsonSer
         jsonObject.addProperty("optionsDescription",
                 contractExtension.getOptionsDescription());
 
-        if (imprimirHijos) {
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "Period", contractExtension.getOptionValidityPeriod(), context);
 
-            JsonSerializationHelper.addIfNotNull(jsonObject, "Period", contractExtension.getOptionValidityPeriod(), context);
-        }
         //
         return jsonObject;
     }

@@ -25,14 +25,10 @@ public record ContactAdapter() implements JsonSerializer<Contact> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("Name",
-                contact.getName());
-        jsonObject.addProperty("Telephone",
-                contact.getTelephone());
-        jsonObject.addProperty("Telefax",
-                contact.getTelefax());
-        jsonObject.addProperty("ElectronicMail",
-                contact.getElectronicMail());
+        jsonObject.addProperty("Name", contact.getName());
+        jsonObject.addProperty("Telephone", contact.getTelephone());
+        jsonObject.addProperty("Telefax", contact.getTelefax());
+        jsonObject.addProperty("ElectronicMail", contact.getElectronicMail());
 
         //
         return jsonObject;

@@ -21,11 +21,13 @@ public record CommodityClassificationAdapter() implements JsonSerializer<Commodi
             CommodityClassification commodityClassification,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("ItemClassificationCode",
-                commodityClassification.getItemClassificationCode());
+        //
+        jsonObject.addProperty("ItemClassificationCode", commodityClassification.getItemClassificationCode());
 
+        //
         return jsonObject;
     }
 }

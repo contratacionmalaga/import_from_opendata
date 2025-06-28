@@ -48,14 +48,12 @@ public record TenderingProcessAdapter(boolean imprimirHijos) implements JsonSeri
         jsonObject.addProperty("TenderSubmissionDeadlinePeriod",
                 String.valueOf(tenderingProcess.getTenderSubmissionDeadlinePeriod()));
 
-        if (imprimirHijos) {
+        //
+        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ProcessJustification>", tenderingProcess.getListProcessJustification(), context);
 
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "ProcessJustification", tenderingProcess.getListProcessJustification(), context);
+        JsonSerializationHelper.addIfNotNull(jsonObject, "EconomicOperatorShortList", tenderingProcess.getEconomicOperatorShortList(), context);
+        JsonSerializationHelper.addIfNotNull(jsonObject, "AuctionTerms", tenderingProcess.getAuctionTerms(), context);
 
-            JsonSerializationHelper.addIfNotNull(jsonObject, "EconomicOperatorShortList", tenderingProcess.getEconomicOperatorShortList(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "AuctionTerms", tenderingProcess.getAuctionTerms(), context);
-
-        }
 
         //
         return jsonObject;

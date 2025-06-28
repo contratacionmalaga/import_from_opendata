@@ -20,10 +20,11 @@ public record TenderRecipientPartyAdapter() implements JsonSerializer<TenderReci
     public JsonElement serialize(
             TenderRecipientParty tenderRecipientParty, Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("endpointId",
-                String.valueOf(tenderRecipientParty.getEndpointId()));
+        //
+        jsonObject.addProperty("endpointId", String.valueOf(tenderRecipientParty.getEndpointId()));
 
         //
         return jsonObject;

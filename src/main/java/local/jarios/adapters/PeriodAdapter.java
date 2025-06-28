@@ -21,23 +21,17 @@ public record PeriodAdapter() implements JsonSerializer<Period> {
             Period period,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("startDateTime",
-                String.valueOf(period.getStartDateTime()));
+        //
+        jsonObject.addProperty("startDateTime", String.valueOf(period.getStartDateTime()));
+        jsonObject.addProperty("endDateTime", String.valueOf(period.getEndDateTime()));
+        jsonObject.addProperty("description", String.valueOf(period.getDescription()));
+        jsonObject.addProperty("durationMeasureUnitCode", String.valueOf(period.getDurationMeasureUnitCode()));
+        jsonObject.addProperty("durationMeasureValue", String.valueOf(period.getDurationMeasureValue()));
 
-        jsonObject.addProperty("endDateTime",
-                String.valueOf(period.getEndDateTime()));
-
-        jsonObject.addProperty("description",
-                String.valueOf(period.getDescription()));
-
-        jsonObject.addProperty("durationMeasureUnitCode",
-                String.valueOf(period.getDurationMeasureUnitCode()));
-
-        jsonObject.addProperty("durationMeasureValue",
-                String.valueOf(period.getDurationMeasureValue()));
-
+        //
         return jsonObject;
     }
 }

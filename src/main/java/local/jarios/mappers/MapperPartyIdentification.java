@@ -41,18 +41,12 @@ public final class MapperPartyIdentification {
                         String partyIdentificationId = id.getValue();
                         Optional.ofNullable(id.getSchemeName())
                                 .ifPresent(schemeName -> {
-                                    partyIdentification.setSchemeName(
-                                            ComunHelper.limitarRegistro(
-                                                    schemeName,
-                                                    Constantes.TAMANO_MAXIMO_CAMPO_250));
                                     String limitedId = ComunHelper.limitarRegistro(
                                             partyIdentificationId,
                                             Constantes.TAMANO_MAXIMO_CAMPO_50);
-
                                     switch (schemeName) {
                                         case Constantes.DIR3 -> partyIdentification.setDir3(limitedId);
-                                        case Constantes.IDPLATAFORMA ->
-                                                partyIdentification.setIdPlataforma(limitedId);
+                                        case Constantes.IDPLATAFORMA -> partyIdentification.setIdPlataforma(limitedId);
                                         case Constantes.IDOCPLAT -> partyIdentification.setIdOcPlat(limitedId);
                                         case Constantes.NIF -> partyIdentification.setNif(limitedId);
                                         case Constantes.OTROS -> partyIdentification.setOtros(limitedId);

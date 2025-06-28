@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.ClassificationScheme;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -22,14 +23,17 @@ public record ClassificationSchemeAdapter(boolean imprimirHijos)
             ClassificationScheme classificationScheme,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        if (imprimirHijos && !classificationScheme.getClassificationCategory().isEmpty()) {
-            jsonObject.add(
-                    "ClassificationCategory",
-                    context.serialize(classificationScheme.getClassificationCategory()));
-        }
+        //
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "List<ClassificationCategory>",
+                classificationScheme.getClassificationCategory(),
+                context);
 
+        //
         return jsonObject;
     }
 }

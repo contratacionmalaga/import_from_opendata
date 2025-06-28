@@ -23,10 +23,8 @@ public record ContractAdapter() implements JsonSerializer<Contract> {
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id_Contract",
-                String.valueOf(contract.getIdContract()));
-        jsonObject.addProperty("IssueDate",
-                String.valueOf(contract.getIssueDate()));
+        jsonObject.addProperty("Id_Contract", String.valueOf(contract.getIdContract()));
+        jsonObject.addProperty("IssueDate", String.valueOf(contract.getIssueDate()));
 
         return jsonObject;
     }

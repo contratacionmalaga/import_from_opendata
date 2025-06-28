@@ -23,26 +23,25 @@ public record ProcurementProjectLotAdapter(boolean imprimirHijos)
             ProcurementProjectLot procurementProjectLot,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
+        //
         jsonObject.addProperty("IdLote",
                 procurementProjectLot.getIdLote());
 
-        if (imprimirHijos) {
+        //
+        jsonObject.add(
+                "ProcurementProject",
+                context.serialize(procurementProjectLot.getProcurementProject()));
 
-           //ProcurementProject es OBLIGATORIO para un ProcurementProjectLot
-            jsonObject.add(
-                    "ProcurementProject",
-                    context.serialize(procurementProjectLot.getProcurementProject()));
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "TenderingTerms",
+                procurementProjectLot.getTenderingTerms(),
+                context);
 
-            JsonSerializationHelper.addIfNotNull(
-                    jsonObject,
-                    "TenderingTerms",
-                    procurementProjectLot.getTenderingTerms(),
-                    context);
-
-        }
-
+        //
         return jsonObject;
     }
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.Log;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -41,12 +42,13 @@ public record LogAdapter(boolean imprimirHijos) implements JsonSerializer<Log> {
         }
 
         //
-        if (imprimirHijos && !log.getListFeed().isEmpty()) {
+        if (imprimirHijos) {
 
-            //
-            logContent.add(
-                    "Feeds",
-                    context.serialize(log.getListFeed()));
+            JsonSerializationHelper.addIfNotEmpty(
+                    jsonObject,
+                    "List<Feed>",
+                    log.getListFeed(),
+                    context);
         }
 
         // Agregar el objeto "Log" que contendrá todos los datos anteriores

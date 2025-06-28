@@ -21,11 +21,14 @@ public record ProcessJustificationAdapter() implements JsonSerializer<ProcessJus
             ProcessJustification processJustification,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
+        //
         jsonObject.addProperty("ReasonCode", processJustification.getReasonCode());
         jsonObject.addProperty("Description", processJustification.getDescription());
 
+        //
         return jsonObject;
     }
 }

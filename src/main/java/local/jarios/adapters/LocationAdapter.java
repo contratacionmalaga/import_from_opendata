@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Location;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -29,13 +30,7 @@ public record LocationAdapter(boolean imprimirHijos) implements JsonSerializer<L
         jsonObject.addProperty("CountrySubentityCode", location.getCountrySubentityCode());
 
         //
-        if (imprimirHijos) {
-
-            //
-            jsonObject.add(
-                    "Address",
-                    context.serialize(location.getAddress()));
-        }
+        JsonSerializationHelper.addIfNotNull(jsonObject, "Address", location.getAddress(), context);
 
         //
         return jsonObject;

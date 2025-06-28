@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Party;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -28,43 +29,16 @@ public record PartyAdapter(boolean imprimirHijos) implements JsonSerializer<Part
         jsonObject.addProperty("Name",
                 party.getPartyName());
 
-        if (imprimirHijos) {
-
-            // PostalAddress
-            if (party.getPostalAddress() != null) {
-                jsonObject.add(
-                        "PostalAddress",
-                        context.serialize(party.getPostalAddress()));
-            }
-
-            // PhysicalLocation
-            if (party.getPhysicalLocation() != null) {
-                jsonObject.add(
-                        "PhysicalLocation",
-                        context.serialize(party.getPhysicalLocation()));
-            }
-
-            // Contact
-            if (party.getContact() != null) {
-                jsonObject.add(
-                        "Contact",
-                        context.serialize(party.getContact()));
-            }
-
-            // AgentParty
-            if (party.getAgentParty() != null) {
-                jsonObject.add(
-                        "AgentParty",
-                        context.serialize(party.getAgentParty()));
-            }
-
-            // PartyIdentification
-            if (party.getPartyIdentification() != null) {
-                jsonObject.add(
-                        "PartyIdentification",
-                        context.serialize(party.getPartyIdentification()));
-            }
-        }
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "PostalAddress", party.getPostalAddress(), context);
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "PhysicalLocation", party.getPhysicalLocation(), context);
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "Contact", party.getContact(), context);
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "AgentParty", party.getAgentParty(), context);
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", party.getPartyIdentification(), context);
 
         //
         return jsonObject;

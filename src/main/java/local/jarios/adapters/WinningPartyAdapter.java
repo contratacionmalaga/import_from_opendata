@@ -22,20 +22,17 @@ public record WinningPartyAdapter(boolean imprimirHijos) implements JsonSerializ
             WinningParty winningParty,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("PartyName",
-                winningParty.getPartyName());
+        //
+        jsonObject.addProperty("PartyName", winningParty.getPartyName());
 
-
-        if (imprimirHijos) {
-
-            JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", winningParty.getPartyIdentification(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "PhysicalLocation", winningParty.getPhysicalLocation(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "Contact", winningParty.getContact(), context);
-            JsonSerializationHelper.addIfNotNull(jsonObject, "Addres", winningParty.getPostalAddress(), context);
-
-        }
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", winningParty.getPartyIdentification(), context);
+        JsonSerializationHelper.addIfNotNull(jsonObject, "PhysicalLocation", winningParty.getPhysicalLocation(), context);
+        JsonSerializationHelper.addIfNotNull(jsonObject, "Contact", winningParty.getContact(), context);
+        JsonSerializationHelper.addIfNotNull(jsonObject, "Addres", winningParty.getPostalAddress(), context);
 
         //
         return jsonObject;

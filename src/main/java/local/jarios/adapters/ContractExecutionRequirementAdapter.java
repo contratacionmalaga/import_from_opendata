@@ -21,15 +21,15 @@ public record ContractExecutionRequirementAdapter() implements JsonSerializer<Co
             ContractExecutionRequirement contractExecutionRequirement,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Name",
-                contractExecutionRequirement.getName());
-        jsonObject.addProperty("ExecutionRequirementCode",
-                contractExecutionRequirement.getExecutionRequirementCode());
-        jsonObject.addProperty("Description",
-                contractExecutionRequirement.getDescription());
+        //
+        jsonObject.addProperty("Name", contractExecutionRequirement.getName());
+        jsonObject.addProperty("ExecutionRequirementCode", contractExecutionRequirement.getExecutionRequirementCode());
+        jsonObject.addProperty("Description", contractExecutionRequirement.getDescription());
 
+        //
         return jsonObject;
     }
 }
