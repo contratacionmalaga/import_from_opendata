@@ -2,15 +2,12 @@ package local.jarios.mappers;
 
 import local.jarios.entity.placsp.Measure;
 import local.jarios.entity.placsp.*;
-import local.jarios.helpers.ComunHelper;
 import local.jarios.helpers.GregorianCalendarHelper;
 import local.jarios.helpers.StringHelper;
 import local.jarios.mappers.auxiliares.MapperStringFromList;
-import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.PeriodType;
 import org.dgpe.codice.common.cbclib.DurationMeasureType;
-import org.dgpe.codice.common.cbclib.FinalDurationMeasureType;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -75,7 +72,7 @@ public final class MapperPeriod {
 
         // Duration Measure
         Optional.ofNullable(periodType.getDurationMeasure())
-                .ifPresent(finalDurationMeasure -> period.setDurationMeasure(
+                .ifPresent(measure -> period.setDurationMeasure(
                         getMeasureFromDurantionMeasure(periodType.getDurationMeasure())));
 
         return period;
@@ -85,11 +82,9 @@ public final class MapperPeriod {
 
         Measure measure = new Measure();
 
-        Optional.ofNullable(durationMeasureType.getValue())
-                .ifPresent(measure::setValue);
+        Optional.ofNullable(durationMeasureType.getValue()).ifPresent(measure::setValue);
 
-        Optional.ofNullable(durationMeasureType.getUnitCode())
-                .ifPresent(measure::setUnitCode);
+        Optional.ofNullable(durationMeasureType.getUnitCode()).ifPresent(measure::setUnitCode);
 
         //
         log.debug(measure.toString());

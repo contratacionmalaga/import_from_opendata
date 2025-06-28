@@ -42,6 +42,7 @@ public record ContractFolderStatusAdapter(boolean imprimirHijos)
 
             JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ProcurementProjectLot>", contractFolderStatus.getListProcurementProjectLot(), context);
 
+
             JsonSerializationHelper.addIfNotNull(jsonObject, "TenderingTerms", contractFolderStatus.getTenderingTerms(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "TenderingProcess", contractFolderStatus.getTenderingProcess(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "LegalDocumentReference", contractFolderStatus.getLegalDocumentReference(), context);

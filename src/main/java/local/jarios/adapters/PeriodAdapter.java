@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Period;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -28,8 +29,12 @@ public record PeriodAdapter() implements JsonSerializer<Period> {
         jsonObject.addProperty("startDateTime", String.valueOf(period.getStartDateTime()));
         jsonObject.addProperty("endDateTime", String.valueOf(period.getEndDateTime()));
         jsonObject.addProperty("description", String.valueOf(period.getDescription()));
-        jsonObject.addProperty("durationMeasureUnitCode", String.valueOf(period.getDurationMeasureUnitCode()));
-        jsonObject.addProperty("durationMeasureValue", String.valueOf(period.getDurationMeasureValue()));
+
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "DurationMeasure",
+                period.getDurationMeasure(),
+                context);
 
         //
         return jsonObject;

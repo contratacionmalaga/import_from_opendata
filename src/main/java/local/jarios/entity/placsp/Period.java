@@ -2,9 +2,7 @@ package local.jarios.entity.placsp;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
-import local.jarios.common.util.Constantes;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,12 +39,6 @@ public class Period extends Auditable {
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-
-    @Column(name = "duration_measure_unitcode", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
-    private String durationMeasureUnitCode;
-
-    @Column(name = "duration_measure_value")
-    private Double durationMeasureValue;
 
     //
     // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
@@ -99,9 +91,7 @@ public class Period extends Auditable {
         return "Period: " +
                 "[startDateTime='" + startDateTime + "', " +
                 "endDateTime='" + endDateTime + "', " +
-                "description='" + description + "', " +
-                "durationMeasureUnitCode='" + durationMeasureUnitCode + "', " +
-                "durationMeasureValue='" + durationMeasureValue + "']";
+                "description='" + description + "']";
     }
 
     //

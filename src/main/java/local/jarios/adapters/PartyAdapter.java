@@ -22,12 +22,17 @@ public record PartyAdapter(boolean imprimirHijos) implements JsonSerializer<Part
             Party party,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("WebsitURI",
-                party.getWebSiteUri());
-        jsonObject.addProperty("Name",
-                party.getPartyName());
+        //
+        jsonObject.addProperty("WebsitURI", party.getWebSiteUri());
+
+        //
+        JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", party.getPartyIdentification(), context);
+
+        //
+        jsonObject.addProperty("PartyName",party.getPartyName());
 
         //
         JsonSerializationHelper.addIfNotNull(jsonObject, "PostalAddress", party.getPostalAddress(), context);
@@ -37,8 +42,7 @@ public record PartyAdapter(boolean imprimirHijos) implements JsonSerializer<Part
         JsonSerializationHelper.addIfNotNull(jsonObject, "Contact", party.getContact(), context);
         //
         JsonSerializationHelper.addIfNotNull(jsonObject, "AgentParty", party.getAgentParty(), context);
-        //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", party.getPartyIdentification(), context);
+
 
         //
         return jsonObject;
