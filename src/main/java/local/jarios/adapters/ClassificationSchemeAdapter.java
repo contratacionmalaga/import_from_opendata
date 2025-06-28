@@ -27,32 +27,37 @@ public record ClassificationSchemeAdapter(boolean imprimirHijos)
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Uuid",
-                classificationScheme.getUuid());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Uuid",
+                        classificationScheme.getUuid());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Name",
-                classificationScheme.getName());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Name",
+                        classificationScheme.getName());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Note",
-                classificationScheme.getNote());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Note",
+                        classificationScheme.getNote());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Description",
-                classificationScheme.getDescription());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        classificationScheme.getDescription());
 
         //
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "List<ClassificationCategory>",
-                classificationScheme.getClassificationCategory(),
-                context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "List<ClassificationCategory>",
+                        classificationScheme.getClassificationCategory(),
+                        context);
 
         //
         return jsonObject;

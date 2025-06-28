@@ -26,45 +26,57 @@ public record ContractModificationAdapter(boolean imprimirHijos) implements Json
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "ContractId",
-                contractModification.getContractId());
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "IdModificacion",
-                contractModification.getIdContractModification());
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "IssueDate",
-                contractModification.getIssueDate());
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Note",
-                contractModification.getNote());
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "ContractModificationLotId",
-                contractModification.getContractModificationLotId());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ContractId",
+                        contractModification.getContractId());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "IdContractModification",
+                        contractModification.getIdContractModification());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "IssueDate",
+                        contractModification.getIssueDate());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Note",
+                        contractModification.getNote());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ContractModificationLotId",
+                        contractModification.getContractModificationLotId());
 
         //
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "LegalMonetaryTotal",
-                contractModification.getContractModificationLegalMonetaryTotal(),
-                context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "LegalMonetaryTotal",
+                        contractModification.getContractModificationLegalMonetaryTotal(),
+                        context);
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "FinalLegalMonetaryTotal",
-                contractModification.getContractModificationFinalLegalMonetaryTotal(),
-                context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "FinalLegalMonetaryTotal",
+                        contractModification.getContractModificationFinalLegalMonetaryTotal(),
+                        context);
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "FinalDurationMeasure",
-                contractModification.getFinalDurationMeasure(),
-                context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "FinalDurationMeasure",
+                        contractModification.getFinalDurationMeasure(),
+                        context);
 
         //
         return jsonObject;

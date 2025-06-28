@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Measure;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,8 +26,17 @@ public record DurationMeasureAdapter() implements JsonSerializer<Measure> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("Value", durationMeasure.getValue());
-        jsonObject.addProperty("UnitCode", durationMeasure.getUnitCode());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Value",
+                        durationMeasure.getValue());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "UnitCode",
+                        durationMeasure.getUnitCode());
 
         //
         return jsonObject;

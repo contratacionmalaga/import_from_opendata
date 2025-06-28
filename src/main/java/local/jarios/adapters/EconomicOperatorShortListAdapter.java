@@ -26,11 +26,11 @@ public record EconomicOperatorShortListAdapter() implements JsonSerializer<Econo
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "Description",
-                economicOperatorShorList.getDescription(),
-                context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        economicOperatorShorList.getDescription());
 
         JsonSerializationHelper.addIfNotNull(
                 jsonObject,

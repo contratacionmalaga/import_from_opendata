@@ -26,15 +26,17 @@ public record CountryAdapter() implements JsonSerializer<Country> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "IdentificationCode",
-                country.getIdentificationCode());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "IdentificationCode",
+                        country.getIdentificationCode());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Name",
-                country.getName());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Name",
+                        country.getName());
 
         //
         return jsonObject;

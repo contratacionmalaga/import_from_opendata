@@ -26,25 +26,29 @@ public record ContactAdapter() implements JsonSerializer<Contact> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Name",
-                contact.getName());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Name",
+                        contact.getName());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Telephone",
-                contact.getTelephone());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Telephone",
+                        contact.getTelephone());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Telefax",
-                contact.getTelefax());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Telefax",
+                        contact.getTelefax());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "ElectronicMail",
-                contact.getElectronicMail());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ElectronicMail",
+                        contact.getElectronicMail());
 
         //
         return jsonObject;

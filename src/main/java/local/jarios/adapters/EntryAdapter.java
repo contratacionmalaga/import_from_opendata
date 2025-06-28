@@ -24,17 +24,18 @@ public record EntryAdapter(boolean imprimirHijos) implements JsonSerializer<Entr
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "IdEntry",
-                entry.getIdEntry(),
-                context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "IdEntry",
+                        entry.getIdEntry());
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "Link",
-                entry.getLink(),
-                context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "Link",
+                        entry.getLink(),
+                        context);
 
         JsonSerializationHelper.addIfNotNull(
                 jsonObject,
