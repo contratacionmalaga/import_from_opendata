@@ -2,10 +2,10 @@ package local.jarios.entity.atom;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.entity.placsp.ContractFolderStatus;
 import local.jarios.common.util.Constantes;
+import local.jarios.interfaces.HasIdEntry;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,7 +31,7 @@ import java.util.UUID;
         }
 )
 
-public class Entry extends Auditable {
+public class Entry extends Auditable implements HasIdEntry<Entry> {
 
     //
     //

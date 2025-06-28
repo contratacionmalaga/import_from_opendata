@@ -196,7 +196,7 @@ public abstract class AbstractOpenData {
             //     VERIFICACIÓN DEL MAP
             //
             Map<String, Entry> map = VariablesGlobales.getMapBaseDatos();
-            MapHelper.printMap(map);
+            MapHelper.analisisMap(map);
 
             //
             //     PERSISTENCIA EN LA BASE DE DATOS

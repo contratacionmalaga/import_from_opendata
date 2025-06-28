@@ -77,9 +77,11 @@ public final class EntryHelper {
 
         // Borro el entryMapBaseDatos del MAP
         VariablesGlobales.getMapBaseDatos().remove(entryMapBaseDatos.getIdEntry());
+        log.debug("actualizarEntryEnMAP] - Remove {}", entryMapBaseDatos);
 
         // Añado el newEntry al MAP
         VariablesGlobales.getMapBaseDatos().put(newEntry.getIdEntry(), newEntry);
+        log.debug("actualizarEntryEnMAP] - Put {}", newEntry);
 
         // Actualizo las estadísticas
         estadistica.aumentarNEntryActualizados();

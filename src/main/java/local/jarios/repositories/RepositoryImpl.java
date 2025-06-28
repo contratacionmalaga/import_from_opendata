@@ -86,7 +86,7 @@ public class RepositoryImpl implements Repository {
 
                 // En importación local grabamos todo directamente sin comprobar
                 session.persist(entry);
-                log.info("[grabarMap] - {}", entry.toString());
+                log.info("[grabarMap] - Persistido {}", entry);
 
             } else {
                 // Importación Internet: chequeamos existencia y fecha updated

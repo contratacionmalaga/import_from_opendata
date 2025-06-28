@@ -159,10 +159,12 @@ public final class FiltroHelper {
             return false;
         }
 
-        boolean enRango = ( !fechaEntry.isBefore(fechaInicio) ) && ( !fechaEntry.isAfter(fechaFin) );
+        boolean enRango = ( fechaEntry.isBefore(fechaInicio) ) && ( fechaEntry.isAfter(fechaFin) );
 
+        /*
         log.debug("[hasEntryFechaEnRango] - Fecha del Entry: {}. Inicio: {}, Fin: {}, ¿Está en rango?: {}",
                 fechaEntry, fechaInicio, fechaFin, enRango);
+        */
 
         return enRango;
     }
@@ -322,7 +324,7 @@ public final class FiltroHelper {
             return false;
         }
 
-        log.debug("[entryCumpleFiltros] - El Entry cumple todos los filtros.");
+        log.debug("[entryCumpleFiltros] - {}.", entry);
         return true;
     }
 
