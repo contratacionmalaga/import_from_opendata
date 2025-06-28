@@ -15,7 +15,7 @@ import java.lang.reflect.Type;
  * Date: 09/07/2024
  * Team: Juan
  */
-public record DurationMeasureAdapter() implements JsonSerializer<Measure> {
+public record MeasureAdapter() implements JsonSerializer<Measure> {
 
     @Override
     public JsonElement serialize(

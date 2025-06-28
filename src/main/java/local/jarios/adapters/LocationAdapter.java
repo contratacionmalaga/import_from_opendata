@@ -26,18 +26,25 @@ public record LocationAdapter(boolean imprimirHijos) implements JsonSerializer<L
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "CountrySubentity",
-                location.getCountrySubentity());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "CountrySubentity",
+                        location.getCountrySubentity());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "CountrySubentityCode",
-                location.getCountrySubentityCode());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "CountrySubentityCode",
+                        location.getCountrySubentityCode());
 
         //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "Address", location.getAddress(), context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "Address",
+                        location.getAddress(),
+                        context);
 
         //
         return jsonObject;

@@ -28,18 +28,22 @@ public record ProcurementProjectLotAdapter(boolean imprimirHijos)
 
         //
         JsonSerializationHelper
-                .addProperty(jsonObject,"IdLote", procurementProjectLot.getIdLote());
+                .addProperty(
+                        jsonObject,
+                        "IdLote",
+                        procurementProjectLot.getIdLote());
 
         //
         jsonObject.add(
                 "ProcurementProject",
                 context.serialize(procurementProjectLot.getProcurementProject()));
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "TenderingTerms",
-                procurementProjectLot.getTenderingTerms(),
-                context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "TenderingTerms",
+                        procurementProjectLot.getTenderingTerms(),
+                        context);
 
         //
         return jsonObject;

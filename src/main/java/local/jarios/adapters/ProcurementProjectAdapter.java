@@ -28,20 +28,34 @@ public record ProcurementProjectAdapter(boolean imprimirHijos)
 
         //
         JsonSerializationHelper
-                .addProperty(jsonObject,"Name",procurementProject.getName());
-
-        JsonSerializationHelper
-                .addProperty(jsonObject,"Description",procurementProject.getTypeCode());
-
-        JsonSerializationHelper
-                .addProperty(jsonObject,"SubtypeCode",procurementProject.getSubtypeCode());
+                .addProperty(
+                        jsonObject,
+                        "Name",
+                        procurementProject.getName());
 
         JsonSerializationHelper
                 .addProperty(
-                        jsonObject,"MixContractIndicator",procurementProject.getMixContractIndicator());
+                        jsonObject,
+                        "Description",
+                        procurementProject.getTypeCode());
 
         JsonSerializationHelper
-                .addProperty(jsonObject,"Description",procurementProject.getDescription());
+                .addProperty(
+                        jsonObject,
+                        "SubtypeCode",
+                        procurementProject.getSubtypeCode());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "MixContractIndicator",
+                        procurementProject.getMixContractIndicator());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        procurementProject.getDescription());
 
         //
         JsonSerializationHelper

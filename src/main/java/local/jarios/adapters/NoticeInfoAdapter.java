@@ -25,7 +25,11 @@ public record NoticeInfoAdapter(boolean imprimirHijos) implements JsonSerializer
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(jsonObject,"NoticeTypeCode",noticeInfo.getNoticeTypeCode());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "NoticeTypeCode",
+                        noticeInfo.getNoticeTypeCode());
 
         //
         JsonSerializationHelper

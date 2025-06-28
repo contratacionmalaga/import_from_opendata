@@ -27,10 +27,16 @@ public record ProcessJustificationAdapter() implements JsonSerializer<ProcessJus
 
         //
         JsonSerializationHelper
-                .addProperty(jsonObject,"ReasonCode",processJustification.getReasonCode());
+                .addProperty(
+                        jsonObject,
+                        "ReasonCode",
+                        processJustification.getReasonCode());
 
         JsonSerializationHelper
-                .addProperty(jsonObject,"Description",processJustification.getDescription());
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        processJustification.getDescription());
 
         //
         return jsonObject;

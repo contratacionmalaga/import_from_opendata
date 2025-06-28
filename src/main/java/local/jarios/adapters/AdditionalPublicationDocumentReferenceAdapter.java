@@ -27,22 +27,25 @@ public record AdditionalPublicationDocumentReferenceAdapter(boolean imprimirHijo
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "IssueDate",
-                additionalPublicationDocumentReference.getIssueDate());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "IssueDate",
+                        additionalPublicationDocumentReference.getIssueDate());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "DocumentTypeCode",
-                additionalPublicationDocumentReference.getDocumentTypeCode());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "DocumentTypeCode",
+                        additionalPublicationDocumentReference.getDocumentTypeCode());
 
         //
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "Attachment",
-                additionalPublicationDocumentReference.getAttachment(),
-                context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "Attachment",
+                        additionalPublicationDocumentReference.getAttachment(),
+                        context);
 
         //
         return jsonObject;

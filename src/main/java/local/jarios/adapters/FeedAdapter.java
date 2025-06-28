@@ -20,16 +20,50 @@ public record FeedAdapter(boolean imprimirHijos) implements JsonSerializer<Feed>
     @Override
     public JsonElement serialize(Feed feed, Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("LinkFirst", feed.getLinkFirst());
-        jsonObject.addProperty("LinkPrev", feed.getLinkPrev());
-        jsonObject.addProperty("LinkSelf", feed.getLinkSelf());
-        jsonObject.addProperty("LinkNext", feed.getLinkNext());
-        jsonObject.addProperty("Updated", String.valueOf(feed.getUpdated()));
+        //
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "LinkFirst",
+                        feed.getLinkFirst());
 
-        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<Entry>", feed.getListEntry(), context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "LinkPrev",
+                        feed.getLinkPrev());
 
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "LinkSelf",
+                        feed.getLinkSelf());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "LinkNext",
+                        feed.getLinkNext());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Updated",
+                        feed.getUpdated());
+
+        //
+        JsonSerializationHelper
+                .addIfNotEmpty(
+                        jsonObject,
+                        "List<Entry>",
+                        feed.getListEntry(),
+                        context);
+
+        //
         return jsonObject;
     }
 }

@@ -40,6 +40,18 @@ public record TendererQualificationRequestAdapter(boolean imprimirHijos)
                         "Description",
                         tendererQualificationRequest.getDescription());
 
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "EmployeeQuantity",
+                        tendererQualificationRequest.getEmployeeQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "EmployeeQuantityDescription",
+                        tendererQualificationRequest.getEmployeeQuantityDescription());
+
         //
         JsonSerializationHelper
                 .addIfNotEmpty(

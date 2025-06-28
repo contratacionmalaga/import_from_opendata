@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.EvaluationCriteria;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,10 +26,29 @@ public record EvaluationCriteriaAdapter() implements JsonSerializer<EvaluationCr
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("EvaluationCriteriaTypeCode", evaluationCriteria.getEvaluationCriteriaTypeCode());
-        jsonObject.addProperty("Description", evaluationCriteria.getDescription());
-        jsonObject.addProperty("ThresholdQuantity", evaluationCriteria.getThresholdQuantity());
-        jsonObject.addProperty("TipoSolvencia", evaluationCriteria.getTipoSolvencia().toString());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "EvaluationCriteriaTypeCode",
+                        evaluationCriteria.getEvaluationCriteriaTypeCode());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        evaluationCriteria.getDescription());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ThresholdQuantity",
+                        evaluationCriteria.getThresholdQuantity());
+
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "TipoSolvencia",
+                        evaluationCriteria.getTipoSolvencia().toString());
 
         //
         return jsonObject;

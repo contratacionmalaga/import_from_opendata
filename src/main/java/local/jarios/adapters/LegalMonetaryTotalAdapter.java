@@ -26,20 +26,23 @@ public record LegalMonetaryTotalAdapter() implements JsonSerializer<LegalMonetar
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "TaxExclusiveAmount",
-                legalMonetaryTotal.getTaxExclusiveAmount());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "TaxExclusiveAmount",
+                        legalMonetaryTotal.getTaxExclusiveAmount());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "TaxInclusiveAmount",
-                legalMonetaryTotal.getTaxInclusiveAmount());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "TaxInclusiveAmount",
+                        legalMonetaryTotal.getTaxInclusiveAmount());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "PayableAmount",
-                legalMonetaryTotal.getPayableAmount());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "PayableAmount",
+                        legalMonetaryTotal.getPayableAmount());
 
         //
         return jsonObject;

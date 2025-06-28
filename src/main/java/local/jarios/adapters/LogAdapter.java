@@ -30,16 +30,20 @@ public record LogAdapter(boolean imprimirHijos) implements JsonSerializer<Log> {
         logContent.addProperty("LugarImportacion", String.valueOf(log.getLugarImportacion()));
         logContent.addProperty("TipoSindicacion", String.valueOf(log.getTipoSindicacion()));
 
-
         // Evitar serializar recursivamente las relaciones bidireccionales
-        if (log.getEstadistica() != null) {
-            logContent.add("Estadística", context.serialize(log.getEstadistica()));
-        }
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "Estadística",
+                        log.getEstadistica(),
+                        context);
 
-        //
-        if (log.getConfiguracion() != null) {
-            logContent.add("Configuración", context.serialize(log.getConfiguracion()));
-        }
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "Configuración",
+                        log.getConfiguracion(),
+                        context);
 
         //
         if (imprimirHijos) {

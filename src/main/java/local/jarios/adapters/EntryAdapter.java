@@ -31,29 +31,28 @@ public record EntryAdapter(boolean imprimirHijos) implements JsonSerializer<Entr
                         entry.getIdEntry());
 
         JsonSerializationHelper
-                .addIfNotNull(
+                .addProperty(
                         jsonObject,
                         "Link",
-                        entry.getLink(),
-                        context);
+                        entry.getLink());
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "Summary",
-                entry.getSummary(),
-                context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Summary",
+                        entry.getSummary());
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "Title",
-                entry.getTitle(),
-                context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Title",
+                        entry.getTitle());
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "Updated",
-                entry.getUpdated(),
-                context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Updated",
+                        entry.getUpdated());
 
         //
         JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ContractFolderStatus>", entry.getListContractFolderStatus(), context);

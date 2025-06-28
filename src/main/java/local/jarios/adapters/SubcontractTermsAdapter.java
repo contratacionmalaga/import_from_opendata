@@ -27,10 +27,16 @@ public record SubcontractTermsAdapter() implements JsonSerializer<SubcontractTer
 
         //
         JsonSerializationHelper
-                .addProperty(jsonObject,"Rate", subcontractTerms.getRate());
+                .addProperty(
+                        jsonObject,
+                        "Rate",
+                        subcontractTerms.getRate());
 
         JsonSerializationHelper
-                .addProperty(jsonObject,"Description", subcontractTerms.getDescription());
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        subcontractTerms.getDescription());
 
         //
         return jsonObject;

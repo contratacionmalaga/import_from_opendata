@@ -26,17 +26,19 @@ public record AwardedTenderedProjectAdapter(boolean imprimirHijos) implements Js
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "ProcurementProjectLotId",
-                awardedTenderedProject.getProcurementProjectLotId());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ProcurementProjectLotId",
+                        awardedTenderedProject.getProcurementProjectLotId());
 
         //
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "LegalMonetaryTotal",
-                awardedTenderedProject.getLegalMonetaryTotal(),
-                context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "LegalMonetaryTotal",
+                        awardedTenderedProject.getLegalMonetaryTotal(),
+                        context);
 
         //
         return jsonObject;

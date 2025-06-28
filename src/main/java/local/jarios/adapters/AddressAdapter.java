@@ -26,23 +26,31 @@ public record AddressAdapter(boolean imprimirHijos) implements JsonSerializer<Ad
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "CityName",
-                address.getCityName());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "CityName",
+                        address.getCityName());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "PostalZone",
-                address.getPostalZone());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "PostalZone",
+                        address.getPostalZone());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "AddressLine",
-                address.getAddressLine());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "AddressLine",
+                        address.getAddressLine());
 
         //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "Country", address.getCountry(), context);
+        JsonSerializationHelper
+                .addIfNotNull(
+                        jsonObject,
+                        "Country",
+                        address.getCountry(),
+                        context);
 
         //
         return jsonObject;

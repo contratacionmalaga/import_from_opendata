@@ -27,17 +27,30 @@ public record PeriodAdapter() implements JsonSerializer<Period> {
 
         //
         JsonSerializationHelper
-                .addProperty(jsonObject,"StartDateTime",period.getStartDateTime());
+                .addProperty(
+                        jsonObject,
+                        "StartDateTime",
+                        period.getStartDateTime());
 
         JsonSerializationHelper
-                .addProperty(jsonObject,"EndDateTime",period.getEndDateTime());
+                .addProperty(
+                        jsonObject,
+                        "EndDateTime",
+                        period.getEndDateTime());
 
         JsonSerializationHelper
-                .addProperty(jsonObject,"Description",period.getDescription());
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        period.getDescription());
 
         //
         JsonSerializationHelper
-                .addIfNotNull(jsonObject,"DurationMeasure", period.getDurationMeasure(), context);
+                .addIfNotNull(
+                        jsonObject,
+                        "DurationMeasure",
+                        period.getDurationMeasure(),
+                        context);
 
         //
         return jsonObject;

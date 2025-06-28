@@ -27,27 +27,53 @@ public record PartyAdapter(boolean imprimirHijos) implements JsonSerializer<Part
 
         //
         JsonSerializationHelper
-                .addProperty(jsonObject,"WebsitURI",party.getWebSiteUri());
+                .addProperty(
+                        jsonObject,
+                        "WebsitURI",
+                        party.getWebSiteUri());
 
         //
         JsonSerializationHelper
-                .addProperty(jsonObject,"PartyName",party.getPartyName());
+                .addProperty(
+                        jsonObject,
+                        "PartyName",
+                        party.getPartyName());
 
         //
         JsonSerializationHelper
-                .addIfNotNull(jsonObject, "PartyIdentification", party.getPartyIdentification(), context);
+                .addIfNotNull(
+                        jsonObject,
+                        "PartyIdentification",
+                        party.getPartyIdentification(),
+                        context);
 
         JsonSerializationHelper
-                .addIfNotNull(jsonObject, "PostalAddress", party.getPostalAddress(), context);
+                .addIfNotNull(
+                        jsonObject,
+                        "PostalAddress",
+                        party.getPostalAddress(),
+                        context);
 
         JsonSerializationHelper
-                .addIfNotNull(jsonObject, "PhysicalLocation", party.getPhysicalLocation(), context);
+                .addIfNotNull(
+                        jsonObject,
+                        "PhysicalLocation",
+                        party.getPhysicalLocation(),
+                        context);
 
         JsonSerializationHelper
-                .addIfNotNull(jsonObject, "Contact", party.getContact(), context);
+                .addIfNotNull(
+                        jsonObject,
+                        "Contact",
+                        party.getContact(),
+                        context);
 
         JsonSerializationHelper
-                .addIfNotNull(jsonObject, "AgentParty", party.getAgentParty(), context);
+                .addIfNotNull(
+                        jsonObject,
+                        "AgentParty",
+                        party.getAgentParty(),
+                        context);
 
         //
         return jsonObject;

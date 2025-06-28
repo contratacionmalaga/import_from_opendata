@@ -26,10 +26,11 @@ public record ClassificationCategoryAdapter() implements JsonSerializer<Classifi
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "CodeValue",
-                classificationCategory.getCodeValue());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "CodeValue",
+                        classificationCategory.getCodeValue());
 
         //
         return jsonObject;

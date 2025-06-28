@@ -26,30 +26,35 @@ public record AwardingCriteriaAdapter() implements JsonSerializer<AwardingCriter
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "AwardingCriteriaTypeCode",
-                awardingCriteria.getAwardingCriteriaTypeCode());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "AwardingCriteriaTypeCode",
+                        awardingCriteria.getAwardingCriteriaTypeCode());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "AwardingCriteriaSubTypeCode",
-                awardingCriteria.getAwardingCriteriaSubTypeCode());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "AwardingCriteriaSubTypeCode",
+                        awardingCriteria.getAwardingCriteriaSubTypeCode());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Description",
-                awardingCriteria.getDescription());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Description",
+                        awardingCriteria.getDescription());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "Note",
-                awardingCriteria.getNote());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "Note",
+                        awardingCriteria.getNote());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "WeightNumeric",
-                awardingCriteria.getWeightNumeric());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "WeightNumeric",
+                        awardingCriteria.getWeightNumeric());
 
         //
         return jsonObject;

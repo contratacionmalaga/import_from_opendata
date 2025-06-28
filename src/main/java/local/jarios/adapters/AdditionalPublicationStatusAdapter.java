@@ -27,23 +27,26 @@ public record AdditionalPublicationStatusAdapter(boolean imprimirHijos)
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "PublicationMediaName",
-                additionalPublicationStatus.getPublicationMediaName());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "PublicationMediaName",
+                        additionalPublicationStatus.getPublicationMediaName());
 
         //
-        JsonSerializationHelper.addIfNotEmpty(
-                jsonObject,
-                "List<AdditionalPublicationDocumentReference>",
-                additionalPublicationStatus.getAdditionalPublicationDocumentReferenceList(),
-                context);
+        JsonSerializationHelper
+                .addIfNotEmpty(
+                        jsonObject,
+                        "List<AdditionalPublicationDocumentReference>",
+                        additionalPublicationStatus.getAdditionalPublicationDocumentReferenceList(),
+                        context);
 
-        JsonSerializationHelper.addIfNotEmpty(
-                jsonObject,
-                "List<AdditionalPublicationRequest>",
-                additionalPublicationStatus.getAdditionalPublicationRequestList(),
-                context);
+        JsonSerializationHelper
+                .addIfNotEmpty(
+                        jsonObject,
+                        "List<AdditionalPublicationRequest>",
+                        additionalPublicationStatus.getAdditionalPublicationRequestList(),
+                        context);
 
         //
         return jsonObject;

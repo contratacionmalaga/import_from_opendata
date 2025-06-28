@@ -32,23 +32,23 @@ public record EconomicOperatorShortListAdapter() implements JsonSerializer<Econo
                         "Description",
                         economicOperatorShorList.getDescription());
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "ExpectedQuantity",
-                economicOperatorShorList.getExpectedQuantity(),
-                context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "ExpectedQuantity",
+                        economicOperatorShorList.getExpectedQuantity());
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "MaximumQuantity",
-                economicOperatorShorList.getMaximumQuantity(),
-                context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "MaximumQuantity",
+                        economicOperatorShorList.getMaximumQuantity());
 
-        JsonSerializationHelper.addIfNotNull(
-                jsonObject,
-                "MinimumQuantity",
-                economicOperatorShorList.getMinimumQuantity(),
-                context);
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "MinimumQuantity",
+                        economicOperatorShorList.getMinimumQuantity());
 
         //
         return jsonObject;

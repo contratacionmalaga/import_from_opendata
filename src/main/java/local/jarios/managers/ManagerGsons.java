@@ -134,7 +134,7 @@ public final class ManagerGsons {
 
         // DurationMeasure
         gsonBuilder.registerTypeAdapter(Measure.class,
-                new DurationMeasureAdapter());
+                new MeasureAdapter());
 
         // EconomicOperatorShortList
         gsonBuilder.registerTypeAdapter(EconomicOperatorShortList.class,

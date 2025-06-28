@@ -27,15 +27,17 @@ public record AdditionalPublicationRequestAdapter()
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "AgencyId",
-                additionalPublicationRequest.getAgencyId());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "AgencyId",
+                        additionalPublicationRequest.getAgencyId());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "SendDateTime",
-                additionalPublicationRequest.getSendDateTime());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "SendDateTime",
+                        additionalPublicationRequest.getSendDateTime());
 
         //
         return jsonObject;

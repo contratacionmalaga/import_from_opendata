@@ -26,10 +26,11 @@ public record AuctionTermsAdapter() implements JsonSerializer<AuctionTerms> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "AuctionConstraintIndicator",
-                auctionTerms.getAuctionConstraintIndicator());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "AuctionConstraintIndicator",
+                        auctionTerms.getAuctionConstraintIndicator());
 
         //
         return jsonObject;

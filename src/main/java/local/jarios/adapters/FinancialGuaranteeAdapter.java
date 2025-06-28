@@ -26,20 +26,23 @@ public record FinancialGuaranteeAdapter() implements JsonSerializer<FinancialGua
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "GuaranteeTypeCode",
-                financialGuarantee.getGuaranteeTypeCode());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "GuaranteeTypeCode",
+                        financialGuarantee.getGuaranteeTypeCode());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "AmountRate",
-                financialGuarantee.getAmountRate());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "AmountRate",
+                        financialGuarantee.getAmountRate());
 
-        JsonSerializationHelper.addProperty(
-                jsonObject,
-                "LiabilityAmount",
-                financialGuarantee.getLiabilityAmount());
+        JsonSerializationHelper
+                .addProperty(
+                        jsonObject,
+                        "LiabilityAmount",
+                        financialGuarantee.getLiabilityAmount());
 
         //
         return jsonObject;

@@ -27,19 +27,34 @@ public record PartyIdentificationAdapter() implements JsonSerializer<PartyIdenti
 
         //
         JsonSerializationHelper
-                .addProperty(jsonObject,"IdPlataforma",partyIdentification.getIdPlataforma());
+                .addProperty(
+                        jsonObject,
+                        "IdPlataforma",
+                        partyIdentification.getIdPlataforma());
 
         JsonSerializationHelper
-                .addProperty(jsonObject,"Dir3",partyIdentification.getDir3());
+                .addProperty(
+                        jsonObject,
+                        "Dir3",
+                        partyIdentification.getDir3());
 
         JsonSerializationHelper
-                .addProperty(jsonObject,"Nif",partyIdentification.getNif());
+                .addProperty(
+                        jsonObject,
+                        "Nif",
+                        partyIdentification.getNif());
 
         JsonSerializationHelper
-                .addProperty(jsonObject,"IdOcPlat",partyIdentification.getIdOcPlat());
+                .addProperty(
+                        jsonObject,
+                        "IdOcPlat",
+                        partyIdentification.getIdOcPlat());
 
         JsonSerializationHelper
-                .addProperty(jsonObject,"Otros",partyIdentification.getOtros());
+                .addProperty(
+                        jsonObject,
+                        "Otros",
+                        partyIdentification.getOtros());
 
         //
         return jsonObject;
