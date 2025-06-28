@@ -26,7 +26,11 @@ public record AttachmentAdapter(boolean imprimirHijos) implements JsonSerializer
         JsonObject jsonObject = new JsonObject();
 
         //
-        JsonSerializationHelper.addIfNotNull(jsonObject, "ExternalReference", attachment.getExternalReference(), context);
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "ExternalReference",
+                attachment.getExternalReference(),
+                context);
 
         //
         return jsonObject;

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.AuctionTerms;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,7 +26,10 @@ public record AuctionTermsAdapter() implements JsonSerializer<AuctionTerms> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("auctionConstraintIndicator", String.valueOf(auctionTerms.getAuctionConstraintIndicator()));
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "AuctionConstraintIndicator",
+                auctionTerms.getAuctionConstraintIndicator());
 
         //
         return jsonObject;

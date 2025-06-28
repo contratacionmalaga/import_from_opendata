@@ -27,9 +27,13 @@ public record AdditionalPublicationDocumentReferenceAdapter(boolean imprimirHijo
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("IssueDate",
-                String.valueOf(additionalPublicationDocumentReference.getIssueDate()));
-        jsonObject.addProperty("DocumentTypeCode",
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "IssueDate",
+                additionalPublicationDocumentReference.getIssueDate());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "DocumentTypeCode",
                 additionalPublicationDocumentReference.getDocumentTypeCode());
 
         //

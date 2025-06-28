@@ -27,7 +27,9 @@ public record AdditionalPublicationStatusAdapter(boolean imprimirHijos)
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("PublicationMediaName",
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "SendDateTime",
                 additionalPublicationStatus.getPublicationMediaName());
 
         //

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.ContractExecutionRequirement;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,9 +26,18 @@ public record ContractExecutionRequirementAdapter() implements JsonSerializer<Co
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("Name", contractExecutionRequirement.getName());
-        jsonObject.addProperty("ExecutionRequirementCode", contractExecutionRequirement.getExecutionRequirementCode());
-        jsonObject.addProperty("Description", contractExecutionRequirement.getDescription());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Name",
+                contractExecutionRequirement.getName());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "ExecutionRequirementCode",
+                contractExecutionRequirement.getExecutionRequirementCode());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Description",
+                contractExecutionRequirement.getDescription());
 
         //
         return jsonObject;

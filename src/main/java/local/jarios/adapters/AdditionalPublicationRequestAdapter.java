@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.AdditionalPublicationRequest;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -22,13 +23,20 @@ public record AdditionalPublicationRequestAdapter()
             AdditionalPublicationRequest additionalPublicationRequest,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("AgencyId",
+        //
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "AgencyId",
                 additionalPublicationRequest.getAgencyId());
-        jsonObject.addProperty("SendDateTime",
-                String.valueOf(additionalPublicationRequest.getSendDateTime()));
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "SendDateTime",
+                additionalPublicationRequest.getSendDateTime());
 
+        //
         return jsonObject;
     }
 }

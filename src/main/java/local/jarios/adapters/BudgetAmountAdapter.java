@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.BudgetAmount;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,9 +26,20 @@ public record BudgetAmountAdapter() implements JsonSerializer<BudgetAmount> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("EstimatedOverallContratAmount", budgetAmount.getEstimatedOverallContractAmount());
-        jsonObject.addProperty("TotalAmount", budgetAmount.getTotalAmount());
-        jsonObject.addProperty("TaxExclusiveAmount", budgetAmount.getTaxExclusiveAmount());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "EstimatedOverallContratAmount",
+                budgetAmount.getEstimatedOverallContractAmount());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "TotalAmount",
+                budgetAmount.getTotalAmount());
+
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "TaxExclusiveAmount",
+                budgetAmount.getTaxExclusiveAmount());
 
         //
         return jsonObject;

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Contact;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,10 +26,22 @@ public record ContactAdapter() implements JsonSerializer<Contact> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("Name", contact.getName());
-        jsonObject.addProperty("Telephone", contact.getTelephone());
-        jsonObject.addProperty("Telefax", contact.getTelefax());
-        jsonObject.addProperty("ElectronicMail", contact.getElectronicMail());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Name",
+                contact.getName());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Telephone",
+                contact.getTelephone());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Telefax",
+                contact.getTelefax());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "ElectronicMail",
+                contact.getElectronicMail());
 
         //
         return jsonObject;

@@ -26,15 +26,25 @@ public record ContractModificationAdapter(boolean imprimirHijos) implements Json
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("ContractId",
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "ContractId",
                 contractModification.getContractId());
-        jsonObject.addProperty("IdModificacion",
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "IdModificacion",
                 contractModification.getIdContractModification());
-        jsonObject.addProperty("IssueDate",
-                String.valueOf(contractModification.getIssueDate()));
-        jsonObject.addProperty("Note",
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "IssueDate",
+                contractModification.getIssueDate());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Note",
                 contractModification.getNote());
-        jsonObject.addProperty("ContractModificationLotId",
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "ContractModificationLotId",
                 contractModification.getContractModificationLotId());
 
         //

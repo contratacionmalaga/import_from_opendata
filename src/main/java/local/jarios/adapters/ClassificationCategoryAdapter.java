@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.ClassificationCategory;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,8 +26,10 @@ public record ClassificationCategoryAdapter() implements JsonSerializer<Classifi
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("CodeValue",
-                String.valueOf(classificationCategory.getCodeValue()));
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "CodeValue",
+                classificationCategory.getCodeValue());
 
         //
         return jsonObject;

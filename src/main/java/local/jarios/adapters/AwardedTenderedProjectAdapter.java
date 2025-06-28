@@ -22,10 +22,21 @@ public record AwardedTenderedProjectAdapter(boolean imprimirHijos) implements Js
             TenderedProject awardedTenderedProject,
             Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("ProcurementProjectLotId", awardedTenderedProject.getProcurementProjectLotId());
 
-        JsonSerializationHelper.addIfNotNull(jsonObject, "LegalMonetaryTotal", awardedTenderedProject.getLegalMonetaryTotal(), context);
+        //
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "ProcurementProjectLotId",
+                awardedTenderedProject.getProcurementProjectLotId());
+
+        //
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "LegalMonetaryTotal",
+                awardedTenderedProject.getLegalMonetaryTotal(),
+                context);
 
         //
         return jsonObject;

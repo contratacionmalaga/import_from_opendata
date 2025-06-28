@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.CommodityClassification;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,7 +26,10 @@ public record CommodityClassificationAdapter() implements JsonSerializer<Commodi
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("ItemClassificationCode", commodityClassification.getItemClassificationCode());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "ItemClassificationCode",
+                commodityClassification.getItemClassificationCode());
 
         //
         return jsonObject;

@@ -26,8 +26,14 @@ public record AgentPartyAdapter(boolean imprimirHijos) implements JsonSerializer
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("WebsitURI", party.getWebSiteUri());
-        jsonObject.addProperty("Name", party.getPartyName());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "WebsitURI",
+                party.getWebSiteUri());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Name",
+                party.getPartyName());
 
         //
         JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", party.getPartyIdentification(), context);

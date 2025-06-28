@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.Country;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,8 +26,14 @@ public record CountryAdapter() implements JsonSerializer<Country> {
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("IdentificationCode", country.getIdentificationCode());
-        jsonObject.addProperty("Name", country.getName());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "IdentificationCode",
+                country.getIdentificationCode());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "Name",
+                country.getName());
 
         //
         return jsonObject;

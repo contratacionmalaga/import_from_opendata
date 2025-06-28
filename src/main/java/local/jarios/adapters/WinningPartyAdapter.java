@@ -26,7 +26,10 @@ public record WinningPartyAdapter(boolean imprimirHijos) implements JsonSerializ
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("PartyName", winningParty.getPartyName());
+        JsonSerializationHelper.addProperty(
+                jsonObject,
+                "PartyName",
+                winningParty.getPartyName());
 
         //
         JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", winningParty.getPartyIdentification(), context);
