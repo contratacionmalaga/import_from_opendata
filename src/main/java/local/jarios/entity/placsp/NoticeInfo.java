@@ -62,7 +62,8 @@ public class NoticeInfo extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "NoticeInfo: " +
+                "[noticeTypeCode='" + noticeTypeCode + "']";
     }
 
     //

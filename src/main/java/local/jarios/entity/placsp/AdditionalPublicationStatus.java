@@ -65,7 +65,8 @@ public class AdditionalPublicationStatus extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "AdditionalPublicationRequest: " +
+                "[publicationMediaName='" + publicationMediaName + "']";
     }
 
     //

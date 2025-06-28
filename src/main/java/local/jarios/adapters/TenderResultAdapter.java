@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.TenderResult;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -22,8 +23,6 @@ public record TenderResultAdapter(boolean imprimirHijos) implements JsonSerializ
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(tenderResult.getId()));
         jsonObject.addProperty("ResultCode",
                 tenderResult.getResultCode());
         jsonObject.addProperty("ReceivedTenderQuantity",
@@ -44,58 +43,19 @@ public record TenderResultAdapter(boolean imprimirHijos) implements JsonSerializ
                 tenderResult.getSMEAwardedIndicator());
         jsonObject.addProperty("EUNationalsReceivedTenderQuantity",
                 tenderResult.getEUNationalsReceivedTenderQuantity());
-        jsonObject.addProperty("NonEUNationalsReceivedTenderQuantity",
+        jsonObject.addProperty("NonEUNationalsReceivedTenderQuantity", 
                 tenderResult.getNonEUNationalsReceivedTenderQuantity());
-        jsonObject.addProperty("StartDate",
-                tenderResult.getStartDate());
-        jsonObject.addProperty("AwardedOwnerNationalityCode",
-                tenderResult.getAwardedOwnerNationalityCode());
+        jsonObject.addProperty("StartDate", String.valueOf(tenderResult.getStartDate()));
+        jsonObject.addProperty("AwardedOwnerNationalityCode", tenderResult.getAwardedOwnerNationalityCode());
 
         if (imprimirHijos) {
 
-            //
-            if (tenderResult.getContract() != null) {
+            JsonSerializationHelper.addIfNotNull(jsonObject, "Contract", tenderResult.getContract(), context);
+            JsonSerializationHelper.addIfNotNull(jsonObject, "WinningParty", tenderResult.getWinningParty(), context);
+            JsonSerializationHelper.addIfNotNull(jsonObject, "AwardedTenderedProject", tenderResult.getAwardedTenderedProject(), context);
+            JsonSerializationHelper.addIfNotNull(jsonObject, "AwardedTenderedProject", tenderResult.getAwardedTenderedProject(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "SubcontractTerms", tenderResult.getListSubcontractTerms(), context);
 
-                // Serializar Contract
-                jsonObject.add(
-                        "Contract",
-                        context.serialize(tenderResult.getContract()));
-            }
-
-            //
-            if (tenderResult.getWinningParty() != null) {
-
-                // Serializar WinningParty
-                jsonObject.add(
-                        "WinningParty",
-                        context.serialize(tenderResult.getWinningParty()));
-            }
-
-
-            // AwardedTenderedProject
-            if (tenderResult.getAwardedTenderedProject() != null) {
-                jsonObject.add(
-                        "AwardedTenderedProject",
-                        context.serialize(tenderResult.getAwardedTenderedProject()));
-            }
-
-            //
-            if (tenderResult.getContract() != null) {
-
-                // Serializar AwardedTenderedProject
-                jsonObject.add(
-                        "AwardedTenderedProject",
-                        context.serialize(tenderResult.getAwardedTenderedProject()));
-            }
-
-            //
-            if (!tenderResult.getListSubcontractTerms().isEmpty()) {
-
-                // Serializar SubcontractTerms
-                jsonObject.add(
-                        "SubcontractTerms",
-                        context.serialize(tenderResult.getListSubcontractTerms()));
-            }
         }
 
         //

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.TenderingTerms;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -22,8 +23,6 @@ public record TenderingTermsAdapter(boolean imprimirHijos) implements JsonSerial
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(tenderingTerms.getId()));
         jsonObject.addProperty("RequiredCurriculaIndicator",
                 tenderingTerms.getRequiredCurriculaIndicator());
         jsonObject.addProperty("VariantConstraintIndicator",
@@ -49,43 +48,13 @@ public record TenderingTermsAdapter(boolean imprimirHijos) implements JsonSerial
 
         if (imprimirHijos) {
 
-            if (tenderingTerms.getTendererQualificationRequest() != null)  {
+            JsonSerializationHelper.addIfNotNull(jsonObject, "TendererQualificationRequest", tenderingTerms.getTendererQualificationRequest(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "ContractExecutionRequirement", tenderingTerms.getListContractExecutionRequirement(), context);
+            JsonSerializationHelper.addIfNotNull(jsonObject, "AwardingTerms", tenderingTerms.getAwardingTerms(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "FinancialGuarantee", tenderingTerms.getListFinancialGuarantee(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "SubcontractTerms", tenderingTerms.getListAllowedSubcontractTerms(), context);
+            JsonSerializationHelper.addIfNotNull(jsonObject, "TenderRecipientParty", tenderingTerms.getTenderRecipientParty(), context);
 
-                jsonObject.add(
-                        "TendererQualificationRequest",
-                        context.serialize(tenderingTerms.getTendererQualificationRequest()));
-            }
-
-            if (!tenderingTerms.getListContractExecutionRequirement().isEmpty()) {
-                jsonObject.add(
-                        "ContractExecutionRequirement",
-                        context.serialize(tenderingTerms.getListContractExecutionRequirement()));
-            }
-
-            if (tenderingTerms.getAwardingTerms() != null)  {
-
-                jsonObject.add(
-                        "AwardingTerms",
-                        context.serialize(tenderingTerms.getAwardingTerms()));
-            }
-
-            if (!tenderingTerms.getListFinancialGuarantee().isEmpty()) {
-                jsonObject.add(
-                        "FinancialGuarantee",
-                        context.serialize(tenderingTerms.getListFinancialGuarantee()));
-            }
-
-            if (!tenderingTerms.getListAllowedSubcontractTerms().isEmpty()) {
-                jsonObject.add(
-                        "SubcontractTerms",
-                        context.serialize(tenderingTerms.getListAllowedSubcontractTerms()));
-            }
-
-            if (tenderingTerms.getTenderRecipientParty() != null) {
-                jsonObject.add(
-                        "TenderRecipientParty",
-                        context.serialize(tenderingTerms.getTenderRecipientParty()));
-            }
         }
 
         return jsonObject;

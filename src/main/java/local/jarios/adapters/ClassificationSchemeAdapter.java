@@ -24,9 +24,6 @@ public record ClassificationSchemeAdapter(boolean imprimirHijos)
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(classificationScheme.getId()));
-
         if (imprimirHijos && !classificationScheme.getClassificationCategory().isEmpty()) {
             jsonObject.add(
                     "ClassificationCategory",

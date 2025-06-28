@@ -28,7 +28,7 @@ public record ExternalReferenceAdapter() implements JsonSerializer<ExternalRefer
         jsonObject.addProperty("Id", String.valueOf(externalReference.getId()));
         jsonObject.addProperty("Uri", String.valueOf(externalReference.getUri()));
         jsonObject.addProperty("DocumentHash", externalReference.getDocumentHash());
-        jsonObject.addProperty("FileName", externalReference.getFilename());
+        jsonObject.addProperty("Filename", externalReference.getFilename());
 
         //
         return jsonObject;

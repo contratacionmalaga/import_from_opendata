@@ -58,6 +58,9 @@ public final class MapperProcurementProject {
             Optional.ofNullable(ppt.getMixContractIndicator()).ifPresent(mixContractIndicator ->
                     procurementProject.setMixContractIndicator(mixContractIndicator.isValue()));
 
+            //
+            log.debug(procurementProject.toString());
+
             Optional.ofNullable(ppt.getBudgetAmount()).ifPresent(budgetAmount ->
                     procurementProject.setBudgetAmount(
                             MapperBudgetAmount.getBudgetAmount(procurementProject, budgetAmount)));

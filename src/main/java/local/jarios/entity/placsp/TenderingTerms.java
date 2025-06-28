@@ -138,7 +138,18 @@ public class TenderingTerms extends Auditable {
         @Override
         public String toString() {
 
-                return ToStringUtil.autoToString(this);
+                return "TenderingTerms: " +
+                        "requiredCurriculaIndicator='" + requiredCurriculaIndicator + "', " +
+                        "variantConstraintIndicator='" + variantConstraintIndicator + "', " +
+                        "priceRevisionFormulaDescription='" + priceRevisionFormulaDescription + "', " +
+                        "fundingProgramCode='" + fundingProgramCode + "', " +
+                        "fundingProgram='" + fundingProgram + "', " +
+                        "procurementNationalLegislationCode='" + procurementNationalLegislationCode + "', " +
+                        "procurementLegislationDocumentReference='" + procurementLegislationDocumentReference + "', " +
+                        "receivedAppealQuantity='" + receivedAppealQuantity + "', " +
+                        "eorderingIndicator='" + eorderingIndicator + "', " +
+                        "epaymentMeansIndicator='" + epaymentMeansIndicator + "', " +
+                        "electronicInvoicingIndicator='" + electronicInvoicingIndicator + "']";
         }
 
         public TenderingTerms() {

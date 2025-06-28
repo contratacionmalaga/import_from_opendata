@@ -68,7 +68,11 @@ public class EconomicOperatorShortList extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "EvaluationCriteria: " +
+                "[description='" + description + "', " +
+                "expectedQuantity='" + expectedQuantity + "', " +
+                "maximumQuantity='" + maximumQuantity + "', " +
+                "minimumQuantity='" + minimumQuantity + "']";
     }
     //
     //

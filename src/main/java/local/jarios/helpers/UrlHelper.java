@@ -2,7 +2,6 @@ package local.jarios.helpers;
 
 import local.jarios.common.util.Constantes;
 import local.jarios.common.util.PropertiesKeys;
-import local.jarios.exceptions.MiUrlException;
 import local.jarios.properties.exception.PropertiesManagerException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +24,7 @@ public final class UrlHelper {
     /**
      * Imprime los valores de los diferentes ficheros properties.
      */
-    public static boolean esUrlValida(String url) throws PropertiesManagerException {
+    public static boolean esUrlValida(String url) throws PropertiesManagerException, URISyntaxException {
 
         // Analizo si el valor que paso es NULO | VACÍO.
         if (url == null || url.isBlank()) {
@@ -63,7 +62,7 @@ public final class UrlHelper {
 
             return true;
 
-        } catch (PropertiesManagerException ex) {
+        } catch (PropertiesManagerException | URISyntaxException ex) {
 
             throw ex;
 
@@ -74,9 +73,9 @@ public final class UrlHelper {
 
         log.debug("[validateRemoteUrl]: urlStr: {}", urlStr);
 
-        String miScheme = PropertiesHelper.getProperty(Constantes.VALIDATION_PROPERTIES, Constantes.PARAMETRO_URI_SCHEME);
+        String miScheme = PropertiesHelper.getProperty(Constantes.VALIDATION_PROPERTIES, PropertiesKeys.PARAMETRO_URI_SCHEME);
         log.debug("[validateRemoteUrl]: Scheme de validación: {}", miScheme);
-        String miHost = PropertiesHelper.getProperty(Constantes.VALIDATION_PROPERTIES, Constantes.PARAMETRO_URI_HOST);
+        String miHost = PropertiesHelper.getProperty(Constantes.VALIDATION_PROPERTIES, PropertiesKeys.PARAMETRO_URI_HOST);
         log.debug("[validateRemoteUrl]: Host de validación: {}", miHost);
         String msg;
 

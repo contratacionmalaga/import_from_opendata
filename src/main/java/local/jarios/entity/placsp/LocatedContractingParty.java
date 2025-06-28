@@ -61,7 +61,9 @@ public class LocatedContractingParty extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "LocatedContractingParty: " +
+                "[contractingPartyTypeCode='" + contractingPartyTypeCode + "', " +
+                "buyerProfileUriId='" + buyerProfileUriId + "']";
     }
 
     public LocatedContractingParty() {

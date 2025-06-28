@@ -66,7 +66,9 @@ public class AdditionalPublicationDocumentReference extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "AdditionalPublicationDocumentReference: " +
+                "[issueDate='" + issueDate + "', " +
+                "documentTypeCode='" + documentTypeCode + "']";
     }
 
     //

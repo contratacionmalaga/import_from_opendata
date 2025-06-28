@@ -124,7 +124,19 @@ public class TenderingProcess extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "TenderingProcess: " +
+                "procedureCode='" + procedureCode + "', " +
+                "contractingSystemCode='" + contractingSystemCode + "', " +
+                "urgencyCode='" + urgencyCode + "', " +
+                "submissionMethodCode='" + submissionMethodCode + "', " +
+                "partPresentationCode='" + partPresentationCode + "', " +
+                "maximumLotPresentationQuantity='" + maximumLotPresentationQuantity + "', " +
+                "maximunTendererAwardedLotQuantity='" + maximunTendererAwardedLotQuantity + "', " +
+                "lotsCombinationContractingAuthorityRights='" + lotsCombinationContractingAuthorityRights + "', " +
+                "overThresholdIndicator='" + overThresholdIndicator + "', " +
+                "description='" + description + "', " +
+                "documentAvailabilityPeriod='" + documentAvailabilityPeriod + "', " +
+                "tenderSubmissionDeadlinePeriod='" + tenderSubmissionDeadlinePeriod + "']";
     }
 
     //

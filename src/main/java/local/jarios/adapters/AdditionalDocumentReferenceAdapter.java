@@ -25,9 +25,6 @@ public record AdditionalDocumentReferenceAdapter(boolean imprimirHijos) implemen
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("id", String.valueOf(additionalDocumentReference.getId()));
-
-        //
         if (imprimirHijos) {
 
             //

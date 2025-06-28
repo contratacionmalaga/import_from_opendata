@@ -55,7 +55,9 @@ public class Uuid extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "Uuid: " +
+                "[uuid='" + uuid + "', " +
+                "schemeName='" + schemeName + "']";
     }
 
     public Uuid() {

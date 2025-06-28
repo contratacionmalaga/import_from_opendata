@@ -1,5 +1,6 @@
 package local.jarios.mappers;
 
+import local.jarios.common.util.Constantes;
 import local.jarios.entity.placsp.*;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.DocumentReferenceType;
@@ -36,9 +37,10 @@ public final class MapperDocumentReference {
         documentReference.setIdDocumentReference(documentReferenceType.getID().getValue());
 
         //
-        Optional.ofNullable(documentReferenceType.getDocumentTypeCode())
-                .map(DocumentTypeCodeType::getValue)
-                .ifPresent(documentReference::setDocumentTypeCode);
+        String docTypeCode = Optional.ofNullable(documentReferenceType.getDocumentTypeCode())
+                                     .map(DocumentTypeCodeType::getValue)
+                                     .orElse(Constantes.CADENA_VACIA);
+        documentReference.setDocumentTypeCode(docTypeCode);
 
         Optional.ofNullable(documentReferenceType.getAttachment())
                 .ifPresent(attachmentType -> documentReference.setAttachment(

@@ -1,5 +1,6 @@
 package local.jarios.helpers;
 
+import local.jarios.common.util.PropertiesKeys;
 import local.jarios.common.util.VariablesGlobales;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
@@ -96,7 +97,9 @@ public final class FeedHelper {
     public static List<Feed> parsearFeeds(Log miLog, Feed newestFeed, Estadistica estadistica, boolean isLocal)
             throws MiParseException {
 
-        List<Feed> listFeedEntities = new ArrayList<>();
+        log.info("[parsearFeeds] - Inicio el parseo de los Feeds.");
+
+        List<Feed> listFeeds = new ArrayList<>();
 
         try {
             var unmarshaller = getValidUnmarshaller();
@@ -110,9 +113,9 @@ public final class FeedHelper {
             var fechaHoraFinalLectura = VariablesGlobales.getFiltroFechaFinal();
             log.debug("[parsearFeeds] - fechaHoraFinalLectura: {}", fechaHoraFinalLectura);
 
-            boolean salirBucle = false;
+            boolean enBubcle = true;
 
-            while (!salirBucle && isNextLinkValid(nextLink, isLocal)) {
+            while (enBubcle) {
 
                 try (
                         var bufferedReader = openBufferedReader(nextLink, isLocal)
@@ -130,17 +133,24 @@ public final class FeedHelper {
                     }
 
                     var feed = MapperFeed.getFeed(miLog, feedType);
-                    log.debug("[parseFeeds] - Feed: {}", feed);
+                    log.debug("[parseFeeds] - Parseado correctamente {}", feed);
 
-                    if (isFechaValida(feed, fechaHoraInicialLectura, fechaHoraFinalLectura, newestFeed, isLocal)) {
+                    if ((isLocal) || (isFechaValida(feed.getUpdated(), newestFeed))) {
 
                         log.info(Mensajes.FEED_INFO, nextLink, Mensajes.FEED_FECHAS_OK);
 
                         procesarFeed(feed, estadistica);
-                        listFeedEntities.add(feed);
+                        log.info("[parsearFeeds] - {} parseado corectamente.", feed);
+
+                        listFeeds.add(feed);
+                        log.info("[parsearFeeds] - Tamaño de ListFeed<Feed>: {}", listFeeds.size());
+
+                        ComunHelper.imprimir(feed);
 
                         nextLink = getNextLink(feed, isLocal);
-                        log.info(Mensajes.NEXT_LINK, "", nextLink, isNextLinkValid(nextLink, isLocal));
+                        log.info("NextLink: {}", nextLink);
+
+                        enBubcle = isNextLinkValid(nextLink, isLocal);
 
                     } else {
 
@@ -152,15 +162,15 @@ public final class FeedHelper {
                                     feed.getUpdated(),
                                     fechaHoraFinalLectura);
                         }
-                        salirBucle = true;
+                        enBubcle = false;
                     }
                 }
             }
 
-            return listFeedEntities;
+            return listFeeds;
 
         } catch (IOException | URISyntaxException | MiInvalidDateFormatException | PropertiesManagerException |
-                 MiUnmarshallerException | JAXBException | MiUrlException ex) {
+                 MiUnmarshallerException | JAXBException ex) {
 
             throw new MiParseException(ex);
         }
@@ -169,7 +179,7 @@ public final class FeedHelper {
     private static String getInitialLink(boolean isLocal) throws PropertiesManagerException, URISyntaxException {
 
         if (isLocal) {
-            String filename = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, Constantes.CONFIG_FILENAME);
+            String filename = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_FILENAME);
             log.debug("[getInitialLink] - Importando desde Local. Link inicial: {}", filename);
             Path resolvedPath = getPathBaseLocal().resolve(filename).normalize();
             log.debug("[getInitialLink] - Path absoluto: {}", resolvedPath);
@@ -180,13 +190,13 @@ public final class FeedHelper {
 
             return resolvedPath.toString();
         } else {
-            String url = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, Constantes.CONFIG_URL);
+            String url = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_URL);
             UrlHelper.validateRemoteUrl(url);
             return url;
         }
     }
 
-    private static boolean isNextLinkValid(String nextLink, boolean isLocal) throws MiUrlException {
+    private static boolean isNextLinkValid(String nextLink, boolean isLocal) throws PropertiesManagerException, URISyntaxException {
         if (isLocal) {
             return FileHelper.esFileValido(nextLink);
         } else {
@@ -226,25 +236,37 @@ public final class FeedHelper {
         }
     }
 
-    private static boolean isFechaValida(LocalDateTime updatedFeed, LocalDateTime updatedNewestFeed) {
+    private static boolean isFechaValida(LocalDateTime updatedFeed, Feed newestFeed) {
 
         // La fecha updatedFeed es válida si:
-        //
-        //  Es posterior a updatedNewestFeed.
-        //  Está entre VariablesGlobales.filtroFechaInicial y VariablesGlobales.filtroFechaFinal
-        //          (ambos extremos incluidos o excluidos, como tú quieras).
-        boolean esFechaValida = updatedFeed != null
-                && updatedNewestFeed != null
-                && updatedFeed.isAfter(updatedNewestFeed)
-                && (VariablesGlobales.getFiltroFechaInicial() == null ||
-                        !updatedFeed.isBefore(VariablesGlobales.getFiltroFechaInicial()))
-                && (VariablesGlobales.getFiltroFechaFinal() == null ||
-                        !updatedFeed.isAfter(VariablesGlobales.getFiltroFechaFinal()));
-        log.debug("[isFechaValida] - Fecha: {}, FechaUpdatedNewestFeed: {}, FechaInicial: {}, FechaFinal: {}",
-                updatedFeed,
-                updatedNewestFeed,
-                VariablesGlobales.getFiltroFechaInicial(),
-                VariablesGlobales.getFiltroFechaFinal());
+        // - newestFeed es NULL
+        // - Es posterior a newestFeed.getUpdated()
+        // - Está entre VariablesGlobales.filtroFechaInicial y VariablesGlobales.filtroFechaFinal
+        //   (ambos extremos incluidos o excluidos, según lo que prefieras)
+
+        boolean esFechaValida = false;
+
+        // Verificar si newestFeed es no nulo
+        if (newestFeed != null) {
+            esFechaValida = updatedFeed != null
+                    && newestFeed.getUpdated() != null
+                    && updatedFeed.isAfter(newestFeed.getUpdated()) // La fecha debe ser posterior a newestFeed.getUpdated()
+                    && estaDentroDelRango(updatedFeed); // Verifica si está dentro del rango de fechas
+
+            log.debug("[isFechaValida] - Fecha: {}, FechaUpdatedNewestFeed: {}, FechaInicial: {}, FechaFinal: {}",
+                    updatedFeed,
+                    newestFeed.getUpdated(),
+                    VariablesGlobales.getFiltroFechaInicial(),
+                    VariablesGlobales.getFiltroFechaFinal());
+        } else {
+            // Si newestFeed es nulo, solo validamos el rango de fechas
+            esFechaValida = updatedFeed != null && estaDentroDelRango(updatedFeed);
+
+            log.debug("[isFechaValida] - Fecha: {}, FechaInicial: {}, FechaFinal: {}",
+                    updatedFeed,
+                    VariablesGlobales.getFiltroFechaInicial(),
+                    VariablesGlobales.getFiltroFechaFinal());
+        }
 
         return esFechaValida;
     }
@@ -252,7 +274,7 @@ public final class FeedHelper {
     private static Path getPathBaseLocal() throws PropertiesManagerException {
 
         return Paths
-                .get(PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, Constantes.CONFIG_PATH))
+                .get(PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_PATH))
                 .toAbsolutePath()
                 .normalize();
     }
@@ -263,5 +285,13 @@ public final class FeedHelper {
         log.info(Mensajes.SERVICE_CREACION_CREADO, TipoConexion.PRINCIPAL);
 
         return service.getNewestFeed(tipoSindicacion);
+    }
+
+    // Método auxiliar para validar si la fecha está dentro del rango
+    private static boolean estaDentroDelRango(LocalDateTime updatedFeed) {
+        boolean dentroFechaInicial = VariablesGlobales.getFiltroFechaInicial() == null || !updatedFeed.isBefore(VariablesGlobales.getFiltroFechaInicial());
+        boolean dentroFechaFinal = VariablesGlobales.getFiltroFechaFinal() == null || !updatedFeed.isAfter(VariablesGlobales.getFiltroFechaFinal());
+
+        return dentroFechaInicial && dentroFechaFinal;
     }
 }

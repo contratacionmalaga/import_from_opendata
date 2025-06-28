@@ -17,18 +17,12 @@ import java.lang.reflect.Type;
 public record UuidAdapter() implements JsonSerializer<Uuid> {
 
     @Override
-    public JsonElement serialize(
-            Uuid uuid,
-            Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(Uuid uuid, Type typeOfSrc, JsonSerializationContext context) {
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("id",
-                String.valueOf(uuid.getId()));
-        jsonObject.addProperty("scheme_name",
-                uuid.getSchemeName());
-        jsonObject.addProperty("uuid",
-                uuid.getUuid());
+        jsonObject.addProperty("scheme_name", uuid.getSchemeName());
+        jsonObject.addProperty("uuid", uuid.getUuid());
 
         return jsonObject;
     }

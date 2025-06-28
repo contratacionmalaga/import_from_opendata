@@ -57,7 +57,9 @@ public class ProcessJustification extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "ProcessJustification: " +
+                "[reasonCode='" + reasonCode + "', " +
+                "description='" + description + "']";
     }
 
     public ProcessJustification() {

@@ -90,7 +90,10 @@ public class LegalMonetaryTotal extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "LegalMonetaryTotal: " +
+                "[payableAmount='" + payableAmount + "', " +
+                "taxExclusiveAmount='" + taxExclusiveAmount + "', " +
+                "taxInclusiveAmount='" + taxInclusiveAmount + "']";
     }
 
     //

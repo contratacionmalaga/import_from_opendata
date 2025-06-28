@@ -74,7 +74,9 @@ public class SubcontractTerms extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "SubcontractTerms: " +
+                "[rate='" + rate + "', " +
+                "description='" + description + "']";
     }
 
     //

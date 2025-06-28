@@ -66,7 +66,10 @@ public class ContractExecutionRequirement extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "ContractExecutionRequirement: " +
+                "[description='" + description + "', " +
+                "[name='" + name + "', " +
+                "[executionRequirementCode='" + executionRequirementCode + "']";
     }
     //
     //

@@ -22,6 +22,7 @@ public final class MapperFeed {
     private MapperFeed() { }
 
     public static Feed getFeed(Log miLog, FeedType feedType) {
+
         var feed = new Feed();
         feed.setMiLog(miLog);
 
@@ -35,6 +36,8 @@ public final class MapperFeed {
         feed.setLinkFirst(limitarLink(linkInfo.getLinkFirst()));
         feed.setLinkPrev(limitarLink(linkInfo.getLinkPrev()));
         feed.setLinkSelf(limitarLink(linkInfo.getLinkSelf()));
+
+        log.debug(feed.toString());
 
         feed.setListEntry(MapperEntry.getListEntryFromEntryType(feed, feedType));
 

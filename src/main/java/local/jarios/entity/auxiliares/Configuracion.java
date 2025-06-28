@@ -2,6 +2,7 @@ package local.jarios.entity.auxiliares;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
+import local.jarios.common.util.PropertiesKeys;
 import local.jarios.entity.Log;
 import local.jarios.common.util.Constantes;
 import local.jarios.properties.api.PropertiesManagerService;
@@ -19,11 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "configuracion",
-        uniqueConstraints = @UniqueConstraint(
-                name = "unique_configuracion_log",
-                columnNames = "log_id"
-        )
+        name = "configuracion"
 )
 @Slf4j
 public class Configuracion extends Auditable {
@@ -89,19 +86,19 @@ public class Configuracion extends Auditable {
             case INTERNET -> {
                 this.path = "";
                 this.filename = "";
-                this.url = props.getProperty(Constantes.FILTER_PROPERTIES, Constantes.CONFIG_URL);
+                this.url = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.APP_URL);
             }
             case LOCAL -> {
-                this.path = props.getProperty(Constantes.FILTER_PROPERTIES, Constantes.CONFIG_PATH);
-                this.filename = props.getProperty(Constantes.FILTER_PROPERTIES, Constantes.CONFIG_FILENAME);
+                this.path = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.APP_PATH);
+                this.filename = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.APP_FILENAME);
                 this.url = "";
             }
         }
 
-        this.filtroFechaInicioLectura = props.getProperty(Constantes.FILTER_PROPERTIES, Constantes.FILTRO_FECHAINICIALLECTURA);
-        this.filtroFechaFinLectura = props.getProperty(Constantes.FILTER_PROPERTIES, Constantes.FILTRO_FECHAFINALLECTURA);
-        this.filtroSql = props.getProperty(Constantes.FILTER_PROPERTIES, Constantes.FILTRO_SQL);
-        this.filtroObjeto = props.getProperty(Constantes.FILTER_PROPERTIES, Constantes.FILTRO_OBJETO);
-        this.filtroNuts = props.getProperty(Constantes.FILTER_PROPERTIES, Constantes.FILTRO_NUTS);
+        this.filtroFechaInicioLectura = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_FECHAINICIALLECTURA);
+        this.filtroFechaFinLectura = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_FECHAFINALLECTURA);
+        this.filtroSql = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_SQL);
+        this.filtroObjeto = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_OBJETO);
+        this.filtroNuts = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_NUTS);
     }
 }

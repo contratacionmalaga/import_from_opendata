@@ -56,12 +56,15 @@ public final class MapperNoticeInfo {
                 noticeInfoType.getNoticeTypeCode().getValue(),
                 Constantes.TAMANO_MAXIMO_CAMPO_50));
 
+        //
+        log.debug(noticeInfo.toString());
+
         noticeInfo.setListAdditionalPublicationStatus(getListAdditionalPublicationStatusFromType(
                 noticeInfo,
                 Optional.ofNullable(noticeInfoType.getAdditionalPublicationStatus())
                         .orElse(Collections.emptyList())));
 
-        log.debug(noticeInfo.toString());
+
         return noticeInfo;
     }
 
@@ -92,6 +95,9 @@ public final class MapperNoticeInfo {
                 .map(NameType::getValue)
                 .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_250))
                 .ifPresent(additionalPublicationStatus::setPublicationMediaName);
+
+        //
+        log.debug(additionalPublicationStatus.toString());
 
         additionalPublicationStatus.setAdditionalPublicationRequestList(
                 getListAdditionalPublicationRequestFromType(
@@ -147,6 +153,10 @@ public final class MapperNoticeInfo {
                                     additionalPublicationRequestType.getSendTime().getValue())));
         }
 
+        //
+        log.debug(additionalPublicationRequest.toString());
+
+        //
         return additionalPublicationRequest;
     }
 
@@ -179,15 +189,20 @@ public final class MapperNoticeInfo {
                 .map(GregorianCalendarHelper::getDateFromXMLGregorianCalendar)
                 .ifPresent(additionalPublicationDocumentReference::setIssueDate);
 
-        Optional.ofNullable(additionalPublicationDocumentReferenceType.getDocumentTypeCode())
-                .map(DocumentTypeCodeType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
-                .ifPresent(additionalPublicationDocumentReference::setDocumentTypeCode);
+        String docTypeCode =  Optional.ofNullable(additionalPublicationDocumentReferenceType.getDocumentTypeCode())
+                                     .map(DocumentTypeCodeType::getValue)
+                                     .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
+                                     .orElse(Constantes.CADENA_VACIA);
+        additionalPublicationDocumentReference.setDocumentTypeCode(docTypeCode);
+
+        //
+        log.debug(additionalPublicationDocumentReference.toString());
 
         Optional.ofNullable(additionalPublicationDocumentReferenceType.getAttachment())
                 .map(att -> MapperAttachment.getAttachment(null, additionalPublicationDocumentReference, att))
                 .ifPresent(additionalPublicationDocumentReference::setAttachment);
 
+        //
         return additionalPublicationDocumentReference;
     }
 }

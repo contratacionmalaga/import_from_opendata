@@ -1,6 +1,7 @@
 package local.jarios.database;
 
 import local.jarios.common.util.Constantes;
+import local.jarios.common.util.PropertiesKeys;
 import local.jarios.enums.TipoConexion;
 import local.jarios.exceptions.MiSessionFactoryProvider;
 import local.jarios.properties.api.PropertiesManagerService;
@@ -134,22 +135,22 @@ public class SessionFactoryProvider {
 
         filtroSqlProperties.setProperty(
                 JdbcSettings.JAKARTA_JDBC_URL,
-                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, Constantes.HIBERNATE_FILTER_URL));
+                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.HIBERNATE_FILTER_URL));
         log.debug("[getFiltroSqlProperties] - URL configurada: {}", filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_URL));
 
         filtroSqlProperties.setProperty(
                 JdbcSettings.JAKARTA_JDBC_DRIVER,
-                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, Constantes.HIBERNATE_FILTER_DRIVER));
+                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.HIBERNATE_FILTER_DRIVER));
         log.debug("[getFiltroSqlProperties] - Driver configurado: {}", filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_DRIVER));
 
         filtroSqlProperties.setProperty(
                 JdbcSettings.JAKARTA_JDBC_USER,
-                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, Constantes.HIBERNATE_FILTER_USER));
+                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.HIBERNATE_FILTER_USER));
         log.debug("[getFiltroSqlProperties] - Usuario configurado: {}", filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_USER));
 
         filtroSqlProperties.setProperty(
                 JdbcSettings.JAKARTA_JDBC_PASSWORD,
-                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, Constantes.HIBERNATE_FILTER_PASSWORD));
+                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.HIBERNATE_FILTER_PASSWORD));
         log.debug("[getFiltroSqlProperties] - Password configurado (oculto en logs por seguridad)");
 
         log.debug("[getFiltroSqlProperties] - FilterProperties: {}", filtroSqlProperties);

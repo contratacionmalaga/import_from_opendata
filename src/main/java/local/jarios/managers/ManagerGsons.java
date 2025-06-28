@@ -6,7 +6,7 @@ import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
-import local.jarios.entity.placsp.DurationMeasure;
+import local.jarios.entity.placsp.Measure;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.placsp.*;
 
@@ -108,6 +108,10 @@ public final class ManagerGsons {
         gsonBuilder.registerTypeAdapter(Contract.class,
                 new ContractAdapter());
 
+        // ContractExtension
+        gsonBuilder.registerTypeAdapter(ContractExtension.class,
+                new ContractExtensionAdapter(imprimirHijos));
+
         // ContractExecutionRequirement
         gsonBuilder.registerTypeAdapter(ContractExecutionRequirement.class,
                 new ContractExecutionRequirementAdapter());
@@ -129,7 +133,7 @@ public final class ManagerGsons {
                 new DocumentReferenceAdapter(imprimirHijos));
 
         // DurationMeasure
-        gsonBuilder.registerTypeAdapter(DurationMeasure.class,
+        gsonBuilder.registerTypeAdapter(Measure.class,
                 new DurationMeasureAdapter());
 
         // EconomicOperatorShortList

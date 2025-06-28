@@ -44,6 +44,7 @@ public final class MapperBudgetAmount {
                 .ifPresent(budgetAmount::setTaxExclusiveAmount);
 
         log.debug(budgetAmount.toString());
+
         return budgetAmount;
     }
 }

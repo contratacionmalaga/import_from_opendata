@@ -2,7 +2,6 @@ package local.jarios.entity.placsp;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
@@ -63,7 +62,8 @@ public class ContractExtension extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "ContractExtension: " +
+                "[optionsDescription='" + optionsDescription + "']";
     }
     //
     // CONSTRUCTOR DE LA CLASE EN EL QUE SE GENERA EL UUID VERSIÓN 7

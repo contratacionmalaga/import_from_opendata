@@ -42,7 +42,10 @@ public final class MapperLocatedContractingParty {
                 .map(uri -> ComunHelper.limitarRegistro(
                         uri.getValue(),
                         Constantes.TAMANO_MAXIMO_CAMPO_2500))
-                .ifPresent(locatedContractingParty::setBuyerProfileURIID);
+                .ifPresent(locatedContractingParty::setBuyerProfileUriId);
+
+        //
+        log.debug(locatedContractingParty.toString());
 
         locatedContractingParty.setParty(
                 MapperParty.getPartyFromType(

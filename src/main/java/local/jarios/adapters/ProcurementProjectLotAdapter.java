@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.ProcurementProjectLot;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -24,8 +25,6 @@ public record ProcurementProjectLotAdapter(boolean imprimirHijos)
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(procurementProjectLot.getId()));
         jsonObject.addProperty("IdLote",
                 procurementProjectLot.getIdLote());
 
@@ -36,11 +35,12 @@ public record ProcurementProjectLotAdapter(boolean imprimirHijos)
                     "ProcurementProject",
                     context.serialize(procurementProjectLot.getProcurementProject()));
 
-            if (procurementProjectLot.getTenderingTerms() != null) {
-                jsonObject.add(
-                        "TenderingTerms",
-                        context.serialize(procurementProjectLot.getTenderingTerms()));
-            }
+            JsonSerializationHelper.addIfNotNull(
+                    jsonObject,
+                    "TenderingTerms",
+                    procurementProjectLot.getTenderingTerms(),
+                    context);
+
         }
 
         return jsonObject;

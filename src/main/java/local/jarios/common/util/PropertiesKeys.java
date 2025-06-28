@@ -8,10 +8,11 @@ package local.jarios.common.util;
 public final class PropertiesKeys {
 
     /* Nombre de las propiedades del fichero app.properties */
-    public static final String CONFIG_NAME = "config.name";
-    public static final String CONFIG_URL = "config.url";
-    public static final String CONFIG_PATH = "config.path";
-    public static final String CONFIG_FILENAME = "config.fileName";
+    public static final String APP_NAME = "app.name";
+    public static final String APP_DESCRIPTION = "app.description";
+    public static final String APP_URL = "app.url";
+    public static final String APP_PATH = "app.path";
+    public static final String APP_FILENAME = "app.filename";
 
     /* Nombre de las propiedades del fichero filter.properties */
     public static final String FILTRO_FECHAINICIALLECTURA = "filtro.fechaInicialLectura";
@@ -24,6 +25,9 @@ public final class PropertiesKeys {
     public static final String PARAMETRO_URI_SCHEME = "parametro.uri.scheme";
     public static final String PARAMETRO_URI_HOST = "parametro.uri.host";
     public static final String PARAMETRO_URI_PATH = "parametro.uri.path";
+
+    /*  */
+    public static final String JAKARTA_URL = "jakarta.persistence.jdbc.url";
 
     /* Nombre de las propiedades del fichero email.properties */
     public static final String EMAIL_USER = "mail.user";

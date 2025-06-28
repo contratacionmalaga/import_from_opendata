@@ -1,5 +1,6 @@
 package local.jarios;
 
+import local.jarios.common.util.PropertiesKeys;
 import local.jarios.email.api.EmailSender;
 import local.jarios.email.api.EmailSenderImpl;
 import local.jarios.email.api.EmailService;
@@ -55,7 +56,7 @@ public abstract class AbstractOpenData {
      * Permite cargar, acceder y gestionar propiedades definidas en ficheros externos.
      * </p>
      */
-    public static final PropertiesManagerService propertiesManager = PropertiesManagerServiceImpl.getInstance();
+    public static PropertiesManagerService propertiesManager = null;
 
     /**
      * Nombre de la aplicación, cargado desde las propiedades externas.
@@ -79,9 +80,8 @@ public abstract class AbstractOpenData {
     protected abstract TipoSindicacion getTipoSindicacion();
 
     //
-    protected abstract List<Feed> parsearFeeds(
-            Log log, Feed newestFeed, Estadistica estadistica)
-                throws MiParseException;
+    protected abstract List<Feed> parsearFeeds(Log log, Feed newestFeed, Estadistica estadistica)
+            throws MiParseException;
 
     // Método que determina el lugar de importación (Local o Internet)
     protected abstract LugarImportacion getLugarImportacion();
@@ -98,6 +98,9 @@ public abstract class AbstractOpenData {
             Version versionService = new VersionImpl();
             log.info("El servicio de consulta de la versión del JAR se ha creado correctamente.");
 
+            propertiesManager = PropertiesManagerServiceImpl.getInstance();
+            log.info("El servicio de consulta de los ficheros properties se ha creado correctamente con los valores por defecto.");
+
             propertiesManager.setConfigDir(Constantes.CONFIG_DIR);
             log.info("Directorio configurado: {}", Constantes.CONFIG_DIR);
 
@@ -112,6 +115,8 @@ public abstract class AbstractOpenData {
 
             // Cargar todas las propiedades desde el directorio de configuración
             propertiesManager.loadAllProperties();
+            log.info("Leídas todas las propiedades de todos los ficheros.");
+
             List<String> listFicheros = propertiesManager.getListFiles();
             log.info("Ficheros cargados correctamente desde el directorio '{}'. Lista ficheros: {}", Constantes.CONFIG_DIR, listFicheros);
 
@@ -120,12 +125,16 @@ public abstract class AbstractOpenData {
             log.info("AppName: {}", appName);
 
             // Obtengo y muestro el valor de APP_VERSION
-            appVersion = versionService.getVersion(VersionDemo.class);
+            appVersion = versionService.getVersion(AbstractOpenData.class);
             log.info("AppVersion: {}", appVersion);
 
             // Creo el objeto Log para esta ejecución
             LugarImportacion lugarImportacion = getLugarImportacion();
+            log.info("LugarImportación: {}", lugarImportacion);
+
             TipoSindicacion tipoSindicacion = getTipoSindicacion();
+            log.info("TipoSindicacion: {}", tipoSindicacion);
+
             Log miLog = new Log(lugarImportacion, tipoSindicacion);
             log.info(Mensajes.LOG_CREACION, miLog);
 
@@ -148,9 +157,13 @@ public abstract class AbstractOpenData {
             miLog.setConfiguracion(configuracion);
             log.info(Mensajes.ASIGN_CONFIGURACION_TO_LOG);
 
+            Feed newestFeed = null;
+
             // Obtengo el NewestFeed para el caso en que esté importando desde INTERNET
-            Feed newestFeed = FeedHelper.getNewestFeed(tipoSindicacion);
-            log.info("Obtenido el Newest feed: {}", newestFeed);
+            if (lugarImportacion == LugarImportacion.INTERNET) {
+                newestFeed = FeedHelper.getNewestFeed(tipoSindicacion);
+                log.info("Obtenido el Newest feed: {}", newestFeed);
+            }
 
             //
             //     COMIENZO EL PARSEO DE LOS FEEDS
@@ -204,7 +217,7 @@ public abstract class AbstractOpenData {
             //     CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
             //
             log.info(Mensajes.SERVICE_CREACION_INICIO);
-            log.info(propertiesManager.getProperty(Constantes.HIBERNATE_PROPERTIES, Constantes.LOCAL_URL));
+            log.info(propertiesManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.JAKARTA_URL));
             Service service = new ServiceImpl(TipoConexion.PRINCIPAL);
             log.info(Mensajes.SERVICE_CREACION_CREADO, TipoConexion.PRINCIPAL);
 
@@ -330,17 +343,17 @@ public abstract class AbstractOpenData {
         try {
 
             String equipo = ComunHelper.getHostName();
-            log.info("[construirEmailData] - Equipo desde el que se envía el email: {}", equipo);
+            log.debug("[construirEmailData] - Equipo desde el que se envía el email: {}", equipo);
 
             String from = propertiesManager.getProperty(Constantes.EMAIL_PROPERTIES, Constantes.KEY_EMAIL_FROM);
-            log.info("[construirEmailData] - Remitente: {}", from);
+            log.debug("[construirEmailData] - Remitente: {}", from);
 
             String to = propertiesManager.getProperty(Constantes.EMAIL_PROPERTIES, Constantes.KEY_EMAIL_TO);
-            log.info("[construirEmailData] - Destinatarios: {}", to);
+            log.debug("[construirEmailData] - Destinatarios: {}", to);
 
             // Defino el asunto y el cupero del Email
             String asunto = EmailHelper.getAsunto(appName, appVersion, equipo, success);
-            log.info("[construirEmailData] - Asunto del correo: {}.", asunto);
+            log.debug("[construirEmailData] - Asunto del correo: {}.", asunto);
 
             String cuerpo;
             if (success) {
@@ -348,7 +361,7 @@ public abstract class AbstractOpenData {
             } else {
                 cuerpo = EmailHelper.getCuerpoExcepcion(obtenerStackTraceComoArray(ex));
             }
-            log.info("[construirEmailData] - Cuerpo del email creado correctamente");
+            log.debug("[construirEmailData] - Cuerpo del email creado correctamente");
 
             return new EmailData(from, to, asunto, cuerpo);
 

@@ -8,6 +8,7 @@ import local.jarios.common.util.Constantes;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -45,8 +46,8 @@ public class TendererQualificationRequest extends Auditable {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "employee_quantity", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
-    private String employeeQuantity;
+    @Column(name = "employee_quantity")
+    private BigDecimal employeeQuantity;
 
     @Column(name = "employee_quantity_description", columnDefinition = "TEXT")
     private String employeeQuantityDescription;
@@ -81,7 +82,11 @@ public class TendererQualificationRequest extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "TendererQualificationRequest: " +
+                "[personalSituation='" + personalSituation + "', " +
+                "description='" + description + "', " +
+                "employeeQuantity='" + employeeQuantity + "', " +
+                "employeeQuantityDescription='" + employeeQuantityDescription + "']";
     }
 
     public TendererQualificationRequest() {

@@ -4,7 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import local.jarios.entity.placsp.WinningParty;
+import local.jarios.entity.placsp.*;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -23,34 +24,17 @@ public record WinningPartyAdapter(boolean imprimirHijos) implements JsonSerializ
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(winningParty.getId()));
         jsonObject.addProperty("PartyName",
                 winningParty.getPartyName());
 
 
         if (imprimirHijos) {
 
-            // PartyIdentification
-            if (winningParty.getPartyIdentification() != null) {
-                jsonObject.add(
-                        "PartyIdentification",
-                        context.serialize(winningParty.getPartyIdentification()));
-            }
+            JsonSerializationHelper.addIfNotNull(jsonObject, "PartyIdentification", winningParty.getPartyIdentification(), context);
+            JsonSerializationHelper.addIfNotNull(jsonObject, "PhysicalLocation", winningParty.getPhysicalLocation(), context);
+            JsonSerializationHelper.addIfNotNull(jsonObject, "Contact", winningParty.getContact(), context);
+            JsonSerializationHelper.addIfNotNull(jsonObject, "Addres", winningParty.getPostalAddress(), context);
 
-            // PhysicalLocation
-            if (winningParty.getPhysicalLocation() != null) {
-                jsonObject.add(
-                        "PhysicalLocation",
-                        context.serialize(winningParty.getPhysicalLocation()));
-            }
-
-            // TenderResult
-            if (winningParty.getTenderResult() != null) {
-                jsonObject.add(
-                        "TenderResult",
-                        context.serialize(winningParty.getTenderResult()));
-            }
         }
 
         //

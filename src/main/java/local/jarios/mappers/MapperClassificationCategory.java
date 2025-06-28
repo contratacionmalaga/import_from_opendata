@@ -43,6 +43,10 @@ public final class MapperClassificationCategory {
                 .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(classificationCategory::setCodeValue);
 
+        //
+        log.debug(classificationCategory.toString());
+
+        //
         return classificationCategory;
     }
 }

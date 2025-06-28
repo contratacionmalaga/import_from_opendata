@@ -23,12 +23,8 @@ public record SubcontractTermsAdapter() implements JsonSerializer<SubcontractTer
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(subcontractTerms.getId()));
-        jsonObject.addProperty("Rate",
-                subcontractTerms.getRate());
-        jsonObject.addProperty("Description",
-                subcontractTerms.getDescription());
+        jsonObject.addProperty("Rate", subcontractTerms.getRate());
+        jsonObject.addProperty("Description", subcontractTerms.getDescription());
 
         return jsonObject;
     }

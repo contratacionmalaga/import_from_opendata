@@ -90,7 +90,9 @@ public class Location extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "Location: " +
+                "[countrySubentity='" + countrySubentity + "', " +
+                "countrySubentityCode='" + countrySubentityCode + "']";
     }
 
     //

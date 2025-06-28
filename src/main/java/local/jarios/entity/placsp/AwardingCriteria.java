@@ -73,7 +73,12 @@ public class AwardingCriteria extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "AwardingCriteria: " +
+                "[awardingCriteriaTypeCode='" + awardingCriteriaTypeCode + "', " +
+                "awardingCriteriaSubTypeCode='" + awardingCriteriaSubTypeCode + "', " +
+                "description='" + description + "', " +
+                "note='" + note + "', " +
+                "weightNumeric='" + weightNumeric + "']";
     }
 
     //

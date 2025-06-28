@@ -33,7 +33,8 @@ public record PartyIdentificationAdapter() implements JsonSerializer<PartyIdenti
                 partyIdentification.getNif());
         jsonObject.addProperty("idOcPlat",
                 partyIdentification.getIdOcPlat());
-
+        jsonObject.addProperty("otros",
+                partyIdentification.getOtros());
         //
         return jsonObject;
     }

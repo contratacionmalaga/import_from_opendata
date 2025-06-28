@@ -3,42 +3,83 @@
     <Appenders>
         <!-- Consola -->
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-15c{1}:%-4L - %m%n" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </Console>
 
         <!-- Archivos de Registro -->
         <!-- Registro generado por el Aplicativo -->
-        <File name="File" fileName="logs/local-log4j2-${date:yyyy-MM-dd_HH-mm-ss}-log.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-15c{1}:%-4L - %m%n" />
+        <File name="MainAppLogFile" fileName="logs/mainapp-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
+        </File>
+
+        <!-- Registro generado por Properties_Helper -->
+        <File name="PropertiesHelper" fileName="logs/properties_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
+        </File>
+
+        <!-- Registro generado por Properties_Helper -->
+        <File name="EmailHelper" fileName="logs/email_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
+        </File>
+
+        <!-- Registro generado por Properties_Helper -->
+        <File name="EncryptHelper" fileName="logs/encrypt_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
+        </File>
+
+        <!-- Registro generado por Properties_Helper -->
+        <File name="VersionHelper" fileName="logs/version_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
         <!-- Registro generado por Hibernate -->
-        <File name="FileHibernate" fileName="logs/local-log4j2-${date:yyyy-MM-dd_HH-mm-ss}-hibernate.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-15c{1}:%-4L - %m%n" />
+        <File name="FileHibernate" fileName="logs/hibernate-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
         <!-- Registro generado por Hibernate -->
-        <File name="FilePersistence" fileName="logs/local-log4j2-${date:yyyy-MM-dd_HH-mm-ss}-hibernate-persistence.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-15c{1}:%-4L - %m%n" />
+        <File name="FilePersistence" fileName="logs/hibernate_persistence-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
         <!-- Registro generado por Hibernate -->
-        <File name="FileHibernateSQL" fileName="logs/local-log4j2-${date:yyyy-MM-dd_HH-mm-ss}-hibernate-sql.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-15c{1}:%-4L - %m%n" />
+        <File name="FileHibernateSQL" fileName="logs/hibernate_sql-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
         <!-- Registro generado por Reflections para obtener las entidades gestionadas por Hibernate -->
-        <File name="FileReflections" fileName="logs/local-log4j2-${date:yyyy-MM-dd_HH-mm-ss}-reflection.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-15c{1}:%-4L - %m%n" />
+        <File name="FileReflections" fileName="logs/reflection-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
         <!-- -->
-        <File name="FileHikariCP" fileName="logs/local-log4j2-${date:yyyy-MM-dd_HH-mm-ss}-hikaricp.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-15c{1}:%-4L - %m%n" />
+        <File name="FileHikariCP" fileName="logs/hikaricp-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
     </Appenders>
 
     <Loggers>
+
+        <!-- Busqueda de entidades en la ruta seleccionada -->
+        <Logger name="local.jarios.properties" level="DEBUG" additivity="false">
+            <AppenderRef ref="PropertiesHelper"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Busqueda de entidades en la ruta seleccionada -->
+        <Logger name="local.jarios.email" level="INFO" additivity="false">
+            <AppenderRef ref="EmailHelper"/>
+        </Logger>
+
+        <!-- Busqueda de entidades en la ruta seleccionada -->
+        <Logger name="local.jarios.encrypt" level="INFO" additivity="false">
+            <AppenderRef ref="EncryptHelper"/>
+        </Logger>
+
+        <!-- Busqueda de entidades en la ruta seleccionada -->
+        <Logger name="local.jarios.version" level="INFO" additivity="false">
+            <AppenderRef ref="VersionHelper"/>
+        </Logger>
 
         <!-- Busqueda de entidades en la ruta seleccionada -->
         <Logger name="org.reflections.Reflections" level="INFO" additivity="false">
@@ -67,10 +108,21 @@
             <AppenderRef ref="FileHibernate"/>
         </Logger>
 
+        <!-- Busqueda de entidades en la ruta seleccionada -->
+        <Logger name="local.jarios.properties" level="INFO" additivity="false">
+            <AppenderRef ref="PropertiesHelper"/>
+        </Logger>
+
+        <!-- Busqueda de entidades en la ruta seleccionada -->
+        <Logger name="local.jarios" level="INFO" additivity="false">
+            <AppenderRef ref="MainAppLogFile"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+
         <!-- Redirección del log del aplicativo. Por consola y almacenado en fichero. -->
         <Root level="INFO">
+            <AppenderRef ref="MainAppLogFile"/>
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="File"/>
         </Root>
 
     </Loggers>

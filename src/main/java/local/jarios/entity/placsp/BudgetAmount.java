@@ -60,7 +60,10 @@ public class BudgetAmount extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "BudgetAmount: " +
+                "[estimatedOverallContractAmount='" + estimatedOverallContractAmount + "', " +
+                "totalAmount='" + totalAmount + "', " +
+                "taxExclusiveAmount='" + taxExclusiveAmount + "']";
     }
     //
     // CONSTRUCTOR DE LA CLASE EN EL QUE SE GENERA EL UUID VERSIÓN 7

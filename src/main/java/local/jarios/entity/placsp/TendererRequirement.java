@@ -58,7 +58,9 @@ public class TendererRequirement extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "TendererRequirement: " +
+                "[requirementTypeCode='" + requirementTypeCode + "', " +
+                "description='" + description + "']";
     }
 
     public TendererRequirement() {

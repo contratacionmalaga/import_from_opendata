@@ -75,7 +75,11 @@ public class ClassificationScheme extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "ClassificationScheme: " +
+                "[uuid='" + uuid + "', " +
+                "[name='" + name + "', " +
+                "[note='" + note + "', " +
+                "[description='" + description + "']";
     }
     //
     //

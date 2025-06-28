@@ -24,8 +24,6 @@ public record AdditionalPublicationStatusAdapter(boolean imprimirHijos)
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(additionalPublicationStatus.getId()));
         jsonObject.addProperty("PublicationMediaName",
                 additionalPublicationStatus.getPublicationMediaName());
 

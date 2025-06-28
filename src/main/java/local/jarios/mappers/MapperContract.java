@@ -41,8 +41,10 @@ public final class MapperContract {
                 .map(GregorianCalendarHelper::getDateFromXMLGregorianCalendar)
                 .ifPresent(contract::setIssueDate);
 
+        //
         log.debug(contract.toString());
 
+        //
         return contract;
     }
 }

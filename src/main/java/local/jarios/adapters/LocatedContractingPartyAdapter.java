@@ -30,7 +30,7 @@ public record LocatedContractingPartyAdapter(boolean imprimirHijos)
         jsonObject.addProperty("ContractingPartyTypeCode",
                 locatedContractingParty.getContractingPartyTypeCode());
         jsonObject.addProperty("BuyerProfileURIID",
-                locatedContractingParty.getBuyerProfileURIID());
+                locatedContractingParty.getBuyerProfileUriId());
 
         if ((imprimirHijos) && (locatedContractingParty.getParty() != null)) {
 

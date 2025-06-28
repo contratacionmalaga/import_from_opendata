@@ -1,8 +1,9 @@
 package local.jarios.helpers;
 
+import local.jarios.common.util.PropertiesKeys;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.common.util.Constantes;
-import local.jarios.common.util.Mensajes;
+import local.jarios.properties.exception.PropertiesManagerException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -31,15 +32,15 @@ public final class TipoSindicacionHelper {
     /**
      * Función encargada de devolver el tipo de Sindicación para la importación LOCAL que estamos realizando
      *
-     * @param fileName Nombre del fichero que recibe
+     * @param filename Nombre del fichero que recibe
      * @return TipoSindicacion Tipo Enumerado
      */
-    private static TipoSindicacion getTipoSindicacionByString(String fileName) {
+    private static TipoSindicacion getTipoSindicacionByString(String filename) {
 
         TipoSindicacion tipoSindicacion;
 
         //
-        switch (fileName) {
+        switch (filename) {
             case Constantes.URL_FINAL_CONSULTASPRELIMINARESMERCADO -> tipoSindicacion = TipoSindicacion.CPM;
             case Constantes.URL_FINAL_ENCARGOSMEDIOSPROPIOS -> tipoSindicacion = TipoSindicacion.EMP;
             case Constantes.URL_FINAL_MAYORES -> tipoSindicacion = TipoSindicacion.MAY;
@@ -56,10 +57,7 @@ public final class TipoSindicacionHelper {
     /**
      * Función encargada de devolver el tipo de Sindicación para la importación LOCAL que estamos realizando
      */
-    public static TipoSindicacion getTipoSindicacion(boolean isLocal) {
-
-        // Cargo los ficheros properties utilizando el patrón SINGLETON
-        PropertyManager propertyManager = PropertyManager.getInstance();
+    public static TipoSindicacion getTipoSindicacion(boolean isLocal) throws PropertiesManagerException {
 
         //
         String config;
@@ -69,34 +67,26 @@ public final class TipoSindicacionHelper {
 
         //
         if (isLocal) {
-            config = propertyManager.getProperty(PropertyConstantes.CONFIG_FILENAME);
+            config = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_FILENAME);
         } else {
-            config = propertyManager.getProperty(PropertyConstantes.CONFIG_URL);
+            config = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_URL);
         }
 
         //
-        if (!config.isEmpty()) {
-            if (isLocal) {
-                //
-                tipoSindicacion = getTipoSindicacionByString(config);
-            } else {
-                //
-                String resultado = getTipoSindicacionByUrl(config);
-                tipoSindicacion = getTipoSindicacionByString(resultado);
-            }
+        if (config.isEmpty()) {
 
+            log.error("[getTipoSindicacion] - ]");
+
+
+        }
+
+        if (isLocal) {
+            //
+            tipoSindicacion = getTipoSindicacionByString(config);
         } else {
-
             //
-            tipoSindicacion = TipoSindicacion.ERROR;
-
-            //
-            var mensajeError = String.format(
-                    Mensajes.ERROR_LECTURA_VARIABLE_PROPERTY, PropertyConstantes.CONFIG_FILENAME);
-
-            //
-            log.error(mensajeError);
-
+            String resultado = getTipoSindicacionByUrl(config);
+            tipoSindicacion = getTipoSindicacionByString(resultado);
         }
 
         return tipoSindicacion;

@@ -98,7 +98,12 @@ public class ProcurementProject extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "ProcurementProject: " +
+                "[name='" + name + "', " +
+                "description='" + description + "', " +
+                "typeCode='" + typeCode + "', " +
+                "subtypeCode='" + subtypeCode + "', " +
+                "mixContractIndicator='" + mixContractIndicator + "']";
     }
 
     //

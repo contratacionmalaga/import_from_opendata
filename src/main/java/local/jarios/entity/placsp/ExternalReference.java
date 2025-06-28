@@ -38,8 +38,8 @@ public class ExternalReference extends Auditable {
     @Column(name = "document_hash", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
     private String documentHash;
 
-    @Column(name = "file_name", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
-    private String fileName;
+    @Column(name = "filename", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    private String filename;
 
     //
     //
@@ -59,7 +59,10 @@ public class ExternalReference extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "ExternalReference: " +
+                "[uri='" + uri + "', " +
+                "documentHash='" + documentHash + "', " +
+                "filename='" + filename + "']";
     }
 
     //

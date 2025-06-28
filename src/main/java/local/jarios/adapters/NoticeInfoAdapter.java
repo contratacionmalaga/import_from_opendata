@@ -26,6 +26,7 @@ public record NoticeInfoAdapter(boolean imprimirHijos) implements JsonSerializer
         jsonObject.addProperty("NoticeTypeCode", noticeInfo.getNoticeTypeCode());
 
         if (imprimirHijos && !noticeInfo.getListAdditionalPublicationStatus().isEmpty()) {
+
             jsonObject.add(
                     "AdditionalPublicationStatus",
                     context.serialize(noticeInfo.getListAdditionalPublicationStatus()));

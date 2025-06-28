@@ -32,22 +32,20 @@ public record ContractFolderStatusAdapter(boolean imprimirHijos)
 
         if (imprimirHijos) {
 
-            // Añadir listas si no están vacías
             JsonSerializationHelper.addIfNotEmpty(jsonObject, "Uuid", contractFolderStatus.getListUuid(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "ProcurementProjectLot", contractFolderStatus.getListProcurementProjectLot(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "TenderResult", contractFolderStatus.getListTenderResult(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "AdditionalDocumentReference", contractFolderStatus.getListAdditionalDocumentReference(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "GeneralDocument", contractFolderStatus.getListGeneralDocument(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "NoticeInfo", contractFolderStatus.getListNoticeInfo(), context);
-            JsonSerializationHelper.addIfNotEmpty(jsonObject, "ContractModification", contractFolderStatus.getListContractModification(), context);
-
-            // Añadir objetos si no son nulos
             JsonSerializationHelper.addIfNotNull(jsonObject, "LocatedContractingParty", contractFolderStatus.getLocatedContractingParty(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "ProcurementProject", contractFolderStatus.getProcurementProject(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "ProcurementProjectLot", contractFolderStatus.getListProcurementProjectLot(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "TenderingTerms", contractFolderStatus.getTenderingTerms(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "TenderingProcess", contractFolderStatus.getTenderingProcess(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "LegalDocumentReference", contractFolderStatus.getLegalDocumentReference(), context);
             JsonSerializationHelper.addIfNotNull(jsonObject, "TechnicalDocumentReference", contractFolderStatus.getTechnicalDocumentReference(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "AdditionalDocumentReference", contractFolderStatus.getListAdditionalDocumentReference(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "NoticeInfo", contractFolderStatus.getListNoticeInfo(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "GeneralDocument", contractFolderStatus.getListGeneralDocument(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "TenderResult", contractFolderStatus.getListTenderResult(), context);
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "ContractModification", contractFolderStatus.getListContractModification(), context);
+
         }
 
         return jsonObject;

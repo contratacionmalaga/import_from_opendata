@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import local.jarios.entity.placsp.DurationMeasure;
+import local.jarios.entity.placsp.Measure;
 
 import java.lang.reflect.Type;
 
@@ -14,11 +14,11 @@ import java.lang.reflect.Type;
  * Date: 09/07/2024
  * Team: Juan
  */
-public record DurationMeasureAdapter() implements JsonSerializer<DurationMeasure> {
+public record DurationMeasureAdapter() implements JsonSerializer<Measure> {
 
     @Override
     public JsonElement serialize(
-            DurationMeasure durationMeasure,
+            Measure durationMeasure,
             Type typeOfSrc, JsonSerializationContext context) {
 
         JsonObject jsonObject = new JsonObject();

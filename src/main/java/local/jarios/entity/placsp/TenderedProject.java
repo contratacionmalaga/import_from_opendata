@@ -67,7 +67,8 @@ public class TenderedProject extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "TenderedProject: " +
+                "[procurementProjectLotId='" + procurementProjectLotId + "']";
     }
 
     //

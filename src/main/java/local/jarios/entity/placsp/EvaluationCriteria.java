@@ -67,7 +67,11 @@ public class EvaluationCriteria extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "EvaluationCriteria: " +
+                "[evaluationCriteriaTypeCode='" + evaluationCriteriaTypeCode + "', " +
+                "description='" + description + "', " +
+                "thresholdQuantity='" + thresholdQuantity + "', " +
+                "tipoSolvencia='" + tipoSolvencia + "']";
     }
 
     public EvaluationCriteria() {

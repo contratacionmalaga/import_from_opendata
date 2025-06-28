@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.TenderingProcess;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -22,8 +23,6 @@ public record TenderingProcessAdapter(boolean imprimirHijos) implements JsonSeri
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(tenderingProcess.getId()));
         jsonObject.addProperty("ProcedureCode",
                 tenderingProcess.getProcedureCode());
         jsonObject.addProperty("ContractingSystemCode",
@@ -44,40 +43,18 @@ public record TenderingProcessAdapter(boolean imprimirHijos) implements JsonSeri
                 tenderingProcess.getOverThresholdIndicator());
         jsonObject.addProperty("Description",
                 tenderingProcess.getDescription());
+        jsonObject.addProperty("documentAvailabilityPeriod",
+                String.valueOf(tenderingProcess.getDocumentAvailabilityPeriod()));
+        jsonObject.addProperty("TenderSubmissionDeadlinePeriod",
+                String.valueOf(tenderingProcess.getTenderSubmissionDeadlinePeriod()));
 
         if (imprimirHijos) {
 
-            // ProcessJustification
-            jsonObject.add(
-                    "ProcessJustification",
-                    context.serialize(tenderingProcess.getListProcessJustification()));
+            JsonSerializationHelper.addIfNotEmpty(jsonObject, "ProcessJustification", tenderingProcess.getListProcessJustification(), context);
 
-            // EconomicOperatorShortList
-            if ((tenderingProcess.getEconomicOperatorShortList() != null)) {
+            JsonSerializationHelper.addIfNotNull(jsonObject, "EconomicOperatorShortList", tenderingProcess.getEconomicOperatorShortList(), context);
+            JsonSerializationHelper.addIfNotNull(jsonObject, "AuctionTerms", tenderingProcess.getAuctionTerms(), context);
 
-                //
-                jsonObject.add(
-                    "EconomicOperatorShortList",
-                    context.serialize(tenderingProcess.getEconomicOperatorShortList()));
-            }
-
-            // AuctionTerms
-            if ((tenderingProcess.getAuctionTerms() != null)) {
-
-                //
-                jsonObject.add(
-                    "AuctionTerms",
-                    context.serialize(tenderingProcess.getAuctionTerms()));
-            }
-
-            // TenderSubmissionDeadlinePeriod
-            if ((tenderingProcess.getTenderSubmissionDeadlinePeriod() != null)) {
-
-                //
-                jsonObject.add(
-                    "TenderSubmissionDeadlinePeriod",
-                    context.serialize(tenderingProcess.getTenderSubmissionDeadlinePeriod()));
-            }
         }
 
         //

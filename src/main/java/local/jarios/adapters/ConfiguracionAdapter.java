@@ -22,24 +22,14 @@ public record ConfiguracionAdapter() implements JsonSerializer<Configuracion> {
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("id",
-                String.valueOf(configuracion.getId()));
-        jsonObject.addProperty("config_path",
-                configuracion.getConfigPath());
-        jsonObject.addProperty("config_fileName",
-                configuracion.getConfigFileName());
-        jsonObject.addProperty("config_url",
-                configuracion.getConfigUrl());
-        jsonObject.addProperty("config_filtros_fechaInicialLectura",
-                configuracion.getConfigFiltroFechaInicialLectura());
-        jsonObject.addProperty("config_filtros_fechaFinalLectura",
-                configuracion.getConfigFiltroFechaFinalLectura());
-        jsonObject.addProperty("config_filtros_filtroSql",
-                configuracion.getConfigFiltroSql());
-        jsonObject.addProperty("config_filtros_objeto",
-                configuracion.getConfigFiltroObjeto());
-        jsonObject.addProperty("config_filtros_nuts",
-                configuracion.getConfigFiltroNuts());
+        jsonObject.addProperty("path", configuracion.getPath());
+        jsonObject.addProperty("filemame", configuracion.getFilename());
+        jsonObject.addProperty("url", configuracion.getUrl());
+        jsonObject.addProperty("filtroFechaInicialLectura", configuracion.getFiltroFechaInicioLectura());
+        jsonObject.addProperty("filtroFechaFinalLectura", configuracion.getFiltroFechaFinLectura());
+        jsonObject.addProperty("filtroSql", configuracion.getFiltroSql());
+        jsonObject.addProperty("filtroObjeto", configuracion.getFiltroObjeto());
+        jsonObject.addProperty("filtroNuts", configuracion.getFiltroNuts());
 
         return jsonObject;
     }

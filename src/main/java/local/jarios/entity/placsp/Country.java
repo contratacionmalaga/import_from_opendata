@@ -55,7 +55,9 @@ public class Country extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "Country: " +
+                "[identificationCode='" + identificationCode + "', " +
+                "name='" + name + "']";
     }
     //
     // CONSTRUCTOR DE LA CLASE EN EL QUE SE GENERA EL UUID VERSIÓN 7

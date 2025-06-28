@@ -35,10 +35,6 @@ public record ContractModificationAdapter(boolean imprimirHijos) implements Json
                 contractModification.getNote());
         jsonObject.addProperty("ContractModificationLotId",
                 contractModification.getContractModificationLotId());
-        jsonObject.addProperty("FinalDurationMeasureValor",
-                contractModification.getFinalDurationMeasureValor());
-        jsonObject.addProperty("FinalDurationMeasureUnidad",
-                contractModification.getFinalDurationMeasureUnidad());
 
         if (imprimirHijos) {
 
@@ -51,6 +47,11 @@ public record ContractModificationAdapter(boolean imprimirHijos) implements Json
             jsonObject.add(
                     "FinalLegalMonetaryTotal",
                     context.serialize(contractModification.getContractModificationFinalLegalMonetaryTotal()));
+
+            //
+            jsonObject.add(
+                    "FinalDurationMeasure",
+                    context.serialize(contractModification.getFinalDurationMeasure()));
         }
 
         return jsonObject;

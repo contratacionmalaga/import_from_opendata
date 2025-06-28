@@ -70,6 +70,9 @@ public final class MapperEntry {
                 .map(updated -> updated.getValue().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
                 .ifPresent(entry::setUpdated);
 
+        //
+        log.debug(entry.toString());
+
         entry.setListContractFolderStatus(
                 MapperContractFolderStatus.getListContractFolderStatusFromListType(entry, entryType));
 

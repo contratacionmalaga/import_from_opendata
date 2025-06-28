@@ -1,6 +1,6 @@
 package local.jarios.mappers;
 
-import local.jarios.entity.placsp.DurationMeasure;
+import local.jarios.entity.placsp.Measure;
 import local.jarios.entity.placsp.*;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.helpers.GregorianCalendarHelper;
@@ -9,6 +9,8 @@ import local.jarios.mappers.auxiliares.MapperStringFromList;
 import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.PeriodType;
+import org.dgpe.codice.common.cbclib.DurationMeasureType;
+import org.dgpe.codice.common.cbclib.FinalDurationMeasureType;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -68,18 +70,30 @@ public final class MapperPeriod {
                         MapperStringFromList.getStringFromListDescriptionType(
                                 periodType.getDescription())));
 
+        //
+        log.debug(period.toString());
+
         // Duration Measure
         Optional.ofNullable(periodType.getDurationMeasure())
-                .ifPresent(durationMeasureType -> {
-                    DurationMeasure durationMeasure = MapperDurationMeasure.getDurationMeasure(durationMeasureType);
-                    period.setDurationMeasureUnitCode(
-                            ComunHelper.limitarRegistro(
-                                    durationMeasure.getUnitCode(),
-                                    Constantes.TAMANO_MAXIMO_CAMPO_5));
-                    period.setDurationMeasureValue(durationMeasure.getValue());
-                });
+                .ifPresent(finalDurationMeasure -> period.setDurationMeasure(
+                        getMeasureFromDurantionMeasure(periodType.getDurationMeasure())));
 
-        log.debug(period.toString());
         return period;
+    }
+
+    private static Measure getMeasureFromDurantionMeasure(DurationMeasureType durationMeasureType) {
+
+        Measure measure = new Measure();
+
+        Optional.ofNullable(durationMeasureType.getValue())
+                .ifPresent(measure::setValue);
+
+        Optional.ofNullable(durationMeasureType.getUnitCode())
+                .ifPresent(measure::setUnitCode);
+
+        //
+        log.debug(measure.toString());
+
+        return measure;
     }
 }

@@ -123,7 +123,20 @@ public class TenderResult extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "TenderResult: " +
+                "[resultCode='" + resultCode + "', " +
+                "description='" + description + "', " +
+                "awardDate='" + awardDate + "', " +
+                "receivedTenderQuantity='" + receivedTenderQuantity + "', " +
+                "lowerTenderAmountQuantity='" + lowerTenderAmountQuantity + "', " +
+                "higherTenderAmountQuantity='" + higherTenderAmountQuantity + "', " +
+                "startDate='" + startDate + "', " +
+                "sMEsReceivedTenderQuantity='" + sMEsReceivedTenderQuantity + "', " +
+                "eUNationalsReceivedTenderQuantity='" + eUNationalsReceivedTenderQuantity + "', " +
+                "nonEUNationalsReceivedTenderQuantity='" + nonEUNationalsReceivedTenderQuantity + "', " +
+                "sMEAwardedIndicator='" + sMEAwardedIndicator + "', " +
+                "awardedOwnerNationalityCode='" + awardedOwnerNationalityCode + "', " +
+                "abnormallyLowTendersIndicator='" + abnormallyLowTendersIndicator + "']";
     }
 
     //

@@ -65,7 +65,10 @@ public class FinancialGuarantee extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "FinancialGuarantee: " +
+                "[guaranteeTypeCode='" + guaranteeTypeCode + "', " +
+                "amountRate='" + amountRate + "', " +
+                "liabilityAmount='" + liabilityAmount + "']";
     }
 
     //

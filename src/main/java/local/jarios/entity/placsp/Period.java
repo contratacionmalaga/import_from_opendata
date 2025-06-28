@@ -90,10 +90,18 @@ public class Period extends Auditable {
                             "REFERENCES contract_extension(id) ON DELETE CASCADE"))
     private ContractExtension contractExtension;
 
+    @OneToOne(mappedBy = "period", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Measure durationMeasure;
+
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "Period: " +
+                "[startDateTime='" + startDateTime + "', " +
+                "endDateTime='" + endDateTime + "', " +
+                "description='" + description + "', " +
+                "durationMeasureUnitCode='" + durationMeasureUnitCode + "', " +
+                "durationMeasureValue='" + durationMeasureValue + "']";
     }
 
     //

@@ -2,6 +2,7 @@ package local.jarios.mappers;
 
 import local.jarios.entity.placsp.ContractFolderStatus;
 import local.jarios.entity.placsp.ContractModification;
+import local.jarios.entity.placsp.Measure;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.helpers.GregorianCalendarHelper;
 import local.jarios.helpers.StringHelper;
@@ -10,6 +11,7 @@ import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.ContractModificationType;
 import org.dgpe.codice.common.cbclib.ContractIDType;
+import org.dgpe.codice.common.cbclib.FinalDurationMeasureType;
 import org.dgpe.codice.common.cbclib.IDType;
 import org.dgpe.codice.common.cbclib.IssueDateType;
 
@@ -69,6 +71,9 @@ public final class MapperContractModification {
                 .map(Object::toString)
                 .ifPresent(contractModification::setContractModificationLotId);
 
+        //
+        log.debug(contractModification.toString());
+
         Optional.ofNullable(contractModificationType.getContractModificationLegalMonetaryTotal())
                 .ifPresent(total -> contractModification.setContractModificationLegalMonetaryTotal(
                         MapperLegalMonetaryTotal.getLegalMonetaryTotalFromType(null, contractModification, null, total)));
@@ -78,12 +83,25 @@ public final class MapperContractModification {
                         MapperLegalMonetaryTotal.getLegalMonetaryTotalFromType(null, null, contractModification, total)));
 
         Optional.ofNullable(contractModificationType.getFinalDurationMeasure())
-                .map(MapperDurationMeasure::getDurationMeasure)
-                .ifPresent(finalDurationMeasure -> {
-                    contractModification.setFinalDurationMeasureUnidad(finalDurationMeasure.getUnitCode());
-                    contractModification.setFinalDurationMeasureValor(finalDurationMeasure.getValue());
-                });
+                .ifPresent(finalDurationMeasure -> contractModification.setFinalDurationMeasure(
+                        getMeasureFromFinalDurantionMeasure(contractModificationType.getFinalDurationMeasure())));
 
         return contractModification;
+    }
+
+    private static Measure getMeasureFromFinalDurantionMeasure(FinalDurationMeasureType finalDurationMeasureType) {
+
+        Measure measure = new Measure();
+
+        Optional.ofNullable(finalDurationMeasureType.getValue())
+                .ifPresent(measure::setValue);
+
+        Optional.ofNullable(finalDurationMeasureType.getUnitCode())
+                .ifPresent(measure::setUnitCode);
+
+        //
+        log.debug(measure.toString());
+
+        return measure;
     }
 }

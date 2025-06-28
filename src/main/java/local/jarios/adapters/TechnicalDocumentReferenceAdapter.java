@@ -25,9 +25,6 @@ public record TechnicalDocumentReferenceAdapter(boolean imprimirHijos) implement
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("id", String.valueOf(technicalDocumentReference.getId()));
-
-        //
         if (imprimirHijos) {
 
             //

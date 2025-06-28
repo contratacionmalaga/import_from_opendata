@@ -23,8 +23,6 @@ public record CommodityClassificationAdapter() implements JsonSerializer<Commodi
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(commodityClassification.getId()));
         jsonObject.addProperty("ItemClassificationCode",
                 commodityClassification.getItemClassificationCode());
 

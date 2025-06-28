@@ -2,6 +2,7 @@ package local.jarios.entity.atom;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
+import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.entity.placsp.ContractFolderStatus;
 import local.jarios.common.util.Constantes;
@@ -74,6 +75,17 @@ public class Entry extends Auditable {
     //
     @OneToMany(mappedBy = "entry",  cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ContractFolderStatus> listContractFolderStatus = new ArrayList<>();
+
+    @Override
+    public String toString() {
+
+        return "Entry: " +
+                "[idEntry='" + idEntry + "', " +
+                "link='" + link + "', " +
+                "summary='" + summary + "', " +
+                "title='" + title + "', " +
+                "updated='" + updated + "]'";
+    }
 
     //
     //

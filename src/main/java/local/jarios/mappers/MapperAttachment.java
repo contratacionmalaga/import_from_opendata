@@ -39,7 +39,6 @@ public final class MapperAttachment {
                 .map(extRef -> MapperExternalReference.getExternalReference(attachment, extRef))
                 .ifPresent(attachment::setExternalReference);
 
-        log.debug(attachment.toString());
         //
         return attachment;
 

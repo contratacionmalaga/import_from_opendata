@@ -8,6 +8,7 @@ import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -25,8 +26,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "duration_meassure")
-public class DurationMeasure extends Auditable {
+@Table(name = "meassure")
+public class Measure extends Auditable {
 
     /**
      * Identificador único de la entidad. Se genera automáticamente usando UUID versión 7.
@@ -45,7 +46,7 @@ public class DurationMeasure extends Auditable {
      * Valor numérico de la duración expresada en la unidad indicada.
      */
     @Column(name = "value")
-    private Double value;
+    private BigDecimal value;
 
     /**
      * Relación uno a uno con la entidad {@link Period}.
@@ -58,15 +59,32 @@ public class DurationMeasure extends Auditable {
             name = "period_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_period_duration_meassure",
+                    name = "fk_period_measure",
                     foreignKeyDefinition = "FOREIGN KEY (period_id) REFERENCES period(id) ON DELETE CASCADE")
     )
     private Period period;
 
     /**
+     * Relación uno a uno con la entidad {@link Period}.
+     * <p>Define la duración dentro de un período específico.</p>
+     */
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "contract_modification_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "fk_contract_modification_measure",
+                    foreignKeyDefinition = "FOREIGN KEY (contract_modification_id) " +
+                            "REFERENCES contract_modification(id) ON DELETE CASCADE")
+    )
+    private ContractModification contractModification;
+
+    /**
      * Constructor por defecto. Genera automáticamente un UUID basado en el tiempo (versión 7).
      */
-    public DurationMeasure() {
+    public Measure() {
         this.id = Generators.timeBasedEpochGenerator().generate();
     }
 
@@ -78,6 +96,8 @@ public class DurationMeasure extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "Measure: " +
+                "[unitCode='" + unitCode + "', " +
+                "value='" + value + "']";
     }
 }

@@ -55,7 +55,10 @@ public final class MapperContact {
                 .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(contact::setTelefax);
 
+        //
         log.debug(contact.toString());
+
+        //
         return contact;
     }
 }

@@ -98,7 +98,9 @@ public class ContractFolderStatus extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "ContractFolderStatus: " +
+                "[contractFolderId='" + contractFolderId + "', " +
+                "contractFolderStatusCode='" + contractFolderStatusCode + "']";
     }
 
     //

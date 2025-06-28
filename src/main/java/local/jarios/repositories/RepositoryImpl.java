@@ -5,10 +5,8 @@ import local.jarios.database.SessionFactoryProvider;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
-import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoConexion;
-import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.exceptions.MiServiceException;
 import local.jarios.exceptions.MiTransactionManagerException;
@@ -20,6 +18,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -227,7 +226,7 @@ public class RepositoryImpl implements Repository {
         }
 
         //
-        if (existingEntry.getUpdated().before(entry.getUpdated())) {
+        if (existingEntry.getUpdated().isBefore(entry.getUpdated())) {
             session.remove(existingEntry);
             session.flush();
             session.persist(entry);
@@ -249,10 +248,7 @@ public class RepositoryImpl implements Repository {
     @Override
     public List<FiltroOrganoContratacion> getListFiltroOcsFromFiltroSql(String filtroSQL) throws MiRepositoryException {
 
-        return ejecutarDentroDeTransaccion(
-                session -> session.createNativeQuery(filtroSQL, FiltroOrganoContratacion.class).list(),
-                "getListFiltroOcsFromFiltroSql"
-        );
+        return new ArrayList<>();
     }
 }
 

@@ -7,40 +7,6 @@ package local.jarios.common.util;
 
 public final class Constantes {
 
-    /* Nombre de las propiedades del fichero app.properties */
-    public static final String CONFIG_NAME = "config.name";
-    public static final String CONFIG_URL = "config.url";
-    public static final String CONFIG_PATH = "config.path";
-    public static final String CONFIG_FILENAME = "config.fileName";
-
-    /* Nombre de las propiedades del fichero filter.properties */
-    public static final String FILTRO_FECHAFINALLECTURA = "filtro.fechaFinalLectura";
-    public static final String FILTRO_FECHAINICIALLECTURA = "filtro.fechaInicialLectura";
-    public static final String FILTRO_SQL = "filtro.sql";
-    public static final String FILTRO_OBJETO = "filtro.objeto";
-    public static final String FILTRO_NUTS = "filtro.nuts";
-
-    /* Nombre de las propiedades del fichero validation.properties */
-    public static final String PARAMETRO_URI_SCHEME = "parametro.uri.scheme";
-    public static final String PARAMETRO_URI_HOST = "parametro.uri.host";
-    public static final String PARAMETRO_URI_PATH = "parametro.uri.path";
-
-    /* Nombre de las propiedades del fichero email.properties */
-    public static final String EMAIL_USER = "mail.user";
-    public static final String EMAIL_PASSWORD = "mail.password";
-    public static final String EMAIL_FROM = "mail.from";
-    public static final String EMAIL_TO = "mail.to";
-
-    /* */
-    public static final String LOCAL_URL = "jakarta.persistence.jdbc.url";
-    public static final String BATCH_SIZE = "hibernate.jdbc.batch_size";
-
-    /* Nombre de las propiedades del fichero hibernate.properties */
-    public static final String HIBERNATE_FILTER_URL = "hibernate.filter.url";
-    public static final String HIBERNATE_FILTER_DRIVER = "hibernate.filter.driver";
-    public static final String HIBERNATE_FILTER_USER = "hibernate.filter.user";
-    public static final String HIBERNATE_FILTER_PASSWORD = "hibernate.filter.password";
-
     /** Nombre sin extensión del fichero app.properties */
     public static final String APP_PROPERTIES = "app";
 
@@ -48,7 +14,7 @@ public final class Constantes {
     public static final String EMAIL_PROPERTIES = "email";
 
     /** Nombre sin extensión del fichero app.properties */
-    public static final String FILTER_PROPERTIES = "hibernate";
+    public static final String FILTER_PROPERTIES = "filter";
 
     /** Nombre sin extensión del fichero app.properties */
     public static final String HIBERNATE_PROPERTIES = "hibernate";

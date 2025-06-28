@@ -23,9 +23,6 @@ public record AwardingTermsAdapter(boolean imprimirHijos) implements JsonSeriali
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(awardingTerms.getId()));
-
         if (!awardingTerms.getListAwardingCriteria().isEmpty()) {
 
             jsonObject.add(

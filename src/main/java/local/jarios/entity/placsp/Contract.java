@@ -61,7 +61,9 @@ public class Contract extends Auditable {
         @Override
         public String toString() {
 
-                return ToStringUtil.autoToString(this);
+                return "Contract: " +
+                        "[idContract='" + idContract + "', " +
+                        "[issueDate='" + issueDate + "']";
         }
         //
         //

@@ -59,7 +59,8 @@ public class ClassificationCategory extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "ClassificationCategory: " +
+                "[codeValue='" + codeValue + "']";
     }
     //
     //

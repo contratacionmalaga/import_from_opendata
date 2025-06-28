@@ -43,8 +43,9 @@ public final class MapperTendererQualificationRequest {
                 MapperStringFromList.getStringFromListDescriptionType(
                     tendererQualificationRequestType.getDescription()));
 
-        tendererQualificationRequest.setEmployeeQuantity(
-                tendererQualificationRequestType.getEmployeeQuantity().getValue().toString());
+        Optional.ofNullable(tendererQualificationRequestType.getEmployeeQuantity())
+                .ifPresent(employeeQuantityType -> tendererQualificationRequest.setEmployeeQuantity(
+                        employeeQuantityType.getValue()));
 
         tendererQualificationRequest.setEmployeeQuantityDescription(
                 MapperStringFromList.getStringFromListEmployeeQuantityDescriptionType(

@@ -102,7 +102,9 @@ public class DocumentReference extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "DocumentReference: " +
+                "[idDocumentReference='" + idDocumentReference + "', " +
+                "documentTypeCode='" + documentTypeCode + "']";
     }
     //
     //

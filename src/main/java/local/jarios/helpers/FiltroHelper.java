@@ -221,8 +221,8 @@ public final class FiltroHelper {
             // Si alguna está vacía, asigno los valores por defecto
             log.debug("[loadFilterFechas] - Alguna de las fechas es Blank. Se aplican valores por defecto.");
 
-            VariablesGlobales.setFiltroFechaInicial(LocalDate.parse(Constantes.FECHA_FINAL_LECTURA, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
-            VariablesGlobales.setFiltroFechaFinal(LocalDate.now().atTime(23, 59, 59));
+            VariablesGlobales.setFiltroFechaFinal(LocalDate.parse(Constantes.FECHA_FINAL_LECTURA, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
+            VariablesGlobales.setFiltroFechaInicial(LocalDate.now().atTime(23, 59, 59));
 
             log.debug("[loadFilterFechas] - Fechas por defecto aplicadas. FechaInicial: {}, FechaFinal: {}",
                     VariablesGlobales.getFiltroFechaInicial(), VariablesGlobales.getFiltroFechaFinal());
@@ -276,19 +276,19 @@ public final class FiltroHelper {
 
     public static void printFilters() {
 
-        log.info(
+        log.debug(
                 "[printFilters] - Filtro fechas. Fecha Inicial: '{}', Fecha Final: '{}'.",
                 VariablesGlobales.getFiltroFechaInicial(),
                 VariablesGlobales.getFiltroFechaFinal());
 
-        log.info("[printFilters] - Filtro Nuts. Nuts: '{}'.", VariablesGlobales.getFiltroNuts());
+        log.debug("[printFilters] - Filtro Nuts. Nuts: '{}'.", VariablesGlobales.getFiltroNuts());
 
-        log.info("[printFilters] - Filtro Objeto. Objeto: '{}'.", VariablesGlobales.getFiltroObjeto());
+        log.debug("[printFilters] - Filtro Objeto. Objeto: '{}'.", VariablesGlobales.getFiltroObjeto());
 
-        log.info("[printFilters] - Filtro Sql. Sql: '{}'.", VariablesGlobales.getFiltroSql());
+        log.debug("[printFilters] - Filtro Sql. Sql: '{}'.", VariablesGlobales.getFiltroSql());
 
         VariablesGlobales.getMapFiltro().forEach((key, value) -> {
-            log.info("[printFilters] - IdPlataforma: '{}' - ÓrganoContratacion: {}", key, value);
+            log.debug("[printFilters] - IdPlataforma: '{}' - ÓrganoContratacion: {}", key, value);
         });
     }
 

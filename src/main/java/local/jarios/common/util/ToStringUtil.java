@@ -13,7 +13,22 @@ public class ToStringUtil {
             fields[i].setAccessible(true);
             try {
                 Object value = fields[i].get(obj);
-                sb.append(fields[i].getName()).append("='").append(value).append("'");
+
+                // Evitar recursión infinita si el campo es entidad relacionada
+                // (por ejemplo, con anotaciones JPA o tipo conocido)
+                if (value != null) {
+                    String className = value.getClass().getName();
+
+                    // Ejemplo: si el campo es una entidad JPA o paquete que causa ciclo
+                    if (className.startsWith("local.jarios.entity") && value != obj) {
+                        sb.append(fields[i].getName()).append("='").append(value.getClass().getSimpleName()).append(" (omitted)'");
+                    } else {
+                        sb.append(fields[i].getName()).append("='").append(value).append("'");
+                    }
+                } else {
+                    sb.append(fields[i].getName()).append("='null'");
+                }
+
             } catch (IllegalAccessException e) {
                 sb.append(fields[i].getName()).append("='<access denied>'");
             }

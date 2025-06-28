@@ -93,7 +93,12 @@ public class Address extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "Address: " +
+                "[addressLine='" + addressLine + "', " +
+                "cityName='" + cityName + "', " +
+                "postalZone='" + postalZone + "', " +
+                "countrySubentityCode='" + countrySubentityCode + "', " +
+                "countrySubentity='" + countrySubentity + "']";
     }
 
     //

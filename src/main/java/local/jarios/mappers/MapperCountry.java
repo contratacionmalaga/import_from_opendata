@@ -36,6 +36,10 @@ public final class MapperCountry {
                 .map(code -> ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(country::setIdentificationCode);
 
+        //
+        log.debug(country.toString());
+
+        //
         return country;
     }
 }

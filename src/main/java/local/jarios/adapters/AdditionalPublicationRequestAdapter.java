@@ -24,8 +24,6 @@ public record AdditionalPublicationRequestAdapter()
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(additionalPublicationRequest.getId()));
         jsonObject.addProperty("AgencyId",
                 additionalPublicationRequest.getAgencyId());
         jsonObject.addProperty("SendDateTime",

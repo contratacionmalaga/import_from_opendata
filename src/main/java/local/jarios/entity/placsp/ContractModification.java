@@ -8,7 +8,6 @@ import local.jarios.common.util.Constantes;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -55,15 +54,6 @@ public class ContractModification extends Auditable {
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;
 
-    // 4.38.6 Duración total del contrato tras la modificación
-    // Duración total del contrato tras la modificación: Se obtiene como la suma de la duración inicial del contrato
-    // más los plazos indicados en sus modificaciones
-    @Column(name = "final_duration_measure_valuer")
-    private Double finalDurationMeasureValue;
-
-    @Column(name = "final_duration_measure_unit", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
-    private String finalDurationMeasureUnit;
-
     // Identificador del lote en caso de ser una licitación por lotes
     @Column(name = "contract_modification_lot_id", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String contractModificationLotId;
@@ -102,10 +92,18 @@ public class ContractModification extends Auditable {
     @OneToOne(mappedBy = "contractModificationFinalLegalMonetaryTotal", cascade = CascadeType.ALL, orphanRemoval = true)
     private LegalMonetaryTotal contractModificationFinalLegalMonetaryTotal;
 
+    @OneToOne(mappedBy = "contractModification", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Measure finalDurationMeasure;
+
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "ContractModification: " +
+                "[contractId='" + contractId + "', " +
+                "issueDate='" + issueDate + "', " +
+                "note='" + note + "', " +
+                "contractModificationLotId='" + contractModificationLotId + "', " +
+                "idContractModification='" + idContractModification + "']";
     }
 
     //

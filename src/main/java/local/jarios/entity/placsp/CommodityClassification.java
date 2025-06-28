@@ -54,7 +54,8 @@ public class CommodityClassification extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "CommodityClassification: " +
+                "[itemClassificationCode='" + itemClassificationCode + "']";
     }
     //
     // CONSTRUCTOR DE LA CLASE EN EL QUE SE GENERA EL UUID VERSIÓN 7

@@ -75,7 +75,9 @@ public class Party extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "Party: " +
+                "[webSiteUri='" + webSiteUri + "', " +
+                "partyName='" + partyName + "']";
     }
 
     //

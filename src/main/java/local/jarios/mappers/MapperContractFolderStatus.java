@@ -53,6 +53,9 @@ public final class MapperContractFolderStatus {
                 .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(contractFolderStatus::setContractFolderId);
 
+        //
+        log.debug(contractFolderStatus.toString());
+
         Optional.ofNullable(contractFolderStatusType.getProcurementProject())
                 .ifPresent(pp -> contractFolderStatus.setProcurementProject(
                         MapperProcurementProject.getProcurementProjectFromType(contractFolderStatus, null, pp)));

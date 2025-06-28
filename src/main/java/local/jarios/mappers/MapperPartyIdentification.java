@@ -54,9 +54,8 @@ public final class MapperPartyIdentification {
                                         case Constantes.IDPLATAFORMA ->
                                                 partyIdentification.setIdPlataforma(limitedId);
                                         case Constantes.IDOCPLAT -> partyIdentification.setIdOcPlat(limitedId);
-                                        case Constantes.NIF, Constantes.OTROS ->
-                                                partyIdentification.setNif(limitedId);
-                                        default -> partyIdentification.setOtro(limitedId);
+                                        case Constantes.NIF -> partyIdentification.setNif(limitedId);
+                                        case Constantes.OTROS -> partyIdentification.setOtros(limitedId);
                                     }
                                 });
                     });

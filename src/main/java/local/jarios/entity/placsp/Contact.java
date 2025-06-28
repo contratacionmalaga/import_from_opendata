@@ -76,7 +76,11 @@ public class Contact extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "Contact: " +
+                "[name='" + name + "', " +
+                "[telephone='" + telephone + "', " +
+                "[telefax='" + telefax + "', " +
+                "[electronicMail='" + electronicMail + "']";
     }
     //
     // CONSTRUCTOR DE LA CLASE EN EL QUE SE GENERA EL UUID VERSIÓN 7

@@ -65,7 +65,10 @@ public final class MapperEvaluationCriteria {
                 )
         );
 
+        //
         log.debug(evaluationCriteria.toString());
+
+        //
         return evaluationCriteria;
     }
 }

@@ -57,7 +57,9 @@ public class AdditionalPublicationRequest extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "AdditionalPublicationRequest: " +
+                "[agencyId='" + agencyId + "', " +
+                "sendDateTime='" + sendDateTime + "']";
     }
 
     //

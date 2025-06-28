@@ -47,8 +47,8 @@ public class PartyIdentification extends Auditable {
     @Column(name = "id_oc_plat", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String idOcPlat;
 
-    @Column(name = "otro", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
-    private String otro;
+    @Column(name = "otros", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+    private String otros;
 
     //
     //
@@ -95,7 +95,13 @@ public class PartyIdentification extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "PartyIdentification: " +
+                "[schemeName='" + schemeName + "', " +
+                "idPlataforma='" + idPlataforma + "', " +
+                "dir3='" + dir3 + "', " +
+                "nif='" + nif + "', " +
+                "idOcPlat='" + idOcPlat + "', " +
+                "otros='" + otros + "']";
     }
 
     //

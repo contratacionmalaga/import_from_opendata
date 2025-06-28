@@ -1,5 +1,6 @@
 package local.jarios.mappers;
 
+import local.jarios.common.util.Constantes;
 import local.jarios.entity.placsp.Attachment;
 import local.jarios.entity.placsp.ExternalReference;
 import lombok.extern.slf4j.Slf4j;
@@ -29,19 +30,25 @@ public final class MapperExternalReference {
         var externalReference = new ExternalReference();
         externalReference.setAttachment(attachment);
 
-        Optional.ofNullable(externalReferenceType.getDocumentHash())
-                .map(DocumentHashType::getValue)
-                .ifPresent(externalReference::setDocumentHash);
+        String documentHash = Optional.ofNullable(externalReferenceType.getDocumentHash())
+                                      .map(DocumentHashType::getValue)
+                                      .orElse(Constantes.CADENA_VACIA);
+        externalReference.setDocumentHash(documentHash);
 
-        Optional.ofNullable(externalReferenceType.getURI())
-                .map(URIType::getValue)
-                .ifPresent(externalReference::setUri);
+        String uri = Optional.ofNullable(externalReferenceType.getURI())
+                             .map(URIType::getValue)
+                             .orElse(Constantes.CADENA_VACIA);
+        externalReference.setUri(uri);
 
-        Optional.ofNullable(externalReferenceType.getFileName())
-                .map(FileNameType::getValue)
-                .ifPresent(externalReference::setFilename);
+        String filename = Optional.ofNullable(externalReferenceType.getFileName())
+                                  .map(FileNameType::getValue)
+                                  .orElse(Constantes.CADENA_VACIA);
+        externalReference.setFilename(filename);
 
+        //
         log.debug(externalReference.toString());
+
+        //
         return externalReference;
     }
 }

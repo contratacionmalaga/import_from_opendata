@@ -63,7 +63,8 @@ public class WinningParty extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "PartyName: " +
+                "[partyName='" + partyName + "']";
     }
 
     public WinningParty() {

@@ -58,7 +58,9 @@ public class AgentParty extends Auditable {
     @Override
     public String toString() {
 
-        return ToStringUtil.autoToString(this);
+        return "Address: " +
+                "[webSiteUri='" + webSiteUri + "', " +
+                "partyName='" + partyName + "']";
     }
 
     //

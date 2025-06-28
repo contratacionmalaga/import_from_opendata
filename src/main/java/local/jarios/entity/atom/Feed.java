@@ -2,6 +2,7 @@ package local.jarios.entity.atom;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
+import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.Log;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
@@ -51,6 +52,16 @@ public class Feed extends Auditable {
     @Column(name = "updated")
     private LocalDateTime updated;
 
+    @Override
+    public String toString() {
+
+        return "Feed: " +
+                "[linkFirst='" + linkFirst + "', " +
+                "linkPrev='" + linkPrev + "', " +
+                "linkSelf='" + linkSelf + "', " +
+                "linkNext='" + linkNext + "', " +
+                "updated='" + updated + "]'";
+    }
     //
     //
     //

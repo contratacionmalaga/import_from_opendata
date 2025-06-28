@@ -50,6 +50,13 @@ public class TenderRecipientParty extends Auditable {
                             "REFERENCES tendering_terms(id) ON DELETE CASCADE"))
     private TenderingTerms tenderingTerms;
 
+    @Override
+    public String toString() {
+
+        return "TenderRecipientParty: " +
+                "[endpointId='" + endpointId + "']";
+    }
+
     //
     //
     //

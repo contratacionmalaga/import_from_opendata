@@ -23,8 +23,6 @@ public record AwardingCriteriaAdapter() implements JsonSerializer<AwardingCriter
 
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("Id",
-                String.valueOf(awardingCriteria.getId()));
         jsonObject.addProperty("AwardingCriteriaTypeCode",
                 awardingCriteria.getAwardingCriteriaTypeCode());
         jsonObject.addProperty("AwardingCriteriaSubTypeCode",

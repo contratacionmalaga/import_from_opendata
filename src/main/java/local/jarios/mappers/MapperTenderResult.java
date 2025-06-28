@@ -10,8 +10,11 @@ import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.TenderResultType;
 import org.dgpe.codice.common.cbclib.AbnormallyLowTendersIndicatorType;
+import org.dgpe.codice.common.cbclib.IssueDateType;
 import org.dgpe.codice.common.cbclib.ResultCodeType;
 import org.dgpe.codice.common.cbclib.SMEAwardedIndicatorType;
+import org.dgpe.codice.common.cbclib.StartDateType;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -89,7 +92,8 @@ public final class MapperTenderResult {
                 .ifPresent(tenderResult::setNonEUNationalsReceivedTenderQuantity);
 
         Optional.ofNullable(tenderResultType.getStartDate())
-                .map(date -> ComunHelper.limitarRegistro(date.getValue().toString(), Constantes.TAMANO_MAXIMO_CAMPO_50))
+                .map(StartDateType::getValue)
+                .map(GregorianCalendarHelper::getDateFromXMLGregorianCalendar)
                 .ifPresent(tenderResult::setStartDate);
 
         Optional.ofNullable(tenderResultType.getAwardedOwnerNationalityCode())
