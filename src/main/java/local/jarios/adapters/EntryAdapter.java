@@ -20,16 +20,44 @@ public record EntryAdapter(boolean imprimirHijos) implements JsonSerializer<Entr
     @Override
     public JsonElement serialize(Entry entry, Type typeOfSrc, JsonSerializationContext context) {
 
+        //
         JsonObject jsonObject = new JsonObject();
 
-        jsonObject.addProperty("IdEntry", String.valueOf(entry.getIdEntry()));
-        jsonObject.addProperty("Link", entry.getLink());
-        jsonObject.addProperty("Summary", entry.getSummary());
-        jsonObject.addProperty("Title", entry.getTitle());
-        jsonObject.addProperty("Updated", String.valueOf(entry.getUpdated()));
+        //
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "IdEntry",
+                entry.getIdEntry(),
+                context);
 
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "Link",
+                entry.getLink(),
+                context);
+
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "Summary",
+                entry.getSummary(),
+                context);
+
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "Title",
+                entry.getTitle(),
+                context);
+
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "Updated",
+                entry.getUpdated(),
+                context);
+
+        //
         JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ContractFolderStatus>", entry.getListContractFolderStatus(), context);
 
+        //
         return jsonObject;
     }
 }

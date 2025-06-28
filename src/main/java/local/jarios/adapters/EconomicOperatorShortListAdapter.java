@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import local.jarios.entity.placsp.EconomicOperatorShortList;
+import local.jarios.helpers.JsonSerializationHelper;
 
 import java.lang.reflect.Type;
 
@@ -25,10 +26,29 @@ public record EconomicOperatorShortListAdapter() implements JsonSerializer<Econo
         JsonObject jsonObject = new JsonObject();
 
         //
-        jsonObject.addProperty("description", economicOperatorShorList.getDescription());
-        jsonObject.addProperty("expectedQuantity", economicOperatorShorList.getExpectedQuantity());
-        jsonObject.addProperty("maximumQuantity", economicOperatorShorList.getMaximumQuantity());
-        jsonObject.addProperty("minimumQuantity", economicOperatorShorList.getMinimumQuantity());
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "Description",
+                economicOperatorShorList.getDescription(),
+                context);
+
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "ExpectedQuantity",
+                economicOperatorShorList.getExpectedQuantity(),
+                context);
+
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "MaximumQuantity",
+                economicOperatorShorList.getMaximumQuantity(),
+                context);
+
+        JsonSerializationHelper.addIfNotNull(
+                jsonObject,
+                "MinimumQuantity",
+                economicOperatorShorList.getMinimumQuantity(),
+                context);
 
         //
         return jsonObject;
