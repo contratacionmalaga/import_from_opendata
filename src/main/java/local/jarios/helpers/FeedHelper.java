@@ -64,17 +64,25 @@ public final class FeedHelper {
                     }
 
                     var feed = MapperFeed.getFeed(miLog, feedType);
-                    log.trace("[parsearFeeds] - Parseado correctamente de Feed con LinkSelf: {}", feed.getLinkSelf());
+                    log.trace(
+                            "[parsearFeeds] - Parseado correctamente de Feed con LinkSelf: {}",
+                            feed.getLinkSelf());
                     listFeeds.add(feed);
-                    log.trace("[parsearFeeds] - Nº de feeds parseados: {}", listFeeds.size());
+                    log.trace(
+                            "[parsearFeeds] - Nº de feeds parseados: {}",
+                            StringHelper.getNumeroConFormato(listFeeds.size()));
                     estadistica.aumentarNFicheros();
 
                     if (isLocal || isFechaValida(feed.getUpdated(), newestFeed)) {
 
                         procesarFeed(feed, estadistica);
-                        log.trace("[parsearFeeds] - Procesado correctamente Feed. Nº Entrys: {}", feed.getListEntry().size());
+                        log.trace(
+                                "[parsearFeeds] - Procesado correctamente Feed. Nº Entrys: {}",
+                                feed.getListEntry().size());
                         nTotalEntries += feed.getListEntry().size();
-                        log.trace("[parsearFeeds] - Nº de Entrys totales procesados: {}", StringHelper.getNumeroConFormato(nTotalEntries));
+                        log.trace(
+                                "[parsearFeeds] - Nº de Entrys totales procesados: {}",
+                                StringHelper.getNumeroConFormato(nTotalEntries));
                         nextLink = getNextLink(feed, isLocal);
                         esValido = isNextLinkValid(nextLink, isLocal);
                         log.trace("[parsearFeeds] - NextLink: {}. ¿Válido?: {}", nextLink, esValido);

@@ -9,6 +9,7 @@ import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoConexion;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.exceptions.MiTransactionManagerException;
+import local.jarios.helpers.StringHelper;
 import local.jarios.models.FiltroOrganoContratacion;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.*;
@@ -73,12 +74,12 @@ public class RepositoryImpl implements Repository {
             log.info("[grabarMap] - {} Persistido entry ID: {}", indiceFormateado, entry.getIdEntry());
 
             if (contador % BATCH_SIZE == 0) {
-                log.info("[grabarMap] - Contador múltipo de {}. Valor contardor: {} ", contador, BATCH_SIZE);
-                flushAndClear(session, contador);
+                log.info("[grabarMap] - Contador múltipo de {}. Valor contardor: {} ", BATCH_SIZE, StringHelper.getNumeroConFormato(contador));
+                flushAndClear(session);
             }
         }
 
-        flushAndClear(session, contador); // Flush final
+        flushAndClear(session); // Flush final
         log.debug("[grabarMap] - Persistencia completada. Total: {}", total);
     }
 
@@ -103,15 +104,15 @@ public class RepositoryImpl implements Repository {
 
     private String formatContador(int actual, int total) {
         int padding = String.valueOf(total).length();
-        return String.format("%0" + padding + "d/%0" + padding + "d", actual, total);
+        return String
+                .format("%0" + padding + "d/%0" + padding + "d",
+                        StringHelper.getNumeroConFormato(actual),
+                        StringHelper.getNumeroConFormato(total));
     }
 
-    private void flushAndClear(Session session, int contador) {
-        log.info("[flushAndClear] - Entrada.");
+    private void flushAndClear(Session session) {
         session.flush();
-        log.info("[flushAndClear] - Flush.");
         session.clear();
-        log.debug("[flushAndClear] - Batch persistido y sesión limpiada en el registro {}", contador);
     }
 
     private <R> R ejecutarDentroDeTransaccion(Function<Session, R> function, String metodo)

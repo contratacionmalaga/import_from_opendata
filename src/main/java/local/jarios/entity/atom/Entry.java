@@ -72,7 +72,7 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     //
     //
     //
-    @OneToMany(mappedBy = "entry",  orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "entry",  cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ContractFolderStatus> listContractFolderStatus = new ArrayList<>();
 
     @Override

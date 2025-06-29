@@ -53,14 +53,14 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>7.0.3.Final</version>
+            <version>7.0.4.Final</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-hikaricp -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-hikaricp</artifactId>
-            <version>7.0.3.Final</version>
+            <version>7.0.4.Final</version>
         </dependency>
 
         <!-- Framework facilitador @Getter @Setter ... -->
@@ -198,13 +198,13 @@
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>encrypt_helper</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
         </dependency>
 
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>version_helper</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.0</version>
         </dependency>
 
         <dependency>

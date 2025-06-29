@@ -159,14 +159,8 @@ public final class FiltroHelper {
             return false;
         }
 
-        boolean enRango = ( fechaEntry.isBefore(fechaInicio) ) && ( fechaEntry.isAfter(fechaFin) );
+        return ( fechaEntry.isBefore(fechaInicio) ) && ( fechaEntry.isAfter(fechaFin) );
 
-        /*
-        log.debug("[hasEntryFechaEnRango] - Fecha del Entry: {}. Inicio: {}, Fin: {}, ¿Está en rango?: {}",
-                fechaEntry, fechaInicio, fechaFin, enRango);
-        */
-
-        return enRango;
     }
 
     public static boolean hasEntryContaninsObject(Entry entry) {
@@ -289,30 +283,29 @@ public final class FiltroHelper {
 
         log.debug("[printFilters] - Filtro Sql. Sql: '{}'.", VariablesGlobales.getFiltroSql());
 
-        VariablesGlobales.getMapFiltro().forEach((key, value) -> {
-            log.debug("[printFilters] - IdPlataforma: '{}' - ÓrganoContratacion: {}", key, value);
-        });
+        VariablesGlobales.getMapFiltro().forEach((key, value) ->
+                log.debug("[printFilters] - IdPlataforma: '{}' - ÓrganoContratacion: {}", key, value));
     }
 
     public static boolean entryCumpleFiltros(Entry entry) {
 
         // Si existe filtro SQL y no lo cumple, descarto el Entry
         if (!VariablesGlobales.getMapFiltro().isEmpty() && !hasEntryInFiltroSql(entry)) {
-            log.debug("[entryCumpleFiltros] - No cumple filtro SQL. {}", entry.getIdEntry());
+            log.debug("[entryCumpleFiltros] - NO CUMPLE filtro SQL. {}", entry.getIdEntry());
             return false;
         }
 
         // Si existe filtro NUTS y no lo cumple, descarto el Entry
         String filtroNuts = VariablesGlobales.getFiltroNuts();
         if (filtroNuts != null && !filtroNuts.isBlank() && !hasEntryContainsNuts(entry)) {
-            log.debug("[entryCumpleFiltros] - No cumple filtro NUTS. {}", entry.getIdEntry());
+            log.debug("[entryCumpleFiltros] - NO CUMPLE filtro NUTS. {}", entry.getIdEntry());
             return false;
         }
 
         // Si existe filtro Objeto y no lo cumple, descarto el Entry
         String filtroObjeto = VariablesGlobales.getFiltroObjeto();
         if (filtroObjeto != null && !filtroObjeto.isBlank() && !hasEntryContaninsObject(entry)) {
-            log.debug("[entryCumpleFiltros] - No cumple filtro Objeto. {}", entry.getIdEntry());
+            log.debug("[entryCumpleFiltros] - NO CUMPLE filtro Objeto. {}", entry.getIdEntry());
             return false;
         }
 
@@ -320,11 +313,11 @@ public final class FiltroHelper {
         LocalDateTime fechaInicio = VariablesGlobales.getFiltroFechaInicial();
         LocalDateTime fechaFin = VariablesGlobales.getFiltroFechaFinal();
         if (fechaInicio != null && fechaFin != null && !hasEntryInFechas(entry)) {
-            log.debug("[entryCumpleFiltros] - No cumple filtro Fechas. {}", entry.getIdEntry());
+            log.debug("[entryCumpleFiltros] - NO CUMPLE filtro Fechas. {}", entry.getIdEntry());
             return false;
         }
 
-        log.debug("[entryCumpleFiltros] - Entry cumple los filtros: {}.", entry.getIdEntry());
+        log.debug("[entryCumpleFiltros] - Entry cumple los filtros: {}", entry.getIdEntry());
         return true;
     }
 
