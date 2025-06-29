@@ -80,7 +80,7 @@ public class Feed extends Auditable {
     //
     //
     //
-    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "feed", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Entry> listEntry = new ArrayList<>();
 
     //

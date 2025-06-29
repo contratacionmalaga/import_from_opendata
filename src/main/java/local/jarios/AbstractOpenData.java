@@ -211,7 +211,7 @@ public abstract class AbstractOpenData {
             log.info(Mensajes.SERVICE_CREACION_INICIO);
             log.info(propertiesManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.JAKARTA_URL));
             Service service = new ServiceImpl(TipoConexion.PRINCIPAL);
-            log.info(Mensajes.SERVICE_CREACION_CREADO, TipoConexion.PRINCIPAL);
+            log.info("Creado el servicio de conexión con la base de datos {}", TipoConexion.PRINCIPAL);
 
             // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
             service.persistirLog(miLog, VariablesGlobales.getMapBaseDatos(), lugarImportacion);

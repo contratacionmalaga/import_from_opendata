@@ -32,6 +32,8 @@ public class HibernateConfigurer {
      */
     public Configuration buildConfiguration(Properties hibernateProperties) {
 
+        log.info("[buildConfiguration] - hibernaterProperties: {}", hibernateProperties);
+
         Configuration configuration = new Configuration();
         log.debug("[buildConfiguration] - Objeto Configuration creado correctamente.");
 

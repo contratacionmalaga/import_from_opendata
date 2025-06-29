@@ -43,7 +43,6 @@ public final class FileHelper {
             return false;
         }
 
-        log.debug("[esFileValido] - esFileValido({}): true", filePathFichero);
         return true;
     }
 }

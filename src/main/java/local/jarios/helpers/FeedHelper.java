@@ -52,45 +52,42 @@ public final class FeedHelper {
             String nextLink = getInitialLink(isLocal);
             log.trace("[parsearFeeds] - NextLink: {}", nextLink);
 
-            boolean enBucle = true;
+            boolean esValido = true;
 
-            while (enBucle) {
+            while (esValido) {
                 try (var reader = openBufferedReader(nextLink, isLocal)) {
-
-                    estadistica.aumentarNFicheros();
-                    log.trace("[parsearFeeds] - Nº de fichero: {}", estadistica.getNFicheros());
 
                     var feedType = getFeedType(unmarshaller, reader);
                     if (feedType == null) {
-                        log.trace("[parseFeeds] - FeedType es null.");
+                        log.trace("[parsearFeeds] - FeedType es null.");
                         break;
                     }
 
                     var feed = MapperFeed.getFeed(miLog, feedType);
-                    log.trace("[parseFeeds] - Parseado correctamente {}", feed);
+                    log.trace("[parsearFeeds] - Parseado correctamente de Feed con LinkSelf: {}", feed.getLinkSelf());
+                    listFeeds.add(feed);
+                    log.trace("[parsearFeeds] - Nº de feeds parseados: {}", listFeeds.size());
+                    estadistica.aumentarNFicheros();
 
                     if (isLocal || isFechaValida(feed.getUpdated(), newestFeed)) {
 
-                        log.trace(Mensajes.FEED_INFO, nextLink, Mensajes.FEED_FECHAS_OK);
                         procesarFeed(feed, estadistica);
-                        log.trace("[parseFeeds] - Parseado {}", feed);
-                        listFeeds.add(feed);
-                        log.trace("[parseFeeds] - Nº de feeds parseados: {}", listFeeds.size());
-                        log.trace("[parseFeeds] - Nº de Entrys parseados en este Feed: {}", feed.getListEntry().size());
+                        log.trace("[parsearFeeds] - Procesado correctamente Feed. Nº Entrys: {}", feed.getListEntry().size());
                         nTotalEntries += feed.getListEntry().size();
-                        log.trace("[parseFeeds] - Nº de Entrys totales parseados: {}", nTotalEntries);
+                        log.trace("[parsearFeeds] - Nº de Entrys totales procesados: {}", StringHelper.getNumeroConFormato(nTotalEntries));
                         nextLink = getNextLink(feed, isLocal);
-                        log.trace("[parseFeeds] - NextLink: {}", nextLink);
-                        enBucle = isNextLinkValid(nextLink, isLocal);
+                        esValido = isNextLinkValid(nextLink, isLocal);
+                        log.trace("[parsearFeeds] - NextLink: {}. ¿Válido?: {}", nextLink, esValido);
+
 
                     } else {
 
                         log.trace(Mensajes.FEED_INFO, nextLink, Mensajes.FEED_FECHAS_NO_OK);
-                        enBucle = false;
+                        esValido = false;
 
                     }
 
-                    log.trace("[parseFeeds] - ¿En bucle?: {}", enBucle);
+                    log.trace("[parsearFeeds] - ¿En bucle?: {}", esValido);
                 }
             }
 

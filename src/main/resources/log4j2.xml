@@ -7,128 +7,121 @@
         </Console>
 
         <!-- Archivos de Registro -->
-        <!-- Registro generado por el Aplicativo -->
         <File name="MainAppLogFile" fileName="logs/mainapp-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
-        <!-- Registro generado por Properties_Helper -->
         <File name="PropertiesHelper" fileName="logs/properties_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
-        <!-- Registro generado por Properties_Helper -->
         <File name="EmailHelper" fileName="logs/email_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
-        <!-- Registro generado por Properties_Helper -->
         <File name="EncryptHelper" fileName="logs/encrypt_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
-        <!-- Registro generado por Properties_Helper -->
         <File name="VersionHelper" fileName="logs/version_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
-        <!-- Registro generado por Hibernate -->
-        <File name="FileHibernate" fileName="logs/hibernate-${date:yyyy-MM-dd_HH-mm-ss}.log">
+        <!-- Hibernate Logs Separados -->
+        <File name="FileHibernate" fileName="logs/hibernate-general-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
-        <!-- Registro generado por Hibernate -->
-        <File name="FilePersistence" fileName="logs/hibernate_persistence-${date:yyyy-MM-dd_HH-mm-ss}.log">
+        <File name="FilePersistence" fileName="logs/hibernate-persistence-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
-        <!-- Registro generado por Hibernate -->
-        <File name="FileHibernateSQL" fileName="logs/hibernate_sql-${date:yyyy-MM-dd_HH-mm-ss}.log">
+        <File name="FileHibernateSQL" fileName="logs/hibernate-sql-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
-        <!-- Registro generado por Reflections para obtener las entidades gestionadas por Hibernate -->
+        <!-- Log para Hibernate Statistics -->
+        <File name="FileHibernateStats" fileName="logs/hibernate-stats-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
+        </File>
+
+        <!-- Log para Flush y Execution Plan -->
+        <File name="FileHibernateFlush" fileName="logs/hibernate-flush-${date:yyyy-MM-dd_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
+        </File>
+
+        <!-- Reflections -->
         <File name="FileReflections" fileName="logs/reflection-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
 
-        <!-- -->
+        <!-- HikariCP -->
         <File name="FileHikariCP" fileName="logs/hikaricp-${date:yyyy-MM-dd_HH-mm-ss}.log">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
         </File>
     </Appenders>
 
     <Loggers>
-
-        <!-- Busqueda de entidades en la ruta seleccionada -->
+        <!-- Loggers varios -->
         <Logger name="local.jarios.properties" level="INFO" additivity="false">
             <AppenderRef ref="PropertiesHelper"/>
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <!-- Busqueda de entidades en la ruta seleccionada -->
         <Logger name="local.jarios.email" level="INFO" additivity="false">
             <AppenderRef ref="EmailHelper"/>
             <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="OkPacket" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
-
-        <Logger name="StandardClient" level="INFO" additivity="false">
-            <AppenderRef ref="Console"/>
-        </Logger>
-
-        <!-- Busqueda de entidades en la ruta seleccionada -->
         <Logger name="local.jarios.encrypt" level="INFO" additivity="false">
             <AppenderRef ref="EncryptHelper"/>
-            <AppenderRef ref="Console"/>
         </Logger>
 
-        <!-- Busqueda de entidades en la ruta seleccionada -->
         <Logger name="local.jarios.version" level="INFO" additivity="false">
             <AppenderRef ref="VersionHelper"/>
         </Logger>
 
-        <!-- Busqueda de entidades en la ruta seleccionada -->
         <Logger name="org.reflections.Reflections" level="INFO" additivity="false">
             <AppenderRef ref="FileReflections"/>
         </Logger>
 
-        <!-- Redirección del log de hibernate. Almacenado en fichero. -->
-        <Logger name="org.hibernate" level="INFO" additivity="false">
-            <AppenderRef ref="FileHibernate"/>
+        <Logger name="com.zaxxer.hikari" level="DEBUG" additivity="false">
+            <AppenderRef ref="FileHikariCP"/>
         </Logger>
 
-        <Logger name="javax.persistence" level="INFO" additivity="false">
-            <AppenderRef ref="FilePersistence"/>
-        </Logger>
-
-        <Logger name="org.hibernate.SQL" level="INFO" additivity="false">
-            <AppenderRef ref="FileHibernateSQL"/>
-        </Logger>
-
-        <!-- Configurar el logger para los logs de HikariCP -->
-        <logger name="com.zaxxer.hikari" level="INFO" additivity="false">
-            <AppenderRef ref="FileHikariCP" />
-        </logger>
-
-        <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="INFO" additivity="false">
-            <AppenderRef ref="FileHibernate"/>
-        </Logger>
-
-        <!-- Busqueda de entidades en la ruta seleccionada -->
-        <Logger name="local.jarios.properties" level="INFO" additivity="false">
-            <AppenderRef ref="PropertiesHelper"/>
-            <AppenderRef ref="Console"/>
-        </Logger>
-
-        <!-- Busqueda de entidades en la ruta seleccionada -->
         <Logger name="local.jarios" level="TRACE" additivity="false">
             <AppenderRef ref="MainAppLogFile"/>
             <AppenderRef ref="Console"/>
         </Logger>
 
+        <!-- Hibernate General (todo excepto lo específico) -->
+        <Logger name="org.hibernate" level="DEBUG" additivity="false">
+            <AppenderRef ref="FileHibernate"/>
+        </Logger>
+
+        <!-- Hibernate Persistence -->
+        <Logger name="javax.persistence" level="DEBUG" additivity="false">
+            <AppenderRef ref="FilePersistence"/>
+        </Logger>
+
+        <!-- Hibernate SQL -->
+        <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+            <AppenderRef ref="FileHibernateSQL"/>
+        </Logger>
+
+        <!-- Hibernate Statistics -->
+        <Logger name="org.hibernate.stat" level="DEBUG" additivity="false">
+            <AppenderRef ref="FileHibernateStats"/>
+        </Logger>
+
+        <!-- Hibernate Flush y Execution Plan -->
+        <Logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="DEBUG" additivity="false">
+            <AppenderRef ref="FileHibernateFlush"/>
+        </Logger>
+
+        <!-- Hibernate SQL Bind Parameters -->
+        <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="DEBUG" additivity="false">
+            <AppenderRef ref="FileHibernate"/>
+        </Logger>
     </Loggers>
 </Configuration>

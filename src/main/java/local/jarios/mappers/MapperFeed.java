@@ -37,8 +37,6 @@ public final class MapperFeed {
         feed.setLinkPrev(limitarLink(linkInfo.getLinkPrev()));
         feed.setLinkSelf(limitarLink(linkInfo.getLinkSelf()));
 
-        log.debug(feed.toString());
-
         feed.setListEntry(MapperEntry.getListEntryFromEntryType(feed, feedType));
 
         return feed;

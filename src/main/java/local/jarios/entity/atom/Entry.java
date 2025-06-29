@@ -59,7 +59,6 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     //
     //
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "feed_id",
@@ -73,7 +72,7 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     //
     //
     //
-    @OneToMany(mappedBy = "entry",  cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "entry",  orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ContractFolderStatus> listContractFolderStatus = new ArrayList<>();
 
     @Override

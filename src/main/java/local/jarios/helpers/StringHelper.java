@@ -1,8 +1,11 @@
 package local.jarios.helpers;
 
 import local.jarios.common.util.Constantes;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.Normalizer;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -10,6 +13,7 @@ import java.util.regex.Pattern;
 /**
  * @author Juan Antonio
  */
+@Slf4j
 public final class StringHelper {
 
     // Definimos el patrón como static final para evitar compilarlo repetidamente
@@ -88,6 +92,27 @@ public final class StringHelper {
             //
             return mensaje;
 
+        }
+    }
+
+    public static String getNumeroConFormato (int numero) throws IllegalArgumentException {
+
+        // Crear símbolos decimales personalizados
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator('.');  // separador de miles como punto
+        symbols.setDecimalSeparator(',');   // separador decimal como coma (opcional)
+
+        // Crear formato con separador de miles y sin decimales
+        DecimalFormat formato = new DecimalFormat("#,###", symbols);
+
+        try {
+
+            return formato.format(numero);
+
+        } catch (IllegalArgumentException ex) {
+
+            log.debug("[getNumeroConFormato] - Error: {}", ex.getMessage());
+            throw ex;
         }
     }
 }

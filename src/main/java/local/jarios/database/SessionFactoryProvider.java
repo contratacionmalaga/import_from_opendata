@@ -110,12 +110,12 @@ public class SessionFactoryProvider {
         switch (tipoConexion) {
             case TipoConexion.PRINCIPAL -> {
                 Properties p = PropertiesManagerServiceImpl.getInstance().getProperties(Constantes.HIBERNATE_PROPERTIES);
-                log.debug("[getUpdateHibernateProperties] - Propiedades obtenidas para PRINCIPAL: {}", p);
+                log.info("[getUpdateHibernateProperties] - Propiedades obtenidas para PRINCIPAL: {}", p);
                 return p;
             }
             case TipoConexion.FILTRO_SQL -> {
                 Properties p = getFiltroSqlProperties();
-                log.debug("[getUpdateHibernateProperties] - Propiedades obtenidas para FILTRO_SQL: {}", p);
+                log.info("[getUpdateHibernateProperties] - Propiedades obtenidas para FILTRO_SQL: {}", p);
                 return p;
             }
             default -> throw new IllegalArgumentException("TipoConexion no soportado: " + tipoConexion);
