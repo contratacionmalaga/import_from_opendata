@@ -48,19 +48,19 @@ public final class MapperTenderingTerms {
                 ComunHelper.limitarRegistro(
                         MapperStringFromList.getStringFromListPriceRevisionFormulaDescriptionType(
                                 tenderingTermsType.getPriceRevisionFormulaDescription()),
-                        Constantes.TAMANO_MAXIMO_CAMPO_450));
+                        Constantes.TAMANO_MAXIMO_CAMPO_500));
 
         tenderingTerms.setFundingProgramCode(
                 ComunHelper.limitarRegistro(
                         MapperStringFromList.getStringFromListFundingProgramCodeType(
                                 tenderingTermsType.getFundingProgramCode()),
-                        Constantes.TAMANO_MAXIMO_CAMPO_450));
+                        Constantes.TAMANO_MAXIMO_CAMPO_500));
 
         tenderingTerms.setFundingProgram(
                 ComunHelper.limitarRegistro(
                         MapperStringFromList.getStringFromListFundingProgramType(
                                 tenderingTermsType.getFundingProgram()),
-                        Constantes.TAMANO_MAXIMO_CAMPO_450));
+                        Constantes.TAMANO_MAXIMO_CAMPO_500));
 
         Optional.ofNullable(tenderingTermsType.getProcurementNationalLegislationCode())
                 .map(ProcurementNationalLegislationCodeType::getValue)

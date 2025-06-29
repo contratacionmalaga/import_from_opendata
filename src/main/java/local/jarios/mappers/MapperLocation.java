@@ -39,15 +39,18 @@ public final class MapperLocation {
         location.setWinningParty(winningParty);
 
         Optional.ofNullable(locationType.getCountrySubentityCode())
-                .map(code -> ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
+                .map(code ->
+                        ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(location::setCountrySubentityCode);
 
         Optional.ofNullable(locationType.getCountrySubentity())
-                .map(sub -> ComunHelper.limitarRegistro(sub.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_250))
+                .map(sub ->
+                        ComunHelper.limitarRegistro(sub.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(location::setCountrySubentity);
 
         Optional.ofNullable(locationType.getAddress())
-                .map(addr -> MapperAddress.getAddress(null, location, null, addr))
+                .map(addr ->
+                        MapperAddress.getAddress(null, location, null, addr))
                 .ifPresent(location::setAddress);
 
         return location;

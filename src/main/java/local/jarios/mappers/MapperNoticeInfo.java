@@ -97,7 +97,7 @@ public final class MapperNoticeInfo {
 
         Optional.ofNullable(additionalPublicationStatusType.getPublicationMediaName())
                 .map(NameType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_250))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(additionalPublicationStatus::setPublicationMediaName);
 
         additionalPublicationStatus.setAdditionalPublicationRequestList(
@@ -141,7 +141,7 @@ public final class MapperNoticeInfo {
 
         Optional.ofNullable(additionalPublicationRequestType.getAgencyID())
                 .map(AgencyIDType::getValue)
-                .map(id -> ComunHelper.limitarRegistro(id, Constantes.TAMANO_MAXIMO_CAMPO_250))
+                .map(id -> ComunHelper.limitarRegistro(id, Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(additionalPublicationRequest::setAgencyId);
 
         if (additionalPublicationRequestType.getSendDate() != null &&

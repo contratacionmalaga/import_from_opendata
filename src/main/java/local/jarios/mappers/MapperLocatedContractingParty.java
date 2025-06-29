@@ -35,7 +35,7 @@ public final class MapperLocatedContractingParty {
         Optional.ofNullable(locatedContractingPartyType.getContractingPartyTypeCode())
                 .map(code -> ComunHelper.limitarRegistro(
                         code.getValue(),
-                        Constantes.TAMANO_MAXIMO_CAMPO_250))
+                        Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(locatedContractingParty::setContractingPartyTypeCode);
 
         Optional.ofNullable(locatedContractingPartyType.getBuyerProfileURIID())

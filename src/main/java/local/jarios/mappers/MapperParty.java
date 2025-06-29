@@ -38,7 +38,7 @@ public final class MapperParty {
         party.setPartyName(
                 ComunHelper.limitarRegistro(
                         MapperStringFromList.getStringFromListPartyNameType(partyType.getPartyName()),
-                        Constantes.TAMANO_MAXIMO_CAMPO_250));
+                        Constantes.TAMANO_MAXIMO_CAMPO_500));
 
         Optional.ofNullable(partyType.getPostalAddress())
                 .ifPresent(addr -> party.setPostalAddress(

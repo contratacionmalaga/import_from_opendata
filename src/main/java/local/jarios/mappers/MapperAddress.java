@@ -42,7 +42,7 @@ public final class MapperAddress {
         // Campos opcionales con sanitización
         Optional.ofNullable(addressType.getCityName())
                 .map(CityNameType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_250))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(address::setCityName);
 
         //

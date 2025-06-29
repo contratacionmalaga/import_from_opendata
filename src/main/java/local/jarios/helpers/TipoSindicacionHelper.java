@@ -1,5 +1,6 @@
 package local.jarios.helpers;
 
+import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.common.util.Constantes;
@@ -67,9 +68,9 @@ public final class TipoSindicacionHelper {
 
         //
         if (isLocal) {
-            config = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_FILENAME);
+            config = PropertiesHelper.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_FILENAME);
         } else {
-            config = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_URL);
+            config = PropertiesHelper.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_URL);
         }
 
         //

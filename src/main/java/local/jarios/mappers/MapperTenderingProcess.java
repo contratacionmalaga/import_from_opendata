@@ -34,27 +34,27 @@ public final class MapperTenderingProcess {
 
         Optional.ofNullable(tenderingProcessType.getProcedureCode())
                 .map(ProcedureCodeType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_5))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(tenderingProcess::setProcedureCode);
 
         Optional.ofNullable(tenderingProcessType.getContractingSystemCode())
                 .map(ContractingSystemCodeType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_5))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(tenderingProcess::setContractingSystemCode);
 
         Optional.ofNullable(tenderingProcessType.getUrgencyCode())
                 .map(UrgencyCodeType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_5))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(tenderingProcess::setUrgencyCode);
 
         Optional.ofNullable(tenderingProcessType.getSubmissionMethodCode())
                 .map(SubmissionMethodCodeType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_5))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(tenderingProcess::setSubmissionMethodCode);
 
         Optional.ofNullable(tenderingProcessType.getPartPresentationCode())
                 .map(PartPresentationCodeType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_5))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(tenderingProcess::setPartPresentationCode);
 
         Optional.ofNullable(tenderingProcessType.getMaximumLotPresentationQuantity())
@@ -69,7 +69,7 @@ public final class MapperTenderingProcess {
                 ComunHelper.limitarRegistro(
                         MapperStringFromList.getStringFromListLotsCombinationContractingAuthorityRightsType(
                                 tenderingProcessType.getLotsCombinationContractingAuthorityRights()),
-                        Constantes.TAMANO_MAXIMO_CAMPO_450));
+                        Constantes.TAMANO_MAXIMO_CAMPO_500));
 
         Optional.ofNullable(tenderingProcessType.getOverThresholdIndicator())
                 .map(OverThresholdIndicatorType::isValue)

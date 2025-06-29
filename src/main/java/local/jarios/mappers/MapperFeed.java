@@ -44,6 +44,6 @@ public final class MapperFeed {
 
     private static String limitarLink(String link) {
 
-        return ComunHelper.limitarRegistro(link, Constantes.TAMANO_MAXIMO_CAMPO_250);
+        return ComunHelper.limitarRegistro(link, Constantes.TAMANO_MAXIMO_CAMPO_500);
     }
 }

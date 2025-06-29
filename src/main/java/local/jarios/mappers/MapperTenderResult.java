@@ -47,7 +47,7 @@ public final class MapperTenderResult {
 
         Optional.ofNullable(tenderResultType.getResultCode())
                 .map(ResultCodeType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_5))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(tenderResult::setResultCode);
 
         Optional.ofNullable(tenderResultType.getReceivedTenderQuantity())
@@ -96,7 +96,7 @@ public final class MapperTenderResult {
                 .ifPresent(tenderResult::setStartDate);
 
         Optional.ofNullable(tenderResultType.getAwardedOwnerNationalityCode())
-                .map(code -> ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_5))
+                .map(code -> ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(tenderResult::setAwardedOwnerNationalityCode);
 
         Optional.ofNullable(tenderResultType.getWinningParty())

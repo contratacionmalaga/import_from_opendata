@@ -41,7 +41,7 @@ public final class MapperAgentParty {
         // Party Name (siempre se procesa)
         String partyName = MapperStringFromList.getStringFromListPartyNameType(partyType.getPartyName());
         agentParty.setPartyName(
-                ComunHelper.limitarRegistro(partyName, Constantes.TAMANO_MAXIMO_CAMPO_250));
+                ComunHelper.limitarRegistro(partyName, Constantes.TAMANO_MAXIMO_CAMPO_500));
 
         // Party Identification
         agentParty.setPartyIdentification(

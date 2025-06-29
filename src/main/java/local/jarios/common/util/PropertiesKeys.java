@@ -33,7 +33,7 @@ public final class PropertiesKeys {
     /* Nombre de las propiedades del fichero validation.properties */
     public static final String VALIDATION_URI_SCHEME = "parametro.uri.scheme";
     public static final String VALIDATION_URI_HOST = "parametro.uri.host";
-    public static final String VALIDATIONURI_PATH = "parametro.uri.path";
+    public static final String VALIDATION_URI_PATH = "parametro.uri.path";
 
     /* Nombre de las propiedades del fichero mail.properties */
     public static final String MAIL_USER = "mail.user";

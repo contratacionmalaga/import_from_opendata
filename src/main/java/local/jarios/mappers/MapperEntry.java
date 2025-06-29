@@ -49,12 +49,12 @@ public final class MapperEntry {
         entry.setFeed(feed);
 
         Optional.ofNullable(entryType.getId())
-                .map(id -> ComunHelper.limitarRegistro(id.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_250))
+                .map(id -> ComunHelper.limitarRegistro(id.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(entry::setIdEntry);
 
         entry.setLink(ComunHelper.limitarRegistro(
                 MapperStringFromList.getStringFromListLinkType(entryType.getLink()),
-                Constantes.TAMANO_MAXIMO_CAMPO_250));
+                Constantes.TAMANO_MAXIMO_CAMPO_500));
 
         Optional.ofNullable(entryType.getTitle())
                 .map(title -> MapperStringFromList.getStringFromListObject(title.getContent()))

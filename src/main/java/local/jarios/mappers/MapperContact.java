@@ -37,12 +37,12 @@ public final class MapperContact {
 
         Optional.ofNullable(contactType.getName())
                 .map(NameType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_250))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(contact::setName);
 
         Optional.ofNullable(contactType.getElectronicMail())
                 .map(ElectronicMailType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_250))
+                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(contact::setElectronicMail);
 
         Optional.ofNullable(contactType.getTelephone())

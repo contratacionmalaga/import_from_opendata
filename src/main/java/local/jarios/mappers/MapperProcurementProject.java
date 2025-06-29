@@ -47,13 +47,13 @@ public final class MapperProcurementProject {
                     procurementProject.setTypeCode(
                             ComunHelper.limitarRegistro(
                                     typeCode.getValue(),
-                                    Constantes.TAMANO_MAXIMO_CAMPO_5)));
+                                    Constantes.TAMANO_MAXIMO_CAMPO_50)));
 
             Optional.ofNullable(ppt.getSubTypeCode()).ifPresent(subTypeCode ->
                     procurementProject.setSubtypeCode(
                             ComunHelper.limitarRegistro(
                                     subTypeCode.getValue(),
-                                    Constantes.TAMANO_MAXIMO_CAMPO_5)));
+                                    Constantes.TAMANO_MAXIMO_CAMPO_50)));
 
             Optional.ofNullable(ppt.getMixContractIndicator()).ifPresent(mixContractIndicator ->
                     procurementProject.setMixContractIndicator(mixContractIndicator.isValue()));

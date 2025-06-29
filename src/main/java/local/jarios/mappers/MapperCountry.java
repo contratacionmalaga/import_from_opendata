@@ -29,11 +29,13 @@ public final class MapperCountry {
         country.setAddress(address);
 
         Optional.ofNullable(countryType.getName())
-                .map(name -> ComunHelper.limitarRegistro(name.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_250))
+                .map(name ->
+                        ComunHelper.limitarRegistro(name.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(country::setName);
 
         Optional.ofNullable(countryType.getIdentificationCode())
-                .map(code -> ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
+                .map(code ->
+                        ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(country::setIdentificationCode);
 
         //
