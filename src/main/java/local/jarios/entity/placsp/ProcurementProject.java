@@ -39,10 +39,10 @@ public class ProcurementProject extends Auditable {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "type_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "type_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String typeCode;
 
-    @Column(name = "subtype_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "subtype_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String subtypeCode;
 
     @Column(name = "mix_contract_indicator")

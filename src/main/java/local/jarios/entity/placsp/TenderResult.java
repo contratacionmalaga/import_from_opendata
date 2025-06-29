@@ -36,7 +36,7 @@ public class TenderResult extends Auditable {
     private UUID id;
 
     // 4.35.1 Tipo de resultado
-    @Column(name = "result_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "result_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String resultCode;
 
     // 4.35.5 Motivación - Descripción textual
@@ -80,7 +80,7 @@ public class TenderResult extends Auditable {
     private Boolean sMEAwardedIndicator;
 
     // 4.35.7 Información sobre el contratista - Nacionalidad del contratista (código)
-    @Column(name = "awarded_owner_nationality_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "awarded_owner_nationality_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String awardedOwnerNationalityCode;
 
     // 4.35.6 Ofertas recibidas - Se han excluído ofertas por ser anormalmente bajas

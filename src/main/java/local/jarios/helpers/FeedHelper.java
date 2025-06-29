@@ -136,7 +136,7 @@ public final class FeedHelper {
 
     private static String getInitialLink(boolean isLocal) throws PropertiesManagerException, URISyntaxException {
         if (isLocal) {
-            String filename = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_FILENAME);
+            String filename = PropertiesHelper.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_FILENAME);
             Path resolved = getPathBaseLocal().resolve(filename).normalize();
 
             if (!resolved.startsWith(getPathBaseLocal())) {
@@ -145,7 +145,7 @@ public final class FeedHelper {
 
             return resolved.toString();
         } else {
-            String url = PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_URL);
+            String url = PropertiesHelper.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_URL);
             UrlHelper.validateRemoteUrl(url);
             return url;
         }
@@ -200,7 +200,7 @@ public final class FeedHelper {
 
     private static Path getPathBaseLocal() throws PropertiesManagerException {
         return Paths
-                .get(PropertiesHelper.getProperty(Constantes.APP_PROPERTIES, PropertiesKeys.APP_PATH))
+                .get(PropertiesHelper.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_PATH))
                 .toAbsolutePath()
                 .normalize();
     }

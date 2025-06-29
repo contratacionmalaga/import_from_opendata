@@ -32,10 +32,10 @@ public class AgentParty extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "web_site_uri", length = Constantes.TAMANO_MAXIMO_CAMPO_450)
+    @Column(name = "web_site_uri", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String webSiteUri;
 
-    @Column(name = "party_name", length = Constantes.TAMANO_MAXIMO_CAMPO_450)
+    @Column(name = "party_name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String partyName;
 
     @OneToOne(

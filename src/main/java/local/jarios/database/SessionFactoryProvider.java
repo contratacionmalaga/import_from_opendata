@@ -1,6 +1,6 @@
 package local.jarios.database;
 
-import local.jarios.common.util.Constantes;
+import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.enums.TipoConexion;
 import local.jarios.exceptions.MiSessionFactoryProvider;
@@ -21,9 +21,6 @@ import java.util.Properties;
  * incluyendo la lectura del fichero de propiedades, construcción del objeto
  * {@link org.hibernate.cfg.Configuration}, y el escaneo del paquete que contiene las entidades
  * anotadas con {@code @Entity}.</p>
- *
- * <p>La configuración de Hibernate se obtiene a partir de un fichero de propiedades
- * definido en {@link Constantes#HIBERNATE_PROPERTIES}.</p>
  *
  * <p>Esta clase depende de los siguientes componentes:
  * <ul>
@@ -60,7 +57,7 @@ public class SessionFactoryProvider {
         try {
 
             Properties hibernateProperties = getUpdateHibernateProperties(tipoConexion);
-            log.debug("[getSessionFactory] - Obtenidas las Properties correctamente del fichero {}.", Constantes.HIBERNATE_PROPERTIES);
+            log.debug("[getSessionFactory] - Obtenidas las Properties correctamente del fichero {}.", PropertiesFiles.HIBERNATE);
 
             var hibernateConfigurer = new HibernateConfigurer();
             log.debug("[getSessionFactory] - Objeto HibernateConfigurer creado correctamente.");
@@ -109,7 +106,7 @@ public class SessionFactoryProvider {
 
         switch (tipoConexion) {
             case TipoConexion.PRINCIPAL -> {
-                Properties p = PropertiesManagerServiceImpl.getInstance().getProperties(Constantes.HIBERNATE_PROPERTIES);
+                Properties p = PropertiesManagerServiceImpl.getInstance().getProperties(PropertiesFiles.HIBERNATE);
                 log.info("[getUpdateHibernateProperties] - Propiedades obtenidas para PRINCIPAL: {}", p);
                 return p;
             }
@@ -135,25 +132,42 @@ public class SessionFactoryProvider {
 
         filtroSqlProperties.setProperty(
                 JdbcSettings.JAKARTA_JDBC_URL,
-                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.HIBERNATE_FILTER_URL));
-        log.debug("[getFiltroSqlProperties] - URL configurada: {}", filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_URL));
+                propertyManager
+                        .getProperty(
+                                PropertiesFiles.JAKARTA_FILTRO,
+                                PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
+        log.debug(
+                "[getFiltroSqlProperties] - URL configurada: {}",
+                filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_URL));
 
         filtroSqlProperties.setProperty(
                 JdbcSettings.JAKARTA_JDBC_DRIVER,
-                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.HIBERNATE_FILTER_DRIVER));
-        log.debug("[getFiltroSqlProperties] - Driver configurado: {}", filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_DRIVER));
+                propertyManager.getProperty(PropertiesFiles.JAKARTA_FILTRO, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_DRIVER));
+        log.debug(
+                "[getFiltroSqlProperties] - Driver configurado: {}",
+                filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_DRIVER));
 
         filtroSqlProperties.setProperty(
                 JdbcSettings.JAKARTA_JDBC_USER,
-                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.HIBERNATE_FILTER_USER));
-        log.debug("[getFiltroSqlProperties] - Usuario configurado: {}", filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_USER));
+                propertyManager
+                        .getProperty(
+                                PropertiesFiles.JAKARTA_FILTRO,
+                                PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_USER));
+        log.debug(
+                "[getFiltroSqlProperties] - Usuario configurado: {}",
+                filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_USER));
 
         filtroSqlProperties.setProperty(
                 JdbcSettings.JAKARTA_JDBC_PASSWORD,
-                propertyManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.HIBERNATE_FILTER_PASSWORD));
-        log.debug("[getFiltroSqlProperties] - Password configurado (oculto en logs por seguridad)");
+                propertyManager
+                        .getProperty(
+                                PropertiesFiles.JAKARTA_FILTRO,
+                                PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
+        log.debug(
+                "[getFiltroSqlProperties] - Password configurado (oculto en logs por seguridad)");
 
-        log.debug("[getFiltroSqlProperties] - FilterProperties: {}", filtroSqlProperties);
+        log.debug(
+                "[getFiltroSqlProperties] - FilterProperties: {}", filtroSqlProperties);
 
         return filtroSqlProperties;
     }

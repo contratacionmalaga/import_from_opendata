@@ -30,10 +30,10 @@ public class LocatedContractingParty extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "contracting_party_type_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "contracting_party_type_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String contractingPartyTypeCode;
 
-    @Column(name = "buyer_profile_uri_id", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "buyer_profile_uri_id", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String buyerProfileUriId;
 
     //

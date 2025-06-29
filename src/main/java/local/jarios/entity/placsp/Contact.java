@@ -32,16 +32,16 @@ public class Contact extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String name;
 
-    @Column(name = "telephone", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "telephone", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String telephone;
 
-    @Column(name = "telefax", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "telefax", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String telefax;
 
-    @Column(name = "electronic_mail", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "electronic_mail", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String electronicMail;
 
     //

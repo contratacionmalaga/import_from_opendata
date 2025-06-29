@@ -81,14 +81,17 @@ public final class MapHelper {
     }
 
 
-    public static <K, V extends HasIdEntry<V>> void analisisMap (Map<K, V> map) {
+    public static <K, V extends HasIdEntry<V>> int analisisMap (Map<K, V> map) {
 
         //
         if (isMapInvalid(map)) {
             log.info("[analisisMap] - Map no válido.");
         }
 
+        //
         AtomicInteger nErrores = new AtomicInteger();
+
+        //
         map.forEach((key,value) -> {
             if (!key.equals(value.getIdEntry())) {
                 log.info("[analisisMap] - ERROR!!! Key: '{}' | Value: {}", key, value.getIdEntry());
@@ -96,6 +99,7 @@ public final class MapHelper {
             }
         });
 
-        log.info("[analisisMap] - Errores: {}", nErrores);
+        //
+        return nErrores.get();
     }
 }

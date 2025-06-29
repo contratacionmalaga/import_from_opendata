@@ -1,6 +1,6 @@
 package local.jarios;
 
-import local.jarios.common.util.PropertiesKeys;
+import local.jarios.common.util.*;
 import local.jarios.email.api.EmailSender;
 import local.jarios.email.api.EmailSenderImpl;
 import local.jarios.email.api.EmailService;
@@ -28,9 +28,6 @@ import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.services.Service;
 import local.jarios.services.ServiceImpl;
-import local.jarios.common.util.Constantes;
-import local.jarios.common.util.Mensajes;
-import local.jarios.common.util.VariablesGlobales;
 import local.jarios.version.api.Version;
 import local.jarios.version.api.VersionImpl;
 import local.jarios.version.exception.VersionException;
@@ -93,32 +90,32 @@ public abstract class AbstractOpenData {
             log.info("El servicio de consulta de la versión del JAR se ha creado correctamente.");
 
             propertiesManager = PropertiesManagerServiceImpl.getInstance();
-            log.info("El servicio de consulta de los ficheros properties se ha creado correctamente con los valores por defecto.");
+            log.info("El servicio de consulta de los ficheros properties se ha creado correctamente.");
 
             propertiesManager.setConfigDir(Constantes.CONFIG_DIR);
-            log.info("Directorio configurado: {}", Constantes.CONFIG_DIR);
+            log.info("Establezco el directorio donde se encuentra .properties: {}", Constantes.CONFIG_DIR);
 
             // === Configuración inicial ===
             Set<String> clavesSensibles = Set.of("password");
             propertiesManager.setSensitiveKeys(clavesSensibles);  // Ahora se aplica sobre la instancia
-            log.info("Establezco el conjunto de claves Sensibles: {}", clavesSensibles);
+            log.info("Establezco el conjunto de claves sensibles: {}", clavesSensibles);
 
             // Configurar clave secreta
             propertiesManager.setSecretKey(Constantes.ENCRYPT_PASSWORD);
-            log.info("Clave secreta configurada correctamente");
+            log.info("Establezco la clave por defecto.");
 
             // Cargar todas las propiedades desde el directorio de configuración
             propertiesManager.loadAllProperties();
             log.info("Leídas todas las propiedades de todos los ficheros.");
 
             List<String> listFicheros = propertiesManager.getListFiles();
-            log.info("Ficheros cargados correctamente desde el directorio '{}'. Lista ficheros: {}", Constantes.CONFIG_DIR, listFicheros);
+            log.info("Ficheros cargados correctamente: {}", listFicheros);
 
-            // Muestro el valor de APP_NAME
-            appName = propertiesManager.getProperty(Constantes.APP_PROPERTIES, Constantes.KEY_APP_NAME);
+            // Obtengo y Muestro el valor de la key dentro del properties que tiene el nombre del aplicativo
+            appName = propertiesManager.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_NAME);
             log.info("AppName: {}", appName);
 
-            // Obtengo y muestro el valor de APP_VERSION
+            // Obtengo y muestro el valor de la versión de la aplicación
             appVersion = versionService.getVersion(AbstractOpenData.class);
             log.info("AppVersion: {}", appVersion);
 
@@ -130,7 +127,7 @@ public abstract class AbstractOpenData {
             log.info("TipoSindicacion: {}", tipoSindicacion);
 
             Log miLog = new Log(lugarImportacion, tipoSindicacion);
-            log.info(Mensajes.LOG_CREACION, miLog);
+            log.info(Mensajes.LOG_CREACION);
 
             // Creo el objeto Estadistica que se inicializa con el Log anteriormente creado y con el
             //         valor LocalDateTime.now() para el campo fechaHoraInicial
@@ -142,6 +139,8 @@ public abstract class AbstractOpenData {
 
             //
             FiltroHelper.printFilters();
+
+            System.exit(0);
 
             // Creo el objeto Configuracion
             Configuracion configuracion = new Configuracion(miLog);
@@ -169,17 +168,17 @@ public abstract class AbstractOpenData {
 
             // Asignar lista de feeds al log
             miLog.setListFeed(listFeedEntities);
-            log.info("Feeds asignadas al Log: {}", listFeedEntities.size());
+            log.info(
+                    "Feeds asignadas al Log: {}",
+                    StringHelper.getNumeroConFormato(listFeedEntities.size()));
 
             // Asignar la lista de Órganos de Contratación del Filtro al log
             List<OrganoContratacion> listOrganosContratacion =
                     OrganoContratacionHelper.getListOrganoContratacion(miLog, VariablesGlobales.getMapFiltro());
             miLog.setListOrganoContratacion(listOrganosContratacion);
-            log.info("Órganos de Contratación asignados al Log: {}", listOrganosContratacion.size());
-
-            //
-            //     FINAL DEL PARSEO DE LOS FEEDS
-            //
+            log.info(
+                    "Órganos de Contratación asignados al Log: {}",
+                    StringHelper.getNumeroConFormato(listOrganosContratacion.size()));
 
             // Asigno la fecha y hora final del parseo
             LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();
@@ -192,6 +191,12 @@ public abstract class AbstractOpenData {
             estadistica.setDuracion(duracion);
             log.info("Duración del parseo: {}", duracion);
 
+            log.info("Nº de errores en el Map: {}",
+                    StringHelper.getNumeroConFormato(MapHelper.analisisMap(VariablesGlobales.getMapBaseDatos())));
+
+            log.info(
+                    "Registros en el Map: {}",
+                    StringHelper.getNumeroConFormato(VariablesGlobales.getMapBaseDatos().size()));
             //
             //     VERIFICACIÓN DEL MAP
             //
@@ -209,9 +214,13 @@ public abstract class AbstractOpenData {
             //     CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
             //
             log.info(Mensajes.SERVICE_CREACION_INICIO);
-            log.info(propertiesManager.getProperty(Constantes.HIBERNATE_PROPERTIES, PropertiesKeys.JAKARTA_URL));
+            log.info(
+                    propertiesManager
+                            .getProperty(
+                                    PropertiesFiles.JAKARTA_PRINCIPAL,
+                                    PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
             Service service = new ServiceImpl(TipoConexion.PRINCIPAL);
-            log.info("Creado el servicio de conexión con la base de datos {}", TipoConexion.PRINCIPAL);
+            log.info("Creación correcta del servicio de conexión con la base de datos {}", TipoConexion.PRINCIPAL);
 
             // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
             service.persistirLog(miLog, VariablesGlobales.getMapBaseDatos(), lugarImportacion);
@@ -289,7 +298,7 @@ public abstract class AbstractOpenData {
         try {
 
             // Configuración del servidor SMTP
-            Properties emailProps = propertiesManager.getProperties(Constantes.EMAIL_PROPERTIES);
+            Properties emailProps = propertiesManager.getProperties(PropertiesFiles.MAIL);
             log.info("[enviarEmail] - Properties cargadas correctamente.");
 
             // Construcción de los datos del correo
@@ -337,10 +346,10 @@ public abstract class AbstractOpenData {
             String equipo = ComunHelper.getHostName();
             log.debug("[construirEmailData] - Equipo desde el que se envía el email: {}", equipo);
 
-            String from = propertiesManager.getProperty(Constantes.EMAIL_PROPERTIES, Constantes.KEY_EMAIL_FROM);
+            String from = propertiesManager.getProperty(PropertiesFiles.MAIL, PropertiesKeys.EMAIL_FROM);
             log.debug("[construirEmailData] - Remitente: {}", from);
 
-            String to = propertiesManager.getProperty(Constantes.EMAIL_PROPERTIES, Constantes.KEY_EMAIL_TO);
+            String to = propertiesManager.getProperty(PropertiesFiles.MAIL, PropertiesKeys.EMAIL_TO);
             log.debug("[construirEmailData] - Destinatarios: {}", to);
 
             // Defino el asunto y el cupero del Email

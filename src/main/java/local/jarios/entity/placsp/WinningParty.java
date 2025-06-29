@@ -29,7 +29,7 @@ public class WinningParty extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "party_name", length = Constantes.TAMANO_MAXIMO_CAMPO_450)
+    @Column(name = "party_name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String partyName;
 
     @OneToOne(

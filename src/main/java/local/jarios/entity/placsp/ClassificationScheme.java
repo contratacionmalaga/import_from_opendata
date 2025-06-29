@@ -37,10 +37,10 @@ public class ClassificationScheme extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "uuid", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "uuid", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String uuid;
 
-    @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_450)
+    @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String name;
 
     @Column(name = "note", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)

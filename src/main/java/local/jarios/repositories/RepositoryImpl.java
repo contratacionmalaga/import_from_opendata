@@ -43,13 +43,20 @@ public class RepositoryImpl implements Repository {
             throws MiRepositoryException {
 
         ejecutarDentroDeTransaccion(session -> {
+
             session.persist(miLog);
-            log.debug("[persistirLog] - Persistido Log (Estadística y Configuración).");
+            log.debug("[persistirLog] - Persistidas las entidades Log, Estadistica, Configuracion y List<Oc>.");
+
+            session.flush();
+            log.debug("[persistirLog] - Flush.");
 
             grabarMap(session, mapBaseDatos, lugarImportacion);
-            log.debug("[persistirLog] - Map de Entry persistido. Registros: {}", mapBaseDatos.size());
+            log.debug(
+                    "[persistirLog] - Map de Entry persistido. Registros: {}",
+                    StringHelper.getNumeroConFormato(mapBaseDatos.size()));
 
             return null;
+
         }, "persistirLog");
     }
 
@@ -104,10 +111,7 @@ public class RepositoryImpl implements Repository {
 
     private String formatContador(int actual, int total) {
         int padding = String.valueOf(total).length();
-        return String
-                .format("%0" + padding + "d/%0" + padding + "d",
-                        StringHelper.getNumeroConFormato(actual),
-                        StringHelper.getNumeroConFormato(total));
+        return String.format("%0" + padding + "d/%0" + padding + "d", actual, total);
     }
 
     private void flushAndClear(Session session) {
@@ -117,13 +121,23 @@ public class RepositoryImpl implements Repository {
 
     private <R> R ejecutarDentroDeTransaccion(Function<Session, R> function, String metodo)
             throws MiRepositoryException {
+
+        //
         Transaction transaction = null;
 
-        try (Session session = sessionFactory.openSession()) {
-            session.setFlushMode(FlushMode.MANUAL.toJpaFlushMode());
+        //
+        try (
+                Session session = sessionFactory.openSession()
+        ) {
+            //
             transaction = TransactionManager.beginTransaction(session);
+            //
+            session.setFlushMode(FlushMode.MANUAL.toJpaFlushMode());
+            //
             R result = function.apply(session);
+            //
             TransactionManager.commitTransaction(transaction);
+            //
             return result;
 
         } catch (Exception ex) {

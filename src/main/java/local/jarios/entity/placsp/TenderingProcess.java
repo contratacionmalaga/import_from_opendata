@@ -33,23 +33,23 @@ public class TenderingProcess extends Auditable {
     private UUID id;
 
     // 4.12 Tipo de procedimiento
-    @Column(name = "procedure_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "procedure_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String procedureCode;
 
     // 4.13 Sistema de contratación
-    @Column(name = "contracting_system_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "contracting_system_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String contractingSystemCode;
 
     // 4.14 Tipo de tramitación
-    @Column(name = "urgency_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "urgency_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String urgencyCode;
 
     // 4.15 Forma de la presentación de la oferta
-    @Column(name = "submission_method_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "submission_method_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String submissionMethodCode;
 
     // 4.34 Limitación del número de licitadores - Número de lotes a los que se debe ofertar
-    @Column(name = "part_presentation_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "part_presentation_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String partPresentationCode;
 
     // 4.34 Limitación del número de licitadores - Número de lotes a los que se puede ofertar

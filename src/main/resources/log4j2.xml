@@ -85,42 +85,42 @@
             <AppenderRef ref="FileReflections"/>
         </Logger>
 
-        <Logger name="com.zaxxer.hikari" level="DEBUG" additivity="false">
+        <Logger name="com.zaxxer.hikari" level="INFO" additivity="false">
             <AppenderRef ref="FileHikariCP"/>
         </Logger>
 
-        <Logger name="local.jarios" level="TRACE" additivity="false">
+        <Logger name="local.jarios" level="INFO" additivity="false">
             <AppenderRef ref="MainAppLogFile"/>
             <AppenderRef ref="Console"/>
         </Logger>
 
         <!-- Hibernate General (todo excepto lo específico) -->
-        <Logger name="org.hibernate" level="DEBUG" additivity="false">
+        <Logger name="org.hibernate" level="INFO" additivity="false">
             <AppenderRef ref="FileHibernate"/>
         </Logger>
 
         <!-- Hibernate Persistence -->
-        <Logger name="javax.persistence" level="DEBUG" additivity="false">
+        <Logger name="javax.persistence" level="INFO" additivity="false">
             <AppenderRef ref="FilePersistence"/>
         </Logger>
 
         <!-- Hibernate SQL -->
-        <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <Logger name="org.hibernate.SQL" level="INFO" additivity="false">
             <AppenderRef ref="FileHibernateSQL"/>
         </Logger>
 
         <!-- Hibernate Statistics -->
-        <Logger name="org.hibernate.stat" level="DEBUG" additivity="false">
+        <Logger name="org.hibernate.stat" level="INFO" additivity="false">
             <AppenderRef ref="FileHibernateStats"/>
         </Logger>
 
         <!-- Hibernate Flush y Execution Plan -->
-        <Logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="DEBUG" additivity="false">
+        <Logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="INFO" additivity="false">
             <AppenderRef ref="FileHibernateFlush"/>
         </Logger>
 
         <!-- Hibernate SQL Bind Parameters -->
-        <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="DEBUG" additivity="false">
+        <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="INFO" additivity="false">
             <AppenderRef ref="FileHibernate"/>
         </Logger>
     </Loggers>

@@ -31,7 +31,7 @@ public class TenderRecipientParty extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "endpoint_id", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "endpoint_id", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String endpointId;
 
     //

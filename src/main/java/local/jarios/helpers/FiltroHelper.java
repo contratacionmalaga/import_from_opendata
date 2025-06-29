@@ -1,5 +1,6 @@
 package local.jarios.helpers;
 
+import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.entity.atom.Entry;
 import local.jarios.enums.TipoConexion;
@@ -10,7 +11,6 @@ import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.services.Service;
 import local.jarios.services.ServiceImpl;
 import local.jarios.common.util.Constantes;
-import local.jarios.common.util.Mensajes;
 import local.jarios.common.util.VariablesGlobales;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,19 +38,19 @@ public final class FiltroHelper {
      * @return Devuelve un Map del tipo Map<IdPlataforma, NombreOrganoContratacion>
      * @throws MiServiceException Excepción a la hora de generar el objeto Session de Hibernate
      */
-    public static Map<String, String> getMapFiltroSql(String sql) throws MiServiceException {
+    public static Map<String, String> getMapFromFiltroSql(String sql) throws MiServiceException {
 
         //
         Map<String, String> mapFiltro = new HashMap<>();
-        log.debug("[getMapFiltroSql] - Creado el HashMap que almacenará el filtro.");
+        log.info("[getMapFiltroSql] - Creado el HashMap que almacenará el filtro.");
 
         // Creo el objeto Servicio
         Service filterService = new ServiceImpl(TipoConexion.FILTRO_SQL);
-        log.debug("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
+        log.info("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
 
         // Llamar al método para la obtención de la lista con el filtro
         List<FiltroOrganoContratacion> listFiltroOCs = filterService.getListFiltroOcsFromFiltroSql(sql);
-        log.debug("[getMapFiltroSql] - Lista de Órganos de Contratación: {}", listFiltroOCs);
+        log.info("[getMapFiltroSql] - Lista de Órganos de Contratación: {}", listFiltroOCs);
 
         // Analizo si la lista con el filtro es vacía
         //     (lo que implicaría que ningún ENTRY podría pertenecer al filtro)
@@ -82,11 +82,8 @@ public final class FiltroHelper {
         if (VariablesGlobales.getMapFiltro().isEmpty()) {
             // En caso de NO APLIAR FILTRO DE CARGA --> Devuelvo TRUE
 
-            if (log.isDebugEnabled()) {
-                log.info(Mensajes.FILTRO, Constantes.TABULADOR_2, Constantes.NO, "SQL", true);
-            }
-
-            //
+            log.debug("[hasEntryInFiltroSql] - VariablesGlobales.getMapFiltro() EMPTY.");
+            System.exit(0);
             return true;
         }
 
@@ -98,10 +95,11 @@ public final class FiltroHelper {
 
             //
             var idPlataforma = idPlataformaOpt.get();
+            log.debug("[hasEntryInFiltroSql] - IdPlataforma en Entry: {}", idPlataforma);
 
             // Comprobamos si el idPlataforma está en el mapa de filtros
             boolean encontrado = VariablesGlobales.getMapFiltro().containsKey(idPlataforma);
-            log.debug("[getIfFiltroSqlContainsEntry] - Encontrado el IdPlataforma del Entry en el Map de OC: {}", idPlataforma);
+            log.debug("[hasEntryInFiltroSql] - No figura en VariablesGlobales.getMapFiltro().");
 
             //
             return encontrado;
@@ -193,13 +191,13 @@ public final class FiltroHelper {
 
         // Leo la fecha inicial de lectura
         String filtroFechaInicialStr = PropertiesHelper.getProperty(
-                Constantes.FILTER_PROPERTIES,
-                PropertiesKeys.FILTRO_FECHAINICIALLECTURA);
+                PropertiesFiles.FILTER,
+                PropertiesKeys.FILTER_FECHAINICIALLECTURA);
 
         // Leo la fecha final de lectura
         String filtroFechaFinalStr = PropertiesHelper.getProperty(
-                Constantes.FILTER_PROPERTIES,
-                PropertiesKeys.FILTRO_FECHAFINALLECTURA);
+                PropertiesFiles.FILTER,
+                PropertiesKeys.FILTER_FECHAFINALLECTURA);
 
         // Si ambas fechas vienen informadas y no están en blanco
         if (!filtroFechaInicialStr.isBlank() && !filtroFechaFinalStr.isBlank()) {
@@ -227,7 +225,10 @@ public final class FiltroHelper {
 
     private static void loadFilterNuts() throws PropertiesManagerException {
 
-        String filter = PropertiesHelper.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_NUTS);
+        String filter = PropertiesHelper
+                            .getProperty(
+                                    PropertiesFiles.FILTER,
+                                    PropertiesKeys.FILTER_NUTS);
 
         if ((filter != null) && (!filter.isBlank())) {
             VariablesGlobales.setFiltroNuts(filter);
@@ -236,7 +237,10 @@ public final class FiltroHelper {
 
     private static void loadFilterObjeto() throws PropertiesManagerException {
 
-        String filter = PropertiesHelper.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_OBJETO);
+        String filter = PropertiesHelper
+                            .getProperty(
+                                    PropertiesFiles.FILTER,
+                                    PropertiesKeys.FILTER_OBJETO);
 
         if ((filter != null) && (!filter.isBlank())) {
             VariablesGlobales.setFiltroObjeto(filter);
@@ -245,46 +249,52 @@ public final class FiltroHelper {
 
     private static void loadFilterSql() throws PropertiesManagerException {
 
-        String filter = PropertiesHelper.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_OBJETO);
+        String filter = PropertiesHelper
+                            .getProperty(
+                                    PropertiesFiles.FILTER,
+                                    PropertiesKeys.FILTER_SQL);
 
-        if ((filter != null) && (!filter.isBlank())) {
+        if (!StringHelper.isInvalidString(filter)) {
             VariablesGlobales.setFiltroSql(filter);
+            log.info("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
 
-            VariablesGlobales.setMapFiltro(getMapFiltroSql(filter));
+            VariablesGlobales.setMapFiltro(getMapFromFiltroSql(filter));
+            log.info("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
+            MapHelper.printMap(getMapFromFiltroSql(filter));
         }
     }
 
     public static void loadFilters() throws PropertiesManagerException {
 
         loadFilterFechas();
-        log.debug("[loadFilters] - FilterFechas cargado correctamente.");
+        log.info("[loadFilters] - FilterFechas cargado correctamente.");
 
         loadFilterNuts();
-        log.debug("[loadFilters] - FilterNuts cargado correctamente.");
+        log.info("[loadFilters] - FilterNuts cargado correctamente.");
 
         loadFilterObjeto();
-        log.debug("[loadFilters] - FilterObjeto cargado correctamente.");
+        log.info("[loadFilters] - FilterObjeto cargado correctamente.");
 
         loadFilterSql();
-        log.debug("[loadFilters] - FilterSql cargado correctamente.");
+        log.info("[loadFilters] - FilterSql cargado correctamente.");
 
     }
 
     public static void printFilters() {
 
-        log.debug(
-                "[printFilters] - Filtro fechas. Fecha Inicial: '{}', Fecha Final: '{}'.",
+        log.info(
+                "[printFilters] - Filtro fechas. Inicial: '{}', Final: '{}'.",
                 VariablesGlobales.getFiltroFechaInicial(),
                 VariablesGlobales.getFiltroFechaFinal());
 
-        log.debug("[printFilters] - Filtro Nuts. Nuts: '{}'.", VariablesGlobales.getFiltroNuts());
+        log.info("[printFilters] - Filtro Nuts: '{}'.", VariablesGlobales.getFiltroNuts());
 
-        log.debug("[printFilters] - Filtro Objeto. Objeto: '{}'.", VariablesGlobales.getFiltroObjeto());
+        log.info("[printFilters] - Filtro Objeto: '{}'.", VariablesGlobales.getFiltroObjeto());
 
-        log.debug("[printFilters] - Filtro Sql. Sql: '{}'.", VariablesGlobales.getFiltroSql());
+        log.info("[printFilters] - Filtro Sql: '{}'.", VariablesGlobales.getFiltroSql());
 
         VariablesGlobales.getMapFiltro().forEach((key, value) ->
-                log.debug("[printFilters] - IdPlataforma: '{}' - ÓrganoContratacion: {}", key, value));
+                log.info("[printFilters] - IdPlataforma: '{}' - ÓrganoContratacion: {}", key, value));
     }
 
     public static boolean entryCumpleFiltros(Entry entry) {

@@ -35,7 +35,7 @@ public class Uuid extends Auditable {
     @Column(name = "scheme_name", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String schemeName;
 
-    @Column(name = "uuid", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "uuid", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String uuid;
 
     @ManyToOne(

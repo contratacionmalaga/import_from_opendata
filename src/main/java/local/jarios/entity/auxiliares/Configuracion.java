@@ -2,6 +2,7 @@ package local.jarios.entity.auxiliares;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
+import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.entity.Log;
 import local.jarios.common.util.Constantes;
@@ -32,13 +33,13 @@ public class Configuracion extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "path", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "path", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String path;
 
-    @Column(name = "filename", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "filename", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String filename;
 
-    @Column(name = "url", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "url", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String url;
 
     @Column(name = "filtro_fecha_inicio_lectura")
@@ -84,21 +85,21 @@ public class Configuracion extends Auditable {
 
         switch (miLog.getLugarImportacion()) {
             case INTERNET -> {
-                this.path = "";
-                this.filename = "";
-                this.url = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.APP_URL);
+                this.path = Constantes.CADENA_VACIA;
+                this.filename = Constantes.CADENA_VACIA;
+                this.url = props.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_URL);
             }
             case LOCAL -> {
-                this.path = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.APP_PATH);
-                this.filename = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.APP_FILENAME);
-                this.url = "";
+                this.path = props.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_PATH);
+                this.filename = props.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_FILENAME);
+                this.url = Constantes.CADENA_VACIA;
             }
         }
 
-        this.filtroFechaInicioLectura = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_FECHAINICIALLECTURA);
-        this.filtroFechaFinLectura = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_FECHAFINALLECTURA);
-        this.filtroSql = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_SQL);
-        this.filtroObjeto = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_OBJETO);
-        this.filtroNuts = props.getProperty(Constantes.FILTER_PROPERTIES, PropertiesKeys.FILTRO_NUTS);
+        this.filtroFechaInicioLectura = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_FECHAINICIALLECTURA);
+        this.filtroFechaFinLectura = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_FECHAFINALLECTURA);
+        this.filtroSql = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_SQL);
+        this.filtroObjeto = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_OBJETO);
+        this.filtroNuts = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_NUTS);
     }
 }

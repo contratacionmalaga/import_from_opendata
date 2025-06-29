@@ -35,7 +35,7 @@ public class Country extends Auditable {
     @Column(name = "identification_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String identificationCode;
 
-    @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String name;
 
     //

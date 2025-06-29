@@ -36,16 +36,16 @@ public class Address extends Auditable {
     @Column(name = "address_line", nullable = false, columnDefinition = "TEXT")
     private String addressLine;
 
-    @Column(name = "city_name", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "city_name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String cityName;
 
-    @Column(name = "postal_zone", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "postal_zone", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String postalZone;
 
-    @Column(name = "country_subentity_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "country_subentity_code", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String countrySubentityCode;
 
-    @Column(name = "country_subentity", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "country_subentity", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String countrySubentity;
 
     //

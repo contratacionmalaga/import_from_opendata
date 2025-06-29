@@ -33,7 +33,7 @@ public class Location extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "country_subentity", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "country_subentity", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String countrySubentity;
 
     @Column(name = "country_subentity_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)

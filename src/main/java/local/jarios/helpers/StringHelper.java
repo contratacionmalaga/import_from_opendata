@@ -115,4 +115,11 @@ public final class StringHelper {
             throw ex;
         }
     }
+
+    public static boolean isInvalidString(String cadena) {
+
+        boolean invalid = (cadena == null) || (cadena.isBlank());
+        log.debug("[isInvalidString] - {} es {}", cadena, invalid);
+        return invalid;
+    }
 }

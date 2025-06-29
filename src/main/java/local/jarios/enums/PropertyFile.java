@@ -27,7 +27,7 @@ public enum PropertyFile {
     PROPERTY_HIBERNATE("config/hibernate.properties"),
 
     //
-    PROPERTY_MAIL("config/email.properties"),
+    PROPERTY_MAIL("config/mail.properties"),
 
     //
     PROPERTY_RELEASE("release.properties");

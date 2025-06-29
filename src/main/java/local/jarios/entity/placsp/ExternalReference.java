@@ -35,10 +35,10 @@ public class ExternalReference extends Auditable {
     @Column(name = "uri", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
     private String uri;
 
-    @Column(name = "document_hash", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "document_hash", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String documentHash;
 
-    @Column(name = "filename", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "filename", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String filename;
 
     //

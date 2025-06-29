@@ -154,7 +154,7 @@ public final class Mensajes {
             "Enviado Mail con los datos estadísticos de la ejecución.";
 
     public static final String LOG_CREACION =
-            "Creación del objeto Log correctamente. {}";
+            "Creación del objeto Log correctamente.";
 
     public static final String ESTADISTICA_CREACION =
             "Creación del objeto Estadística correctamente.";

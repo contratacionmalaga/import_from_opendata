@@ -33,7 +33,7 @@ public class ProcessJustification extends Auditable {
     //     procedimiento extraordinario de contratación.
     // La lista de códigos se encuentra en
     //         [...](http://contrataciondelestado.es/codice/cl/2.0/ProcessJustificationReasonCode-2.0.gc)
-    @Column(name = "reason_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "reason_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String reasonCode;
 
     // Descripción: Descripción textual de la jusitificación de la utilización de un determinado

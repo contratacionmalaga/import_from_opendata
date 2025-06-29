@@ -32,10 +32,10 @@ public class DocumentReference extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "id_document_reference", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "id_document_reference", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String idDocumentReference;
 
-    @Column(name = "document_type_code", length = Constantes.TAMANO_MAXIMO_CAMPO_5)
+    @Column(name = "document_type_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String documentTypeCode;
 
     //

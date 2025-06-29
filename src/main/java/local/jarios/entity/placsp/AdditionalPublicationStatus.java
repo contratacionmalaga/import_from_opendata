@@ -2,7 +2,6 @@ package local.jarios.entity.placsp;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
@@ -33,7 +32,7 @@ public class AdditionalPublicationStatus extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "publication_median_ame", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "publication_media_name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String publicationMediaName;
 
     //

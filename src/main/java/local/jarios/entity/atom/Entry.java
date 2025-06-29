@@ -37,13 +37,13 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     //
     //
     @Id
-    @Column(name = "id", updatable = false, nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "id", updatable = false, nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private UUID id;
 
-    @Column(name = "id_entry", nullable = false, unique = true, length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "id_entry", nullable = false, unique = true, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String idEntry;
 
-    @Column(name = "link", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "link", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String link;
 
     @Column(name = "summary", columnDefinition = "TEXT")

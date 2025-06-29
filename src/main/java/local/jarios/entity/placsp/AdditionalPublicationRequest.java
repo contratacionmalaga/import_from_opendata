@@ -32,7 +32,7 @@ public class AdditionalPublicationRequest extends Auditable {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name = "agency_id", length = Constantes.TAMANO_MAXIMO_CAMPO_250)
+    @Column(name = "agency_id", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String agencyId;
 
     @Column(name = "send_date_time")
