@@ -8,8 +8,8 @@ import local.jarios.exceptions.MiServiceException;
 import local.jarios.models.FiltroOrganoContratacion;
 
 import local.jarios.properties.exception.PropertiesManagerException;
-import local.jarios.services.Service;
-import local.jarios.services.ServiceImpl;
+import local.jarios.services.ServiceFiltro;
+import local.jarios.services.ServiceFiltroImpl;
 import local.jarios.common.util.Constantes;
 import local.jarios.common.util.VariablesGlobales;
 import lombok.extern.slf4j.Slf4j;
@@ -42,15 +42,15 @@ public final class FiltroHelper {
 
         //
         Map<String, String> mapFiltro = new HashMap<>();
-        log.info("[getMapFiltroSql] - Creado el HashMap que almacenará el filtro.");
+        log.debug("[getMapFiltroSql] - Creado el HashMap que almacenará el filtro.");
 
         // Creo el objeto Servicio
-        Service filterService = new ServiceImpl(TipoConexion.FILTRO_SQL);
-        log.info("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
+        ServiceFiltro serviceFiltro = new ServiceFiltroImpl();
+        log.debug("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
 
         // Llamar al método para la obtención de la lista con el filtro
-        List<FiltroOrganoContratacion> listFiltroOCs = filterService.getListFiltroOcsFromFiltroSql(sql);
-        log.info("[getMapFiltroSql] - Lista de Órganos de Contratación: {}", listFiltroOCs);
+        List<FiltroOrganoContratacion> listFiltroOCs = serviceFiltro.getListFiltroOcsFromFiltroSql(sql);
+        log.debug("[getMapFiltroSql] - Lista de Órganos de Contratación: {}", listFiltroOCs);
 
         // Analizo si la lista con el filtro es vacía
         //     (lo que implicaría que ningún ENTRY podría pertenecer al filtro)
@@ -59,7 +59,7 @@ public final class FiltroHelper {
 
             // Paso de una Lista a un Map (para mejorar la eficiencia a la hora de realizar la búsqueda)
             mapFiltro = MapHelper.getMapFromList(listFiltroOCs);
-            log.info("[getMapFiltroSql] - Pasada la lista a un Map para acelerar las búsquedas.");
+            log.debug("[getMapFiltroSql] - Pasada la lista a un Map para acelerar las búsquedas.");
 
         }
 
@@ -256,11 +256,10 @@ public final class FiltroHelper {
 
         if (!StringHelper.isInvalidString(filter)) {
             VariablesGlobales.setFiltroSql(filter);
-            log.info("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
+            log.debug("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
 
             VariablesGlobales.setMapFiltro(getMapFromFiltroSql(filter));
-            log.info("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
-            MapHelper.printMap(getMapFromFiltroSql(filter));
+            log.debug("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
         }
     }
 
@@ -293,8 +292,7 @@ public final class FiltroHelper {
 
         log.info("[printFilters] - Filtro Sql: '{}'.", VariablesGlobales.getFiltroSql());
 
-        VariablesGlobales.getMapFiltro().forEach((key, value) ->
-                log.info("[printFilters] - IdPlataforma: '{}' - ÓrganoContratacion: {}", key, value));
+        MapHelper.printMap(VariablesGlobales.getMapFiltro());
     }
 
     public static boolean entryCumpleFiltros(Entry entry) {

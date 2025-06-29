@@ -9,8 +9,6 @@ import local.jarios.exceptions.MiParseException;
 import local.jarios.helpers.FeedHelper;
 import local.jarios.helpers.TipoSindicacionHelper;
 
-import java.util.List;
-
 public class OpenDataInternet extends AbstractOpenData {
 
     @Override
@@ -26,11 +24,9 @@ public class OpenDataInternet extends AbstractOpenData {
     }
 
     @Override
-    protected List<Feed> parsearFeeds(
-            Log log, Feed newestFeed, Estadistica estadistica)
-                throws MiParseException {
+    protected void parsearFeeds(Log log, Feed newestFeed, Estadistica estadistica) throws MiParseException {
 
-        return FeedHelper.parsearFeeds(log, newestFeed, estadistica, false);
+        FeedHelper.parsearFeeds(log, newestFeed, estadistica, false);
     }
 
     public static void main(String[] args) {

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Description:
@@ -15,9 +16,17 @@ public final class JsonSerializationHelper {
 
     private JsonSerializationHelper() { } // Prevent instantiation
 
-    public static <T> void addIfNotEmpty(JsonObject jsonObject, String propertyName, List<T> list, JsonSerializationContext context) {
+    public static <T> void addIfNotEmpty(
+            JsonObject jsonObject, String propertyName, List<T> list, JsonSerializationContext context) {
         if (list != null && !list.isEmpty()) {
             jsonObject.add(propertyName, context.serialize(list));
+        }
+    }
+
+    public static <T> void addIfNotEmptyMap(
+            JsonObject jsonObject, String propertyName, Map<T, T> map, JsonSerializationContext context) {
+        if (map != null && !map.isEmpty()) {
+            jsonObject.add(propertyName, context.serialize(map));
         }
     }
 

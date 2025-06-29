@@ -71,12 +71,14 @@ public final class MapHelper {
     }
 
     public static <K, V> void printMap(Map<K, V> map) {
+
         // Usamos forEach para recorrer el mapa y llamar a printKeyValue
         map.forEach(MapHelper::printKeyValue);
     }
 
     // Método auxiliar para imprimir clave y valor
     public static <K, V> void printKeyValue(K key, V value) {
+
         log.info("Key: {} | Value: {}", key, value.toString());
     }
 

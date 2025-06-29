@@ -46,9 +46,9 @@ public final class TransactionManager {
      * @param transaction Transacción a confirmar.
      */
     public static void commitTransaction(Transaction transaction) {
-        if ((transaction != null) && !transaction.getRollbackOnly()) {
+        if (transaction != null && !transaction.getRollbackOnly() && transaction.isActive()) {
             transaction.commit();
-            log.debug("[commitTransaction] - Commit de la transacción.");
+            log.debug("[commitTransaction] - Commit ejecutado.");
         }
     }
 

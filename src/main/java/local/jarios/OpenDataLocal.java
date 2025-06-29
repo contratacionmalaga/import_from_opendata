@@ -9,8 +9,6 @@ import local.jarios.exceptions.MiParseException;
 import local.jarios.helpers.FeedHelper;
 import local.jarios.helpers.TipoSindicacionHelper;
 
-import java.util.List;
-
 /**
  * @author Juan Antonio
  */
@@ -28,11 +26,9 @@ public class OpenDataLocal extends AbstractOpenData {
     }
 
     @Override
-    protected List<Feed> parsearFeeds(
-            Log log, Feed newestFeed, Estadistica estadistica)
-            throws MiParseException {
+    protected void parsearFeeds(Log log, Feed newestFeed, Estadistica estadistica) throws MiParseException {
 
-        return FeedHelper.parsearFeeds(log, newestFeed, estadistica, true);
+        FeedHelper.parsearFeeds(log, newestFeed, estadistica, true);
     }
 
     public static void main(String[] args) {

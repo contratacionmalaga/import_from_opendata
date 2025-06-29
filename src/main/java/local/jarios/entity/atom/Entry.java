@@ -59,6 +59,7 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     //
     //
     @ManyToOne(
+            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "feed_id",

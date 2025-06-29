@@ -54,8 +54,15 @@ public record EntryAdapter(boolean imprimirHijos) implements JsonSerializer<Entr
                         "Updated",
                         entry.getUpdated());
 
-        //
-        JsonSerializationHelper.addIfNotEmpty(jsonObject, "List<ContractFolderStatus>", entry.getListContractFolderStatus(), context);
+        if (imprimirHijos) {
+            //
+            JsonSerializationHelper
+                    .addIfNotEmpty(
+                            jsonObject,
+                            "List<ContractFolderStatus>",
+                            entry.getListContractFolderStatus(),
+                            context);
+        }
 
         //
         return jsonObject;

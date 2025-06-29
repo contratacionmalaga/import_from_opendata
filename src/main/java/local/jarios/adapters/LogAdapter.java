@@ -45,15 +45,11 @@ public record LogAdapter(boolean imprimirHijos) implements JsonSerializer<Log> {
                         log.getConfiguracion(),
                         context);
 
-        //
-        if (imprimirHijos) {
-
-            JsonSerializationHelper.addIfNotEmpty(
-                    jsonObject,
-                    "List<Feed>",
-                    log.getListFeed(),
-                    context);
-        }
+        JsonSerializationHelper.addIfNotEmpty(
+                jsonObject,
+                "List<Feed>",
+                log.getListFeed(),
+                context);
 
         // Agregar el objeto "Log" que contendrá todos los datos anteriores
         jsonObject.add("Log", logContent);

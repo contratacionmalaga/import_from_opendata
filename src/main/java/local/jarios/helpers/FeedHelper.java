@@ -5,13 +5,12 @@ import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.enums.TipoConexion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.*;
 import local.jarios.mappers.MapperFeed;
 import local.jarios.properties.exception.PropertiesManagerException;
-import local.jarios.services.Service;
-import local.jarios.services.ServiceImpl;
+import local.jarios.services.ServicePrincipal;
+import local.jarios.services.ServicePrincipalImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.w3._2005.atom.FeedType;
 
@@ -25,7 +24,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -40,12 +38,12 @@ public final class FeedHelper {
     /**
      * Obtiene la lista de feeds parseados desde local o remoto.
      */
-    public static List<Feed> parsearFeeds(Log miLog, Feed newestFeed, Estadistica estadistica, boolean isLocal)
+    public static void parsearFeeds(Log miLog, Feed newestFeed, Estadistica estadistica, boolean isLocal)
             throws MiParseException {
 
         log.trace("[parsearFeeds] - Inicio el parseo de los Feeds.");
-        List<Feed> listFeeds = new ArrayList<>();
         int nTotalEntries = 0;
+        int nTotalFeeds = 0;
 
         try {
             var unmarshaller = getValidUnmarshaller();
@@ -58,19 +56,11 @@ public final class FeedHelper {
                 try (var reader = openBufferedReader(nextLink, isLocal)) {
 
                     var feedType = getFeedType(unmarshaller, reader);
-                    if (feedType == null) {
-                        log.trace("[parsearFeeds] - FeedType es null.");
-                        break;
-                    }
-
+                    log.debug("[parsearFeeds] - Obtenido FeedType desde fichero atom.");
                     var feed = MapperFeed.getFeed(miLog, feedType);
-                    log.trace(
-                            "[parsearFeeds] - Parseado correctamente de Feed con LinkSelf: {}",
-                            feed.getLinkSelf());
-                    listFeeds.add(feed);
-                    log.trace(
-                            "[parsearFeeds] - Nº de feeds parseados: {}",
-                            StringHelper.getNumeroConFormato(listFeeds.size()));
+                    log.debug("[parsearFeeds] - Parseado correctamente de Feed con LinkSelf: {}",feed.getLinkSelf());
+                    nTotalFeeds++;
+                    log.trace("[parsearFeeds] - Nº de feeds: {}", StringHelper.getNumeroConFormato(nTotalFeeds));
                     estadistica.aumentarNFicheros();
 
                     if (isLocal || isFechaValida(feed.getUpdated(), newestFeed)) {
@@ -99,8 +89,6 @@ public final class FeedHelper {
                 }
             }
 
-            return listFeeds;
-
         } catch (IOException | URISyntaxException | MiInvalidDateFormatException |
                  PropertiesManagerException | MiUnmarshallerException | JAXBException ex) {
             throw new MiParseException(ex);
@@ -111,9 +99,10 @@ public final class FeedHelper {
      * Devuelve el feed más reciente en base al tipo de sindicación.
      */
     public static Feed getNewestFeed(TipoSindicacion tipoSindicacion) throws MiServiceException {
-        Service service = new ServiceImpl(TipoConexion.PRINCIPAL);
-        log.trace(Mensajes.SERVICE_CREACION_CREADO, TipoConexion.PRINCIPAL);
-        return service.getNewestFeed(tipoSindicacion);
+        ServicePrincipal servicePrincipal = new ServicePrincipalImpl();
+        Feed feed = servicePrincipal.getNewestFeed(tipoSindicacion);
+        log.debug("[getNewestFeed] - TipoSindicacion: {}. NewestFeed: {}", tipoSindicacion, feed);
+        return feed;
     }
 
     // ==========================
@@ -131,7 +120,9 @@ public final class FeedHelper {
 
     @SuppressWarnings("unchecked")
     private static FeedType getFeedType(Unmarshaller unmarshaller, BufferedReader reader) throws JAXBException {
-        return ((JAXBElement<FeedType>) unmarshaller.unmarshal(reader)).getValue();
+        FeedType feedType = ((JAXBElement<FeedType>) unmarshaller.unmarshal(reader)).getValue();
+        log.debug("[getFeedType] - Updated FeedType: {}", feedType.getUpdated().getValue().toGregorianCalendar().toString());
+        return feedType;
     }
 
     private static String getInitialLink(boolean isLocal) throws PropertiesManagerException, URISyntaxException {

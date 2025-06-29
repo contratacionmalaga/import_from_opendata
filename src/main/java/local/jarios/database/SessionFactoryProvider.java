@@ -9,166 +9,104 @@ import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.JdbcSettings;
 
+import java.util.Objects;
 import java.util.Properties;
 
 /**
  * Clase encargada de construir una instancia de {@link SessionFactory}
  * utilizando propiedades externas y escaneo automático de entidades JPA.
- *
- * <p>Este proveedor centraliza la creación de una configuración completa de Hibernate,
- * incluyendo la lectura del fichero de propiedades, construcción del objeto
- * {@link org.hibernate.cfg.Configuration}, y el escaneo del paquete que contiene las entidades
- * anotadas con {@code @Entity}.</p>
- *
- * <p>Esta clase depende de los siguientes componentes:
- * <ul>
- *     <li>{@link PropertiesManagerService} para obtener las propiedades de configuración</li>
- *     <li>{@link HibernateConfigurer} para construir la configuración de Hibernate</li>
- *     <li>{@link EntityScanner} para registrar las entidades JPA dinámicamente</li>
- * </ul>
- * </p>
  */
 @Slf4j
 public class SessionFactoryProvider {
 
-    /**
-     * Paquete donde se encuentran las entidades JPA para el escaneo automático.
-     */
     private static final String CONFIG_PACKAGE_NAME = "local.jarios.entity";
+    private final PropertiesManagerService propertyManager;
 
-    /**
-     * Constructor vacío.
-     */
     public SessionFactoryProvider() {
-        // Constructor por defecto
+        this.propertyManager = PropertiesManagerServiceImpl.getInstance();
     }
 
     /**
-     * Construye y devuelve una instancia de {@link SessionFactory} configurada
-     * con las propiedades Hibernate proporcionadas.
+     * Construye y devuelve una instancia de {@link SessionFactory} configurada.
      *
-     * @return Instancia de {@link SessionFactory} configurada.
-     * @throws HibernateException Si ocurre un error durante la creación de la SessionFactory.
+     * @param tipoConexion tipo de conexión a usar
+     * @return instancia de {@link SessionFactory}
+     * @throws MiSessionFactoryProvider si ocurre un error al crearla
      */
     public SessionFactory getSessionFactory(TipoConexion tipoConexion) throws MiSessionFactoryProvider {
+        Objects.requireNonNull(tipoConexion, "TipoConexion no puede ser null");
 
         try {
+            final var hibernateProperties = getHibernateProperties(tipoConexion);
+            log.info("Propiedades Hibernate obtenidas correctamente para tipo de conexión: {}", tipoConexion);
 
-            Properties hibernateProperties = getUpdateHibernateProperties(tipoConexion);
-            log.debug("[getSessionFactory] - Obtenidas las Properties correctamente del fichero {}.", PropertiesFiles.HIBERNATE);
+            final var hibernateConfigurer = new HibernateConfigurer();
+            final Configuration configuration = hibernateConfigurer.buildConfiguration(hibernateProperties);
 
-            var hibernateConfigurer = new HibernateConfigurer();
-            log.debug("[getSessionFactory] - Objeto HibernateConfigurer creado correctamente.");
-
-            var configuration = hibernateConfigurer.buildConfiguration(hibernateProperties);
-            log.debug("[getSessionFactory] - Configuración Hibernate creada correctamente.");
-
-            // Aquí podemos agregar el escaneo de entidades y la configuración del DataSource, si es necesario
             if (tipoConexion == TipoConexion.PRINCIPAL) {
-
-                var entityScanner = new EntityScanner();
-                log.debug("[getSessionFactory] - Objeto EntityScanner creado correctamente.");
-
+                final var entityScanner = new EntityScanner();
                 entityScanner.scanAndAddEntities(configuration, CONFIG_PACKAGE_NAME);
-                log.debug("[getSessionFactory] - Entidades escaneadas y añadidas desde el paquete '{}'.", CONFIG_PACKAGE_NAME);
-
+                log.info("Entidades escaneadas desde el paquete '{}'", CONFIG_PACKAGE_NAME);
             }
 
-            var sessionFactory = configuration.buildSessionFactory();
-            log.debug("[getSessionFactory] - SessionFactory creada exitosamente.");
+            final var sessionFactory = configuration.buildSessionFactory();
+            log.info("SessionFactory creada exitosamente.");
             return sessionFactory;
 
-        } catch (HibernateException ex) {
-
-            String msg = String.format("[getSessionFactory] - Error creando SessionFactory: %s", ex.getMessage());
+        } catch (HibernateException | IllegalArgumentException ex) {
+            final var msg = String.format("Error creando SessionFactory: %s", ex.getMessage());
             log.error(msg, ex);
-            throw new MiSessionFactoryProvider (msg, ex); // Propagar la excepción para que el llamador la maneje
-
-        } catch (IllegalArgumentException ex) {
-
-            String msg = String.format("[getSessionFactory] - Error en los parámetros: %s", ex.getMessage());
-            log.error(msg, ex);
-            throw new MiSessionFactoryProvider (msg, ex); // Propagar la excepción para que el llamador la maneje
-
+            throw new MiSessionFactoryProvider(msg, ex);
         }
     }
 
     /**
+     * Obtiene las propiedades necesarias para configurar Hibernate.
      *
-     * @param tipoConexion Tipo de Conexión (Enumerado)
-     * @return Devuelve un objeto Properties
+     * @param tipoConexion tipo de conexión
+     * @return propiedades de configuración de Hibernate
      */
-    private Properties getUpdateHibernateProperties(TipoConexion tipoConexion) throws IllegalArgumentException {
-
-        log.debug("[getUpdateHibernateProperties] - Obteniendo propiedades Hibernate para tipoConexion: {}", tipoConexion);
-
-        switch (tipoConexion) {
-            case TipoConexion.PRINCIPAL -> {
-                Properties p = PropertiesManagerServiceImpl.getInstance().getProperties(PropertiesFiles.HIBERNATE);
-                log.info("[getUpdateHibernateProperties] - Propiedades obtenidas para PRINCIPAL: {}", p);
-                return p;
-            }
-            case TipoConexion.FILTRO_SQL -> {
-                Properties p = getFiltroSqlProperties();
-                log.info("[getUpdateHibernateProperties] - Propiedades obtenidas para FILTRO_SQL: {}", p);
-                return p;
-            }
-            default -> throw new IllegalArgumentException("TipoConexion no soportado: " + tipoConexion);
-        }
+    private Properties getHibernateProperties(TipoConexion tipoConexion) {
+        return switch (tipoConexion) {
+            case PRINCIPAL -> configurePrincipalProperties(
+                    propertyManager.getProperties(PropertiesFiles.HIBERNATE));
+            case FILTRO_SQL -> configureConnectionProperties(PropertiesFiles.JAKARTA_FILTRO);
+        };
     }
 
     /**
-     *
-     * @return Devuelve un objeto Properties
+     * Configura propiedades para la conexión principal.
      */
-    private Properties getFiltroSqlProperties() {
+    private Properties configurePrincipalProperties(Properties props) {
+        setCommonConnectionProperties(props, PropertiesFiles.JAKARTA_PRINCIPAL);
+        return props;
+    }
 
-        log.debug("[getFiltroSqlProperties] - Obteniendo propiedades filtro SQL");
+    /**
+     * Configura propiedades para cualquier conexión basada en el archivo indicado.
+     */
+    private Properties configureConnectionProperties(String propertiesFile) {
+        final var props = new Properties();
+        setCommonConnectionProperties(props, propertiesFile);
+        return props;
+    }
 
-        PropertiesManagerService propertyManager = PropertiesManagerServiceImpl.getInstance();
-        Properties filtroSqlProperties = new Properties();
+    /**
+     * Asigna propiedades JDBC comunes.
+     */
+    private void setCommonConnectionProperties(Properties props, String file) {
+        props.setProperty(JdbcSettings.JAKARTA_JDBC_URL,
+                propertyManager.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
+        props.setProperty(JdbcSettings.JAKARTA_JDBC_DRIVER,
+                propertyManager.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_DRIVER));
+        props.setProperty(JdbcSettings.JAKARTA_JDBC_USER,
+                propertyManager.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_USER));
+        props.setProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD,
+                propertyManager.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
 
-        filtroSqlProperties.setProperty(
-                JdbcSettings.JAKARTA_JDBC_URL,
-                propertyManager
-                        .getProperty(
-                                PropertiesFiles.JAKARTA_FILTRO,
-                                PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
-        log.debug(
-                "[getFiltroSqlProperties] - URL configurada: {}",
-                filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_URL));
-
-        filtroSqlProperties.setProperty(
-                JdbcSettings.JAKARTA_JDBC_DRIVER,
-                propertyManager.getProperty(PropertiesFiles.JAKARTA_FILTRO, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_DRIVER));
-        log.debug(
-                "[getFiltroSqlProperties] - Driver configurado: {}",
-                filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_DRIVER));
-
-        filtroSqlProperties.setProperty(
-                JdbcSettings.JAKARTA_JDBC_USER,
-                propertyManager
-                        .getProperty(
-                                PropertiesFiles.JAKARTA_FILTRO,
-                                PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_USER));
-        log.debug(
-                "[getFiltroSqlProperties] - Usuario configurado: {}",
-                filtroSqlProperties.getProperty(JdbcSettings.JAKARTA_JDBC_USER));
-
-        filtroSqlProperties.setProperty(
-                JdbcSettings.JAKARTA_JDBC_PASSWORD,
-                propertyManager
-                        .getProperty(
-                                PropertiesFiles.JAKARTA_FILTRO,
-                                PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
-        log.debug(
-                "[getFiltroSqlProperties] - Password configurado (oculto en logs por seguridad)");
-
-        log.debug(
-                "[getFiltroSqlProperties] - FilterProperties: {}", filtroSqlProperties);
-
-        return filtroSqlProperties;
+        log.debug("Propiedades configuradas desde archivo '{}': {}", file, props);
     }
 }

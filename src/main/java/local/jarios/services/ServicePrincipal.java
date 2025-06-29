@@ -6,16 +6,15 @@ import local.jarios.entity.atom.Feed;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiServiceException;
-import local.jarios.models.FiltroOrganoContratacion;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Interfaz que define los métodos principales para la persistencia y recuperación
  * de información relacionada con la importación de datos abiertos.
  */
-public interface Service {
+public interface ServicePrincipal {
 
     /**
      * Persiste un objeto de log en el sistema.
@@ -24,7 +23,15 @@ public interface Service {
      * @param mapBaseDatos       el mapa que representa la base de datos con claves como IDs o nombres.
      * @param lugarImportacion   información sobre el origen o contexto de la importación.
      */
-    void persistirLog(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion) throws MiServiceException;
+    void persistirMiLogLocal(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion) throws MiServiceException;
+
+    /**
+     * Persiste un objeto de log en el sistema.
+     *
+     * @param miLog el objeto de log que se desea almacenar.
+     * @param setEntrysToDelete  conjunto de entrys a borrar de la base de datos
+     */
+    void persistirMiLogInternet(Log miLog, Set<String> setEntrysToDelete) throws MiServiceException;
 
 
     /**
@@ -35,12 +42,5 @@ public interface Service {
      */
     Feed getNewestFeed(TipoSindicacion tipoSindicacion) throws MiServiceException;
 
-    /**
-     * Devuelve una lista de filtros de órganos de contratación a partir de una cláusula SQL.
-     *
-     * @param filtroSQL el SQL que representa los criterios de filtrado.
-     * @return una lista de filtros aplicables a órganos de contratación.
-     */
-    List<FiltroOrganoContratacion> getListFiltroOcsFromFiltroSql(String filtroSQL) throws MiServiceException;
 }
 

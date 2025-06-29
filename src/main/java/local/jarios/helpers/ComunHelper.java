@@ -68,13 +68,13 @@ public final class ComunHelper {
      *
      * @param object El objeto que voy a imprimir
      */
-    public static void imprimir(Object object) {
+    public static void imprimir(Object object, boolean imprimirHijos) {
 
         // Imprimiendo el objeto
         Arrays
                 .stream(
                         ManagerGsons
-                                .objectToJsonPretty(object, true)
+                                .objectToJsonPretty(object, imprimirHijos)
                                 .split(Constantes.CR))
                 .forEach(log::info);
     }

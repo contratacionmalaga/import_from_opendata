@@ -26,7 +26,7 @@ public interface Repository {
      * @param miLog Instancia de {@link Log} a persistir.
      * @throws MiRepositoryException Si ocurre un error durante la persistencia.
      */
-    void persistirLog(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion) throws MiRepositoryException;
+    void persistirLogYDatos(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion) throws MiRepositoryException;
 
     /**
      * Obtiene el {@link Feed} más reciente para un tipo específico de sindicacion.

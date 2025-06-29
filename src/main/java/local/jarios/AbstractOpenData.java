@@ -1,6 +1,7 @@
 package local.jarios;
 
 import local.jarios.common.util.*;
+import local.jarios.database.SessionFactoryRegistry;
 import local.jarios.email.api.EmailSender;
 import local.jarios.email.api.EmailSenderImpl;
 import local.jarios.email.api.EmailService;
@@ -26,8 +27,8 @@ import local.jarios.helpers.*;
 import local.jarios.properties.api.PropertiesManagerService;
 import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import local.jarios.properties.exception.PropertiesManagerException;
-import local.jarios.services.Service;
-import local.jarios.services.ServiceImpl;
+import local.jarios.services.ServicePrincipal;
+import local.jarios.services.ServicePrincipalImpl;
 import local.jarios.version.api.Version;
 import local.jarios.version.api.VersionImpl;
 import local.jarios.version.exception.VersionException;
@@ -71,8 +72,7 @@ public abstract class AbstractOpenData {
     protected abstract TipoSindicacion getTipoSindicacion();
 
     //
-    protected abstract List<Feed> parsearFeeds(Log log, Feed newestFeed, Estadistica estadistica)
-            throws MiParseException;
+    protected abstract void parsearFeeds(Log log, Feed newestFeed, Estadistica estadistica) throws MiParseException;
 
     // Método que determina el lugar de importación (Local o Internet)
     protected abstract LugarImportacion getLugarImportacion();
@@ -134,13 +134,9 @@ public abstract class AbstractOpenData {
             Estadistica estadistica = new Estadistica(miLog);
             log.info(Mensajes.ESTADISTICA_CREACION);
 
-            // Cargo los filtros que se amplican
+            // Cargo los filtros que se amplican y los imprimo
             FiltroHelper.loadFilters();
-
-            //
             FiltroHelper.printFilters();
-
-            System.exit(0);
 
             // Creo el objeto Configuracion
             Configuracion configuracion = new Configuracion(miLog);
@@ -163,14 +159,44 @@ public abstract class AbstractOpenData {
             //
 
             // Parseo de los Feeds
-            List<Feed> listFeedEntities = parsearFeeds(miLog, newestFeed, estadistica);
+            parsearFeeds(miLog, newestFeed, estadistica);
             log.info(Mensajes.FIN_PARSEO_FICHEROS_ATOM);
 
-            // Asignar lista de feeds al log
-            miLog.setListFeed(listFeedEntities);
-            log.info(
-                    "Feeds asignadas al Log: {}",
-                    StringHelper.getNumeroConFormato(listFeedEntities.size()));
+
+            Map<String, Entry> entryMap = VariablesGlobales.getMapBaseDatos(); // Asumido
+
+// Mapa auxiliar para agrupar Feeds por su lista de Entry
+            Map<Feed, List<Entry>> feedEntryMap = new HashMap<>();
+
+            for (Entry entry : entryMap.values()) {
+                Feed feed = entry.getFeed();
+
+                // Asegurarse de que el Feed esté en el mapa
+                feedEntryMap.computeIfAbsent(feed, k -> new ArrayList<>()).add(entry);
+            }
+
+            // Asociar feeds y entries a miLog
+            for (Map.Entry<Feed, List<Entry>> entry : feedEntryMap.entrySet()) {
+                Feed feed = entry.getKey();
+                List<Entry> entries = entry.getValue();
+
+                // Asignar miLog al feed
+                feed.setMiLog(miLog);
+
+                // Asignar las entries al feed
+                feed.setListEntry(entries);
+
+                // También se asegura que cada entry apunte a su feed (por si acaso)
+                for (Entry e : entries) {
+                    e.setFeed(feed);
+                }
+
+                // Añadir el feed a la lista de feeds del Log
+                miLog.getListFeed().add(feed);
+            }
+
+            ComunHelper.imprimir(miLog, false);
+
 
             // Asignar la lista de Órganos de Contratación del Filtro al log
             List<OrganoContratacion> listOrganosContratacion =
@@ -189,6 +215,7 @@ public abstract class AbstractOpenData {
                     estadistica.getFechaHoraInicial(),
                     estadistica.getFechaHoraFinal());
             estadistica.setDuracion(duracion);
+            miLog.setEstadistica(estadistica);
             log.info("Duración del parseo: {}", duracion);
 
             log.info("Nº de errores en el Map: {}",
@@ -197,11 +224,6 @@ public abstract class AbstractOpenData {
             log.info(
                     "Registros en el Map: {}",
                     StringHelper.getNumeroConFormato(VariablesGlobales.getMapBaseDatos().size()));
-            //
-            //     VERIFICACIÓN DEL MAP
-            //
-            Map<String, Entry> map = VariablesGlobales.getMapBaseDatos();
-            MapHelper.analisisMap(map);
 
             //
             //     PERSISTENCIA EN LA BASE DE DATOS
@@ -213,17 +235,16 @@ public abstract class AbstractOpenData {
             //
             //     CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
             //
-            log.info(Mensajes.SERVICE_CREACION_INICIO);
+            ServicePrincipal servicePrincial = new ServicePrincipalImpl();
+            log.info("Creación correcta del servicio de conexión con la base de datos {}", TipoConexion.PRINCIPAL);
             log.info(
                     propertiesManager
                             .getProperty(
                                     PropertiesFiles.JAKARTA_PRINCIPAL,
                                     PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
-            Service service = new ServiceImpl(TipoConexion.PRINCIPAL);
-            log.info("Creación correcta del servicio de conexión con la base de datos {}", TipoConexion.PRINCIPAL);
 
             // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
-            service.persistirLog(miLog, VariablesGlobales.getMapBaseDatos(), lugarImportacion);
+            servicePrincial.persistirMiLogLocal(miLog, VariablesGlobales.getMapBaseDatos(), lugarImportacion);
             log.info(Mensajes.PERSISTIDO_LOG_CONFIGURACION_LIST_ORGANOS_CONTRATACION);
 
             //
@@ -247,6 +268,9 @@ public abstract class AbstractOpenData {
             manejarExcepcion(ex, "[VersionException] - ");
         } catch (RuntimeException ex) {
             manejarExcepcion(ex, "[RuntimeException] - ");
+        } finally {
+            // Cierra todos los SessionFactory
+            SessionFactoryRegistry.closeAll();
         }
     }
 
