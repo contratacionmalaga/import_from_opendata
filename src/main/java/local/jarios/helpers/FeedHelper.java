@@ -114,7 +114,6 @@ public final class FeedHelper {
         estadistica.setNEntryLeidos(estadistica.getNEntryLeidos() + entries.size());
 
         for (Entry entry : entries) {
-            log.info("[procesarFeed] - Procesando Entry: {}", entry.getIdEntry());
             EntryHelper.procesarEntry(entry, estadistica);
         }
     }

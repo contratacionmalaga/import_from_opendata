@@ -8,7 +8,6 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.exceptions.MiRepositoryException;
-import local.jarios.helpers.StringHelper;
 import local.jarios.models.FiltroOrganoContratacion;
 import local.jarios.properties.api.PropertiesManagerService;
 import local.jarios.properties.api.PropertiesManagerServiceImpl;
@@ -27,11 +26,9 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     private static final int DEFAULT_BATCH_SIZE = 50;
 
     private final SessionFactory sessionFactory;
-    private final int batchSize;
 
     public RepositoryImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
-        this.batchSize = cargarBatchSizeDesdeProperties();
     }
 
     /**
@@ -50,10 +47,10 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         try {
             int parsed = Integer.parseInt(valor);
             if (parsed <= 0) throw new NumberFormatException("El valor debe ser mayor a cero.");
-            log.info("[RepositoryImpl] - Batch size configurado: {}", parsed);
+            log.debug("[RepositoryImpl] - Batch size configurado: {}", parsed);
             return parsed;
         } catch (Exception e) {
-            log.warn("[RepositoryImpl] - Valor inválido para '{}': '{}'. Usando valor por defecto: {}",
+            log.debug("[RepositoryImpl] - Valor inválido para '{}': '{}'. Usando valor por defecto: {}",
                     PropertiesKeys.HIBERNATE_JDBC_BATCH_SIZE, valor, DEFAULT_BATCH_SIZE);
             return DEFAULT_BATCH_SIZE;
         }
@@ -79,29 +76,6 @@ public class RepositoryImpl implements Repository, AutoCloseable {
              */
             return null;
         }, "persistirLog");
-    }
-
-    private void grabarMap(Session session, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion) {
-
-
-        boolean esLocal = lugarImportacion.isLocalImport();
-        int total = mapBaseDatos.size();
-        int contador = 0;
-
-        for (Entry entry : mapBaseDatos.values()) {
-            contador++;
-            String indiceFormateado = formatContador(contador, total);
-
-            session.persist(entry);
-
-            log.info("[grabarMap] - {} Persistido entry ID: {}", indiceFormateado, entry.getIdEntry());
-
-            if (contador % batchSize == 0) {
-                flushAndClear(session);
-            }
-        }
-
-        flushAndClear(session);
     }
 
     private void procesarEntryRemoto(Session session, Entry entry) {

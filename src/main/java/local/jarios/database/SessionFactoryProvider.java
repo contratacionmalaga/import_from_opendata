@@ -41,7 +41,7 @@ public class SessionFactoryProvider {
 
         try {
             final var hibernateProperties = getHibernateProperties(tipoConexion);
-            log.info("Propiedades Hibernate obtenidas correctamente para tipo de conexión: {}", tipoConexion);
+            log.debug("[getSessionFactory] - Propiedades Hibernate obtenidas correctamente para tipo de conexión: {}", tipoConexion);
 
             final var hibernateConfigurer = new HibernateConfigurer();
             final Configuration configuration = hibernateConfigurer.buildConfiguration(hibernateProperties);
@@ -49,15 +49,15 @@ public class SessionFactoryProvider {
             if (tipoConexion == TipoConexion.PRINCIPAL) {
                 final var entityScanner = new EntityScanner();
                 entityScanner.scanAndAddEntities(configuration, CONFIG_PACKAGE_NAME);
-                log.info("Entidades escaneadas desde el paquete '{}'", CONFIG_PACKAGE_NAME);
+                log.debug("[getSessionFactory] - Entidades escaneadas desde el paquete '{}'", CONFIG_PACKAGE_NAME);
             }
 
             final var sessionFactory = configuration.buildSessionFactory();
-            log.info("SessionFactory creada exitosamente.");
+            log.debug("[getSessionFactory] - SessionFactory creada exitosamente.");
             return sessionFactory;
 
         } catch (HibernateException | IllegalArgumentException ex) {
-            final var msg = String.format("Error creando SessionFactory: %s", ex.getMessage());
+            final var msg = String.format("[getSessionFactory] - Error creando SessionFactory: %s", ex.getMessage());
             log.error(msg, ex);
             throw new MiSessionFactoryProvider(msg, ex);
         }

@@ -95,14 +95,16 @@ public final class EntryHelper {
      */
     public static void procesarEntry(Entry entry, Estadistica estadistica) {
 
+        log.info("[procesarEntry] - Procesando Entry: {}", entry.getIdEntry());
         if (FiltroHelper.entryCumpleFiltros(entry)) {
 
             estadistica.aumentarNEntryProcesados();
-            log.info("[procesarFeed] - Cumple con los filtros Entry: {}", entry.getIdEntry());
+            log.info("[procesarFeed] - Cumple con los filtros.");
             procesarEntrySegunExistencia(entry, estadistica);
 
         } else {
 
+            log.info("[procesarFeed] - No cumple con los filtros.");
             estadistica.aumentarNEntryRechazados();// Entry cumple con los filtros
 
         }
