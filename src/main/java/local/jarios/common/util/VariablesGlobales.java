@@ -4,9 +4,9 @@ import local.jarios.entity.atom.Entry;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -39,7 +39,7 @@ public final class VariablesGlobales {
 
     @Getter
     @Setter
-    private static String filtroNuts;
+    private static HashSet<String> filtroNuts;
 
     @Getter
     @Setter

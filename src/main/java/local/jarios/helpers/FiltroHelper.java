@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -123,10 +124,10 @@ public final class FiltroHelper {
      */
     public static boolean hasEntryContainsNuts(Entry entry) {
 
-        String filtroNuts = VariablesGlobales.getFiltroNuts();
+        HashSet<String> filtroNuts = VariablesGlobales.getFiltroNuts();
 
-        if (filtroNuts == null || filtroNuts.isBlank()) {
-            log.debug("[hasEntryContainsNuts] - El filtro Nuts es NULL o BLANK. Se acepta el Entry.");
+        if (filtroNuts == null || filtroNuts.isEmpty()) {
+            log.debug("[hasEntryContainsNuts] - El filtro Nuts es NULL o EMPTY. Se acepta el Entry.");
             return true;
         }
 
@@ -138,9 +139,9 @@ public final class FiltroHelper {
         }
 
         String nutsEntry = nutsEntryOptional.get();
-        boolean encontrado = nutsEntry.contains(filtroNuts);
+        boolean encontrado = filtroNuts.contains(nutsEntry);
 
-        log.debug("[hasEntryContainsNuts] - ¿Filtro figura en Nuts?: {}.", encontrado);
+        log.debug("[hasEntryContainsNuts] - ¿Filtro figura len Nuts?: {}.", encontrado);
 
         return encontrado;
 
@@ -199,7 +200,7 @@ public final class FiltroHelper {
                 PropertiesFiles.FILTER,
                 PropertiesKeys.FILTER_FECHAFINALLECTURA);
 
-        // Si ambas fechas vienen informadas y no están en blanco
+        // Si ambas fechas no están en blanco
         if (!filtroFechaInicialStr.isBlank() && !filtroFechaFinalStr.isBlank()) {
 
             LocalDate fechaInicial = LocalDate.parse(filtroFechaInicialStr, DateTimeFormatter.ISO_LOCAL_DATE);
@@ -231,7 +232,24 @@ public final class FiltroHelper {
                                     PropertiesKeys.FILTER_NUTS);
 
         if ((filter != null) && (!filter.isBlank())) {
-            VariablesGlobales.setFiltroNuts(filter);
+            HashSet<String> nutsSet = new HashSet<>();
+            String[] nutsArray = filter.split(",");
+
+            // Validar cada código NUTS
+            for (String nutsCode : nutsArray) {
+                nutsCode = nutsCode.trim(); // Eliminar espacios alrededor del código NUTS
+
+                // Agregar el código NUTS al conjunto
+                nutsSet.add(nutsCode);
+            }
+
+            // Almacenamos el conjunto de códigos NUTS en VariablesGlobales
+            VariablesGlobales.setFiltroNuts(nutsSet);
+
+        } else {
+
+            throw new PropertiesManagerException("El filtro de códigos NUTS está vacío o es nulo.");
+
         }
     }
 
@@ -304,8 +322,8 @@ public final class FiltroHelper {
         }
 
         // Si existe filtro NUTS y no lo cumple, descarto el Entry
-        String filtroNuts = VariablesGlobales.getFiltroNuts();
-        if (filtroNuts != null && !filtroNuts.isBlank() && !hasEntryContainsNuts(entry)) {
+        HashSet<String> filtroNuts = VariablesGlobales.getFiltroNuts();
+        if (filtroNuts != null && !filtroNuts.isEmpty() && !hasEntryContainsNuts(entry)) {
             log.debug("[entryCumpleFiltros] - NO CUMPLE filtro NUTS. {}", entry.getIdEntry());
             return false;
         }

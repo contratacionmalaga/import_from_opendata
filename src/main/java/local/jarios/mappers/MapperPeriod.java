@@ -69,18 +69,27 @@ public final class MapperPeriod {
 
         // Duration Measure
         Optional.ofNullable(periodType.getDurationMeasure())
-                .ifPresent(measure -> period.setDurationMeasure(
-                        getMeasureFromDurantionMeasure(periodType.getDurationMeasure())));
+                .ifPresent(measure ->
+                        period.setDurationMeasure(
+                                getMeasureFromDurantionMeasure(
+                                        period,
+                                        periodType.getDurationMeasure()
+                                )
+                        )
+                );
 
         return period;
     }
 
-    private static Measure getMeasureFromDurantionMeasure(DurationMeasureType durationMeasureType) {
+    private static Measure getMeasureFromDurantionMeasure(
+            Period period, DurationMeasureType durationMeasureType) {
 
         Measure measure = new Measure();
 
-        Optional.ofNullable(durationMeasureType.getValue()).ifPresent(measure::setValue);
+        measure.setPeriod(period);
+        measure.setContractModification(null);
 
+        Optional.ofNullable(durationMeasureType.getValue()).ifPresent(measure::setValue);
         Optional.ofNullable(durationMeasureType.getUnitCode()).ifPresent(measure::setUnitCode);
 
         return measure;

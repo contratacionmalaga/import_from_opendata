@@ -77,11 +77,11 @@ public final class EntryHelper {
 
         // Borro el entryMapBaseDatos del MAP
         VariablesGlobales.getMapBaseDatos().remove(entryMapBaseDatos.getIdEntry());
-        log.debug("[actualizarEntryEnMAP] - Remove {}", entryMapBaseDatos.getIdEntry());
+        log.info("[actualizarEntryEnMAP] - Remove Entry: {}", entryMapBaseDatos.getIdEntry());
 
         // Añado el newEntry al MAP
         VariablesGlobales.getMapBaseDatos().put(newEntry.getIdEntry(), newEntry);
-        log.debug("[actualizarEntryEnMAP] - Put {}", newEntry.getIdEntry());
+        log.info("[actualizarEntryEnMAP] - Put Entry: {}", newEntry.getIdEntry());
 
         // Actualizo las estadísticas
         estadistica.aumentarNEntryActualizados();
@@ -98,6 +98,7 @@ public final class EntryHelper {
         if (FiltroHelper.entryCumpleFiltros(entry)) {
 
             estadistica.aumentarNEntryProcesados();
+            log.info("[procesarFeed] - Cumple con los filtros Entry: {}", entry.getIdEntry());
             procesarEntrySegunExistencia(entry, estadistica);
 
         } else {
@@ -115,11 +116,14 @@ public final class EntryHelper {
         if (VariablesGlobales.getMapBaseDatos().containsKey(entry.getIdEntry())) {
             // Si existe en el MAP, lo procesamos
 
+            log.info("[procesarFeed] - Existente en el Map Entry: {}", entry.getIdEntry());
             Entry entryEnMap = VariablesGlobales.getMapBaseDatos().get(entry.getIdEntry());
             procesarEntryExistenteEnMAP(entry, entryEnMap, estadistica);
 
         } else {
             // No existe en el MAP, lo agregamos
+
+            log.info("[procesarFeed] - NO existe en el Map Entry: {}", entry.getIdEntry());
 
             // Lo agrego al MAP
             VariablesGlobales.getMapBaseDatos().put(entry.getIdEntry(), entry);
@@ -144,12 +148,18 @@ public final class EntryHelper {
         if (entryEnMemoria.getUpdated().isBefore(entryEnMap.getUpdated())) {
             // La fecha del entry en el MAP es más nueva, descartamos el Entry
 
+            log.info("[procesarFeed] - Rechazado. Fecha(EntryEnMemoria) - '{}' isBefore Fecha(EntryEnMap) - '{}'.",
+                    entryEnMemoria.getUpdated(), entryEnMap.getUpdated());
+
             estadistica.aumentarNEntryRechazados();
 
         } else {
             // La fecha del Entry en el MAP es más antigua, actualizamos el Entry en el MAP
 
             //
+            log.info("[procesarFeed] - Modificar en el MAP. Fecha(EntryEnMemoria) - '{}' isAfter Fecha(EntryEnMap) - '{}'.",
+                    entryEnMemoria.getUpdated(), entryEnMap.getUpdated());
+
             actualizarEntryEnMAP(entryEnMemoria, entryEnMap, estadistica);
         }
     }

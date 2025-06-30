@@ -71,27 +71,50 @@ public final class MapperContractModification {
                 .map(Object::toString)
                 .ifPresent(contractModification::setContractModificationLotId);
 
-        //
-        log.debug(contractModification.toString());
-
         Optional.ofNullable(contractModificationType.getContractModificationLegalMonetaryTotal())
-                .ifPresent(total -> contractModification.setContractModificationLegalMonetaryTotal(
-                        MapperLegalMonetaryTotal.getLegalMonetaryTotalFromType(null, contractModification, null, total)));
+                .ifPresent(total ->
+                        contractModification.setContractModificationLegalMonetaryTotal(
+                                MapperLegalMonetaryTotal
+                                        .getLegalMonetaryTotalFromType(
+                                                null,
+                                                contractModification,
+                                                null,
+                                                total)
+                        )
+                );
 
         Optional.ofNullable(contractModificationType.getFinalLegalMonetaryTotal())
-                .ifPresent(total -> contractModification.setContractModificationFinalLegalMonetaryTotal(
-                        MapperLegalMonetaryTotal.getLegalMonetaryTotalFromType(null, null, contractModification, total)));
+                .ifPresent(total ->
+                        contractModification.setContractModificationFinalLegalMonetaryTotal(
+                                MapperLegalMonetaryTotal
+                                        .getLegalMonetaryTotalFromType(
+                                                null,
+                                                null,
+                                                contractModification,
+                                                total)
+                        )
+                );
 
         Optional.ofNullable(contractModificationType.getFinalDurationMeasure())
-                .ifPresent(finalDurationMeasure -> contractModification.setFinalDurationMeasure(
-                        getMeasureFromFinalDurantionMeasure(contractModificationType.getFinalDurationMeasure())));
+                .ifPresent(finalDurationMeasure ->
+                        contractModification
+                                .setFinalDurationMeasure(
+                                        getMeasureFromFinalDurantionMeasure(
+                                                contractModificationType.getFinalDurationMeasure(),
+                                                contractModification)
+                                )
+                );
 
         return contractModification;
     }
 
-    private static Measure getMeasureFromFinalDurantionMeasure(FinalDurationMeasureType finalDurationMeasureType) {
+    private static Measure getMeasureFromFinalDurantionMeasure(
+            FinalDurationMeasureType finalDurationMeasureType, ContractModification contractModification) {
 
         Measure measure = new Measure();
+
+        measure.setPeriod(null);
+        measure.setContractModification(contractModification);
 
         Optional.ofNullable(finalDurationMeasureType.getValue())
                 .ifPresent(measure::setValue);

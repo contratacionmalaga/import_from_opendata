@@ -159,15 +159,16 @@ public abstract class AbstractOpenData {
             //
 
             // Parseo de los Feeds
+            log.info("Inicio del parseo de los ficheros ATOM.");
             parsearFeeds(miLog, newestFeed, estadistica);
-            log.info(Mensajes.FIN_PARSEO_FICHEROS_ATOM);
 
-
+            log.info("Migrar los datos desde el MAP a la estructura de CODICE.");
             Map<String, Entry> entryMap = VariablesGlobales.getMapBaseDatos(); // Asumido
 
-// Mapa auxiliar para agrupar Feeds por su lista de Entry
+            // Mapa auxiliar para agrupar Feeds por su lista de Entry
             Map<Feed, List<Entry>> feedEntryMap = new HashMap<>();
 
+            log.info("Migrar los datos desde el MAP a la estructura de CODICE.");
             for (Entry entry : entryMap.values()) {
                 Feed feed = entry.getFeed();
 
@@ -195,35 +196,29 @@ public abstract class AbstractOpenData {
                 miLog.getListFeed().add(feed);
             }
 
-            ComunHelper.imprimir(miLog, false);
-
-
             // Asignar la lista de Órganos de Contratación del Filtro al log
-            List<OrganoContratacion> listOrganosContratacion =
-                    OrganoContratacionHelper.getListOrganoContratacion(miLog, VariablesGlobales.getMapFiltro());
+            List<OrganoContratacion> listOrganosContratacion = OrganoContratacionHelper
+                                                                    .getListOrganoContratacion(
+                                                                            miLog,
+                                                                            VariablesGlobales.getMapFiltro());
             miLog.setListOrganoContratacion(listOrganosContratacion);
-            log.info(
-                    "Órganos de Contratación asignados al Log: {}",
-                    StringHelper.getNumeroConFormato(listOrganosContratacion.size()));
+            log
+                    .info(
+                            "Órganos de Contratación asignados al Log: {}",
+                            StringHelper.getNumeroConFormato(listOrganosContratacion.size()));
 
             // Asigno la fecha y hora final del parseo
             LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();
             estadistica.setFechaHoraFinal(localDateTime);
 
             // Calculo el tiempo de ejecución del parseo
-            String duracion = LocalDateTimeHelper.getDiferenciaLocalDateTime(
-                    estadistica.getFechaHoraInicial(),
-                    estadistica.getFechaHoraFinal());
+            String duracion = LocalDateTimeHelper
+                                    .getDiferenciaLocalDateTime(
+                                            estadistica.getFechaHoraInicial(),
+                                            estadistica.getFechaHoraFinal());
             estadistica.setDuracion(duracion);
             miLog.setEstadistica(estadistica);
             log.info("Duración del parseo: {}", duracion);
-
-            log.info("Nº de errores en el Map: {}",
-                    StringHelper.getNumeroConFormato(MapHelper.analisisMap(VariablesGlobales.getMapBaseDatos())));
-
-            log.info(
-                    "Registros en el Map: {}",
-                    StringHelper.getNumeroConFormato(VariablesGlobales.getMapBaseDatos().size()));
 
             //
             //     PERSISTENCIA EN LA BASE DE DATOS
@@ -324,6 +319,8 @@ public abstract class AbstractOpenData {
             // Configuración del servidor SMTP
             Properties emailProps = propertiesManager.getProperties(PropertiesFiles.MAIL);
             log.info("[enviarEmail] - Properties cargadas correctamente.");
+
+            log.info("[enviarEmail] - Propiedades: {}", emailProps);
 
             // Construcción de los datos del correo
             EmailData emailData = construirEmailData(estadistica, ex, success);
