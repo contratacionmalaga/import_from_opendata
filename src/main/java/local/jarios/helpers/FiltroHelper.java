@@ -313,21 +313,21 @@ public final class FiltroHelper {
 
         // Si existe filtro SQL y no lo cumple, descarto el Entry
         if (!VariablesGlobales.getMapFiltro().isEmpty() && !hasEntryInFiltroSql(entry)) {
-            log.info("[entryCumpleFiltros] - NO CUMPLE filtro SQL. {}", entry.getIdEntry());
+            log.info("[entryCumpleFiltros] - NO CUMPLE filtro SQL.");
             return false;
         }
 
         // Si existe filtro NUTS y no lo cumple, descarto el Entry
         HashSet<String> filtroNuts = VariablesGlobales.getFiltroNuts();
         if (filtroNuts != null && !filtroNuts.isEmpty() && !hasEntryContainsNuts(entry)) {
-            log.info("[entryCumpleFiltros] - NO CUMPLE filtro NUTS. {}", entry.getIdEntry());
+            log.info("[entryCumpleFiltros] - NO CUMPLE filtro NUTS.");
             return false;
         }
 
         // Si existe filtro Objeto y no lo cumple, descarto el Entry
         String filtroObjeto = VariablesGlobales.getFiltroObjeto();
         if (filtroObjeto != null && !filtroObjeto.isBlank() && !hasEntryContaninsObject(entry)) {
-            log.info("[entryCumpleFiltros] - NO CUMPLE filtro Objeto. {}", entry.getIdEntry());
+            log.info("[entryCumpleFiltros] - NO CUMPLE filtro Objeto.");
             return false;
         }
 
@@ -335,11 +335,11 @@ public final class FiltroHelper {
         LocalDateTime fechaInicio = VariablesGlobales.getFiltroFechaInicial();
         LocalDateTime fechaFin = VariablesGlobales.getFiltroFechaFinal();
         if (fechaInicio != null && fechaFin != null && !hasEntryInFechas(entry)) {
-            log.info("[entryCumpleFiltros] - NO CUMPLE filtro Fechas. {}", entry.getIdEntry());
+            log.info("[entryCumpleFiltros] - NO CUMPLE filtro Fechas.");
             return false;
         }
 
-        log.debug("[entryCumpleFiltros] - Entry cumple los filtros: {}", entry.getIdEntry());
+        log.info("[entryCumpleFiltros] - Entry cumple los filtros.");
         return true;
     }
 
