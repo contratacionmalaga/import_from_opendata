@@ -1,16 +1,12 @@
 package local.jarios.repositories;
 
 import jakarta.persistence.TypedQuery;
-import local.jarios.common.util.PropertiesFiles;
-import local.jarios.common.util.PropertiesKeys;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.models.FiltroOrganoContratacion;
-import local.jarios.properties.api.PropertiesManagerService;
-import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.*;
 
@@ -31,49 +27,15 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         this.sessionFactory = sessionFactory;
     }
 
-    /**
-     * Lee el batch size desde el fichero de propiedades.
-     * Si el valor no es válido, devuelve un valor por defecto seguro.
-     */
-    private int cargarBatchSizeDesdeProperties() {
-
-        //
-        PropertiesManagerService propertiesManager = PropertiesManagerServiceImpl.getInstance();
-        String valor = propertiesManager
-                .getProperty(
-                        PropertiesFiles.HIBERNATE,
-                        PropertiesKeys.HIBERNATE_JDBC_BATCH_SIZE);
-
-        try {
-            int parsed = Integer.parseInt(valor);
-            if (parsed <= 0) throw new NumberFormatException("El valor debe ser mayor a cero.");
-            log.debug("[RepositoryImpl] - Batch size configurado: {}", parsed);
-            return parsed;
-        } catch (Exception e) {
-            log.debug("[RepositoryImpl] - Valor inválido para '{}': '{}'. Usando valor por defecto: {}",
-                    PropertiesKeys.HIBERNATE_JDBC_BATCH_SIZE, valor, DEFAULT_BATCH_SIZE);
-            return DEFAULT_BATCH_SIZE;
-        }
-    }
-
     @Override
     public void persistirLogYDatos(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion)
             throws MiRepositoryException {
 
         ejecutarDentroDeTransaccion(session -> {
-
-            log.debug("[persistirLog] - Inicio persistencia Log.");
+            log.debug("[persistirLog] - Persistiendo Log.");
             session.persist(miLog);
-            log.debug("[persistirLog] - Final persistencia Log.");
-
             flushAndClear(session);
-            log.debug("[persistirLog] - Flush ejecutado.");
-
-            /*
-            grabarMap(session, mapBaseDatos, lugarImportacion);
-            log.debug("[persistirLog] - Mapa Entry persistido. Total: {}",
-                    StringHelper.getNumeroConFormato(mapBaseDatos.size()));
-             */
+            log.debug("[persistirLog] - Persistencia de Log completada.");
             return null;
         }, "persistirLog");
     }
@@ -99,6 +61,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     }
 
     private void flushAndClear(Session session) {
+        // Se puede optimizar si se planea ejecutar en muchas transacciones.
         session.flush();
         session.clear();
     }
@@ -106,29 +69,30 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     private <R> R ejecutarDentroDeTransaccion(Function<Session, R> function, String metodo)
             throws MiRepositoryException {
 
-        Transaction transaction = null;
-
         try (Session session = sessionFactory.openSession()) {
-            session.setFlushMode(FlushMode.AUTO.toJpaFlushMode());
+            Transaction transaction = session.beginTransaction(); // Usamos beginTransaction directamente.
 
-            transaction = TransactionManager.beginTransaction(session);
-            R result = function.apply(session);
-            TransactionManager.commitTransaction(transaction);
-
-            return result;
-
-        } catch (Exception ex) {
-            log.error("[{}] - Error en transacción: {}", metodo, ex.getMessage(), ex);
-
-            if (transaction != null && transaction.getStatus().canRollback()) {
-                try {
-                    TransactionManager.rollbackTransaction(transaction);
-                } catch (Exception rollbackEx) {
-                    log.error("[{}] - Error durante rollback: {}", metodo, rollbackEx.getMessage(), rollbackEx);
-                }
+            try {
+                session.setFlushMode(FlushMode.AUTO.toJpaFlushMode());
+                R result = function.apply(session);
+                transaction.commit();
+                return result;
+            } catch (Exception ex) {
+                handleTransactionError(metodo, transaction, ex);
+                throw new MiRepositoryException("[" + metodo + "] - Error en transacción", ex);
             }
+        }
+    }
 
-            throw new MiRepositoryException("[" + metodo + "] - Error en transacción", ex);
+    private void handleTransactionError(String metodo, Transaction transaction, Exception ex) {
+        log.error("[{}] - Error en transacción: {}", metodo, ex.getMessage(), ex);
+        if (transaction != null && transaction.getStatus().canRollback()) {
+            try {
+                transaction.rollback();
+                log.warn("[{}] - Transacción revertida debido a error", metodo);
+            } catch (HibernateException rollbackEx) {
+                log.error("[{}] - Error durante rollback: {}", metodo, rollbackEx.getMessage(), rollbackEx);
+            }
         }
     }
 
