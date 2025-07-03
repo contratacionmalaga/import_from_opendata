@@ -42,7 +42,7 @@ public class ServicePrincipalImpl implements ServicePrincipal {
      */
     public ServicePrincipalImpl() throws MiServiceException {
 
-        SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(TipoConexion.PRINCIPAL);
+        SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(TipoConexion.MARIADB);
         this.repository = new RepositoryImpl(sessionFactory);
     }
 

@@ -18,9 +18,7 @@ import java.lang.reflect.Type;
 public record AddressAdapter(boolean imprimirHijos) implements JsonSerializer<Address> {
 
     @Override
-    public JsonElement serialize(
-            Address address,
-            Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(Address address, Type typeOfSrc, JsonSerializationContext context) {
 
         //
         JsonObject jsonObject = new JsonObject();

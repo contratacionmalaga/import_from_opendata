@@ -12,7 +12,7 @@ import lombok.Getter;
 public enum TipoConexion {
 
     //
-    PRINCIPAL,
+    MARIADB,
     FILTRO_SQL;
 
     TipoConexion() {

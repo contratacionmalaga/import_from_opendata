@@ -2,7 +2,7 @@ package local.jarios.common.util;
 
 import java.lang.reflect.Field;
 
-public class ToStringUtil {
+public final class ToStringUtil {
 
     public static String autoToString(Object obj) {
         StringBuilder sb = new StringBuilder();

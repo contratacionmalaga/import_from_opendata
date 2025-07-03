@@ -231,7 +231,7 @@ public abstract class AbstractOpenData {
             //     CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
             //
             ServicePrincipal servicePrincial = new ServicePrincipalImpl();
-            log.info("Creación correcta del servicio de conexión con la base de datos {}", TipoConexion.PRINCIPAL);
+            log.info("Creación correcta del servicio de conexión con la base de datos {}", TipoConexion.MARIADB);
             log.info(
                     propertiesManager
                             .getProperty(
@@ -367,10 +367,10 @@ public abstract class AbstractOpenData {
             String equipo = ComunHelper.getHostName();
             log.debug("[construirEmailData] - Equipo desde el que se envía el email: {}", equipo);
 
-            String from = propertiesManager.getProperty(PropertiesFiles.MAIL, PropertiesKeys.EMAIL_FROM);
+            String from = propertiesManager.getProperty(PropertiesFiles.MAIL, PropertiesKeys.MAIL_FROM);
             log.debug("[construirEmailData] - Remitente: {}", from);
 
-            String to = propertiesManager.getProperty(PropertiesFiles.MAIL, PropertiesKeys.EMAIL_TO);
+            String to = propertiesManager.getProperty(PropertiesFiles.MAIL, PropertiesKeys.MAIL_TO);
             log.debug("[construirEmailData] - Destinatarios: {}", to);
 
             // Defino el asunto y el cupero del Email

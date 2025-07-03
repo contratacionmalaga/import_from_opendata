@@ -46,7 +46,7 @@ public class SessionFactoryProvider {
             final var hibernateConfigurer = new HibernateConfigurer();
             final Configuration configuration = hibernateConfigurer.buildConfiguration(hibernateProperties);
 
-            if (tipoConexion == TipoConexion.PRINCIPAL) {
+            if (tipoConexion == TipoConexion.MARIADB) {
                 final var entityScanner = new EntityScanner();
                 entityScanner.scanAndAddEntities(configuration, CONFIG_PACKAGE_NAME);
                 log.debug("[getSessionFactory] - Entidades escaneadas desde el paquete '{}'", CONFIG_PACKAGE_NAME);
@@ -71,7 +71,7 @@ public class SessionFactoryProvider {
      */
     private Properties getHibernateProperties(TipoConexion tipoConexion) {
         return switch (tipoConexion) {
-            case PRINCIPAL -> configurePrincipalProperties(
+            case MARIADB -> configurePrincipalProperties(
                     propertyManager.getProperties(PropertiesFiles.HIBERNATE));
             case FILTRO_SQL -> configureConnectionProperties(PropertiesFiles.JAKARTA_FILTRO);
         };

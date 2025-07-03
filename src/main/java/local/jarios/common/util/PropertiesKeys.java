@@ -40,8 +40,6 @@ public final class PropertiesKeys {
     public static final String MAIL_PASSWORD = "mail.password";
     public static final String MAIL_FROM = "mail.from";
     public static final String MAIL_TO = "mail.to";
-    public static final String EMAIL_FROM = "mail.from";
-    public static final String EMAIL_TO = "mail.to";
 
     private PropertiesKeys() {/* CONSTRUCTOR PRIVADO PRA EVITAR LA INSTANCIACIÓN */}
 
