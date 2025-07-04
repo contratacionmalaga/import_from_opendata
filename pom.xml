@@ -403,6 +403,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Main-Class>local.jarios.OpenDataLocal</Main-Class>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
                 <!-- No config aquí; se toma el finalName del <build> -->
             </plugin>
 

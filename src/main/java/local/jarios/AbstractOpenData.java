@@ -100,10 +100,6 @@ public abstract class AbstractOpenData {
             propertiesManager.setSensitiveKeys(clavesSensibles);  // Ahora se aplica sobre la instancia
             log.info("Establezco el conjunto de claves sensibles: {}", clavesSensibles);
 
-            // Configurar clave secreta
-            propertiesManager.setSecretKey(Constantes.ENCRYPT_PASSWORD);
-            log.info("Establezco la clave por defecto.");
-
             // Cargar todas las propiedades desde el directorio de configuración
             propertiesManager.loadAllProperties();
             log.info("Leídas todas las propiedades de todos los ficheros.");
