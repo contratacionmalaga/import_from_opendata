@@ -199,7 +199,7 @@ public abstract class AbstractOpenData {
             miLog.setListOrganoContratacion(listOrganosContratacion);
             log
                     .info(
-                            "Órganos de Contratación asignados al Log: {}",
+                            "Órganos de Contratación en el Filtro SQL: {}",
                             StringHelper.getNumeroConFormato(listOrganosContratacion.size()));
 
             miLog.setListHistorio(VariablesGlobales.getListHistoricos());

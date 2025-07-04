@@ -59,6 +59,7 @@ public final class FeedHelper {
                     var feedType = getFeedType(unmarshaller, reader);
                     log.info("[parsearFeeds] - Obtenido FeedType desde fichero atom.");
                     var feed = MapperFeed.getFeed(miLog, feedType);
+                    VariablesGlobales.getSetFeeds().add(feed);
                     log.info("[parsearFeeds] - Parseado correctamente de Feed con LinkSelf: {}",feed.getLinkSelf());
                     nTotalFeeds++;
                     log.info("[parsearFeeds] - Nº de feeds: {}", StringHelper.getNumeroConFormato(nTotalFeeds));
