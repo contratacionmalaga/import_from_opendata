@@ -84,12 +84,16 @@ public final class FeedHelper {
 
                     } else {
 
+                        ///
+                        /// NO ERES LOCAL Y LA FECHA NO ES VÁLIDA RESPECTO DEL NEWESTFEED
+                        ///
+                        /// MEJORAR ESTA PARTE CUANDO NO ES LOCAL
+                        ///
+
                         log.info(Mensajes.FEED_INFO, nextLink, Mensajes.FEED_FECHAS_NO_OK);
                         esValido = false;
 
                     }
-
-                    log.info("[parsearFeeds] - ¿En bucle?: {}", esValido);
                 }
             }
 

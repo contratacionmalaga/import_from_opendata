@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.Log;
 import local.jarios.common.util.TamanoCampos;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "organo_contratacion"
@@ -54,9 +56,10 @@ public class OrganoContratacion extends Auditable {
     //
     //
     //
-    public OrganoContratacion() {
+    public OrganoContratacion(Log miLog) {
 
         this.id = Generators.timeBasedEpochGenerator().generate();
+        this.miLog = miLog;
     }
 }
 

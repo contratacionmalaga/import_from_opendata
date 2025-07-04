@@ -202,11 +202,17 @@ public abstract class AbstractOpenData {
                             "Órganos de Contratación asignados al Log: {}",
                             StringHelper.getNumeroConFormato(listOrganosContratacion.size()));
 
-            // Asigno la fecha y hora final del parseo
+            miLog.setListHistorio(VariablesGlobales.getListHistoricos());
+            log
+                    .info(
+                            "Asignados los históricos generados durante la ejecución: {}",
+                            StringHelper.getNumeroConFormato(VariablesGlobales.getListHistoricos().size()));
+
+            // Asigno la fecha y hora final
             LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();
             estadistica.setFechaHoraFinal(localDateTime);
 
-            // Calculo el tiempo de ejecución del parseo
+            // Obtengo el tiempo transcurrido durante la obtención del modelo de datos
             String duracion = LocalDateTimeHelper
                                     .getDiferenciaLocalDateTime(
                                             estadistica.getFechaHoraInicial(),

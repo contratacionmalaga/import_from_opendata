@@ -32,10 +32,9 @@ public final class OrganoContratacionHelper {
         for (Map.Entry<String, String> entry : mapOrganosContratacion.entrySet()) {
 
             //
-            OrganoContratacion organoContratacion = new OrganoContratacion();
+            OrganoContratacion organoContratacion = new OrganoContratacion(miLog);
 
             //
-            organoContratacion.setMiLog(miLog);
             organoContratacion.setIdPlataforma(entry.getKey());
             organoContratacion.setNombre(entry.getValue());
 
