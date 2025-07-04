@@ -1,8 +1,11 @@
 package local.jarios.helpers;
 
+import local.jarios.common.util.Mensajes;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.auxiliares.Estadistica;
+import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.placsp.*;
+import local.jarios.enums.EntryOpcion;
 import local.jarios.exceptions.MiInvalidDateFormatException;
 import local.jarios.common.util.Constantes;
 import local.jarios.common.util.VariablesGlobales;
@@ -88,7 +91,8 @@ public final class EntryHelper {
     }
 
     /**
-     *
+     * Función encarga del procesamiento de los objetos Entry
+     *      Proceso si el Entry cumple con los filtros que estuvieran definidos al inicio de la ejecución
      * @param entry Objeto Entry que se está procesando
      * @param estadistica Objeto Estadistica
      * @throws MiInvalidDateFormatException Excepción en caso de error
@@ -96,23 +100,44 @@ public final class EntryHelper {
     public static void procesarEntry(Entry entry, Estadistica estadistica) {
 
         log.info("[procesarEntry] - {}", entry.getIdEntry());
-        if (FiltroHelper.entryCumpleFiltros(entry)) {
+        String evaluacionFiltrosEntry = FiltroHelper.entryCumpleFiltros(entry);
+        log.debug("[procesarEntry] - Evaluación de los filtros del entry: {}", evaluacionFiltrosEntry);
 
+        if (evaluacionFiltrosEntry.equals(Mensajes.ENTRY_CUMPLE_FILTROS)) {
+
+            // Entry cumple con los filtros --> PROCESADO
             estadistica.aumentarNEntryProcesados();
+
+            // Inicio el procesamiento del entry
             procesarEntrySegunExistencia(entry, estadistica);
 
         } else {
 
-            estadistica.aumentarNEntryRechazados();// Entry cumple con los filtros
+            // Entry NO cumple con los filtros --> RECHAZADO
+            estadistica.aumentarNEntryRechazados();
 
+            // Creo un histórico asociado al Entry
+            Historico historico = new Historico(entry, EntryOpcion.RECHAZADO, evaluacionFiltrosEntry);
+
+            // Añado el histórico a la lista de históricos de esta ejecución
+            VariablesGlobales.getListHistoricos().add(historico);
         }
     }
 
-    // Método para procesar el entry según su existencia en el MAP
+    /**
+     * Procesa un Entry que ya se que cumple con los filtros
+     *      Analizo si existe en MapBaseDatos y dependiendo de si existe o no actúo de una forma u otra
+     *
+     * @param entry Objeto entry que será procesado
+     * @param estadistica Objeto para la gestión de las estadísticas
+     */
     private static void procesarEntrySegunExistencia(Entry entry, Estadistica estadistica) {
 
         //
-        if (VariablesGlobales.getMapBaseDatos().containsKey(entry.getIdEntry())) {
+        boolean existeEntryEnMapBd = VariablesGlobales.getMapBaseDatos().containsKey(entry.getIdEntry());
+        log.debug("[procesarEntrySegunExistencia] - Entry pertenece al MapBd: {}", existeEntryEnMapBd);
+
+        if (existeEntryEnMapBd) {
             // Si existe en el MAP, lo procesamos
 
             log.info("[procesarEntrySegunExistencia] - Existente en el Map Entry.");
@@ -126,6 +151,12 @@ public final class EntryHelper {
 
             // Lo agrego al MAP
             VariablesGlobales.getMapBaseDatos().put(entry.getIdEntry(), entry);
+
+            //
+            Historico historico =  new Historico(entry, EntryOpcion.INSERTAR, Mensajes.ENTRY_NUEVO);
+
+            //
+            VariablesGlobales.getListHistoricos().add(historico);
 
             // Aumento las estadísticas
             estadistica.aumentarNEntryGrabados();

@@ -1,12 +1,15 @@
 package local.jarios.common.util;
 
 import local.jarios.entity.atom.Entry;
+import local.jarios.entity.auxiliares.Historico;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,6 +27,10 @@ public final class VariablesGlobales {
     @Getter
     @Setter
     private static Map<String, Entry> mapBaseDatos = new HashMap<>();
+
+    @Getter
+    @Setter
+    private static List<Historico> listHistoricos = new ArrayList<>();
 
     @Getter
     @Setter
@@ -46,5 +53,4 @@ public final class VariablesGlobales {
     private static String filtroSql;
 
     private VariablesGlobales() { }
-
 }

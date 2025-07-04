@@ -1,5 +1,6 @@
 package local.jarios.helpers;
 
+import local.jarios.common.util.Mensajes;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.entity.atom.Entry;
@@ -231,7 +232,7 @@ public final class FiltroHelper {
                                     PropertiesFiles.FILTER,
                                     PropertiesKeys.FILTER_NUTS);
 
-        if ((filter != null) && (!filter.isBlank())) {
+        if (!StringHelper.isInvalidString(filter)) {
             HashSet<String> nutsSet = new HashSet<>();
             String[] nutsArray = filter.split(",");
 
@@ -242,10 +243,11 @@ public final class FiltroHelper {
                 // Agregar el código NUTS al conjunto
                 nutsSet.add(nutsCode);
             }
+            log.debug("[loadFilterNuts] - nutsSet'{}'", nutsSet);
 
             // Almacenamos el conjunto de códigos NUTS en VariablesGlobales
             VariablesGlobales.setFiltroNuts(nutsSet);
-
+            log.debug("[loadFilterNuts] - VariablesGlobales.setFiltroNuts('{}')", filter);
         }
     }
 
@@ -256,8 +258,9 @@ public final class FiltroHelper {
                                     PropertiesFiles.FILTER,
                                     PropertiesKeys.FILTER_OBJETO);
 
-        if ((filter != null) && (!filter.isBlank())) {
+        if (!StringHelper.isInvalidString(filter)) {
             VariablesGlobales.setFiltroObjeto(filter);
+            log.debug("[loadFilterObjeto] - VariablesGlobales.setFiltroObjeto('{}')", filter);
         }
     }
 
@@ -309,38 +312,39 @@ public final class FiltroHelper {
         MapHelper.printMap(VariablesGlobales.getMapFiltro());
     }
 
-    public static boolean entryCumpleFiltros(Entry entry) {
+    public static String entryCumpleFiltros(Entry entry) {
 
         // Si existe filtro SQL y no lo cumple, descarto el Entry
         if (!VariablesGlobales.getMapFiltro().isEmpty() && !hasEntryInFiltroSql(entry)) {
-            log.info("[entryCumpleFiltros] - NO CUMPLE filtro SQL.");
-            return false;
+            log.debug("[entryCumpleFiltros] - {}", Mensajes.ENTRY_NO_FILTRO_SQL);
+            return Mensajes.ENTRY_NO_FILTRO_SQL;
         }
 
         // Si existe filtro NUTS y no lo cumple, descarto el Entry
         HashSet<String> filtroNuts = VariablesGlobales.getFiltroNuts();
         if (filtroNuts != null && !filtroNuts.isEmpty() && !hasEntryContainsNuts(entry)) {
-            log.info("[entryCumpleFiltros] - NO CUMPLE filtro NUTS.");
-            return false;
+            log.debug("[entryCumpleFiltros] - {}", Mensajes.ENTRY_NO_FILTRO_NUTS);
+            return Mensajes.ENTRY_NO_FILTRO_NUTS;
         }
 
         // Si existe filtro Objeto y no lo cumple, descarto el Entry
         String filtroObjeto = VariablesGlobales.getFiltroObjeto();
         if (filtroObjeto != null && !filtroObjeto.isBlank() && !hasEntryContaninsObject(entry)) {
-            log.info("[entryCumpleFiltros] - NO CUMPLE filtro Objeto.");
-            return false;
+            log.debug("[entryCumpleFiltros] - {}", Mensajes.ENTRY_NO_FILTRO_OBJETO);
+            return Mensajes.ENTRY_NO_FILTRO_OBJETO;
         }
 
         // Si existe filtro de fechas y no lo cumple, descarto el Entry
         LocalDateTime fechaInicio = VariablesGlobales.getFiltroFechaInicial();
         LocalDateTime fechaFin = VariablesGlobales.getFiltroFechaFinal();
         if (fechaInicio != null && fechaFin != null && !hasEntryInFechas(entry)) {
-            log.info("[entryCumpleFiltros] - NO CUMPLE filtro Fechas.");
-            return false;
+            log.debug("[entryCumpleFiltros] - {}", Mensajes.ENTRY_NO_FILTRO_FECHAS);
+            return Mensajes.ENTRY_NO_FILTRO_FECHAS;
         }
 
-        log.info("[entryCumpleFiltros] - Entry cumple los filtros.");
-        return true;
+        //
+        log.debug("[entryCumpleFiltros] - {}}", Mensajes.ENTRY_CUMPLE_FILTROS);
+        return Mensajes.ENTRY_CUMPLE_FILTROS;
     }
 
 }

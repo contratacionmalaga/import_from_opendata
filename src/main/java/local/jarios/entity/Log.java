@@ -6,6 +6,7 @@ import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
+import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
@@ -58,6 +59,9 @@ public class Log extends Auditable {
 
     @OneToMany(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Feed> listFeed = new ArrayList<>();
+
+    @OneToMany(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Historico> listHistorio = new ArrayList<>();
 
     // Constructor con dos parámetros
     public Log(LugarImportacion lugarImportacion, TipoSindicacion tipoSindicacion) {

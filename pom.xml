@@ -419,6 +419,11 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.7.1</version>
                 <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Main-Class>local.jarios.OpenDataLocal</Main-Class>
+                        </manifestEntries>
+                    </archive>
                     <appendAssemblyId>true</appendAssemblyId>
                     <finalName>${project.artifactId}-${version.trimmed}</finalName>
                     <descriptorRefs>

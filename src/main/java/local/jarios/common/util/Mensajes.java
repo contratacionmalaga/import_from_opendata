@@ -8,21 +8,8 @@ public final class Mensajes {
     /** Mensaje que indica el final del log. */
     public static final String FINAL =
             "**** Final del log";
-
-    public static final String PERSISTIDO_ESTADISTICA =
-            "Se ha persistido correctamente, la entidad Estadistica en la base de datos.";
-
-    public static final String PERSISTIDO_MAP_ENTRIES =
-            "Se han persistido correctamente, los registros en la base de datos. {} registros persistidos";
-
-    public static final String PERSISTIDO_LOG_CONFIGURACION_LIST_ORGANOS_CONTRATACION =
-            "Se ha persistido correctamente, las entidades Log, Configuracion y List<OrganoContratacion> en la base de datos.";
-
-    public static final String VERSION_APP =
-            "Versión del aplicativo: {}";
-
-    public static final String URL_NULL_EMPTY =
-            "Url es null o vacía.";
+    public static final String PERSISTIDAS_ENTIDADES_BASE_DATOS =
+            "Se han persistido todas las entidades correctamente en la base de datos.";
 
     public static final String FILE_NOT_EXIST =
             "Fichero no existe. {}";
@@ -33,83 +20,16 @@ public final class Mensajes {
     public static final String FILE_NOT_READ =
             "No se puede leer. {}";
 
-    public static final String FILTROS_OK =
-            "Cumple con los filtros.";
-
-    public static final String FILTROS_NO_SQL =
-            "No cumple el filtro SQL.";
-
-    public static final String FILTROS_NO_NUTS =
-            "No cumple el filtro NUTS.";
-
-    public static final String FILTROS_NO_OBJETO =
-            "No cumple el filtro OBJETO.";
-
-    public static final String FILTROS_NO_FECHAS =
-            "No cumple el filtro FECHAS.";
-
     public static final String MENSAJE_VALOR_SWITCH_INCORRECTO =
             "EL VALOR DE {}: ({}) NO ES VÁLIDO";
-
-    public static final String ENTRY_NO_EN_MAP =
-            "NO figura en el MAP.";
-
-    public static final String ENTRY_EN_MAPBASEDATOS_CON_FECHA_MAS_MODERNA =
-            "Figura en memoria con una fecha más moderna.";
-
-    public static final String ENTRY_EN_MAPBASEDATOS_CON_FECHA_MAS_ANTIGUA =
-            "Figura en el MAP con una fecha más antigua.";
 
     public static final String INICIO =
             "**** Inicio de la ejecución del programa ****";
 
     public static final String FINAL_CORRECTO =
             "**** La ejecución ha finalizado CORRECTAMENTE ****";
-
-    public static final String FINAL_ERROR =
-            "!!!! La ejecución ha finalizado con ERRORES !!!!";
-
-    public static final String NEWESTFEED_NO_NULO =
-            "NewestFeed para el Tipo de Sindicación: {}";
-
-    public static final String NEWESTFEED_NULO =
-            "NewestFeed es NULO para el Tipo de Sindicación: {}";
-
-    public static final String PROPERTY_LOG =
-            "Lectura correcta de las variables definidas en los ficheros properties.";
-
-    public static final String ENTRY_NO_TIENE_IDPLATAFORMA =
-            "{}El Entry ({}) NO tiene IdPlataforma";
-
-    public static final String ENTRY_NO_TIENE_NUTS =
-            "{}El Entry ({}) NO tiene Nuts";
-
-    public static final String ERROR_LECTURA_VARIABLE_PROPERTY =
-            "La variable (%s) se encuentra VACÍA o es NULA";
-
     public static final String FEED_INFO =
             "Feed: {}. {}";
-
-    public static final String NEXT_LINK =
-            "{}NextLink: {}. ¿Válido?: {}";
-
-    public static final String FEED_TYPE_NULL =
-            "{}¿Es FeedType Nulo? {}";
-
-    public static final String FILTRO_SQL_LISTADO =
-            "Listado de los Órganos de contratación incluídos en el filtro SQL. {} registros.";
-
-    public static final String FILTROS =
-            "Se están aplicando filtros en esta ejecución. Listado de los filtros aplicados:";
-
-    public static final String FILTROS_NO =
-            "No se extán aplicando filtros en esta ejecución.";
-
-    public static final String FILTRO =
-            "{}{} se está aplicando el filtro {} en esta importación. ¿Cumple con el Filtro? {}";
-
-    public static final String FIN_PARSEO_FICHEROS_ATOM =
-            "***** FIN DEL PARSEO DE LOS FICHEROS FEEDS *****";
 
     public static final String INICIO_PERSISTENCIA_FICHEROS_ATOM =
             "***** INICIO DE LA PERSISTENCIA DE LOS FICHEROS ATOMS EN BASE DE DATOS *****";
@@ -197,6 +117,13 @@ public final class Mensajes {
 
     public static final String ENTRY_3 =
             "{}Entry: {}. {}";
+
+    public static final String ENTRY_NUEVO = "El Entry no figura en la base de datos.";
+    public static final String ENTRY_NO_FILTRO_SQL = "El Entry no cumple el filtro SQL.";
+    public static final String ENTRY_NO_FILTRO_FECHAS = "El Entry no cumple el filtro FECHAS.";
+    public static final String ENTRY_NO_FILTRO_OBJETO = "El Entry no cumple el filtro OBJETO.";
+    public static final String ENTRY_NO_FILTRO_NUTS = "El Entry no cumple el filtro NUTS.";
+    public static final String ENTRY_CUMPLE_FILTROS = "El Entru cumple los filtros.";
 
     private Mensajes() { }
 

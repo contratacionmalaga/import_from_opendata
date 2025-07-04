@@ -158,8 +158,7 @@ public abstract class AbstractOpenData {
             log.info("Inicio del parseo de los ficheros ATOM.");
             parsearFeeds(miLog, newestFeed, estadistica);
 
-            log.info("Migrar los datos desde el MAP a la estructura de CODICE.");
-            Map<String, Entry> entryMap = VariablesGlobales.getMapBaseDatos(); // Asumido
+            Map<String, Entry> entryMap = VariablesGlobales.getMapBaseDatos();
 
             // Mapa auxiliar para agrupar Feeds por su lista de Entry
             Map<Feed, List<Entry>> feedEntryMap = new HashMap<>();
@@ -236,7 +235,7 @@ public abstract class AbstractOpenData {
 
             // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
             servicePrincial.persistirMiLogLocal(miLog, VariablesGlobales.getMapBaseDatos(), lugarImportacion);
-            log.info(Mensajes.PERSISTIDO_LOG_CONFIGURACION_LIST_ORGANOS_CONTRATACION);
+            log.info(Mensajes.PERSISTIDAS_ENTIDADES_BASE_DATOS);
 
             //
             enviarEmail(estadistica, null, true);
@@ -315,8 +314,6 @@ public abstract class AbstractOpenData {
             // Configuración del servidor SMTP
             Properties emailProps = propertiesManager.getProperties(PropertiesFiles.MAIL);
             log.info("[enviarEmail] - Properties cargadas correctamente.");
-
-            log.info("[enviarEmail] - Propiedades: {}", emailProps);
 
             // Construcción de los datos del correo
             EmailData emailData = construirEmailData(estadistica, ex, success);

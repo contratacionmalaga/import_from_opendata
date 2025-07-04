@@ -44,6 +44,7 @@ public final class FeedHelper {
         log.trace("[parsearFeeds] - Inicio el parseo de los Feeds.");
         int nTotalEntries = 0;
         int nTotalFeeds = 0;
+        int nEntrisEnBd = 0;
 
         try {
             var unmarshaller = getValidUnmarshaller();
@@ -73,6 +74,9 @@ public final class FeedHelper {
                         log.info(
                                 "[parsearFeeds] - Nº de Entrys totales procesados: {}",
                                 StringHelper.getNumeroConFormato(nTotalEntries));
+                        nEntrisEnBd = VariablesGlobales.getMapBaseDatos().size();
+                        log.info("[parsearFeeds] - Nº de Entrys en Base de datos: {}",
+                                StringHelper.getNumeroConFormato(nEntrisEnBd));
                         nextLink = getNextLink(feed, isLocal);
                         esValido = isNextLinkValid(nextLink, isLocal);
                         log.info("[parsearFeeds] - NextLink: {}. ¿Válido?: {}", nextLink, esValido);
@@ -112,6 +116,7 @@ public final class FeedHelper {
     private static void procesarFeed(Feed feed, Estadistica estadistica) throws MiInvalidDateFormatException {
         List<Entry> entries = feed.getListEntry();
         estadistica.setNEntryLeidos(estadistica.getNEntryLeidos() + entries.size());
+        log.debug("[procesarFeed] - estadistica.setNEntryLeidos({})", estadistica.getNEntryLeidos() + entries.size());
 
         for (Entry entry : entries) {
             EntryHelper.procesarEntry(entry, estadistica);
