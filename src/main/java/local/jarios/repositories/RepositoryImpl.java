@@ -4,22 +4,16 @@ import jakarta.persistence.TypedQuery;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
-import local.jarios.enums.LugarImportacion;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.models.FiltroOrganoContratacion;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 @Slf4j
 public class RepositoryImpl implements Repository, AutoCloseable {
-
-    private static final int DEFAULT_BATCH_SIZE = 50;
 
     private final SessionFactory sessionFactory;
 
@@ -28,16 +22,30 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     }
 
     @Override
-    public void persistirLogYDatos(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion)
+    public void persistirMiLogLocal(Log miLog)
             throws MiRepositoryException {
 
         ejecutarDentroDeTransaccion(session -> {
-            log.debug("[persistirLog] - Persistiendo Log.");
+            log.debug("[persistirMiLogLocal] - Persistiendo Log.");
             session.persist(miLog);
             flushAndClear(session);
-            log.debug("[persistirLog] - Persistencia de Log completada.");
+            log.debug("[persistirMiLogLocal] - Persistencia de Log completada.");
             return null;
-        }, "persistirLog");
+        }, "persistirMiLogLocal");
+    }
+
+    public void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete)
+            throws MiRepositoryException {
+
+        ejecutarDentroDeTransaccion(session -> {
+            setEntriesToDelete.forEach(session::remove);
+            log.debug("[persistirMiLogInternet] - Borrados '{}' Entries de la base de datos.", setEntriesToDelete.size());
+            session.persist(miLog);
+            log.debug("[persistirMiLogInternet] - Persistencia de Log completada.");
+            flushAndClear(session);
+            log.debug("[persistirMiLogInternet] - Flush # Clear de la session.");
+            return null;
+        }, "persistirMiLogInternet");
     }
 
     private void procesarEntryRemoto(Session session, Entry entry) {
@@ -89,6 +97,30 @@ public class RepositoryImpl implements Repository, AutoCloseable {
                 log.error("[{}] - Error durante rollback: {}", metodo, rollbackEx.getMessage(), rollbackEx);
             }
         }
+    }
+
+    /**
+     * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.
+     *
+     * @param sql Consulta a ejecutar sobre la base de datos
+     * @return el feed más reciente disponible para el tipo indicado.
+     */
+    @Override
+    public Map<String, Entry> getMapEntries(String sql) throws MiRepositoryException {
+
+        Map<String, Entry> mapEntriesEnBdBorrar = new HashMap<>();
+
+        return ejecutarDentroDeTransaccion(session -> {
+            TypedQuery<Entry> query = session.createQuery(sql, Entry.class);
+            List<Entry> listEntries = query.getResultList();
+            if (listEntries == null) {
+                return mapEntriesEnBdBorrar;
+            }
+            for (Entry entry : listEntries) {
+                mapEntriesEnBdBorrar.put(entry.getIdEntry(), entry);
+            }
+            return mapEntriesEnBdBorrar;
+        }, "getListEntries");
     }
 
     @Override

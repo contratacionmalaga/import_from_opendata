@@ -4,7 +4,6 @@ import local.jarios.database.SessionFactoryRegistry;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
-import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoConexion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiRepositoryException;
@@ -15,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,12 +53,12 @@ public class ServicePrincipalImpl implements ServicePrincipal {
      * @param miLog Objeto {@link Log} a persistir.
      */
     @Override
-    public void persistirMiLogLocal(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion) throws MiServiceException {
+    public void persistirMiLogLocal(Log miLog) throws MiServiceException {
 
         try {
 
             // El repositorio se encarga de la persistencia y manejo de la las transacciones
-            repository.persistirLogYDatos(miLog, mapBaseDatos, lugarImportacion);
+            repository.persistirMiLogLocal(miLog);
 
         } catch (MiRepositoryException ex) {
 
@@ -80,12 +81,12 @@ public class ServicePrincipalImpl implements ServicePrincipal {
      * @param miLog Objeto {@link Log} a persistir.
      */
     @Override
-    public void persistirMiLogInternet(Log miLog, Set<String> setEntrysToDelete) throws MiServiceException {
+    public void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete) throws MiServiceException {
 
         try {
 
             // El repositorio se encarga de la persistencia y manejo de la las transacciones
-            // repository.persistirLogYDatos(miLog, mapBaseDatos, lugarImportacion);
+            repository.persistirMiLogInternet(miLog, setEntriesToDelete);
 
         } catch (MiRepositoryException ex) {
 
@@ -96,16 +97,6 @@ public class ServicePrincipalImpl implements ServicePrincipal {
                                     ex.getMessage());
             log.error(msg, ex.getMessage(), ex);
             throw new MiServiceException (msg, ex);
-
-        } catch (RuntimeException ex) {
-
-            String msg = String
-                            .format(
-                                    "[persistirLog] - Error desconocido al persisitir el Log con ID %s: %s",
-                                    miLog.getId(),
-                                    ex.getMessage());
-            log.error(msg, ex.getMessage(), ex);
-            throw new MiServiceException(msg, ex);
 
         }
     }
@@ -134,6 +125,36 @@ public class ServicePrincipalImpl implements ServicePrincipal {
         } catch (RuntimeException  ex) {
 
             msg = String.format("[getListFiltroOcsFromFiltroSql] - Error de ejecución en la consulta: %s. Error: %s", sql, ex.getMessage());
+            log.error(msg, ex);
+            throw new MiServiceException(msg, ex);
+
+        }
+    }
+
+    /**
+     * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.
+     *
+     * @param tipoSindicacion el tipo de sindicación (RSS, Atom, etc.).
+     * @return el feed más reciente disponible para el tipo indicado.
+     */
+    @Override
+    public Map<String, Entry> getMapEntries(TipoSindicacion tipoSindicacion) throws MiServiceException {
+
+        Map<String, LocalDateTime> mapEntriesExistentesEnBd = new HashMap<>();
+
+        //
+        String sql = "SELECT e FROM Entry e " +
+                "JOIN e.miLog l " +
+                "WHERE l.tipoSindicacion = :tipoSindicacion " +
+                "ORDER BY e.updated DESC";
+
+        try {
+
+            return repository.getMapEntries(sql);
+
+        } catch (MiRepositoryException ex) {
+
+            String msg = String.format("[getListEntries] - Error en la consunta: %s. Error: %s", sql, ex.getMessage());
             log.error(msg, ex);
             throw new MiServiceException(msg, ex);
 

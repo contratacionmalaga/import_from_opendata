@@ -22,7 +22,7 @@ public final class UrlHelper {
     private UrlHelper() {}
 
     public static boolean esUrlValida(String url) throws PropertiesManagerException, URISyntaxException {
-        if (url == null || url.isBlank()) {
+        if (StringHelper.isInvalidString(url)) {
             log.error("[esUrlValida] - URL es nula o vacía.");
             return false;
         }
@@ -89,9 +89,10 @@ public final class UrlHelper {
     private static String getProperty(String file, String key) throws PropertiesManagerException {
         try {
             return PropertiesHelper.getProperty(file, key);
-        } catch (PropertiesManagerException e) {
-            log.error("[UrlHelper] - Error cargando propiedad '{}'", key, e);
-            throw e;
+        } catch (Exception e) {
+            String msg = String.format ("[UrlHelper] - Error cargando propiedad '%s' del fichero '%s", key, file);
+            log.error(msg, e);
+            throw new PropertiesManagerException(msg, e);
         }
     }
 }

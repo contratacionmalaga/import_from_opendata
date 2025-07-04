@@ -1,7 +1,6 @@
 package local.jarios;
 
 import local.jarios.entity.Log;
-import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
@@ -17,21 +16,24 @@ public class OpenDataLocal extends AbstractOpenData {
 
     @Override
     protected TipoSindicacion getTipoSindicacion() {
+
         return TipoSindicacionHelper.getTipoSindicacion(true);
     }
 
     @Override
     protected LugarImportacion getLugarImportacion() {
+
         return LugarImportacion.LOCAL;
     }
 
     @Override
-    protected void parsearFeeds(Log log, Feed newestFeed, Estadistica estadistica) throws MiParseException {
+    protected void parsearFeeds(Log log, Estadistica estadistica) throws MiParseException {
 
-        FeedHelper.parsearFeeds(log, newestFeed, estadistica, true);
+        FeedHelper.parsearFeedsDesdeLocal(log, estadistica);
     }
 
     public static void main(String[] args) {
+
         new OpenDataLocal().procesar();
     }
 }

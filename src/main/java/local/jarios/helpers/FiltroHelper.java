@@ -232,23 +232,31 @@ public final class FiltroHelper {
                                     PropertiesFiles.FILTER,
                                     PropertiesKeys.FILTER_NUTS);
 
-        if (!StringHelper.isInvalidString(filter)) {
-            HashSet<String> nutsSet = new HashSet<>();
-            String[] nutsArray = filter.split(",");
+        if (StringHelper.isInvalidString(filter)) {
 
-            // Validar cada código NUTS
-            for (String nutsCode : nutsArray) {
-                nutsCode = nutsCode.trim(); // Eliminar espacios alrededor del código NUTS
-
-                // Agregar el código NUTS al conjunto
-                nutsSet.add(nutsCode);
-            }
-            log.debug("[loadFilterNuts] - nutsSet'{}'", nutsSet);
-
-            // Almacenamos el conjunto de códigos NUTS en VariablesGlobales
-            VariablesGlobales.setFiltroNuts(nutsSet);
-            log.debug("[loadFilterNuts] - VariablesGlobales.setFiltroNuts('{}')", filter);
+            log.debug(
+                    "[loadFilterNuts] - Valor inválido para fichero: '{}', propiedad: '{}'",
+                    PropertiesFiles.FILTER,
+                    PropertiesKeys.FILTER_NUTS);
+            return;
         }
+
+        HashSet<String> nutsSet = new HashSet<>();
+        String[] nutsArray = filter.split(",");
+
+        // Validar cada código NUTS
+        for (String nutsCode : nutsArray) {
+            nutsCode = nutsCode.trim(); // Eliminar espacios alrededor del código NUTS
+
+            // Agregar el código NUTS al conjunto
+            nutsSet.add(nutsCode);
+        }
+        log.debug("[loadFilterNuts] - nutsSet('{}')", nutsSet);
+
+        // Almacenamos el conjunto de códigos NUTS en VariablesGlobales
+        VariablesGlobales.setFiltroNuts(nutsSet);
+        log.debug("[loadFilterNuts] - VariablesGlobales.setFiltroNuts('{}')", filter);
+
     }
 
     private static void loadFilterObjeto() throws PropertiesManagerException {
@@ -258,10 +266,18 @@ public final class FiltroHelper {
                                     PropertiesFiles.FILTER,
                                     PropertiesKeys.FILTER_OBJETO);
 
-        if (!StringHelper.isInvalidString(filter)) {
-            VariablesGlobales.setFiltroObjeto(filter);
-            log.debug("[loadFilterObjeto] - VariablesGlobales.setFiltroObjeto('{}')", filter);
+        if (StringHelper.isInvalidString(filter)) {
+
+            log.debug(
+                    "[loadFilterObjeto] - Valor inválido para fichero: '{}', propiedad: '{}'",
+                    PropertiesFiles.FILTER,
+                    PropertiesKeys.FILTER_OBJETO);
+            return;
         }
+
+        // Almaceno el filtro Objeto
+        VariablesGlobales.setFiltroObjeto(filter);
+        log.debug("[loadFilterObjeto] - VariablesGlobales.setFiltroObjeto('{}')", filter);
     }
 
     private static void loadFilterSql() throws PropertiesManagerException {
@@ -272,12 +288,20 @@ public final class FiltroHelper {
                                     PropertiesKeys.FILTER_SQL);
 
         if (!StringHelper.isInvalidString(filter)) {
-            VariablesGlobales.setFiltroSql(filter);
-            log.debug("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
-
-            VariablesGlobales.setMapFiltro(getMapFromFiltroSql(filter));
-            log.debug("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
+            log.debug(
+                    "[loadFilterSql] - Valor inválido para fichero: '{}', propiedad: '{}'",
+                    PropertiesFiles.FILTER,
+                    PropertiesKeys.FILTER_OBJETO);
+            return;
         }
+
+        // Almaceno el filtro SQL
+        VariablesGlobales.setFiltroSql(filter);
+        log.debug("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
+
+        VariablesGlobales.setMapFiltro(getMapFromFiltroSql(filter));
+        log.debug("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
+
     }
 
     public static void loadFilters() throws PropertiesManagerException {

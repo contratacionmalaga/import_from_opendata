@@ -4,11 +4,15 @@ import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.enums.LugarImportacion;
+import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiRepositoryException;
+import local.jarios.exceptions.MiServiceException;
 import local.jarios.models.FiltroOrganoContratacion;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Interfaz que define las operaciones básicas para acceder y manipular datos
@@ -26,7 +30,15 @@ public interface Repository {
      * @param miLog Instancia de {@link Log} a persistir.
      * @throws MiRepositoryException Si ocurre un error durante la persistencia.
      */
-    void persistirLogYDatos(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion) throws MiRepositoryException;
+    void persistirMiLogLocal(Log miLog) throws MiRepositoryException;
+
+    /**
+     * Persiste un objeto {@link Log} en la base de datos.
+     *
+     * @param miLog Instancia de {@link Log} a persistir.
+     * @throws MiRepositoryException Si ocurre un error durante la persistencia.
+     */
+    void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete) throws MiRepositoryException;
 
     /**
      * Obtiene el {@link Feed} más reciente para un tipo específico de sindicacion.
@@ -46,4 +58,12 @@ public interface Repository {
      * @throws MiRepositoryException Si ocurre un error en Hibernate durante la consulta.
      */
     List<FiltroOrganoContratacion> getListFiltroOcsFromFiltroSql (String filtroSQL) throws MiRepositoryException;
+
+    /**
+     * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.
+     *
+     * @param sql consulta a realizar sobre la base de datos
+     * @return el feed más reciente disponible para el tipo indicado.
+     */
+    Map<String, Entry> getMapEntries(String sql) throws MiServiceException;
 }

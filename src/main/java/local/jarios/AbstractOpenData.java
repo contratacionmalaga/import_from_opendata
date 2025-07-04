@@ -10,7 +10,6 @@ import local.jarios.email.exception.EmailException;
 import local.jarios.email.helper.EmailHelper;
 import local.jarios.email.model.EmailData;
 import local.jarios.email.validator.EmailRequestValidator;
-import local.jarios.encryptor.exception.EncryptorException;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
@@ -72,7 +71,7 @@ public abstract class AbstractOpenData {
     protected abstract TipoSindicacion getTipoSindicacion();
 
     //
-    protected abstract void parsearFeeds(Log log, Feed newestFeed, Estadistica estadistica) throws MiParseException;
+    protected abstract void parsearFeeds(Log log, Estadistica estadistica) throws MiParseException;
 
     // Método que determina el lugar de importación (Local o Internet)
     protected abstract LugarImportacion getLugarImportacion();
@@ -131,7 +130,9 @@ public abstract class AbstractOpenData {
             log.info(Mensajes.ESTADISTICA_CREACION);
 
             // Cargo los filtros que se amplican y los imprimo
+            log.info("Cargamos los filtros asociados a esta ejecución.");
             FiltroHelper.loadFilters();
+            log.info("Impresión de los filtros.");
             FiltroHelper.printFilters();
 
             // Creo el objeto Configuracion
@@ -142,21 +143,13 @@ public abstract class AbstractOpenData {
             miLog.setConfiguracion(configuracion);
             log.info(Mensajes.ASIGN_CONFIGURACION_TO_LOG);
 
-            Feed newestFeed = null;
-
-            // Obtengo el NewestFeed para el caso en que esté importando desde INTERNET
-            if (lugarImportacion == LugarImportacion.INTERNET) {
-                newestFeed = FeedHelper.getNewestFeed(tipoSindicacion);
-                log.info("Obtenido el Newest feed: {}", newestFeed);
-            }
-
             //
             //     COMIENZO EL PARSEO DE LOS FEEDS
             //
 
             // Parseo de los Feeds
             log.info("Inicio del parseo de los ficheros ATOM.");
-            parsearFeeds(miLog, newestFeed, estadistica);
+            parsearFeeds(miLog, estadistica);
 
             Map<String, Entry> entryMap = VariablesGlobales.getMapBaseDatos();
 
@@ -240,7 +233,11 @@ public abstract class AbstractOpenData {
                                     PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
 
             // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
-            servicePrincial.persistirMiLogLocal(miLog, VariablesGlobales.getMapBaseDatos(), lugarImportacion);
+            if (getLugarImportacion() == LugarImportacion.INTERNET) {
+                servicePrincial.persistirMiLogInternet(miLog, ((OpenDataInternet) this).getEntriesAEliminar());
+            } else {
+                servicePrincial.persistirMiLogLocal(miLog);
+            }
             log.info(Mensajes.PERSISTIDAS_ENTIDADES_BASE_DATOS);
 
             //
@@ -254,8 +251,6 @@ public abstract class AbstractOpenData {
             manejarExcepcion(ex, "[MiUnknownHostException] - ");
         } catch (MiServiceException ex) {
             manejarExcepcion(ex, "[MiServiceException] - ");
-        } catch (EncryptorException ex) {
-            manejarExcepcion(ex, "[EncryptorException] - ");
         } catch (EmailException ex) {
             manejarExcepcion(ex, "[EmailServiceException] - ");
         } catch (PropertiesManagerException ex) {

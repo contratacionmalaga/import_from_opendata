@@ -7,6 +7,7 @@ import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiServiceException;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,10 +21,8 @@ public interface ServicePrincipal {
      * Persiste un objeto de log en el sistema.
      *
      * @param miLog el objeto de log que se desea almacenar.
-     * @param mapBaseDatos       el mapa que representa la base de datos con claves como IDs o nombres.
-     * @param lugarImportacion   información sobre el origen o contexto de la importación.
      */
-    void persistirMiLogLocal(Log miLog, Map<String, Entry> mapBaseDatos, LugarImportacion lugarImportacion) throws MiServiceException;
+    void persistirMiLogLocal(Log miLog) throws MiServiceException;
 
     /**
      * Persiste un objeto de log en el sistema.
@@ -31,7 +30,7 @@ public interface ServicePrincipal {
      * @param miLog el objeto de log que se desea almacenar.
      * @param setEntrysToDelete  conjunto de entrys a borrar de la base de datos
      */
-    void persistirMiLogInternet(Log miLog, Set<String> setEntrysToDelete) throws MiServiceException;
+    void persistirMiLogInternet(Log miLog, Set<Entry> setEntrysToDelete) throws MiServiceException;
 
 
     /**
@@ -42,5 +41,12 @@ public interface ServicePrincipal {
      */
     Feed getNewestFeed(TipoSindicacion tipoSindicacion) throws MiServiceException;
 
+    /**
+     * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.
+     *
+     * @param tipoSindicacion el tipo de sindicación (RSS, Atom, etc.).
+     * @return el feed más reciente disponible para el tipo indicado.
+     */
+    Map<String, Entry> getMapEntries(TipoSindicacion tipoSindicacion) throws MiServiceException;
 }
 

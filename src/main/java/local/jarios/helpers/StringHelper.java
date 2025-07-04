@@ -118,8 +118,18 @@ public final class StringHelper {
 
     public static boolean isInvalidString(String cadena) {
 
-        boolean invalid = (cadena == null) || (cadena.isBlank());
-        log.debug("[isInvalidString] - {} es {}", cadena, invalid);
-        return invalid;
+        if (cadena == null) {
+            log.debug("[isInvalidString] - La cadena es NULL. Cadena: {}", cadena);
+            return true;
+        }
+
+        if (cadena.isBlank()) {
+            log.debug("[isInvalidString] - La cadena es BLANK. Cadena: {}", cadena);
+            return true;
+        }
+
+        log.debug("[isInvalidString] - La cadena no es NULL ni BLANK. Cadena: {}", cadena);
+        return false;
+
     }
 }
