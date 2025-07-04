@@ -55,11 +55,6 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         }
     }
 
-    private String formatContador(int actual, int total) {
-        int padding = String.valueOf(total).length();
-        return String.format("%0" + padding + "d/%0" + padding + "d", actual, total);
-    }
-
     private void flushAndClear(Session session) {
         // Se puede optimizar si se planea ejecutar en muchas transacciones.
         session.flush();
