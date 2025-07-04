@@ -318,7 +318,7 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.9.3.0</version>
+                <version>4.9.3.2</version>
                 <configuration>
                     <includeFilterFile>src/main/resources/spotbugs-security-include.xml</includeFilterFile>
                     <excludeFilterFile>src/main/resources/spotbugs-security-exclude.xml</excludeFilterFile>
@@ -368,7 +368,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
             </plugin>
 
             <plugin>
