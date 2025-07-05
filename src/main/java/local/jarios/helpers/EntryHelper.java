@@ -105,7 +105,6 @@ public final class EntryHelper {
      */
     public static void procesarEntry(Entry entry, Estadistica estadistica) {
 
-        log.info("[procesarEntry] - {}", entry.toStringResumido());
         String evaluacionFiltrosEntry = FiltroHelper.entryCumpleFiltros(entry);
         log.debug("[procesarEntry] - Evaluación de los filtros del entry: {}", evaluacionFiltrosEntry);
 
@@ -128,6 +127,8 @@ public final class EntryHelper {
             // Añado el histórico a la lista de históricos de esta ejecución
             VariablesGlobales.getListHistoricos().add(historico);
         }
+
+        log.info("[procesarEntry] - {} - {}", entry.toStringResumido(), evaluacionFiltrosEntry);
     }
 
     /**

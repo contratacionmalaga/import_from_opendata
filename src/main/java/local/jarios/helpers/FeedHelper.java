@@ -66,9 +66,12 @@ public final class FeedHelper {
                 try (var reader = source.openBufferedReader(nextLink)) {
                     // Obtengo el FeedType desde el fichero Atom
                     var feedType = getFeedType(unmarshaller, reader);
+                    log.info("[parsearFeeds] - Obtenido el objeto FeedType desde el fichero Atom correctamente.");
 
                     // Mapeo el fichero FeedType al objeto Feed
                     var feed = MapperFeed.getFeed(miLog, feedType);
+                    log.info("[parsearFeeds] - Parseo correcto del FeedType. '{}' objetos Entry.",
+                            StringHelper.getNumeroConFormato(feed.getListEntry().size()));
 
                     // Aumento el NFicheros procesados
                     estadistica.aumentarNFicheros();
@@ -112,10 +115,6 @@ public final class FeedHelper {
 
         // Obtengo la lista
         List<Entry> entries = feed.getListEntry();
-        log.info(
-                "[procesarFeed] - Procesando el Feed: '{}'. Contiene '{}' objetos Entry,",
-                feed.getLinkSelf(),
-                StringHelper.getNumeroConFormato(entries.size()));
 
         // Ordeno la lista de mayor a menor según Updated
         entries.sort(Comparator.comparing(Entry::getUpdated).reversed());

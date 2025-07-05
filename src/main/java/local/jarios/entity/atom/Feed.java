@@ -1,8 +1,6 @@
 package local.jarios.entity.atom;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.Log;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
@@ -34,6 +32,7 @@ public class Feed extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -66,7 +65,8 @@ public class Feed extends Auditable {
     public String toStringResumido() {
 
         return "[linkSelf='" + linkSelf + "', " +
-                "updated='" + updated + "]'";
+                "updated='" + updated + "', " +
+                "id='" + id + "']";
     }
     //
     //
@@ -88,13 +88,4 @@ public class Feed extends Auditable {
     //
     @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Entry> listEntry = new ArrayList<>();
-
-    //
-    //
-    //
-    public Feed() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
-    }
 }

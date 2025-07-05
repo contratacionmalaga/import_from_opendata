@@ -1,6 +1,5 @@
 package local.jarios.entity.atom;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.entity.placsp.ContractFolderStatus;
@@ -37,7 +36,8 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     //
     //
     @Id
-    @Column(name = "id", updatable = false, nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+    @GeneratedValue(generator = "UUID")
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @Column(name = "id_entry", nullable = false, unique = true, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
@@ -89,17 +89,8 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
 
     public String toStringResumido() {
 
-        return "[idEntry='" + idEntry + "'," +
+        return "[idEntry='" + idEntry + "', " +
                 "updated='" + updated + "', " +
-                "id='" + id + "]'";
-    }
-
-    //
-    //
-    //
-    public Entry() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
+                "id='" + id + "']";
     }
 }

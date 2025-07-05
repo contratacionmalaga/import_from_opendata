@@ -57,7 +57,7 @@ public class OpenDataInternet extends AbstractOpenData {
 
         Map<String, Entry> entriesDesdeInternet = VariablesGlobales.getMapBaseDatos();
         log.info(
-                "[parsearAtomsFeeds] - Listado de Entries almacenados en el map - {}",
+                "[parsearAtomsFeeds] - Listado de Entries almacenados en el map ('{}')",
                 VariablesGlobales.getMapBaseDatos().size());
         entriesDesdeInternet.values().forEach(e->log.info(e.toStringResumido()));
 
@@ -66,7 +66,7 @@ public class OpenDataInternet extends AbstractOpenData {
         ServicePrincipal servicePrincipal = new ServicePrincipalImpl();
         entriesEnBaseDatos = servicePrincipal.getMapEntries(getTipoSindicacion());
         log.info(
-                "[parsearAtomsFeeds] - Listado de Entries almacenados en la base de datos - {}",
+                "[parsearAtomsFeeds] - Listado de Entries almacenados en la base de datos ('{}')",
                 entriesEnBaseDatos.size());
         entriesEnBaseDatos.values().forEach(e->log.info("[parsearAtomsFeeds] - {}", e.toStringResumido()));
 
@@ -80,9 +80,9 @@ public class OpenDataInternet extends AbstractOpenData {
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toSet());
         log.info(
-                "[parsearAtomsFeeds] - Nº de Entries en la intersección (a eliminar de la BD) - {}",
+                "[parsearAtomsFeeds] - Listado de los Entries a actualizar en la base de datos ('{}')",
                 this.entriesAEliminar.size());
-        this.entriesAEliminar.forEach(e->log.info(e.toStringResumido()));
+        this.entriesAEliminar.forEach(e->log.info("[parsearAtomsFeeds] - {}", e.toStringResumido()));
     }
 
     public static void main(String[] args) {

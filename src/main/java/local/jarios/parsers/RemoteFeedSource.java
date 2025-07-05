@@ -50,6 +50,11 @@ public class RemoteFeedSource implements FeedSource {
 
     @Override
     public BufferedReader openBufferedReader(String path) throws Exception {
-        return new BufferedReader(new InputStreamReader(new URI(path).toURL().openStream(), StandardCharsets.UTF_8));
+        BufferedReader bufferedReader =
+                new BufferedReader
+                        (new InputStreamReader(
+                                new URI(path).toURL().openStream(), StandardCharsets.UTF_8));
+        log.debug("[openBufferedReader] - Creado un BufferedReader para la ruta: {}", path);
+        return bufferedReader;
     }
 }

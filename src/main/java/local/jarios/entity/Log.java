@@ -1,6 +1,5 @@
 package local.jarios.entity;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Auditable;
@@ -37,6 +36,7 @@ import java.util.UUID;
 public class Log extends Auditable {
 
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -65,9 +65,6 @@ public class Log extends Auditable {
 
     // Constructor con dos parámetros
     public Log(LugarImportacion lugarImportacion, TipoSindicacion tipoSindicacion) {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
 
         //
         this.lugarImportacion = lugarImportacion;
