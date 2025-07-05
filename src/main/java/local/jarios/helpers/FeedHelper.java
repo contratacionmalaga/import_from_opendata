@@ -60,9 +60,14 @@ public final class FeedHelper {
             var unmarshaller = getValidUnmarshaller();
             log.info("[parsearFeeds] - Obtención de objeto Unmarshaller correctamente.");
             String nextLink = source.getInitialLink();
-            log.info("[parsearFeeds] - NextLink: {}", nextLink);
+
+            // Salimos si nextLink no es válido desde el inicio
+            if (!source.isNextLinkValid(nextLink)) {
+                log.warn("[parsearFeeds] - El NextLink inicial no es válido, se aborta el bucle: {}", nextLink);
+            }
 
             while (source.isNextLinkValid(nextLink) && (!superadoNewestEntry)) {
+                log.info("[parsearFeeds] - Loop - nextLink = {}. isValid? {}", nextLink, source.isNextLinkValid(nextLink));
                 try (var reader = source.openBufferedReader(nextLink)) {
                     // Obtengo el FeedType desde el fichero Atom
                     var feedType = getFeedType(unmarshaller, reader);

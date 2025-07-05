@@ -26,9 +26,6 @@ public final class PropertiesFiles {
     public static final String MAIL = "mail";
 
     /** Nombre sin extensión del fichero app.properties */
-    public static final String VALIDATION = "validation";
-
-    /** Nombre sin extensión del fichero app.properties */
     private PropertiesFiles() {/* CONSTRUCTOR PRIVADO PRA EVITAR LA INSTANCIACIÓN */}
 
 }
