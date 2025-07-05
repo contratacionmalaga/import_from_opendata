@@ -56,10 +56,12 @@ public class OrganoContratacion extends Auditable {
     //
     //
     //
-    public OrganoContratacion(Log miLog) {
+    public OrganoContratacion(Log miLog, String idPlataforma, String organoContratacion) {
 
         this.id = Generators.timeBasedEpochGenerator().generate();
         this.miLog = miLog;
+        this.idPlataforma = idPlataforma;
+        this.nombre = organoContratacion;
     }
 }
 

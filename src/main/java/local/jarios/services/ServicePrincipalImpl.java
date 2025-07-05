@@ -14,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -83,6 +81,9 @@ public class ServicePrincipalImpl implements ServicePrincipal {
     @Override
     public void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete) throws MiServiceException {
 
+        log.info("[persistirMiLogInternet] - Tamaño del conjunto de Entry a borrar: {}", setEntriesToDelete.size());
+        setEntriesToDelete.forEach(e->log.info("[persistirMiLogInternet] - {}", e.toStringResumido()));
+
         try {
 
             // El repositorio se encarga de la persistencia y manejo de la las transacciones
@@ -107,10 +108,12 @@ public class ServicePrincipalImpl implements ServicePrincipal {
         String msg;
 
         //
-        String sql = "SELECT f FROM Feed f " +
+        String sql = String.format(
+                "SELECT f FROM Feed f " +
                 "JOIN f.miLog l " +
-                "WHERE l.tipoSindicacion = :tipoSindicacion " +
-                "ORDER BY f.updated DESC";
+                "WHERE l.tipoSindicacion = %s " +
+                "ORDER BY f.updated DESC", tipoSindicacion);
+
 
         try {
 
@@ -118,13 +121,33 @@ public class ServicePrincipalImpl implements ServicePrincipal {
 
         } catch (MiRepositoryException ex) {
 
-            msg = String.format("[getListFiltroOcsFromFiltroSql] - Error en la consunta: %s. Error: %s", sql, ex.getMessage());
+            msg = String.format("[getNewestFeed] - Error en la consunta: %s. Error: %s", sql, ex.getMessage());
             log.error(msg, ex);
             throw new MiServiceException(msg, ex);
 
-        } catch (RuntimeException  ex) {
+        }
+    }
 
-            msg = String.format("[getListFiltroOcsFromFiltroSql] - Error de ejecución en la consulta: %s. Error: %s", sql, ex.getMessage());
+    public Entry getNewestEntry(TipoSindicacion tipoSindicacion) throws MiServiceException {
+
+        String msg;
+
+        //
+        String sql = String.format(
+                "SELECT e FROM Entry e " +
+                        "JOIN e.feed f " +
+                        "JOIN f.miLog l " +
+                        "WHERE l.tipoSindicacion = %s " +
+                        "ORDER BY f.updated DESC", tipoSindicacion);
+
+
+        try {
+
+            return repository.getNewestEntry(sql);
+
+        } catch (MiRepositoryException ex) {
+
+            msg = String.format("[getNewestEntry] - Error en la consunta: %s. Error: %s", sql, ex.getMessage());
             log.error(msg, ex);
             throw new MiServiceException(msg, ex);
 
@@ -140,13 +163,12 @@ public class ServicePrincipalImpl implements ServicePrincipal {
     @Override
     public Map<String, Entry> getMapEntries(TipoSindicacion tipoSindicacion) throws MiServiceException {
 
-        Map<String, LocalDateTime> mapEntriesExistentesEnBd = new HashMap<>();
-
         //
-        String sql = "SELECT e FROM Entry e " +
-                "JOIN e.miLog l " +
-                "WHERE l.tipoSindicacion = :tipoSindicacion " +
-                "ORDER BY e.updated DESC";
+        String sql = String.format(
+                "SELECT e FROM Entry e " +
+                        "JOIN e.feed f " +
+                        "JOIN f.miLog l " +
+                        "WHERE l.tipoSindicacion = %s ", tipoSindicacion);
 
         try {
 

@@ -40,8 +40,16 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         ejecutarDentroDeTransaccion(session -> {
             setEntriesToDelete.forEach(session::remove);
             log.debug("[persistirMiLogInternet] - Borrados '{}' Entries de la base de datos.", setEntriesToDelete.size());
-            session.persist(miLog);
-            log.debug("[persistirMiLogInternet] - Persistencia de Log completada.");
+            flushAndClear(session);
+            log.debug("[persistirMiLogInternet] - Flush # Clear de la session.");
+/*
+            setEntriesToDelete.forEach(session::remove);
+            log.debug("[persistirMiLogInternet] - Borrados '{}' Entries de la base de datos.", setEntriesToDelete.size());
+            flushAndClear(session);
+            log.debug("[persistirMiLogInternet] - Flush # Clear de la session.");
+ */
+            // session.merge(miLog);
+            //log.debug("[persistirMiLogInternet] - Persistencia de Log completada.");
             flushAndClear(session);
             log.debug("[persistirMiLogInternet] - Flush # Clear de la session.");
             return null;
@@ -129,6 +137,14 @@ public class RepositoryImpl implements Repository, AutoCloseable {
             TypedQuery<Feed> query = session.createQuery(sql, Feed.class);
             return query.getResultList().stream().findFirst().orElse(null);
         }, "getNewestFeed");
+    }
+
+    @Override
+    public Entry getNewestEntry(String sql) throws MiRepositoryException {
+        return ejecutarDentroDeTransaccion(session -> {
+            TypedQuery<Entry> query = session.createQuery(sql, Entry.class);
+            return query.getResultList().stream().findFirst().orElse(null);
+        }, "getNewestEntry");
     }
 
     @Override

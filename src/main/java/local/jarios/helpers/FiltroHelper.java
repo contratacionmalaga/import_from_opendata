@@ -287,7 +287,7 @@ public final class FiltroHelper {
                                     PropertiesFiles.FILTER,
                                     PropertiesKeys.FILTER_SQL);
 
-        if (!StringHelper.isInvalidString(filter)) {
+        if (StringHelper.isInvalidString(filter)) {
             log.debug(
                     "[loadFilterSql] - Valor inválido para fichero: '{}', propiedad: '{}'",
                     PropertiesFiles.FILTER,
@@ -332,8 +332,9 @@ public final class FiltroHelper {
         log.info("[printFilters] - Filtro Objeto: '{}'.", VariablesGlobales.getFiltroObjeto());
 
         log.info("[printFilters] - Filtro Sql: '{}'.", VariablesGlobales.getFiltroSql());
-
+        log.info("[printFilters] ----- LISTADO MapFiltro. '{}' registros.", VariablesGlobales.getMapFiltro().size());
         MapHelper.printMap(VariablesGlobales.getMapFiltro());
+        log.info("[printFilters] ----- FINAL LISTADO MapFiltro.");
     }
 
     public static String entryCumpleFiltros(Entry entry) {

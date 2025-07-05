@@ -59,7 +59,6 @@ public final class UrlHelper {
     }
 
     public static void validateRemoteUrl(String urlStr) throws PropertiesManagerException, URISyntaxException {
-        log.debug("[validateRemoteUrl] - Validando URL: {}", urlStr);
 
         URI uri;
         try {
@@ -69,9 +68,11 @@ public final class UrlHelper {
             log.error(msg, e);
             throw e;
         }
-
+        log.debug("[validateRemoteUrl] - Validando URL: {}", urlStr);
         String expectedScheme = getProperty(PropertiesFiles.VALIDATION, PropertiesKeys.VALIDATION_URI_SCHEME);
+        log.debug("[validateRemoteUrl] - Scheme expected: {}", expectedScheme);
         String expectedHost = getProperty(PropertiesFiles.VALIDATION, PropertiesKeys.VALIDATION_URI_HOST);
+        log.debug("[validateRemoteUrl] - Host expected: {}", expectedHost);
 
         if (!expectedScheme.equalsIgnoreCase(uri.getScheme())) {
             String msg = String.format("[validateRemoteUrl] - Solo se permiten URLs %s. Encontrado: %s", expectedScheme, uri.getScheme());

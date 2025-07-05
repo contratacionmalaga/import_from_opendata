@@ -50,6 +50,15 @@ public interface Repository {
     Feed getNewestFeed (String sql) throws MiRepositoryException;
 
     /**
+     * Obtiene el {@link Entry} más reciente para un tipo específico de sindicacion.
+     *
+     * @param sql  Tipo de sindicacion para filtrar el Entry.
+     * @return El entry más nuevo encontrado o {@code null} si no existe.
+     * @throws MiRepositoryException Si ocurre un error en Hibernate durante la consulta.
+     */
+    Entry getNewestEntry (String sql) throws MiRepositoryException;
+
+    /**
      * Devuelve una lista de filtros de órganos de contratación construidos a partir
      * de un filtro SQL específico.
      *

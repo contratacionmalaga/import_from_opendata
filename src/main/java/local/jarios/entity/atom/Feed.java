@@ -62,6 +62,12 @@ public class Feed extends Auditable {
                 "linkNext='" + linkNext + "', " +
                 "updated='" + updated + "]'";
     }
+
+    public String toStringResumido() {
+
+        return "[linkSelf='" + linkSelf + "', " +
+                "updated='" + updated + "]'";
+    }
     //
     //
     //

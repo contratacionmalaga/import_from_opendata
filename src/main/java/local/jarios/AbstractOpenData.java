@@ -36,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class AbstractOpenData {
@@ -71,7 +72,7 @@ public abstract class AbstractOpenData {
     protected abstract TipoSindicacion getTipoSindicacion();
 
     //
-    protected abstract void parsearFeeds(Log log, Estadistica estadistica) throws MiParseException;
+    protected abstract void parsearAtomsFeeds(Log log, Estadistica estadistica) throws MiParseException;
 
     // Método que determina el lugar de importación (Local o Internet)
     protected abstract LugarImportacion getLugarImportacion();
@@ -135,6 +136,15 @@ public abstract class AbstractOpenData {
             log.info("Impresión de los filtros.");
             FiltroHelper.printFilters();
 
+            // Asigno la lista de órganos de contratación a miLog
+            miLog.setListOrganoContratacion(
+                    VariablesGlobales
+                            .getMapFiltro()
+                            .entrySet()
+                            .stream()
+                            .map(e -> new OrganoContratacion(miLog, e.getKey(), e.getValue()))
+                            .collect(Collectors.toList()));
+
             // Creo el objeto Configuracion
             Configuracion configuracion = new Configuracion(miLog);
             log.info(Mensajes.CONFIGURACION_CREACION);
@@ -149,24 +159,26 @@ public abstract class AbstractOpenData {
 
             // Parseo de los Feeds
             log.info("Inicio del parseo de los ficheros ATOM.");
-            parsearFeeds(miLog, estadistica);
+            parsearAtomsFeeds(miLog, estadistica);
 
             Map<String, Entry> entryMap = VariablesGlobales.getMapBaseDatos();
 
             // Mapa auxiliar para agrupar Feeds por su lista de Entry
             Map<Feed, List<Entry>> feedEntryMap = new HashMap<>();
 
-            log.info("Migrar los datos desde el MAP a la estructura de CODICE.");
+            log.info("Asocio los Entries del MapBaseDatos a sus Feeds correspondientes. Nº Entries: {}", entryMap.size());
             for (Entry entry : entryMap.values()) {
+                log.info("{}", entry.toStringResumido());
                 Feed feed = entry.getFeed();
-
                 // Asegurarse de que el Feed esté en el mapa
                 feedEntryMap.computeIfAbsent(feed, k -> new ArrayList<>()).add(entry);
             }
 
+            log.info("Asocio los Feeds al Log. Nº Feeds: {}", feedEntryMap.size());
             // Asociar feeds y entries a miLog
             for (Map.Entry<Feed, List<Entry>> entry : feedEntryMap.entrySet()) {
                 Feed feed = entry.getKey();
+                log.info("{}", feed.toStringResumido());
                 List<Entry> entries = entry.getValue();
 
                 // Asignar miLog al feed
@@ -184,22 +196,10 @@ public abstract class AbstractOpenData {
                 miLog.getListFeed().add(feed);
             }
 
-            // Asignar la lista de Órganos de Contratación del Filtro al log
-            List<OrganoContratacion> listOrganosContratacion = OrganoContratacionHelper
-                                                                    .getListOrganoContratacion(
-                                                                            miLog,
-                                                                            VariablesGlobales.getMapFiltro());
-            miLog.setListOrganoContratacion(listOrganosContratacion);
-            log
-                    .info(
-                            "Órganos de Contratación en el Filtro SQL: {}",
-                            StringHelper.getNumeroConFormato(listOrganosContratacion.size()));
-
             miLog.setListHistorio(VariablesGlobales.getListHistoricos());
-            log
-                    .info(
-                            "Asignados los históricos generados durante la ejecución: {}",
-                            StringHelper.getNumeroConFormato(VariablesGlobales.getListHistoricos().size()));
+            log.info(
+                    "Asignados los históricos generados durante la ejecución: {}",
+                    StringHelper.getNumeroConFormato(VariablesGlobales.getListHistoricos().size()));
 
             // Asigno la fecha y hora final
             LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();
@@ -233,7 +233,11 @@ public abstract class AbstractOpenData {
                                     PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
 
             // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
-            if (getLugarImportacion() == LugarImportacion.INTERNET) {
+            log.info("Entrys a grabar en la base de datos");
+            miLog.getListFeed().forEach(f -> f.getListEntry().forEach(e->log.info(e.toStringResumido())));
+
+            // Discrimino según el lugar de importación (INTERNET | LOCAL)
+            if (lugarImportacion.equals(LugarImportacion.INTERNET)) {
                 servicePrincial.persistirMiLogInternet(miLog, ((OpenDataInternet) this).getEntriesAEliminar());
             } else {
                 servicePrincial.persistirMiLogLocal(miLog);

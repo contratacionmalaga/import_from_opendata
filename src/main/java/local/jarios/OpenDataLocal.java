@@ -27,7 +27,7 @@ public class OpenDataLocal extends AbstractOpenData {
     }
 
     @Override
-    protected void parsearFeeds(Log log, Estadistica estadistica) throws MiParseException {
+    protected void parsearAtomsFeeds(Log log, Estadistica estadistica) throws MiParseException {
 
         FeedHelper.parsearFeedsDesdeLocal(log, estadistica);
     }

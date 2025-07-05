@@ -42,6 +42,14 @@ public interface ServicePrincipal {
     Feed getNewestFeed(TipoSindicacion tipoSindicacion) throws MiServiceException;
 
     /**
+     * Obtiene el entry más reciente correspondiente a un tipo específico de sindicación.
+     *
+     * @param tipoSindicacion el tipo de sindicación (RSS, Atom, etc.).
+     * @return el feed más reciente disponible para el tipo indicado.
+     */
+    Entry getNewestEntry(TipoSindicacion tipoSindicacion) throws MiServiceException;
+
+    /**
      * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.
      *
      * @param tipoSindicacion el tipo de sindicación (RSS, Atom, etc.).

@@ -2,13 +2,18 @@ package local.jarios.helpers;
 
 import local.jarios.common.util.Mensajes;
 import local.jarios.entity.atom.Entry;
+import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.placsp.*;
 import local.jarios.enums.EntryOpcion;
+import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiInvalidDateFormatException;
 import local.jarios.common.util.Constantes;
 import local.jarios.common.util.VariablesGlobales;
+import local.jarios.exceptions.MiServiceException;
+import local.jarios.services.ServicePrincipal;
+import local.jarios.services.ServicePrincipalImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
@@ -208,5 +213,15 @@ public final class EntryHelper {
         }
 
         log.debug("[procesarEntryExistenteEnMAP] - {}", motivo);
+    }
+
+    /**
+     * Devuelve el feed más reciente en base al tipo de sindicación.
+     */
+    public static Entry getNewestEntry(TipoSindicacion tipoSindicacion) throws MiServiceException {
+        ServicePrincipal servicePrincipal = new ServicePrincipalImpl();
+        Entry entry = servicePrincipal.getNewestEntry(tipoSindicacion);
+        log.debug("[getNewestEntry] - TipoSindicacion: {}. NewestEntry: {}", tipoSindicacion, entry.toStringResumido());
+        return entry;
     }
 }

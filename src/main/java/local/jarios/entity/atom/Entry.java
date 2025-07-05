@@ -87,6 +87,13 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
                 "updated='" + updated + "]'";
     }
 
+    public String toStringResumido() {
+
+        return "[idEntry='" + idEntry + "'," +
+                "updated='" + updated + "', " +
+                "id='" + id + "]'";
+    }
+
     //
     //
     //
