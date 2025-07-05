@@ -2,7 +2,6 @@ package local.jarios.helpers;
 
 import local.jarios.common.util.Mensajes;
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.placsp.*;
@@ -106,7 +105,7 @@ public final class EntryHelper {
      */
     public static void procesarEntry(Entry entry, Estadistica estadistica) {
 
-        log.info("[procesarEntry] - {}", entry.getIdEntry());
+        log.info("[procesarEntry] - {}", entry.toStringResumido());
         String evaluacionFiltrosEntry = FiltroHelper.entryCumpleFiltros(entry);
         log.debug("[procesarEntry] - Evaluación de los filtros del entry: {}", evaluacionFiltrosEntry);
 

@@ -54,7 +54,6 @@ public final class FeedHelper {
             throws MiParseException {
 
         // Definición de variables locales
-        int totalEntries = 0;
         boolean superadoNewestEntry = false;
 
         try {
@@ -76,16 +75,17 @@ public final class FeedHelper {
 
                     // Proceso los Entrys del objeto Feed
                     superadoNewestEntry = procesarFeed(feed, estadistica, newestEntry);
-                    totalEntries += feed.getListEntry().size();
-                    nextLink = source.getNextLink(feed);
-                    log.info("[parsearFeeds] - NextLink: {}", nextLink);
+                    if (!superadoNewestEntry) {
+                        nextLink = source.getNextLink(feed);
+                        log.info("[parsearFeeds] - NextLink: {}", nextLink);
+                    }
                 }
             }
 
             log.info(
-                    "[parsearFeeds] - Final lectura ficheros. Total ficheros Atoms: {}, Total Entries: {}",
+                    "[parsearFeeds] - Total ficheros Atoms Procesados: {}, Total Entries procesados: {}",
                     StringHelper.getNumeroConFormato(estadistica.getNFicheros()),
-                    StringHelper.getNumeroConFormato(totalEntries));
+                    StringHelper.getNumeroConFormato(estadistica.getNEntryProcesados()));
 
         } catch (Exception e) {
             throw new MiParseException(e);
@@ -113,18 +113,18 @@ public final class FeedHelper {
         // Obtengo la lista
         List<Entry> entries = feed.getListEntry();
         log.info(
-                "[procesarFeed] - Procesando el Feed: '{}' que contiene '{}' objetos Entry,",
+                "[procesarFeed] - Procesando el Feed: '{}'. Contiene '{}' objetos Entry,",
                 feed.getLinkSelf(),
                 StringHelper.getNumeroConFormato(entries.size()));
 
         // Ordeno la lista de mayor a menor según Updated
         entries.sort(Comparator.comparing(Entry::getUpdated).reversed());
-        log.debug("[procesarFeed] - Ordeno la lista de Entrys mediante el campo Updated (DESC).");
-        entries.forEach(e->log.info("[procesarFeed] - {}", e.toStringResumido()));
+        log.info("[procesarFeed] - Ordeno la lista de Entrys mediante el campo Updated (DESC).");
 
         estadistica.setNEntryLeidos(estadistica.getNEntryLeidos() + entries.size());
 
         boolean superadoNewestEntry = false;
+        int nEntryProcesadosAxu = estadistica.getNEntryProcesados();
 
         for (Entry entry : entries) {
             if (newestEntry == null || entry.getUpdated().isAfter(newestEntry.getUpdated())) {
@@ -134,15 +134,15 @@ public final class FeedHelper {
                 superadoNewestEntry = true;
                 break;
             }
-            log.debug(
-                    "[procesarFeed] - Entry.Updated: {}, NewestEntry.Updated: {}",
-                    entry.getUpdated(),
-                    (newestEntry != null ? newestEntry.getUpdated() : "null")
-            );
         }
 
         //
-        log.debug("[procesarFeed] - Superado NewestEntry: {}", superadoNewestEntry);
+        log.info(
+                "[procesarFeed] - Entrys procesados: {}",
+                StringHelper.getNumeroConFormato(estadistica.getNEntryProcesados() - nEntryProcesadosAxu));
+
+        //
+        log.info("[procesarFeed] - ¿Superado NewestEntry?: {}", superadoNewestEntry);
         return superadoNewestEntry;
     }
 
