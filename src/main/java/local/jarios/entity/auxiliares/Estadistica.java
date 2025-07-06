@@ -144,7 +144,7 @@ public class Estadistica extends Auditable {
                     "nEntryGrabados='" + StringHelper.getNumeroConFormato(nEntryGrabados) + "', " +
                     "nEntryActualizados='" + StringHelper.getNumeroConFormato(nEntryActualizados) + "', " +
                     "nEntryRechazados='" + StringHelper.getNumeroConFormato(nEntryRechazados) + "', " +
-                    "nEntryBorradosEnMap='" + StringHelper.getNumeroConFormato(nEntryBorradosEnMap) + "', " +
+                    "nEntryBorradosEnMap='" + StringHelper.getNumeroConFormato(nEntryBorradosEnMap) + "'" +
                 "]";
     }
 }

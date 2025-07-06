@@ -17,7 +17,6 @@ import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.LugarImportacion;
-import local.jarios.enums.TipoConexion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.exceptions.MiServiceException;
@@ -81,7 +80,7 @@ public abstract class AbstractOpenData {
     protected void procesar() {
 
         // Inicio del log
-        log.info(Mensajes.INICIO);
+        log.info("[procesar] - {}", Mensajes.INICIO);
 
         try {
 
@@ -184,7 +183,9 @@ public abstract class AbstractOpenData {
             }
 
             // Asociar feeds y entries a miLog
-            log.info("[procesar] - Asocio los Feeds al Log. Nº Feeds: {}", feedEntryMap.size());
+            log.info(
+                    "[procesar] - Asocio los Feeds al Log. Nº Feeds: {}",
+                    StringHelper.getNumeroConFormato(feedEntryMap.size()));
 
             for (Map.Entry<Feed, List<Entry>> entry : feedEntryMap.entrySet()) {
                 Feed feed = entry.getKey();
@@ -229,28 +230,31 @@ public abstract class AbstractOpenData {
             //
 
             // Persistir en la base de datos
-            log.info(Mensajes.INICIO_PERSISTENCIA_FICHEROS_ATOM);
+            log.info("[procesar] - ***** INICIO DE LA PERSISTENCIA EN LA BASE DE DATOS *****");
 
             //
             //     CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
             //
-            ServicePrincipal servicePrincial = new ServicePrincipalImpl();
-            log.info("[procesar] - Creación correcta del servicio de conexión con la base de datos {}", TipoConexion.MARIADB);
-            log.info(propertiesManager.getProperty(
-                                    PropertiesFiles.JAKARTA_PRINCIPAL,
-                                    PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
+            ServicePrincipal servicePrincipal = new ServicePrincipalImpl();
+            String baseDatos = propertiesManager.getProperty(
+                    PropertiesFiles.JAKARTA_PRINCIPAL, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL);
+            log.info("[procesar] - Base de datos: {}", baseDatos);
+            log.info("[procesar] - Conexión correcta con la base de datos.");
+
 
             // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
-            log.info("[procesar] - Entrys a grabar en la base de datos");
+            log.info(
+                    "[procesar] - Entrys a grabar en la base de datos: {}",
+                    StringHelper.getNumeroConFormato(entryMap.size()));
             miLog.getListFeed().forEach(f -> f.getListEntry().forEach(e->log.debug(e.toStringResumido())));
 
             // Discrimino según el lugar de importación (INTERNET | LOCAL)
             if (lugarImportacion.equals(LugarImportacion.INTERNET)) {
-                servicePrincial.persistirMiLogInternet(miLog, ((OpenDataInternet) this).getEntriesAEliminar());
+                servicePrincipal.persistirMiLogInternet(miLog, ((OpenDataInternet) this).getEntriesAEliminar());
             } else {
-                servicePrincial.persistirMiLogLocal(miLog);
+                servicePrincipal.persistirMiLogLocal(miLog);
             }
-            log.info(Mensajes.PERSISTIDAS_ENTIDADES_BASE_DATOS);
+            log.info("[procesar] - Se han persistido correctamente las entidades en la base de datos.");
 
             //
             enviarEmail(estadistica, null, true);
@@ -487,12 +491,12 @@ public abstract class AbstractOpenData {
      */
     public static void finalizar(String mensaje, int exitCode) {
         if (exitCode == 0) {
-            log.info(mensaje);
+            log.info("[finalizar] - {}", mensaje);
         } else {
             log.error("[finalizar] - {} (Código de salida: {})", mensaje, exitCode);
         }
 
-        log.info(Mensajes.FINAL); // Se asume que FINAL es una constante tipo String
+        log.info("[finalizar] - {}", Mensajes.FINAL); // Se asume que FINAL es una constante tipo String
         System.exit(exitCode);
     }
 }
