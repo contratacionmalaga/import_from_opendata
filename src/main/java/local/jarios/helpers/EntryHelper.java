@@ -72,31 +72,6 @@ public final class EntryHelper {
     }
 
     /**
-     * Función que actualiza en Entry en la base de datos (MAP de VariablesGlobales)
-     *
-     * @param entryEnMemoria Entry que estamos analizando y que vamos a actualizar en el MAP
-     * @param entryEnMapBd Entry existente en el MAP y que vamos a remover para poner el anterior
-     */
-    private static void actualizarEntryEnMAP(Entry entryEnMemoria, Entry entryEnMapBd, String motivo, Estadistica estadistica) {
-
-        // Borro el entryMapBaseDatos del MAP
-        VariablesGlobales.getMapBaseDatos().remove(entryEnMapBd.getIdEntry());
-        log.debug("[actualizarEntryEnMAP] - Remove Entry: {}", entryEnMapBd.getIdEntry());
-        Historico historicoEnMapBd = new Historico(entryEnMapBd, EntryOpcion.BORRAR, motivo);
-        log.debug("[actualizarEntryEnMAP] - Creación de Histórico: {}", historicoEnMapBd);
-        VariablesGlobales.getListHistoricos().add(historicoEnMapBd);
-
-        // Añado el newEntry al MAP
-        VariablesGlobales.getMapBaseDatos().put(entryEnMemoria.getIdEntry(), entryEnMemoria);
-        log.debug("[actualizarEntryEnMAP] - Put Entry: {}", entryEnMemoria.getIdEntry());
-        Historico historicoEnMemoria= new Historico(entryEnMemoria, EntryOpcion.INSERTAR, motivo);
-        log.debug("[actualizarEntryEnMAP] - Creación de Histórico: {}", historicoEnMemoria);
-
-        // Actualizo las estadísticas
-        estadistica.aumentarNEntryActualizados();
-    }
-
-    /**
      * Función encarga del procesamiento de los objetos Entry
      *      Proceso si el Entry cumple con los filtros que estuvieran definidos al inicio de la ejecución
      * @param entry Objeto Entry que se está procesando
@@ -109,9 +84,6 @@ public final class EntryHelper {
         log.debug("[procesarEntry] - Evaluación de los filtros del entry: {}", evaluacionFiltrosEntry);
 
         if (evaluacionFiltrosEntry.equals(Mensajes.ENTRY_CUMPLE_FILTROS)) {
-
-            // Entry cumple con los filtros --> PROCESADO
-            estadistica.aumentarNEntryProcesados();
 
             // Inicio el procesamiento del entry
             procesarEntrySegunExistencia(entry, estadistica);
@@ -148,7 +120,7 @@ public final class EntryHelper {
             // Si existe en el MAP, lo procesamos
 
             Entry entryEnMap = VariablesGlobales.getMapBaseDatos().get(entry.getIdEntry());
-            log.debug("[procesarEntrySegunExistencia] - Datos del Entry en el MapBd: {}", entryEnMap);
+            log.debug("[procesarEntrySegunExistencia] - Datos del Entry en el MapBd: {}", entryEnMap.toStringResumido());
 
             procesarEntryExistenteEnMAP(entry, entryEnMap, estadistica);
 
@@ -160,10 +132,10 @@ public final class EntryHelper {
             // Lo agrego al MAP
             VariablesGlobales.getMapBaseDatos().put(entry.getIdEntry(), entry);
 
-            //
-            Historico historico =  new Historico(entry, EntryOpcion.INSERTAR, Mensajes.ENTRY_NUEVO);
+            // Creo el histórico asociado
+            Historico historico = new Historico(entry, EntryOpcion.INSERTAR, Mensajes.ENTRY_NUEVO);
 
-            //
+            // Añado el histórico
             VariablesGlobales.getListHistoricos().add(historico);
 
             // Aumento las estadísticas
@@ -195,11 +167,11 @@ public final class EntryHelper {
                             entryEnMemoria.getUpdated(),
                             entryEnMap.getUpdated());
 
-            estadistica.aumentarNEntryRechazados();
-
             Historico historico = new Historico(entryEnMemoria, EntryOpcion.RECHAZADO, motivo);
 
             VariablesGlobales.getListHistoricos().add(historico);
+
+            estadistica.aumentarNEntryRechazados();
 
         } else {
             // La fecha del Entry en el MAP es más antigua, actualizamos el Entry en el MAP
@@ -209,7 +181,20 @@ public final class EntryHelper {
                             entryEnMemoria.getUpdated(),
                             entryEnMap.getUpdated());
 
-            actualizarEntryEnMAP(entryEnMemoria, entryEnMap, motivo, estadistica);
+            // Borro el entryMapBaseDatos del MAP
+            VariablesGlobales.getMapBaseDatos().remove(entryEnMap.getIdEntry());
+            Historico historicoEnMapBd = new Historico(entryEnMap, EntryOpcion.BORRAR, motivo);
+            VariablesGlobales.getListHistoricos().add(historicoEnMapBd);
+
+            estadistica.aumentarNEntryBorradosEnMap();
+
+            // Añado el newEntry al MAP
+            VariablesGlobales.getMapBaseDatos().put(entryEnMemoria.getIdEntry(), entryEnMemoria);
+            Historico historicoEnMemoria= new Historico(entryEnMemoria, EntryOpcion.INSERTAR, motivo);
+            VariablesGlobales.getListHistoricos().add(historicoEnMemoria);
+
+            // Actualizo las estadísticas
+            estadistica.aumentarNEntryActualizados();
         }
 
         log.debug("[procesarEntryExistenteEnMAP] - {}", motivo);

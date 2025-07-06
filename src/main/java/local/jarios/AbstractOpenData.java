@@ -87,53 +87,54 @@ public abstract class AbstractOpenData {
 
             // Obtener la instancia singleton
             Version versionService = new VersionImpl();
-            log.info("El servicio de consulta de la versión del JAR se ha creado correctamente.");
+            log.info("[procesar] - El servicio de consulta de la versión del JAR se ha creado correctamente.");
 
             propertiesManager = PropertiesManagerServiceImpl.getInstance();
-            log.info("El servicio de consulta de los ficheros properties se ha creado correctamente.");
+            log.info("[procesar] - El servicio de consulta de los ficheros properties se ha creado correctamente.");
 
             propertiesManager.setConfigDir(Constantes.CONFIG_DIR);
-            log.info("Establezco el directorio donde se encuentra .properties: {}", Constantes.CONFIG_DIR);
+            log.info("[procesar] - Establezco el directorio donde se encuentra .properties: {}", Constantes.CONFIG_DIR);
 
             // === Configuración inicial ===
             Set<String> clavesSensibles = Set.of("password");
             propertiesManager.setSensitiveKeys(clavesSensibles);  // Ahora se aplica sobre la instancia
-            log.info("Establezco el conjunto de claves sensibles: {}", clavesSensibles);
+            log.info("[procesar] - Establezco el conjunto de claves sensibles: {}", clavesSensibles);
 
             // Cargar todas las propiedades desde el directorio de configuración
             propertiesManager.loadAllProperties();
-            log.info("Leídas todas las propiedades de todos los ficheros.");
+            log.info("[procesar] - Leídas todas las propiedades de todos los ficheros.");
 
             List<String> listFicheros = propertiesManager.getListFiles();
-            log.info("Ficheros cargados correctamente: {}", listFicheros);
+            log.info("[procesar] - Ficheros cargados correctamente: {}", listFicheros);
 
             // Obtengo y Muestro el valor de la key dentro del properties que tiene el nombre del aplicativo
             appName = propertiesManager.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_NAME);
-            log.info("AppName: {}", appName);
+            log.info("[procesar] - AppName: {}", appName);
 
             // Obtengo y muestro el valor de la versión de la aplicación
             appVersion = versionService.getVersion(AbstractOpenData.class);
-            log.info("AppVersion: {}", appVersion);
+            log.info("[procesar] - AppVersion: {}", appVersion);
 
             // Creo el objeto Log para esta ejecución
             LugarImportacion lugarImportacion = getLugarImportacion();
-            log.info("LugarImportación: {}", lugarImportacion);
+            log.info("[procesar] - LugarImportación: {}", lugarImportacion);
 
             TipoSindicacion tipoSindicacion = getTipoSindicacion();
-            log.info("TipoSindicacion: {}", tipoSindicacion);
+            log.info("[procesar] - TipoSindicacion: {}", tipoSindicacion);
 
             Log miLog = new Log(lugarImportacion, tipoSindicacion);
-            log.info(Mensajes.LOG_CREACION);
+            log.info("[procesar] - Creación correcta del objeto {}", miLog);
 
             // Creo el objeto Estadistica que se inicializa con el Log anteriormente creado y con el
             //         valor LocalDateTime.now() para el campo fechaHoraInicial
             Estadistica estadistica = new Estadistica(miLog);
-            log.info(Mensajes.ESTADISTICA_CREACION);
+            log.info("[procesar] - Creación correcta del objeto {}", estadistica);
 
             // Cargo los filtros que se amplican y los imprimo
-            log.info("Cargamos los filtros asociados a esta ejecución.");
+            log.info("[procesar] - Cargamos los filtros asociados a esta ejecución.");
             FiltroHelper.loadFilters();
-            log.info("Impresión de los filtros.");
+
+            log.info("[procesar] - Filtros cargados correctamente. Impresión de los filtros.");
             FiltroHelper.printFilters();
 
             // Asigno la lista de órganos de contratación a miLog
@@ -144,10 +145,11 @@ public abstract class AbstractOpenData {
                             .stream()
                             .map(e -> new OrganoContratacion(miLog, e.getKey(), e.getValue()))
                             .collect(Collectors.toList()));
+            log.info("[procesar] - Asignados los órganos de contratación del filtro sql al Log.");
 
             // Creo el objeto Configuracion
             Configuracion configuracion = new Configuracion(miLog);
-            log.info(Mensajes.CONFIGURACION_CREACION);
+            log.info("[procesar] - Creación correcta del objeto {}", configuracion);
 
             //
             miLog.setConfiguracion(configuracion);
@@ -158,7 +160,7 @@ public abstract class AbstractOpenData {
             //
 
             // Parseo de los Feeds
-            log.info("Inicio del parseo de los ficheros ATOM.");
+            log.info("[procesar] - Inicio del parseo de los ficheros ATOM.");
             parsearAtomsFeeds(miLog, estadistica);
 
             Map<String, Entry> entryMap = VariablesGlobales.getMapBaseDatos();
@@ -166,19 +168,27 @@ public abstract class AbstractOpenData {
             // Mapa auxiliar para agrupar Feeds por su lista de Entry
             Map<Feed, List<Entry>> feedEntryMap = new HashMap<>();
 
-            log.info("Asocio los Entries del MapBaseDatos a sus Feeds correspondientes. Nº Entries: {}", entryMap.size());
+            //
+            // PASO DEL MAP A LA ESTRUCTURA CODICE
+            //
+
+            // Asocio los Entry en el MapBaseDatos a los Feeds correspondientes
+            log.info(
+                    "[procesar] - Asocio los Entries del MapBaseDatos a sus Feeds correspondientes. Nº Entries: {}",
+                    StringHelper.getNumeroConFormato(entryMap.size()));
             for (Entry entry : entryMap.values()) {
-                log.info("{}", entry.toStringResumido());
+                log.debug("{}", entry.toStringResumido());
                 Feed feed = entry.getFeed();
                 // Asegurarse de que el Feed esté en el mapa
                 feedEntryMap.computeIfAbsent(feed, k -> new ArrayList<>()).add(entry);
             }
 
-            log.info("Asocio los Feeds al Log. Nº Feeds: {}", feedEntryMap.size());
             // Asociar feeds y entries a miLog
+            log.info("[procesar] - Asocio los Feeds al Log. Nº Feeds: {}", feedEntryMap.size());
+
             for (Map.Entry<Feed, List<Entry>> entry : feedEntryMap.entrySet()) {
                 Feed feed = entry.getKey();
-                log.info("{}", feed.toStringResumido());
+                log.debug("{}", feed.toStringResumido());
                 List<Entry> entries = entry.getValue();
 
                 // Asignar miLog al feed
@@ -198,7 +208,7 @@ public abstract class AbstractOpenData {
 
             miLog.setListHistorio(VariablesGlobales.getListHistoricos());
             log.info(
-                    "Asignados los históricos generados durante la ejecución: {}",
+                    "[procesar] - Asigno los históricos generados durante la ejecución al Log. Nº Históricos: {}",
                     StringHelper.getNumeroConFormato(VariablesGlobales.getListHistoricos().size()));
 
             // Asigno la fecha y hora final
@@ -212,7 +222,7 @@ public abstract class AbstractOpenData {
                                             estadistica.getFechaHoraFinal());
             estadistica.setDuracion(duracion);
             miLog.setEstadistica(estadistica);
-            log.info("Duración del parseo: {}", duracion);
+            log.info("[procesar] - Duración del parseo: {}", duracion);
 
             //
             //     PERSISTENCIA EN LA BASE DE DATOS
@@ -225,16 +235,14 @@ public abstract class AbstractOpenData {
             //     CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
             //
             ServicePrincipal servicePrincial = new ServicePrincipalImpl();
-            log.info("Creación correcta del servicio de conexión con la base de datos {}", TipoConexion.MARIADB);
-            log.info(
-                    propertiesManager
-                            .getProperty(
+            log.info("[procesar] - Creación correcta del servicio de conexión con la base de datos {}", TipoConexion.MARIADB);
+            log.info(propertiesManager.getProperty(
                                     PropertiesFiles.JAKARTA_PRINCIPAL,
                                     PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
 
             // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
-            log.info("Entrys a grabar en la base de datos");
-            miLog.getListFeed().forEach(f -> f.getListEntry().forEach(e->log.info(e.toStringResumido())));
+            log.info("[procesar] - Entrys a grabar en la base de datos");
+            miLog.getListFeed().forEach(f -> f.getListEntry().forEach(e->log.debug(e.toStringResumido())));
 
             // Discrimino según el lugar de importación (INTERNET | LOCAL)
             if (lugarImportacion.equals(LugarImportacion.INTERNET)) {
@@ -246,7 +254,7 @@ public abstract class AbstractOpenData {
 
             //
             enviarEmail(estadistica, null, true);
-            log.info("Email enviado correctamente.");
+            log.info("[procesar] - Email enviado correctamente.");
 
             // Finalizo el programa correctamente
             finalizar (Mensajes.FINAL_CORRECTO, 0);

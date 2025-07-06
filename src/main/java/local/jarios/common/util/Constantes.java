@@ -28,18 +28,15 @@ public final class Constantes {
 
     //
     /**    */
-    public static final String URL_FINAL_MAYORES = "licitacionesPerfilesContratanteCompleto3.atom";
+    public static final String FILENAME_MAYORES = "licitacionesPerfilesContratanteCompleto3.atom";
     /**    */
-    public static final String URL_FINAL_MENORES = "contratosMenoresPerfilesContratantes.atom";
+    public static final String FILENAME_MENORES = "contratosMenoresPerfilesContratantes.atom";
     /**    */
-    public static final String URL_FINAL_AGREGADAS = "PlataformasAgregadasSinMenores.atom";
+    public static final String FILENAME_AGREGADAS = "PlataformasAgregadasSinMenores.atom";
     /**    */
-    public static final String URL_FINAL_ENCARGOSMEDIOSPROPIOS = "EMP_SectorPublico.atom";
+    public static final String FILENAME_ENCARGOSMEDIOSPROPIOS = "EMP_SectorPublico.atom";
     /**    */
-    public static final String URL_FINAL_CONSULTASPRELIMINARESMERCADO = "CPM_SectorPublico.atom";
-    /**    */
-    public static final String URL_FINAL_PRUEBAS = "prueba.atom";
-
+    public static final String FILENAME_CONSULTASPRELIMINARESMERCADO = "CPM_SectorPublico.atom";
 
     /* Tipos de LINKs */
     /**    */

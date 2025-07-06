@@ -67,7 +67,7 @@ public final class FeedHelper {
             }
 
             while (source.isNextLinkValid(nextLink) && (!superadoNewestEntry)) {
-                log.info("[parsearFeeds] - Loop - nextLink = {}. isValid? {}", nextLink, source.isNextLinkValid(nextLink));
+
                 try (var reader = source.openBufferedReader(nextLink)) {
                     // Obtengo el FeedType desde el fichero Atom
                     var feedType = getFeedType(unmarshaller, reader);
@@ -85,30 +85,18 @@ public final class FeedHelper {
                     superadoNewestEntry = procesarFeed(feed, estadistica, newestEntry);
                     if (!superadoNewestEntry) {
                         nextLink = source.getNextLink(feed);
-                        log.info("[parsearFeeds] - NextLink: {}", nextLink);
+                        log.info(
+                                "[parsearFeeds] - Loop - nextLink = {}. ¿Es válido? {}",
+                                nextLink, source.isNextLinkValid(nextLink));
                     }
                 }
             }
 
-            log.info(
-                    "[parsearFeeds] - Total ficheros Atoms Procesados: {}, Total Entries procesados: {}",
-                    StringHelper.getNumeroConFormato(estadistica.getNFicheros()),
-                    StringHelper.getNumeroConFormato(estadistica.getNEntryProcesados()));
+            log.info("[parsearFeeds] - {}", estadistica.toStringReducido());
 
         } catch (Exception e) {
             throw new MiParseException(e);
         }
-    }
-
-
-    /**
-     * Devuelve el feed más reciente en base al tipo de sindicación.
-     */
-    public static Feed getNewestFeed(TipoSindicacion tipoSindicacion) throws MiServiceException {
-        ServicePrincipal servicePrincipal = new ServicePrincipalImpl();
-        Feed feed = servicePrincipal.getNewestFeed(tipoSindicacion);
-        log.debug("[getNewestFeed] - TipoSindicacion: {}. NewestFeed: {}", tipoSindicacion, feed);
-        return feed;
     }
 
     // ==========================

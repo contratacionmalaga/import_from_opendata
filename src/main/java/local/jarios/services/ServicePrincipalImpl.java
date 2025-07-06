@@ -81,9 +81,6 @@ public class ServicePrincipalImpl implements ServicePrincipal {
     @Override
     public void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete) throws MiServiceException {
 
-        log.info("[persistirMiLogInternet] - Tamaño del conjunto de Entry a borrar: {}", setEntriesToDelete.size());
-        setEntriesToDelete.forEach(e->log.info("[persistirMiLogInternet] - {}", e.toStringResumido()));
-
         try {
 
             // El repositorio se encarga de la persistencia y manejo de la las transacciones

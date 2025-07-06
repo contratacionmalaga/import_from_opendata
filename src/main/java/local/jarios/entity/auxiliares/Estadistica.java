@@ -7,6 +7,7 @@ import local.jarios.exceptions.MiUnknownHostException;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.helpers.LocalDateTimeHelper;
 import local.jarios.common.util.TamanoCampos;
+import local.jarios.helpers.StringHelper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -60,9 +61,6 @@ public class Estadistica extends Auditable {
 
     @Column(name = "nEntryRechazados", nullable = false)
     private int nEntryRechazados;
-
-    @Column(name = "nEntryBorradosEnBaseDatos", nullable = false)
-    private int nEntryBorradosEnBaseDatos;
 
     @Column(name = "nEntryBorradosEnMap", nullable = false)
     private int nEntryBorradosEnMap;
@@ -132,14 +130,21 @@ public class Estadistica extends Auditable {
     }
 
     //
-    public void aumentarNEntryBorradosEnBaseDatos() {
-
-        nEntryBorradosEnBaseDatos++;
-    }
-
-    //
     public void aumentarNEntryBorradosEnMap() {
 
         nEntryBorradosEnMap++;
+    }
+
+    public String toStringReducido() {
+
+        return "Estadistica: [" +
+                    "nFicheros='" + StringHelper.getNumeroConFormato(nFicheros) + "', " +
+                    "nEntryLeidos='" + StringHelper.getNumeroConFormato(nEntryLeidos) + "', " +
+                    "nEntryProcesados='" + StringHelper.getNumeroConFormato(nEntryProcesados) + "', " +
+                    "nEntryGrabados='" + StringHelper.getNumeroConFormato(nEntryGrabados) + "', " +
+                    "nEntryActualizados='" + StringHelper.getNumeroConFormato(nEntryActualizados) + "', " +
+                    "nEntryRechazados='" + StringHelper.getNumeroConFormato(nEntryRechazados) + "', " +
+                    "nEntryBorradosEnMap='" + StringHelper.getNumeroConFormato(nEntryBorradosEnMap) + "', " +
+                "]";
     }
 }

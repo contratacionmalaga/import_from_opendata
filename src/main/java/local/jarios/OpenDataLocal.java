@@ -17,7 +17,7 @@ public class OpenDataLocal extends AbstractOpenData {
     @Override
     protected TipoSindicacion getTipoSindicacion() {
 
-        return TipoSindicacionHelper.getTipoSindicacion(true);
+        return TipoSindicacionHelper.getTipoSindicacionLocal();
     }
 
     @Override

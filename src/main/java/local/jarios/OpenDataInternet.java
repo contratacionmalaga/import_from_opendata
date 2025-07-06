@@ -28,7 +28,7 @@ public class OpenDataInternet extends AbstractOpenData {
     @Override
     protected TipoSindicacion getTipoSindicacion() {
 
-        return TipoSindicacionHelper.getTipoSindicacion(false);
+        return TipoSindicacionHelper.getTipoSindicacionRemota();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class OpenDataInternet extends AbstractOpenData {
         log.info(
                 "[parsearAtomsFeeds] - Listado de Entries almacenados en el map ('{}')",
                 VariablesGlobales.getMapBaseDatos().size());
-        entriesDesdeInternet.values().forEach(e->log.info(e.toStringResumido()));
+        entriesDesdeInternet.values().forEach(e->log.info("[parsearAtomsFeeds] - {}", e.toStringResumido()));
 
         // 3. Obtener el mapa con los Entry de la base de datos
         Map<String, Entry> entriesEnBaseDatos;

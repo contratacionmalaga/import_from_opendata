@@ -7,6 +7,7 @@ import local.jarios.exceptions.MiUrlException;
 import local.jarios.helpers.PropertiesHelper;
 import local.jarios.interfaces.FeedSource;
 import local.jarios.properties.exception.PropertiesManagerException;
+import local.jarios.properties.helpers.StringHelper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;

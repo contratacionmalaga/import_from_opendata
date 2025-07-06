@@ -1,6 +1,5 @@
 package local.jarios.entity.auxiliares;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
@@ -30,6 +29,7 @@ public class Configuracion extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -77,7 +77,6 @@ public class Configuracion extends Auditable {
     //
     public Configuracion(Log miLog) {
 
-        this.id = Generators.timeBasedEpochGenerator().generate();
         this.miLog = miLog;
 
         // Cargar propiedades una única vez
@@ -101,5 +100,20 @@ public class Configuracion extends Auditable {
         this.filtroSql = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_SQL);
         this.filtroObjeto = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_OBJETO);
         this.filtroNuts = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_NUTS);
+    }
+
+    @Override
+    public String toString() {
+
+        return "Configuración: [" +
+                "path='" + path + "', " +
+                "filename='" + filename + "', " +
+                "url='" + url + "', " +
+                "filtroFechaInicioLectura='" + filtroFechaInicioLectura + "', " +
+                "filtroFechaFinLectura='" + filtroFechaFinLectura + "', " +
+                "filtroSql='" + filtroSql + "', " +
+                "filtroObjeto='" + filtroObjeto + "', " +
+                "filtroNuts='" + filtroNuts + "']";
+
     }
 }

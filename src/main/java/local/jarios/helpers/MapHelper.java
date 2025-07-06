@@ -79,7 +79,7 @@ public final class MapHelper {
     // Método auxiliar para imprimir clave y valor
     public static <K, V> void printKeyValue(K key, V value) {
 
-        log.info("{} | {}", key, value.toString());
+        log.info("[printKeyValue] - {} | {}", key, value.toString());
     }
 
 

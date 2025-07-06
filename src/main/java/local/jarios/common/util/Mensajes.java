@@ -123,7 +123,7 @@ public final class Mensajes {
     public static final String ENTRY_NO_FILTRO_FECHAS = "El Entry no cumple el filtro FECHAS.";
     public static final String ENTRY_NO_FILTRO_OBJETO = "El Entry no cumple el filtro OBJETO.";
     public static final String ENTRY_NO_FILTRO_NUTS = "El Entry no cumple el filtro NUTS.";
-    public static final String ENTRY_CUMPLE_FILTROS = "El Entru cumple los filtros.";
+    public static final String ENTRY_CUMPLE_FILTROS = "El Entry cumple los filtros.";
 
     private Mensajes() { }
 
