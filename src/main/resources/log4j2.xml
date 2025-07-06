@@ -1,127 +1,267 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
+<Configuration status="WARN" monitorInterval="60">
     <Appenders>
+
         <!-- Consola -->
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
         </Console>
 
-        <!-- Archivos de Registro -->
-        <File name="MainAppLogFile" fileName="logs/mainapp-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <!-- Appender reutilizable -->
+        <RollingFile name="GenericRolling"
+                     filePattern="logs/%appenderName%-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
-        <File name="PropertiesHelper" fileName="logs/properties_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <!-- Appenders específicos -->
+        <RollingFile name="MainAppLogFile" fileName="logs/mainapp.log"
+                     filePattern="logs/mainapp-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
-        <File name="EmailHelper" fileName="logs/email_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <!-- Componentes locales -->
+        <RollingFile name="PropertiesHelper" fileName="logs/properties_helper.log"
+                     filePattern="logs/properties_helper-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
-        <File name="EncryptHelper" fileName="logs/encrypt_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <RollingFile name="EmailHelper" fileName="logs/email_helper.log"
+                     filePattern="logs/email_helper-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
-        <File name="VersionHelper" fileName="logs/version_helper-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <RollingFile name="EncryptHelper" fileName="logs/encrypt_helper.log"
+                     filePattern="logs/encrypt_helper-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
-        <!-- Hibernate Logs Separados -->
-        <File name="FileHibernate" fileName="logs/hibernate-general-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <RollingFile name="VersionHelper" fileName="logs/version_helper.log"
+                     filePattern="logs/version_helper-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
-        <File name="FilePersistence" fileName="logs/hibernate-persistence-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <!-- Hibernate y otros -->
+        <RollingFile name="FileHibernate" fileName="logs/hibernate.log"
+                     filePattern="logs/hibernate-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
-        <File name="FileHibernateSQL" fileName="logs/hibernate-sql-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <RollingFile name="FilePersistence" fileName="logs/hibernate-persistence.log"
+                     filePattern="logs/hibernate-persistence-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
-        <!-- Log para Hibernate Statistics -->
-        <File name="FileHibernateStats" fileName="logs/hibernate-stats-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <RollingFile name="FileHibernateSQL" fileName="logs/hibernate-sql.log"
+                     filePattern="logs/hibernate-sql-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
-        <!-- Log para Flush y Execution Plan -->
-        <File name="FileHibernateFlush" fileName="logs/hibernate-flush-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <RollingFile name="FileHibernateStats" fileName="logs/hibernate-stats.log"
+                     filePattern="logs/hibernate-stats-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="FileHibernateFlush" fileName="logs/hibernate-flush.log"
+                     filePattern="logs/hibernate-flush-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
         <!-- Reflections -->
-        <File name="FileReflections" fileName="logs/reflection-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <RollingFile name="FileReflections" fileName="logs/reflections.log"
+                     filePattern="logs/reflections-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
 
         <!-- HikariCP -->
-        <File name="FileHikariCP" fileName="logs/hikaricp-${date:yyyy-MM-dd_HH-mm-ss}.log">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n" />
-        </File>
+        <RollingFile name="FileHikariCP" fileName="logs/hikaricp.log"
+                     filePattern="logs/hikaricp-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <!-- Otros nuevos -->
+        <RollingFile name="FileJackson" fileName="logs/jackson.log"
+                     filePattern="logs/jackson-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="FileGson" fileName="logs/gson.log"
+                     filePattern="logs/gson-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="FileJaxb" fileName="logs/jaxb.log"
+                     filePattern="logs/jaxb-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="FileCodec" fileName="logs/commons-codec.log"
+                     filePattern="logs/commons-codec-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="FileCommonsText" fileName="logs/commons-text.log"
+                     filePattern="logs/commons-text-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+
     </Appenders>
 
     <Loggers>
-        <!-- Loggers varios -->
-        <Logger name="local.jarios.properties" level="INFO" additivity="false">
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="MainAppLogFile"/>
+        </Root>
+
+        <!-- Local -->
+        <Logger name="local.jarios.properties.PropertiesHelper" level="debug" additivity="false">
             <AppenderRef ref="PropertiesHelper"/>
-            <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="local.jarios.email" level="INFO" additivity="false">
+        <Logger name="local.jarios.helpers.EmailHelper" level="debug" additivity="false">
             <AppenderRef ref="EmailHelper"/>
-            <AppenderRef ref="Console"/>
         </Logger>
 
-        <Logger name="local.jarios.encrypt" level="INFO" additivity="false">
+        <Logger name="local.jarios.helpers.EncryptHelper" level="debug" additivity="false">
             <AppenderRef ref="EncryptHelper"/>
         </Logger>
 
-        <Logger name="local.jarios.version" level="INFO" additivity="false">
+        <Logger name="local.jarios.VersionHelper" level="debug" additivity="false">
             <AppenderRef ref="VersionHelper"/>
         </Logger>
 
-        <Logger name="org.reflections.Reflections" level="INFO" additivity="false">
-            <AppenderRef ref="FileReflections"/>
-        </Logger>
-
-        <Logger name="com.zaxxer.hikari" level="DEBUG" additivity="false">
-            <AppenderRef ref="FileHikariCP"/>
-        </Logger>
-
-        <Logger name="local.jarios" level="INFO" additivity="false">
-            <AppenderRef ref="MainAppLogFile"/>
-            <AppenderRef ref="Console"/>
-        </Logger>
-
-        <!-- Hibernate General (todo excepto lo específico) -->
-        <Logger name="org.hibernate" level="DEBUG" additivity="false">
+        <!-- Hibernate -->
+        <Logger name="org.hibernate" level="info" additivity="false">
             <AppenderRef ref="FileHibernate"/>
         </Logger>
 
-        <!-- Hibernate Persistence -->
-        <Logger name="javax.persistence" level="DEBUG" additivity="false">
+        <Logger name="org.hibernate.persister" level="info" additivity="false">
             <AppenderRef ref="FilePersistence"/>
         </Logger>
 
-        <!-- Hibernate SQL -->
-        <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <Logger name="org.hibernate.SQL" level="debug" additivity="false">
             <AppenderRef ref="FileHibernateSQL"/>
         </Logger>
 
-        <!-- Hibernate Statistics -->
-        <Logger name="org.hibernate.stat" level="DEBUG" additivity="false">
+        <Logger name="org.hibernate.stat" level="debug" additivity="false">
             <AppenderRef ref="FileHibernateStats"/>
         </Logger>
 
-        <!-- Hibernate Flush y Execution Plan -->
-        <Logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="DEBUG" additivity="false">
+        <Logger name="org.hibernate.engine.internal.StatisticalLoggingSessionEventListener" level="info" additivity="false">
+            <AppenderRef ref="FileHibernateStats"/>
+        </Logger>
+
+        <Logger name="org.hibernate.engine.jdbc.batch.internal.BatchingBatch" level="info" additivity="false">
             <AppenderRef ref="FileHibernateFlush"/>
         </Logger>
 
-        <!-- Hibernate SQL Bind Parameters -->
-        <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="DEBUG" additivity="false">
-            <AppenderRef ref="FileHibernate"/>
+        <Logger name="org.hibernate.engine.jdbc.spi.SqlStatementLogger" level="debug" additivity="false">
+            <AppenderRef ref="FileHibernateSQL"/>
+        </Logger>
+
+        <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace" additivity="false">
+            <AppenderRef ref="FileHibernateSQL"/>
+        </Logger>
+
+        <!-- Otros -->
+        <Logger name="org.reflections.Reflections" level="info" additivity="false">
+            <AppenderRef ref="FileReflections"/>
+        </Logger>
+
+        <Logger name="com.zaxxer.hikari" level="info" additivity="false">
+            <AppenderRef ref="FileHikariCP"/>
+        </Logger>
+
+        <!-- Nuevos -->
+        <Logger name="com.fasterxml.jackson" level="debug" additivity="false">
+            <AppenderRef ref="FileJackson"/>
+        </Logger>
+
+        <Logger name="com.google.gson" level="debug" additivity="false">
+            <AppenderRef ref="FileGson"/>
+        </Logger>
+
+        <Logger name="com.sun.xml.bind" level="debug" additivity="false">
+            <AppenderRef ref="FileJaxb"/>
+        </Logger>
+
+        <Logger name="org.apache.commons.codec" level="debug" additivity="false">
+            <AppenderRef ref="FileCodec"/>
+        </Logger>
+
+        <Logger name="org.apache.commons.text" level="debug" additivity="false">
+            <AppenderRef ref="FileCommonsText"/>
         </Logger>
     </Loggers>
 </Configuration>
