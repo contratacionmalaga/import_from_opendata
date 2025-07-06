@@ -15,6 +15,7 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
+import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
@@ -152,7 +153,7 @@ public abstract class AbstractOpenData {
 
             //
             miLog.setConfiguracion(configuracion);
-            log.info(Mensajes.ASIGN_CONFIGURACION_TO_LOG);
+            log.info("[procesar] - Asignado el objeto configuración al Log correctamente.");
 
             //
             //     COMIENZO EL PARSEO DE LOS FEEDS
@@ -176,7 +177,7 @@ public abstract class AbstractOpenData {
                     "[procesar] - Asocio los Entries del MapBaseDatos a sus Feeds correspondientes. Nº Entries: {}",
                     StringHelper.getNumeroConFormato(entryMap.size()));
             for (Entry entry : entryMap.values()) {
-                log.debug("{}", entry.toStringResumido());
+                log.info("[procesar] - {}", entry.toStringResumido());
                 Feed feed = entry.getFeed();
                 // Asegurarse de que el Feed esté en el mapa
                 feedEntryMap.computeIfAbsent(feed, k -> new ArrayList<>()).add(entry);
@@ -189,7 +190,7 @@ public abstract class AbstractOpenData {
 
             for (Map.Entry<Feed, List<Entry>> entry : feedEntryMap.entrySet()) {
                 Feed feed = entry.getKey();
-                log.debug("{}", feed.toStringResumido());
+                log.info("[procesar] - {}", feed.toStringResumido());
                 List<Entry> entries = entry.getValue();
 
                 // Asignar miLog al feed
@@ -207,16 +208,17 @@ public abstract class AbstractOpenData {
                 miLog.getListFeed().add(feed);
             }
 
-            miLog.setListHistorio(VariablesGlobales.getListHistoricos());
+            // ASIGNO LOS HISTÓRICOS DE ACCIONES QUE HAN OCURRIDO SOBRE CADA ENTRY AL LOG
+            List<Historico> listHistoricos = VariablesGlobales.getListHistoricos();
+            miLog.setListHistorio(listHistoricos);
             log.info(
                     "[procesar] - Asigno los históricos generados durante la ejecución al Log. Nº Históricos: {}",
                     StringHelper.getNumeroConFormato(VariablesGlobales.getListHistoricos().size()));
+            listHistoricos.forEach(h -> log.debug("[procesar] - {}", h.toStringReducido()));
 
-            // Asigno la fecha y hora final
+            // RELLENO LOS ÚLTIMOS DATOS ASOCIADOS AL OBJETO ESTADISTICA
             LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();
             estadistica.setFechaHoraFinal(localDateTime);
-
-            // Obtengo el tiempo transcurrido durante la obtención del modelo de datos
             String duracion = LocalDateTimeHelper
                                     .getDiferenciaLocalDateTime(
                                             estadistica.getFechaHoraInicial(),
@@ -228,27 +230,21 @@ public abstract class AbstractOpenData {
             //
             //     PERSISTENCIA EN LA BASE DE DATOS
             //
-
-            // Persistir en la base de datos
             log.info("[procesar] - ***** INICIO DE LA PERSISTENCIA EN LA BASE DE DATOS *****");
 
-            //
-            //     CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
-            //
+            // CREO LA INSTANCIA DEL SERVICIO ENCARGADO DE INTERACTUAR CON LA BASE DE DATOS
             ServicePrincipal servicePrincipal = new ServicePrincipalImpl();
             String baseDatos = propertiesManager.getProperty(
                     PropertiesFiles.JAKARTA_PRINCIPAL, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL);
+
             log.info("[procesar] - Base de datos: {}", baseDatos);
             log.info("[procesar] - Conexión correcta con la base de datos.");
-
-
-            // Persisto el objeto Log -> Configuracion + List<OrganoContratacion>
             log.info(
                     "[procesar] - Entrys a grabar en la base de datos: {}",
                     StringHelper.getNumeroConFormato(entryMap.size()));
             miLog.getListFeed().forEach(f -> f.getListEntry().forEach(e->log.debug(e.toStringResumido())));
 
-            // Discrimino según el lugar de importación (INTERNET | LOCAL)
+            // PERSISTO EN LA BASE DE DATOS SEGÚN PROVENGAN LOS DATOS (INTERNET | LOCAL)
             if (lugarImportacion.equals(LugarImportacion.INTERNET)) {
                 servicePrincipal.persistirMiLogInternet(miLog, ((OpenDataInternet) this).getEntriesAEliminar());
             } else {
@@ -256,7 +252,7 @@ public abstract class AbstractOpenData {
             }
             log.info("[procesar] - Se han persistido correctamente las entidades en la base de datos.");
 
-            //
+            // ENVÍO EMAIL CON LAS ESTADÍSTICAS
             enviarEmail(estadistica, null, true);
             log.info("[procesar] - Email enviado correctamente.");
 

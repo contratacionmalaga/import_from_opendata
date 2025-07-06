@@ -1,10 +1,11 @@
 package local.jarios.entity.atom;
 
 import jakarta.persistence.*;
+import local.jarios.common.util.Constantes;
 import local.jarios.entity.Log;
 import local.jarios.entity.auxiliares.Auditable;
-import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -12,30 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Description: Importaciones de Ficheros Excel desde Internet
- * Author: Juan Antonio
- * Date: 04/06/2024
- * Team: Juan Antonio
- */
-
-@Setter
 @Getter
+@Setter
+@NoArgsConstructor
 @Entity
-@Table(
-        name = "feed"
-)
-
+@Table(name = "feed")
 public class Feed extends Auditable {
 
-    //
-    //
-    //
+    // Primary Key
     @Id
     @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    // Campos del Feed
     @Column(name = "link_first", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
     private String linkFirst;
 
@@ -51,41 +42,37 @@ public class Feed extends Auditable {
     @Column(name = "updated")
     private LocalDateTime updated;
 
-    @Override
-    public String toString() {
-
-        return "Feed: " +
-                "[linkFirst='" + linkFirst + "', " +
-                "linkPrev='" + linkPrev + "', " +
-                "linkSelf='" + linkSelf + "', " +
-                "linkNext='" + linkNext + "', " +
-                "updated='" + updated + "]'";
-    }
-
-    public String toStringResumido() {
-
-        return "[linkSelf='" + linkSelf + "', " +
-                "updated='" + updated + "', " +
-                "id='" + id + "']";
-    }
-    //
-    //
-    //
-    @ManyToOne(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+    // Relaciones
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(
             name = "log_id",
             nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_feed_log",
-                    foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
+                    foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE")
+    )
     private Log miLog;
 
-    //
-    //
-    //
     @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Entry> listEntry = new ArrayList<>();
+
+    // Representaciones en texto
+    @Override
+    public String toString() {
+        return "Feed: [" +
+                    "linkFirst='" + linkFirst + "', " +
+                    "linkPrev='" + linkPrev + "', " +
+                    "linkSelf='" + linkSelf + "', " +
+                    "linkNext='" + linkNext + "', " +
+                    "updated='" + updated +
+                "']";
+    }
+
+    public String toStringResumido() {
+        return "[" +
+                    "linkSelf='" + linkSelf + "', " +
+                    "updated='" + updated + "'" +
+                "']";
+    }
 }

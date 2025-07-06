@@ -136,7 +136,7 @@ public class ServicePrincipalImpl implements ServicePrincipal {
                         "JOIN f.miLog l " +
                         "WHERE l.tipoSindicacion = %s " +
                         "ORDER BY f.updated DESC", tipoSindicacion);
-
+        log.info("[getNewestEntry] - Consulta: {}", sql);
 
         try {
 

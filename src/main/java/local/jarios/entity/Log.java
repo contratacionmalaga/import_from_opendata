@@ -1,15 +1,11 @@
 package local.jarios.entity;
 
 import jakarta.persistence.*;
+import local.jarios.common.util.Constantes;
 import local.jarios.entity.atom.Feed;
-import local.jarios.entity.auxiliares.Auditable;
-import local.jarios.entity.auxiliares.Configuracion;
-import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
-import local.jarios.entity.auxiliares.OrganoContratacion;
+import local.jarios.entity.auxiliares.*;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
-import local.jarios.common.util.Constantes;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,28 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Description: LogEntity
- * Author: Juan Antonio
- * Date: 04/06/2024
- * Team: Juan Antonio
- */
-
-@Setter
 @Getter
-@Entity
+@Setter
 @NoArgsConstructor
-@Table(
-        name = "log"
-)
-
+@Entity
+@Table(name = "log")
 public class Log extends Auditable {
 
+    // Primary Key
     @Id
     @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    // Enums
     @Enumerated(EnumType.STRING)
     @Column(name = "tipoSindicacion", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private TipoSindicacion tipoSindicacion;
@@ -48,12 +36,14 @@ public class Log extends Auditable {
     @Column(name = "lugarImportacion", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private LugarImportacion lugarImportacion;
 
+    // Relaciones uno a uno
     @OneToOne(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true)
     private Estadistica estadistica;
 
     @OneToOne(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true)
     private Configuracion configuracion;
 
+    // Relaciones uno a muchos
     @OneToMany(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrganoContratacion> listOrganoContratacion = new ArrayList<>();
 
@@ -63,19 +53,15 @@ public class Log extends Auditable {
     @OneToMany(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Historico> listHistorio = new ArrayList<>();
 
-    // Constructor con dos parámetros
+    // Constructor principal
     public Log(LugarImportacion lugarImportacion, TipoSindicacion tipoSindicacion) {
-
-        //
         this.lugarImportacion = lugarImportacion;
-
-        //
         this.tipoSindicacion = tipoSindicacion;
     }
 
     @Override
     public String toString() {
-
-        return "Log: [TipoSindicacion: " + tipoSindicacion + ", LugarImportacion: " + lugarImportacion + "]";
+        return "Log: [TipoSindicacion=" + tipoSindicacion +
+                ", LugarImportacion=" + lugarImportacion + "]";
     }
 }
