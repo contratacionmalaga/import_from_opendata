@@ -2,7 +2,6 @@ package local.jarios.entity.placsp;
 
 import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
