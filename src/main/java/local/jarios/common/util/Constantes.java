@@ -92,6 +92,9 @@ public final class Constantes {
     /**    */
     public static final String OTROS = "OTROS";
 
+    /** Ruta del directorio con los ficheros properties */
+    public static final String NULL = "NULL";
+
     /**    */
     private Constantes() {/*  CONSTRUCTOR PRIVADO PARA EVITAR INSTANCIACIONES */}
 

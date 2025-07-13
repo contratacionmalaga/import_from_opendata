@@ -22,9 +22,13 @@ import java.util.Properties;
 @Slf4j
 public class SessionFactoryProvider {
 
+    /** Variable con la ruta de las entidades que son gestionadas por Hibernate */
     private static final String CONFIG_PACKAGE_NAME = "local.jarios.entity";
+
+    /** Variable asociada al servicio de consulta de los ficheros properties */
     private final PropertiesManagerService propertyManager;
 
+    /** Constructor */
     public SessionFactoryProvider() {
         this.propertyManager = PropertiesManagerServiceImpl.getInstance();
     }
