@@ -1,8 +1,6 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +29,7 @@ public class EconomicOperatorShortList extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -73,13 +72,5 @@ public class EconomicOperatorShortList extends Auditable {
                 "expectedQuantity='" + expectedQuantity + "', " +
                 "maximumQuantity='" + maximumQuantity + "', " +
                 "minimumQuantity='" + minimumQuantity + "']";
-    }
-    //
-    //
-    //
-    public EconomicOperatorShortList() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

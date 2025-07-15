@@ -1,6 +1,5 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
@@ -28,6 +27,7 @@ public class Period extends Auditable {
     // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -92,14 +92,5 @@ public class Period extends Auditable {
                 "[startDateTime='" + startDateTime + "', " +
                 "endDateTime='" + endDateTime + "', " +
                 "description='" + description + "']";
-    }
-
-    //
-    // GENERACIÓN DEL IDENTIFICADOR UUID v7
-    //
-    public Period() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

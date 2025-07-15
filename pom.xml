@@ -9,13 +9,6 @@
     <version>2.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-    </repositories>
-
     <name>import_from_opendata</name>
     <description>Cliente que parsea los datos abiertos de la Plataforma de Contratación del Sector Público</description>
 
@@ -129,6 +122,12 @@
             <version>1.4.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.13.1</version>
+        </dependency>
+
         <!-- Otros -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
@@ -156,11 +155,6 @@
             <version>4.5.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-text</artifactId>
-            <version>1.13.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
@@ -176,37 +170,36 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.uuid</groupId>
-            <artifactId>java-uuid-generator</artifactId>
-            <version>5.1.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>6.3.0</version>
         </dependency>
 
-        <!-- Custom helpers -->
+        <!-- Componentes personales -->
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>encrypt_helper</artifactId>
-            <version>2.0.0</version>
+            <version>2.1.0</version>
         </dependency>
+
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>version_helper</artifactId>
-            <version>2.1.0</version>
+            <version>2.2.0</version>
         </dependency>
+
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>email_helper</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
         </dependency>
+
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>properties_helper</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
         </dependency>
+        <!-- Fin de componenetes personales -->
 
         <!-- Testing -->
         <dependency>
@@ -236,8 +229,10 @@
     </dependencies>
 
     <build>
+
         <!-- Nombre del JAR por defecto (incluye -SNAPSHOT si aplica) -->
         <finalName>${final.name}</finalName>
+
         <plugins>
 
             <plugin>
@@ -254,6 +249,9 @@
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>12.1.3</version>
+                <configuration>
+                    <nvdApiKey>95ada876-88fe-4a9b-ae9c-43f3c37cc004</nvdApiKey>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -266,11 +264,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>3.5.3</version>
                 <configuration>
                     <useModulePath>false</useModulePath> <!-- importante si usas Java 9+ con módulos -->
                     <argLine>
-                        -javaagent:"${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.17.5/byte-buddy-agent-1.17.5.jar" -XX:+EnableDynamicAgentLoading
+                        --add-modules jdk.incubator.vector -javaagent:"${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.17.5/byte-buddy-agent-1.17.5.jar" -XX:+EnableDynamicAgentLoading
                     </argLine>
                 </configuration>
             </plugin>
@@ -301,7 +299,6 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <scmCommentPrefix>[RELEASE]</scmCommentPrefix>
                     <pushChanges>true</pushChanges>
-                    <releaseProfiles>release</releaseProfiles>
                 </configuration>
             </plugin>
 
@@ -340,19 +337,19 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.1</version>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -405,8 +402,30 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>4.0.0-M16</version>
+            </plugin>
+
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.9.0</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <profiles>
         <!-- Perfil para OpenDataLocal -->
@@ -504,4 +523,7 @@
             </build>
         </profile>
     </profiles>
+
+
+
 </project>

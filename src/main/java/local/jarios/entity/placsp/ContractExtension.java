@@ -1,6 +1,5 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
@@ -15,7 +14,6 @@ import java.util.UUID;
  * Team:
  */
 
-
 @Setter
 @Getter
 @Entity
@@ -28,6 +26,7 @@ public class ContractExtension extends Auditable {
     // PROPIEDADES DE LA ENTIDAD
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -64,13 +63,5 @@ public class ContractExtension extends Auditable {
 
         return "ContractExtension: " +
                 "[optionsDescription='" + optionsDescription + "']";
-    }
-    //
-    // CONSTRUCTOR DE LA CLASE EN EL QUE SE GENERA EL UUID VERSIÓN 7
-    //
-    public ContractExtension() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

@@ -1,8 +1,6 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
@@ -28,6 +26,7 @@ import java.util.UUID;
 public class Uuid extends Auditable {
 
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -51,18 +50,11 @@ public class Uuid extends Auditable {
                             "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
     private ContractFolderStatus contractFolderStatus;
 
-
     @Override
     public String toString() {
 
         return "Uuid: " +
                 "[uuid='" + uuid + "', " +
                 "schemeName='" + schemeName + "']";
-    }
-
-    public Uuid() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

@@ -38,6 +38,7 @@ public class Estadistica extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 

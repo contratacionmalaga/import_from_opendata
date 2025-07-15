@@ -1,6 +1,5 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
@@ -33,6 +32,7 @@ public class AwardingTerms extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -57,13 +57,4 @@ public class AwardingTerms extends Auditable {
     //
     @OneToMany(mappedBy = "awardingTerms", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AwardingCriteria> listAwardingCriteria = new ArrayList<>();
-
-    //
-    //
-    //
-    public AwardingTerms() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
-    }
 }

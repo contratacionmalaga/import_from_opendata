@@ -1,14 +1,11 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
-import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
+import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +29,7 @@ import java.util.UUID;
 public class TenderResult extends Auditable {
 
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -137,14 +135,5 @@ public class TenderResult extends Auditable {
                 "sMEAwardedIndicator='" + sMEAwardedIndicator + "', " +
                 "awardedOwnerNationalityCode='" + awardedOwnerNationalityCode + "', " +
                 "abnormallyLowTendersIndicator='" + abnormallyLowTendersIndicator + "']";
-    }
-
-    //
-    // CONSTRUCTOR
-    //
-    public TenderResult() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

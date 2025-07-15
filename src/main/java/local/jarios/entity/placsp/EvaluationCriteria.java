@@ -1,8 +1,6 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.enums.TipoSolvencia;
 import local.jarios.common.util.Constantes;
@@ -31,6 +29,7 @@ import java.util.UUID;
 public class EvaluationCriteria extends Auditable {
 
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -72,11 +71,5 @@ public class EvaluationCriteria extends Auditable {
                 "description='" + description + "', " +
                 "thresholdQuantity='" + thresholdQuantity + "', " +
                 "tipoSolvencia='" + tipoSolvencia + "']";
-    }
-
-    public EvaluationCriteria() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

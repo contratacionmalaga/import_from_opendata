@@ -1,6 +1,5 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
@@ -8,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.UUID;
-
 
 /**
  * Description: Juan Antonio
@@ -28,6 +26,7 @@ public class AuctionTerms extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -56,13 +55,5 @@ public class AuctionTerms extends Auditable {
     public String toString() {
 
         return ToStringUtil.autoToString(this);
-    }
-    //
-    //
-    //
-    public AuctionTerms() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

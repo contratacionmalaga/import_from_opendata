@@ -1,10 +1,7 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
-import local.jarios.common.util.Constantes;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,6 +30,7 @@ import java.util.UUID;
 public class TendererQualificationRequest extends Auditable {
 
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -87,11 +85,5 @@ public class TendererQualificationRequest extends Auditable {
                 "description='" + description + "', " +
                 "employeeQuantity='" + employeeQuantity + "', " +
                 "employeeQuantityDescription='" + employeeQuantityDescription + "']";
-    }
-
-    public TendererQualificationRequest() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

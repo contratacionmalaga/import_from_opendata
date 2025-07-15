@@ -1,6 +1,5 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.auxiliares.Auditable;
@@ -29,6 +28,7 @@ import java.util.UUID;
 public class ContractFolderStatus extends Auditable {
 
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -100,14 +100,5 @@ public class ContractFolderStatus extends Auditable {
         return "ContractFolderStatus: " +
                 "[contractFolderId='" + contractFolderId + "', " +
                 "contractFolderStatusCode='" + contractFolderStatusCode + "']";
-    }
-
-    //
-    //
-    //
-    public ContractFolderStatus() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

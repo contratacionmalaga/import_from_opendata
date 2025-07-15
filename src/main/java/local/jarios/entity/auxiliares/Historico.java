@@ -1,6 +1,5 @@
 package local.jarios.entity.auxiliares;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.Log;

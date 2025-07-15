@@ -1,8 +1,6 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,6 +31,7 @@ public class LegalMonetaryTotal extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -94,14 +93,5 @@ public class LegalMonetaryTotal extends Auditable {
                 "[payableAmount='" + payableAmount + "', " +
                 "taxExclusiveAmount='" + taxExclusiveAmount + "', " +
                 "taxInclusiveAmount='" + taxInclusiveAmount + "']";
-    }
-
-    //
-    // CONSTRUCTOR DE LA CLASE EN EL QUE SE GENERA EL UUID VERSIÓN 7
-    //
-    public LegalMonetaryTotal() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

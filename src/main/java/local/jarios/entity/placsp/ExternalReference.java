@@ -1,8 +1,6 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
@@ -29,6 +27,7 @@ public class ExternalReference extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -63,15 +62,6 @@ public class ExternalReference extends Auditable {
                 "[uri='" + uri + "', " +
                 "documentHash='" + documentHash + "', " +
                 "filename='" + filename + "']";
-    }
-
-    //
-    //
-    //
-    public ExternalReference() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }
 

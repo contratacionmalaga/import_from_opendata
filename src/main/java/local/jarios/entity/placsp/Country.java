@@ -1,8 +1,6 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
@@ -29,6 +27,7 @@ public class Country extends Auditable {
     // PROPIEDADES DEL MODELO
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -58,13 +57,5 @@ public class Country extends Auditable {
         return "Country: " +
                 "[identificationCode='" + identificationCode + "', " +
                 "name='" + name + "']";
-    }
-    //
-    // CONSTRUCTOR DE LA CLASE EN EL QUE SE GENERA EL UUID VERSIÓN 7
-    //
-    public Country() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

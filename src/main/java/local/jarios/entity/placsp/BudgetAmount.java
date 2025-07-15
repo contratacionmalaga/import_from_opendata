@@ -1,8 +1,6 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +27,7 @@ public class BudgetAmount extends Auditable {
     //
 
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -64,13 +63,5 @@ public class BudgetAmount extends Auditable {
                 "[estimatedOverallContractAmount='" + estimatedOverallContractAmount + "', " +
                 "totalAmount='" + totalAmount + "', " +
                 "taxExclusiveAmount='" + taxExclusiveAmount + "']";
-    }
-    //
-    // CONSTRUCTOR DE LA CLASE EN EL QUE SE GENERA EL UUID VERSIÓN 7
-    //
-    public BudgetAmount() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

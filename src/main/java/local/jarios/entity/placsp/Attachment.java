@@ -1,6 +1,5 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
@@ -27,6 +26,7 @@ public class Attachment extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -64,13 +64,4 @@ public class Attachment extends Auditable {
     //
     @OneToOne(mappedBy = "attachment", cascade = CascadeType.ALL, orphanRemoval = true)
     private ExternalReference externalReference;
-
-    //
-    //
-    //
-    public Attachment() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
-    }
 }

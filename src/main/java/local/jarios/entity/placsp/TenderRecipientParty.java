@@ -1,6 +1,5 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
@@ -28,6 +27,7 @@ public class TenderRecipientParty extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -55,14 +55,5 @@ public class TenderRecipientParty extends Auditable {
 
         return "TenderRecipientParty: " +
                 "[endpointId='" + endpointId + "']";
-    }
-
-    //
-    //
-    //
-    public TenderRecipientParty() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

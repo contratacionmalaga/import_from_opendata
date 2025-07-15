@@ -1,8 +1,6 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
@@ -31,6 +29,7 @@ public class NoticeInfo extends Auditable {
     //
     //
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -64,14 +63,5 @@ public class NoticeInfo extends Auditable {
 
         return "NoticeInfo: " +
                 "[noticeTypeCode='" + noticeTypeCode + "']";
-    }
-
-    //
-    //
-    //
-    public NoticeInfo() {
-
-        //
-        this.id = Generators.timeBasedEpochGenerator().generate();
     }
 }

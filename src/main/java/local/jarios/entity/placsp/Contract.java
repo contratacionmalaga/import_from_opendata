@@ -1,15 +1,12 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -32,6 +29,7 @@ public class Contract extends Auditable {
         //
         //
         @Id
+        @GeneratedValue(generator = "UUID")
         @Column(name = "id", updatable = false, nullable = false)
         private UUID id;
 
@@ -64,13 +62,5 @@ public class Contract extends Auditable {
                 return "Contract: " +
                         "[idContract='" + idContract + "', " +
                         "[issueDate='" + issueDate + "']";
-        }
-        //
-        //
-        //
-        public Contract() {
-
-                //
-                this.id = Generators.timeBasedEpochGenerator().generate();
         }
 }

@@ -1,9 +1,7 @@
 package local.jarios.entity.placsp;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.common.util.Constantes;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,6 +31,7 @@ public class Measure extends Auditable {
      * Identificador único de la entidad. Se genera automáticamente usando UUID versión 7.
      */
     @Id
+    @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -80,14 +79,6 @@ public class Measure extends Auditable {
                             "REFERENCES contract_modification(id) ON DELETE CASCADE")
     )
     private ContractModification contractModification;
-
-    /**
-     * Constructor por defecto. Genera automáticamente un UUID basado en el tiempo (versión 7).
-     */
-    public Measure() {
-        this.id = Generators.timeBasedEpochGenerator().generate();
-    }
-
     /**
      * Devuelve una representación en texto del objeto, útil para depuración.
      *

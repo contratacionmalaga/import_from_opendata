@@ -26,6 +26,9 @@ public final class Constantes {
     /**    */
     public static final String RETORNO_CARRO_HTML = "&#xD;";
 
+    /** Formato fecha hora. */
+    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
     //
     /**    */
     public static final String FILENAME_MAYORES = "licitacionesPerfilesContratanteCompleto3.atom";
