@@ -9,7 +9,8 @@
 
         <!-- Appender reutilizable -->
         <RollingFile name="GenericRolling"
-                     filePattern="logs/%appenderName%-%d{yyyy-MM-dd}-%i.log.gz">
+                     fileName="logs/generic.log"
+                     filePattern="logs/generic-%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
@@ -18,7 +19,8 @@
         </RollingFile>
 
         <!-- Appenders específicos -->
-        <RollingFile name="MainAppLogFile" fileName="logs/mainapp.log"
+        <RollingFile name="MainAppLogFile"
+                     fileName="logs/mainapp.log"
                      filePattern="logs/mainapp-%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] %-30c{1}:%-4L - %m%n"/>
             <Policies>

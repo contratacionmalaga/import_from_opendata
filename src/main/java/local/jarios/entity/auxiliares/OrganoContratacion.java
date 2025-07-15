@@ -1,6 +1,5 @@
 package local.jarios.entity.auxiliares;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.Log;
 import local.jarios.common.util.TamanoCampos;
@@ -59,7 +58,6 @@ public class OrganoContratacion extends Auditable {
     //
     public OrganoContratacion(Log miLog, String idPlataforma, String organoContratacion) {
 
-        this.id = Generators.timeBasedEpochGenerator().generate();
         this.miLog = miLog;
         this.idPlataforma = idPlataforma;
         this.nombre = organoContratacion;

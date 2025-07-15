@@ -40,8 +40,9 @@ public class ServiceFiltroImpl implements ServiceFiltro {
     public ServiceFiltroImpl() throws MiSessionFactoryProvider {
 
         SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(TipoConexion.FILTRO_SQL);
+        log.debug("[ServiceFiltroImpl] Obtenido el objeto SessionFactory correctamente.");
         this.repository = new RepositoryImpl(sessionFactory);
-
+        log.debug("[ServiceFiltroImpl] Obtenido el objeto Repository correctamente.");
     }
 
     @Override

@@ -32,9 +32,13 @@ public final class SessionFactoryRegistry {
     public static SessionFactory getSessionFactory(TipoConexion tipoConexion) throws MiSessionFactoryProvider {
         synchronized (lock) {
             if (!registry.containsKey(tipoConexion)) {
-                log.debug("[SessionFactoryRegistry] - Creando SessionFactory para tipo de conexión: {}", tipoConexion);
+                log.info("[getSessionFactory] - El Map<TipoConexion, SessionFactory> no cotiene la conexión: {}", tipoConexion);
+
                 SessionFactory factory = new SessionFactoryProvider().getSessionFactory(tipoConexion);
+                log.info("[getSessionFactory] - Se ha generado la SessionFactory correctamente.}");
+
                 registry.put(tipoConexion, factory);
+                log.info("[getSessionFactory] - Asignada al Map<TipoConexion, SessionFactory> la conexión: {}", tipoConexion);
             }
             return registry.get(tipoConexion);
         }

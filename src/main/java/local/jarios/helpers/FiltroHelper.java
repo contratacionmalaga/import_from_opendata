@@ -44,15 +44,15 @@ public final class FiltroHelper {
 
         //
         Map<String, String> mapFiltro = new HashMap<>();
-        log.debug("[getMapFiltroSql] - Creado el HashMap que almacenará el filtro.");
+        log.info("[getMapFiltroSql] - Creado el HashMap que almacenará el filtro.");
 
         // Creo el objeto Servicio
         ServiceFiltro serviceFiltro = new ServiceFiltroImpl();
-        log.debug("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
+        log.info("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
 
         // Llamar al método para la obtención de la lista con el filtro
         List<FiltroOrganoContratacion> listFiltroOCs = serviceFiltro.getListFiltroOcsFromFiltroSql(sql);
-        log.debug("[getMapFiltroSql] - Lista de Órganos de Contratación: {}", listFiltroOCs);
+        log.info("[getMapFiltroSql] - Lista de Órganos de Contratación: {}", listFiltroOCs);
 
         // Analizo si la lista con el filtro es vacía
         //     (lo que implicaría que ningún ENTRY podría pertenecer al filtro)
@@ -61,7 +61,7 @@ public final class FiltroHelper {
 
             // Paso de una Lista a un Map (para mejorar la eficiencia a la hora de realizar la búsqueda)
             mapFiltro = MapHelper.getMapFromList(listFiltroOCs);
-            log.debug("[getMapFiltroSql] - Pasada la lista a un Map para acelerar las búsquedas.");
+            log.info("[getMapFiltroSql] - Pasada la lista a un Map para acelerar las búsquedas.");
 
         }
 
@@ -288,7 +288,7 @@ public final class FiltroHelper {
                                     PropertiesKeys.FILTER_SQL);
 
         if (StringHelper.isInvalidString(filter)) {
-            log.debug(
+            log.info(
                     "[loadFilterSql] - Valor inválido para fichero: '{}', propiedad: '{}'",
                     PropertiesFiles.FILTER,
                     PropertiesKeys.FILTER_OBJETO);
@@ -297,10 +297,13 @@ public final class FiltroHelper {
 
         // Almaceno el filtro SQL
         VariablesGlobales.setFiltroSql(filter);
-        log.debug("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
+        log.info("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
 
-        VariablesGlobales.setMapFiltro(getMapFromFiltroSql(filter));
-        log.debug("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
+        Map<String, String> mapFilter = getMapFromFiltroSql(filter);
+        log.info("[loadFilterSql] - Mapa asociado al filtro obtenido correctamente('{}')", mapFilter.size());
+
+        VariablesGlobales.setMapFiltro(mapFilter);
+        log.info("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
 
     }
 

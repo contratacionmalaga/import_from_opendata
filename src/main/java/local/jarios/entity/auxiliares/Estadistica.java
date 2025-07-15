@@ -1,6 +1,5 @@
 package local.jarios.entity.auxiliares;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.*;
 import local.jarios.entity.Log;
 import local.jarios.exceptions.MiUnknownHostException;
@@ -94,7 +93,6 @@ public class Estadistica extends Auditable {
     //
     public Estadistica(Log miLog) throws MiUnknownHostException {
 
-        this.id = Generators.timeBasedEpochGenerator().generate();
         this.miLog = miLog;
         this.fechaHoraInicial = LocalDateTimeHelper.getLocalDateTimeNow();
         this.equipo = ComunHelper.getHostName();
