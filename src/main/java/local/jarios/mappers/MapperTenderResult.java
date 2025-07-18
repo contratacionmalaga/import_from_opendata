@@ -18,30 +18,57 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Utilidad para mapear objetos del modelo Codice {@link TenderResultType}
+ * a entidades persistentes {@link TenderResult}.
+ * <p>
+ * Esta clase ofrece métodos estáticos para transformar listas y objetos individuales
+ * del tipo {@link TenderResultType} en entidades JPA adecuadas para la persistencia.
+ * </p>
+ * <p>
+ * En la conversión se aplican límites de tamaño, limpieza de cadenas y mapeos
+ * de sub-objetos relacionados.
+ * </p>
+ * <p>
+ * La clase es final y no instanciable.
+ * </p>
+ *
+ * <p><b>Autor:</b> Juan Antonio</p>
+ * <p><b>Fecha:</b> 11/04/2024</p>
+ * <p><b>Equipo:</b> Juan Antonio</p>
  */
 @Slf4j
 public final class MapperTenderResult {
 
     private MapperTenderResult() { }
 
+    /**
+     * Convierte una lista de objetos {@link TenderResultType} en una lista
+     * de entidades {@link TenderResult} asociadas a un {@link ContractFolderStatus}.
+     *
+     * @param contractFolderStatus entidad padre a la que se asocian los resultados de licitación.
+     * @param listTenderResultType lista de objetos {@link TenderResultType} a convertir.
+     * @return lista de entidades {@link TenderResult} generadas.
+     */
     public static List<TenderResult> getListTenderResultFromType(
             ContractFolderStatus contractFolderStatus,
             List<TenderResultType> listTenderResultType) {
 
-        //
         return listTenderResultType.stream()
                 .map(tenderResultType -> getTenderResultFromType(contractFolderStatus, tenderResultType))
                 .toList();
     }
 
+    /**
+     * Convierte un objeto {@link TenderResultType} en una entidad {@link TenderResult},
+     * realizando mapeos de sus atributos y sub-objetos relacionados.
+     *
+     * @param contractFolderStatus entidad padre para el mapeo.
+     * @param tenderResultType objeto fuente a convertir.
+     * @return entidad {@link TenderResult} resultante.
+     */
     private static TenderResult getTenderResultFromType(
             ContractFolderStatus contractFolderStatus, TenderResultType tenderResultType) {
 
-        //
         var tenderResult = new TenderResult();
         tenderResult.setContractFolderStatus(contractFolderStatus);
 

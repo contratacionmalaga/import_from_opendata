@@ -2,14 +2,9 @@ package local.jarios.services;
 
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.atom.Feed;
-import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiServiceException;
-
-import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Interfaz que define los métodos principales para la persistencia y recuperación
@@ -23,23 +18,6 @@ public interface ServicePrincipal {
      * @param miLog el objeto de log que se desea almacenar.
      */
     void persistirMiLogLocal(Log miLog) throws MiServiceException;
-
-    /**
-     * Persiste un objeto de log en el sistema.
-     *
-     * @param miLog el objeto de log que se desea almacenar.
-     * @param setEntrysToDelete  conjunto de entrys a borrar de la base de datos
-     */
-    void persistirMiLogInternet(Log miLog, Set<Entry> setEntrysToDelete) throws MiServiceException;
-
-
-    /**
-     * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.
-     *
-     * @param tipoSindicacion el tipo de sindicación (RSS, Atom, etc.).
-     * @return el feed más reciente disponible para el tipo indicado.
-     */
-    Feed getNewestFeed(TipoSindicacion tipoSindicacion) throws MiServiceException;
 
     /**
      * Obtiene el entry más reciente correspondiente a un tipo específico de sindicación.

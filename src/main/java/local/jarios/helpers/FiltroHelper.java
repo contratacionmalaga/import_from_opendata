@@ -8,6 +8,8 @@ import local.jarios.enums.TipoConexion;
 import local.jarios.exceptions.MiServiceException;
 import local.jarios.models.FiltroOrganoContratacion;
 
+import local.jarios.properties.api.PropertiesManagerService;
+import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.services.ServiceFiltro;
 import local.jarios.services.ServiceFiltroImpl;
@@ -30,10 +32,15 @@ import java.util.Optional;
 @Slf4j
 public final class FiltroHelper {
 
+    /** Variable asociada al servicio de consulta de los ficheros properties */
+    private final PropertiesManagerService propertyManager;
+
     /**
      * CONSTRUCTOR DE LA CLASE
      */
-    private FiltroHelper() {/* CONSTRUCTOR VACÍO */}
+    private FiltroHelper() {
+        this.propertyManager = PropertiesManagerServiceImpl.getInstance();
+    }
 
     /**
      *
@@ -189,15 +196,15 @@ public final class FiltroHelper {
         return encontrado;
     }
 
-    private static void loadFilterFechas() throws PropertiesManagerException {
+    private void loadFilterFechas() throws PropertiesManagerException {
 
         // Leo la fecha inicial de lectura
-        String filtroFechaInicialStr = PropertiesHelper.getProperty(
+        String filtroFechaInicialStr = propertyManager.getProperty(
                 PropertiesFiles.FILTER,
                 PropertiesKeys.FILTER_FECHAINICIALLECTURA);
 
         // Leo la fecha final de lectura
-        String filtroFechaFinalStr = PropertiesHelper.getProperty(
+        String filtroFechaFinalStr = propertyManager.getProperty(
                 PropertiesFiles.FILTER,
                 PropertiesKeys.FILTER_FECHAFINALLECTURA);
 
@@ -225,9 +232,9 @@ public final class FiltroHelper {
         }
     }
 
-    private static void loadFilterNuts() throws PropertiesManagerException {
+    private void loadFilterNuts() throws PropertiesManagerException {
 
-        String filter = PropertiesHelper.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_NUTS);
+        String filter = propertyManager.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_NUTS);
         log.debug("[loadFilterNuts] Valor del filtro en el fichero properties: {}", filter);
 
         HashSet<String> nutsSet = new HashSet<>();
@@ -260,9 +267,9 @@ public final class FiltroHelper {
 
     }
 
-    private static void loadFilterObjeto() throws PropertiesManagerException {
+    private void loadFilterObjeto() throws PropertiesManagerException {
 
-        String filter = PropertiesHelper
+        String filter = propertyManager
                             .getProperty(
                                     PropertiesFiles.FILTER,
                                     PropertiesKeys.FILTER_OBJETO);
@@ -272,9 +279,9 @@ public final class FiltroHelper {
         log.debug("[loadFilterObjeto] - VariablesGlobales.setFiltroObjeto('{}')", filter);
     }
 
-    private static void loadFilterSql() throws PropertiesManagerException {
+    private void loadFilterSql() throws PropertiesManagerException {
 
-        String filter = PropertiesHelper
+        String filter = propertyManager
                             .getProperty(
                                     PropertiesFiles.FILTER,
                                     PropertiesKeys.FILTER_SQL);
@@ -301,7 +308,9 @@ public final class FiltroHelper {
 
     public static void loadFilters() throws PropertiesManagerException {
 
-        loadFilterFechas();
+        FiltroHelper filtroHelper = new FiltroHelper();
+
+        filtroHelper.loadFilterFechas();
         String msg = String.format(
                 "[loadFilters] - Filtro Fechas cargado correctamente. Inicial: '%s', Final: '%s'",
                 VariablesGlobales.getFiltroFechaInicial(),
@@ -309,7 +318,7 @@ public final class FiltroHelper {
 
         log.info(msg);
 
-        loadFilterNuts();
+        filtroHelper.loadFilterNuts();
         if (VariablesGlobales.getFiltroNuts().isEmpty()) {
             msg = "[loadFilters] - Filtro Nuts se encuentra vacío.";
         } else {
@@ -319,7 +328,7 @@ public final class FiltroHelper {
         }
         log.info(msg);
 
-        loadFilterObjeto();
+        filtroHelper.loadFilterObjeto();
         if (VariablesGlobales.getFiltroObjeto().isBlank()) {
             msg = "[loadFilters] - Filtro Objeto se encuentra vacío.";
         } else {
@@ -329,7 +338,7 @@ public final class FiltroHelper {
         }
         log.info(msg);
 
-        loadFilterSql();
+        filtroHelper.loadFilterSql();
         if (VariablesGlobales.getFiltroSql().isBlank()) {
             msg = "[loadFilters] - Filtro Sql se encuentra vacío.";
         } else {

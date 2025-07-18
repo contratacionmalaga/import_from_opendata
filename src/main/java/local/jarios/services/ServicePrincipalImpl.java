@@ -3,7 +3,6 @@ package local.jarios.services;
 import local.jarios.database.SessionFactoryRegistry;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.atom.Feed;
 import local.jarios.enums.TipoConexion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiRepositoryException;
@@ -15,121 +14,74 @@ import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
- * Description:
- * Author: juan
- * Date: 28/12/2024
- * Team:
+ * Implementación principal del servicio que maneja operaciones sobre feeds, logs
+ * y entidades relacionadas a sindicación.
+ * <p>
+ * Esta clase utiliza un repositorio para gestionar la persistencia y acceso a datos,
+ * permitiendo operaciones CRUD y consultas específicas.
+ * </p>
+ *
+ * <p><b>Autor:</b> juan</p>
+ * <p><b>Fecha:</b> 28/12/2024</p>
+ * <p><b>Equipo:</b> (vacío)</p>
  */
 @Slf4j
 public class ServicePrincipalImpl implements ServicePrincipal {
 
     /**
      * Instancia del repositorio para acceso y gestión de datos.
-     * <p>
      * Se utiliza para realizar operaciones CRUD sobre las entidades persistentes.
-     * </p>
      */
     private final Repository repository;
 
     /**
      * Constructor que inicializa los componentes necesarios para la persistencia.
      *
-     * @throws HibernateException Si ocurre un error al crear la {@link SessionFactory}.
+     * @throws MiServiceException Si ocurre un error al crear la {@link SessionFactory}.
      */
     public ServicePrincipalImpl() throws MiServiceException {
-
-        SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(TipoConexion.MARIADB);
-        this.repository = new RepositoryImpl(sessionFactory);
+        try {
+            SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(TipoConexion.MARIADB);
+            this.repository = new RepositoryImpl(sessionFactory);
+        } catch (HibernateException ex) {
+            String msg = "Error al obtener la SessionFactory para la conexión MARIADB";
+            log.error(msg, ex);
+            throw new MiServiceException(msg, ex);
+        }
     }
 
     /**
      * Persiste un objeto {@link Log} en la base de datos.
      *
      * @param miLog Objeto {@link Log} a persistir.
+     * @throws MiServiceException En caso de error durante la persistencia.
      */
     @Override
     public void persistirMiLogLocal(Log miLog) throws MiServiceException {
-
         try {
-
-            // El repositorio se encarga de la persistencia y manejo de la las transacciones
+            // El repositorio se encarga de la persistencia y manejo de las transacciones
             repository.persistirMiLogLocal(miLog);
-
         } catch (MiRepositoryException ex) {
-
             String msg = String.format("[persistirLog] - Error persistiendo Log con ID %s: %s", miLog.getId(), ex.getMessage());
-            log.error(msg, ex.getMessage(), ex);
-            throw new MiServiceException (msg, ex);
-
-        } catch (RuntimeException ex) {
-
-            String msg = String.format("[persistirLog] - Error desconocido al persisitir el Log con ID %s: %s", miLog.getId(), ex.getMessage());
-            log.error(msg, ex.getMessage(), ex);
+            log.error(msg, ex);
             throw new MiServiceException(msg, ex);
-
+        } catch (RuntimeException ex) {
+            String msg = String.format("[persistirLog] - Error desconocido al persistir el Log con ID %s: %s", miLog.getId(), ex.getMessage());
+            log.error(msg, ex);
+            throw new MiServiceException(msg, ex);
         }
     }
 
     /**
-     * Persiste un objeto {@link Log} en la base de datos.
+     * Obtiene la entrada (Entry) más reciente para un tipo específico de sindicación.
      *
-     * @param miLog Objeto {@link Log} a persistir.
+     * @param tipoSindicacion el tipo de sindicación (RSS, Atom, etc.).
+     * @return la entrada más reciente disponible para el tipo indicado.
+     * @throws MiServiceException si ocurre un error en la consulta.
      */
-    @Override
-    public void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete) throws MiServiceException {
-
-        try {
-
-            // El repositorio se encarga de la persistencia y manejo de la las transacciones
-            repository.persistirMiLogInternet(miLog, setEntriesToDelete);
-
-        } catch (MiRepositoryException ex) {
-
-            String msg = String
-                            .format(
-                                    "[persistirLog] - Error persistiendo Log con ID %s: %s",
-                                    miLog.getId(),
-                                    ex.getMessage());
-            log.error(msg, ex.getMessage(), ex);
-            throw new MiServiceException (msg, ex);
-
-        }
-    }
-
-    @Override
-    public Feed getNewestFeed(TipoSindicacion tipoSindicacion) throws MiServiceException {
-
-        String msg;
-
-        //
-        String sql = String.format(
-                "SELECT f FROM Feed f " +
-                "JOIN f.miLog l " +
-                "WHERE l.tipoSindicacion = %s " +
-                "ORDER BY f.updated DESC", tipoSindicacion);
-
-
-        try {
-
-            return repository.getNewestFeed(sql);
-
-        } catch (MiRepositoryException ex) {
-
-            msg = String.format("[getNewestFeed] - Error en la consunta: %s. Error: %s", sql, ex.getMessage());
-            log.error(msg, ex);
-            throw new MiServiceException(msg, ex);
-
-        }
-    }
-
     public Entry getNewestEntry(TipoSindicacion tipoSindicacion) throws MiServiceException {
-
-        String msg;
-
-        //
         String sql = String.format(
                 "SELECT e FROM Entry e " +
                         "JOIN e.feed f " +
@@ -139,28 +91,24 @@ public class ServicePrincipalImpl implements ServicePrincipal {
         log.info("[getNewestEntry] - Consulta: {}", sql);
 
         try {
-
             return repository.getNewestEntry(sql);
-
         } catch (MiRepositoryException ex) {
-
-            msg = String.format("[getNewestEntry] - Error en la consunta: %s. Error: %s", sql, ex.getMessage());
+            String msg = String.format("[getNewestEntry] - Error en la consulta: %s. Error: %s", sql, ex.getMessage());
             log.error(msg, ex);
             throw new MiServiceException(msg, ex);
-
         }
     }
 
     /**
-     * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.
+     * Obtiene un mapa de entradas (Entries) indexadas por un String,
+     * correspondientes a un tipo específico de sindicación.
      *
      * @param tipoSindicacion el tipo de sindicación (RSS, Atom, etc.).
-     * @return el feed más reciente disponible para el tipo indicado.
+     * @return un mapa con las entradas encontradas.
+     * @throws MiServiceException si ocurre un error en la consulta.
      */
     @Override
     public Map<String, Entry> getMapEntries(TipoSindicacion tipoSindicacion) throws MiServiceException {
-
-        //
         String sql = String.format(
                 "SELECT e FROM Entry e " +
                         "JOIN e.feed f " +
@@ -168,15 +116,11 @@ public class ServicePrincipalImpl implements ServicePrincipal {
                         "WHERE l.tipoSindicacion = %s ", tipoSindicacion);
 
         try {
-
             return repository.getMapEntries(sql);
-
         } catch (MiRepositoryException ex) {
-
-            String msg = String.format("[getListEntries] - Error en la consunta: %s. Error: %s", sql, ex.getMessage());
+            String msg = String.format("[getListEntries] - Error en la consulta: %s. Error: %s", sql, ex.getMessage());
             log.error(msg, ex);
             throw new MiServiceException(msg, ex);
-
         }
     }
 }

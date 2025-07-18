@@ -16,22 +16,43 @@ import org.oasis.ubl.common.udt.IndicatorType;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Clase utilitaria para mapear objetos del modelo Codice {@link TenderingTermsType}
+ * a la entidad persistente {@link TenderingTerms}.
+ * <p>
+ * Proporciona métodos estáticos para transformar instancias del modelo Codice
+ * en entidades JPA que representan las condiciones de licitación dentro del sistema.
+ * </p>
+ * <p>
+ * Esta clase es final y no instanciable.
+ * </p>
+ *
+ * <p><b>Autor:</b> Juan Antonio</p>
+ * <p><b>Fecha:</b> 11/04/2024</p>
+ * <p><b>Equipo:</b> Juan Antonio</p>
  */
 @Slf4j
 public final class MapperTenderingTerms {
 
     private MapperTenderingTerms() { }
 
+    /**
+     * Crea una instancia de {@link TenderingTerms} a partir de un objeto {@link TenderingTermsType}
+     * y la asocia a un {@link ContractFolderStatus} y un {@link ProcurementProjectLot}.
+     * <p>
+     * El método mapea todos los campos disponibles en {@code tenderingTermsType} hacia la entidad persistente,
+     * aplicando las correspondientes transformaciones y limitaciones de tamaño.
+     * </p>
+     *
+     * @param contractFolderStatus Entidad padre {@link ContractFolderStatus} a la que se asocia el {@link TenderingTerms}.
+     * @param procurementProjectLot Entidad {@link ProcurementProjectLot} asociada al {@link TenderingTerms}.
+     * @param tenderingTermsType Objeto fuente con datos del modelo Codice para mapear.
+     * @return Instancia de {@link TenderingTerms} con los datos mapeados y lista para persistencia.
+     */
     public static TenderingTerms getTenderingTermsFromType(
             ContractFolderStatus contractFolderStatus,
             ProcurementProjectLot procurementProjectLot,
             TenderingTermsType tenderingTermsType) {
 
-        //
         var tenderingTerms = new TenderingTerms();
         tenderingTerms.setContractFolderStatus(contractFolderStatus);
         tenderingTerms.setProcurementProjectLot(procurementProjectLot);
@@ -119,5 +140,4 @@ public final class MapperTenderingTerms {
     }
 
     // OneToOne de TenderingTerms
-
 }

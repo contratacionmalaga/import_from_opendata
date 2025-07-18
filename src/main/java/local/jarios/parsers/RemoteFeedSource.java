@@ -17,26 +17,43 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 /**
- * RemoteFeedSource implementa FeedSource leyendo feeds remotos via URL.
- * Mejora:
- *   - Validación centralizada de URLs
- *   - Evita uso de constructor URL(String) deprecated
- *   - Logging claro y manejo de errores robusto
- *   - isNextLinkValid captura enlaces inválidos sin fallar
- * Author: juan
- * Date: 04/07/2025 (mejorado 05/07/2025)
+ * Implementación de {@link FeedSource} para obtener feeds remotos a través de URLs.
+ * <p>
+ * Esta clase ofrece:
+ * <ul>
+ *   <li>Validación centralizada y robusta de URLs conforme a la especificación RFC.</li>
+ *   <li>Evitación del uso de constructores URL(String) deprecated.</li>
+ *   <li>Logging detallado y manejo exhaustivo de excepciones propias.</li>
+ *   <li>Validación segura en {@link #isNextLinkValid(String)} para evitar fallos ante URLs inválidas.</li>
+ * </ul>
+ * <p>La configuración de la URL inicial se obtiene de un archivo de propiedades gestionado mediante
+ * {@link PropertiesManagerService}.</p>
+ *
+ * <p><b>Autor:</b> juan</p>
+ * <p><b>Fecha:</b> 04/07/2025 (mejorado 05/07/2025)</p>
  */
 @Slf4j
 public class RemoteFeedSource implements FeedSource {
 
-    /** Servicio centralizado para la gestión de properties */
+    /**
+     * Servicio centralizado para la gestión y lectura de propiedades de configuración.
+     */
     private final PropertiesManagerService propertyManager;
 
-    /** Constructor por defecto usando la implementación singleton */
+    /**
+     * Constructor por defecto que obtiene la instancia singleton del gestor de propiedades.
+     */
     public RemoteFeedSource() {
         this.propertyManager = PropertiesManagerServiceImpl.getInstance();
     }
 
+    /**
+     * Obtiene la URL inicial para la carga del feed desde el archivo de propiedades.
+     *
+     * @return La URL inicial como {@link String}.
+     * @throws PropertiesManagerException si hay error al acceder a la propiedad.
+     * @throws MiUrlException si la URL obtenida es nula, vacía o inválida.
+     */
     @Override
     public String getInitialLink() throws PropertiesManagerException, MiUrlException {
         String url = propertyManager.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_URL);
@@ -45,6 +62,16 @@ public class RemoteFeedSource implements FeedSource {
         return url;
     }
 
+    /**
+     * Valida si la URL para el siguiente enlace es válida.
+     * <p>
+     * Esta implementación captura errores de validación y no lanza excepciones,
+     * devolviendo {@code false} si la URL no es válida.
+     * </p>
+     *
+     * @param link URL a validar.
+     * @return {@code true} si la URL es válida; {@code false} en caso contrario.
+     */
     @Override
     public boolean isNextLinkValid(String link) {
         log.debug("[isNextLinkValid] Validando nextLink → {}", link);
@@ -57,6 +84,13 @@ public class RemoteFeedSource implements FeedSource {
         }
     }
 
+    /**
+     * Obtiene la URL del siguiente feed a partir del objeto {@link Feed}.
+     *
+     * @param feed Objeto {@link Feed} que contiene la URL siguiente.
+     * @return La URL siguiente como {@link String}.
+     * @throws MiUrlException si la URL obtenida es inválida.
+     */
     @Override
     public String getNextLink(Feed feed) throws MiUrlException {
         String url = feed.getLinkNext();
@@ -65,12 +99,19 @@ public class RemoteFeedSource implements FeedSource {
         return url;
     }
 
+    /**
+     * Abre un {@link BufferedReader} para leer desde la URL proporcionada usando UTF-8.
+     *
+     * @param path URL del recurso a abrir.
+     * @return {@link BufferedReader} para lectura del recurso.
+     * @throws MiUrlException si la URL es inválida o no se puede abrir la conexión.
+     */
     @Override
     public BufferedReader openBufferedReader(String path) throws MiUrlException {
         validateUrl(path);
         try {
             URI raw = new URI(path);
-            URI uri = raw.parseServerAuthority(); // usamos el resultado
+            URI uri = raw.parseServerAuthority();
             URL url = uri.toURL();
             log.debug("[openBufferedReader] Abriendo BufferedReader para URL → {}", uri);
             return new BufferedReader(
@@ -83,11 +124,15 @@ public class RemoteFeedSource implements FeedSource {
     }
 
     /**
-     * Valida URL según RFC:
-     *  - no nula/vacía
-     *  - sintaxis legal
-     *  - autoridad válida
-     * Si falla, lanza MiUrlException con causa y mensaje.
+     * Valida una URL según criterios:
+     * <ul>
+     *   <li>No puede ser nula o vacía.</li>
+     *   <li>Debe tener sintaxis válida según RFC.</li>
+     *   <li>Debe contener autoridad válida (host, puerto, etc.).</li>
+     * </ul>
+     *
+     * @param url URL a validar.
+     * @throws MiUrlException si la URL no cumple con los criterios anteriores.
      */
     private static void validateUrl(String url) throws MiUrlException {
         if (url == null || url.isBlank()) {
@@ -98,7 +143,7 @@ public class RemoteFeedSource implements FeedSource {
 
         try {
             URI uri = new URI(url).parseServerAuthority();
-            URL validatedUrl = uri.toURL(); // usamos el resultado
+            URL validatedUrl = uri.toURL();
             log.debug("[validateUrl] URL válida (convertida a URL): {}", validatedUrl);
         } catch (Exception e) {
             String msg = "[validateUrl] URL inválida: " + url;

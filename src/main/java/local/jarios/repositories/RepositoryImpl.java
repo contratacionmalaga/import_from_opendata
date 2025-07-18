@@ -12,19 +12,51 @@ import org.hibernate.*;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * Implementación del repositorio que gestiona la persistencia y
+ * recuperación de datos mediante Hibernate {@link SessionFactory}.
+ * <p>
+ * Proporciona métodos para persistir logs, obtener entradas y feeds,
+ * y ejecutar consultas específicas para filtros.
+ * </p>
+ * <p>
+ * Utiliza transacciones para garantizar la integridad y gestión adecuada
+ * de las operaciones sobre la base de datos.
+ * </p>
+ * <p>
+ * Implementa {@link AutoCloseable} para liberar recursos cerrando
+ * la {@link SessionFactory} cuando sea necesario.
+ * </p>
+ *
+ * <p><b>Autor:</b> juan</p>
+ * <p><b>Fecha:</b> (sin especificar en código)</p>
+ * <p><b>Equipo:</b> (vacío)</p>
+ */
 @Slf4j
 public class RepositoryImpl implements Repository, AutoCloseable {
 
+    /**
+     * Factoría de sesiones para obtener sesiones Hibernate y ejecutar operaciones.
+     */
     private final SessionFactory sessionFactory;
 
+    /**
+     * Constructor que recibe la {@link SessionFactory} para trabajar.
+     *
+     * @param sessionFactory factoría para crear sesiones Hibernate.
+     */
     public RepositoryImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
+    /**
+     * Persiste un objeto {@link Log} en la base de datos dentro de una transacción.
+     *
+     * @param miLog objeto {@link Log} a persistir.
+     * @throws MiRepositoryException si ocurre algún error en la transacción.
+     */
     @Override
-    public void persistirMiLogLocal(Log miLog)
-            throws MiRepositoryException {
-
+    public void persistirMiLogLocal(Log miLog) throws MiRepositoryException {
         ejecutarDentroDeTransaccion(session -> {
             log.debug("[persistirMiLogLocal] - Persistiendo Log.");
             session.persist(miLog);
@@ -34,8 +66,15 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         }, "persistirMiLogLocal");
     }
 
+    /**
+     * Persiste un objeto {@link Log} con entradas a borrar y la persistencia del log,
+     * todo dentro de una transacción.
+     *
+     * @param miLog objeto {@link Log} a persistir.
+     * @param setEntriesToDelete conjunto de {@link Entry} a eliminar previamente.
+     * @throws MiRepositoryException si ocurre algún error en la transacción.
+     */
     public void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete) throws MiRepositoryException {
-
         for (Feed feed : miLog.getListFeed()) {
             log.info("Feed: {}", feed.toStringResumido());
             for (Entry entry : feed.getListEntry()) {
@@ -46,55 +85,59 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         System.exit(0);
 
         ejecutarDentroDeTransaccion(session -> {
-
             setEntriesToDelete.forEach(session::remove);
-            log.info("[persistirMiLogInternet] - Borraddos Entry de la base de datos. {}", setEntriesToDelete.size());
+            log.info("[persistirMiLogInternet] - Borrados Entry de la base de datos. {}", setEntriesToDelete.size());
             session.merge(miLog);
             log.info("[persistirMiLogInternet] - Persistencia de Log completada.");
             return null;
         }, "persistirMiLogInternet");
     }
 
-    private void procesarEntryRemoto(Session session, Entry entry) {
-        Entry existing = session.createQuery(
-                        "FROM Entry e WHERE e.idEntry = :idEntry", Entry.class)
-                .setParameter("idEntry", entry.getIdEntry())
-                .uniqueResult();
-
-        if (existing == null) {
-            session.persist(entry);
-        } else if (entry.getUpdated() != null &&
-                (existing.getUpdated() == null || entry.getUpdated().isAfter(existing.getUpdated()))) {
-            session.remove(existing);
-            session.persist(entry);
-        }
-    }
-
+    /**
+     * Realiza un flush y clear de la sesión para sincronizar y liberar memoria.
+     *
+     * @param session sesión de Hibernate.
+     */
     private void flushAndClear(Session session) {
-        // Se puede optimizar si se planea ejecutar en muchas transacciones.
         session.flush();
         session.clear();
     }
 
+    /**
+     * Ejecuta una función dentro de una transacción Hibernate, gestionando
+     * commit, rollback y manejo de excepciones.
+     *
+     * @param function función que recibe la sesión y retorna un resultado.
+     * @param metodo nombre del método para logs y excepciones.
+     * @param <R> tipo del resultado esperado.
+     * @return resultado de la función.
+     * @throws MiRepositoryException si ocurre error durante la transacción.
+     */
     private <R> R ejecutarDentroDeTransaccion(Function<Session, R> function, String metodo)
             throws MiRepositoryException {
 
         try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction(); // Usamos beginTransaction directamente.
+            Transaction transaction = session.beginTransaction();
 
             try {
-                // session.setFlushMode(FlushMode.AUTO.toJpaFlushMode());
                 R result = function.apply(session);
                 transaction.commit();
                 return result;
             } catch (Exception ex) {
-                ex.getStackTrace();
                 handleTransactionError(metodo, transaction, ex);
                 throw new MiRepositoryException("[" + metodo + "] - Error en transacción", ex);
             }
         }
     }
 
+    /**
+     * Maneja el error ocurrido en una transacción, realiza rollback si es posible,
+     * y registra el error en logs.
+     *
+     * @param metodo nombre del método donde ocurrió el error.
+     * @param transaction transacción actual.
+     * @param ex excepción ocurrida.
+     */
     private void handleTransactionError(String metodo, Transaction transaction, Exception ex) {
         log.error("[{}] - Error en transacción: {}", metodo, ex.getMessage(), ex);
         if (transaction != null && transaction.getStatus().canRollback()) {
@@ -108,29 +151,37 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     }
 
     /**
-     * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.
+     * Obtiene un mapa de entradas ({@link Entry}) a partir de una consulta HQL.
+     * La clave del mapa es el ID de la entrada.
      *
-     * @param sql Consulta a ejecutar sobre la base de datos
-     * @return el feed más reciente disponible para el tipo indicado.
+     * @param sql consulta HQL a ejecutar.
+     * @return mapa con claves de ID y valores {@link Entry}.
+     * @throws MiRepositoryException si ocurre error en la consulta.
      */
     @Override
     public Map<String, Entry> getMapEntries(String sql) throws MiRepositoryException {
-
-        Map<String, Entry> mapEntriesEnBdBorrar = new HashMap<>();
+        Map<String, Entry> mapEntries = new HashMap<>();
 
         return ejecutarDentroDeTransaccion(session -> {
             TypedQuery<Entry> query = session.createQuery(sql, Entry.class);
             List<Entry> listEntries = query.getResultList();
             if (listEntries == null) {
-                return mapEntriesEnBdBorrar;
+                return mapEntries;
             }
             for (Entry entry : listEntries) {
-                mapEntriesEnBdBorrar.put(entry.getIdEntry(), entry);
+                mapEntries.put(entry.getIdEntry(), entry);
             }
-            return mapEntriesEnBdBorrar;
+            return mapEntries;
         }, "getListEntries");
     }
 
+    /**
+     * Obtiene el feed más reciente de acuerdo con la consulta proporcionada.
+     *
+     * @param sql consulta HQL para obtener el feed más reciente.
+     * @return objeto {@link Feed} o null si no existe.
+     * @throws MiRepositoryException si ocurre error en la consulta.
+     */
     @Override
     public Feed getNewestFeed(String sql) throws MiRepositoryException {
         return ejecutarDentroDeTransaccion(session -> {
@@ -139,6 +190,13 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         }, "getNewestFeed");
     }
 
+    /**
+     * Obtiene la entrada más reciente de acuerdo con la consulta proporcionada.
+     *
+     * @param sql consulta HQL para obtener la entrada más reciente.
+     * @return objeto {@link Entry} o null si no existe.
+     * @throws MiRepositoryException si ocurre error en la consulta.
+     */
     @Override
     public Entry getNewestEntry(String sql) throws MiRepositoryException {
         return ejecutarDentroDeTransaccion(session -> {
@@ -147,17 +205,26 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         }, "getNewestEntry");
     }
 
+    /**
+     * Ejecuta una consulta nativa SQL para obtener una lista de
+     * {@link FiltroOrganoContratacion} de acuerdo al filtro indicado.
+     *
+     * @param filtroSQL consulta SQL nativa que define el filtro.
+     * @return lista de objetos {@link FiltroOrganoContratacion}.
+     * @throws MiRepositoryException si ocurre error en la consulta.
+     */
     @Override
-    public List<FiltroOrganoContratacion> getListFiltroOcsFromFiltroSql(String filtroSQL)
-            throws MiRepositoryException {
-
+    public List<FiltroOrganoContratacion> getListFiltroOcsFromFiltroSql(String filtroSQL) throws MiRepositoryException {
         return ejecutarDentroDeTransaccion(session ->
                         session.createNativeQuery(filtroSQL, FiltroOrganoContratacion.class).getResultList(),
                 "getListFiltroOcsFromFiltroSql");
     }
 
     /**
-     * Cierra el `SessionFactory` si está abierto. Llamar al final de la aplicación.
+     * Cierra el {@link SessionFactory} si está abierto, liberando recursos.
+     * <p>
+     * Se recomienda llamar al finalizar el ciclo de vida de la aplicación.
+     * </p>
      */
     @Override
     public void close() {
@@ -167,11 +234,4 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         }
     }
 
-    private Set<String> obtenerIdsExistentes(Session session, Set<String> ids) {
-        List<String> existentes = session.createQuery(
-                        "SELECT e.idEntry FROM Entry e WHERE e.idEntry IN :ids", String.class)
-                .setParameter("ids", ids)
-                .getResultList();
-        return new HashSet<>(existentes);
-    }
 }

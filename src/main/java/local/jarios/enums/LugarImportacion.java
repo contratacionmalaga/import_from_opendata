@@ -13,9 +13,4 @@ public enum LugarImportacion {
     LugarImportacion() {
 
     }
-
-    // Ejemplo de método (puede ser un enum o boolean)
-    public boolean isLocalImport() {
-        return this == LOCAL;
-    }
 }
