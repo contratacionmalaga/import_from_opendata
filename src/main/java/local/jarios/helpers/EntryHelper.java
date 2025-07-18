@@ -15,6 +15,8 @@ import local.jarios.services.ServicePrincipal;
 import local.jarios.services.ServicePrincipalImpl;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -72,6 +74,38 @@ public final class EntryHelper {
     }
 
     /**
+     * Obtiene la lista de feeds parseados desde local o remoto.
+     */
+    public static boolean procesarListaEntry(List<Entry> listEntry, Estadistica estadistica, Entry newestEntry)
+            throws MiInvalidDateFormatException {
+
+        // Ordeno la lista de mayor a menor según Updated
+        listEntry.sort(Comparator.comparing(Entry::getUpdated).reversed());
+
+        boolean superadoNewestEntry = false;
+        int nEntryLeidos = 0;
+
+        for (Entry entry : listEntry) {
+
+            if (newestEntry == null || entry.getUpdated().isAfter(newestEntry.getUpdated())) {
+                nEntryLeidos++;
+                estadistica.aumentarNEntryLeidos();
+                procesarEntry(entry, estadistica);
+            } else {
+                superadoNewestEntry = true;
+                break;
+            }
+        }
+
+        String msg;
+        //
+        if (superadoNewestEntry) {
+            log.info("[procesarListaEntry] Se ha superado el newestEntry. Nº de Entry leídos: {}", nEntryLeidos);
+        }
+
+        return superadoNewestEntry;
+    }
+    /**
      * Función encarga del procesamiento de los objetos Entry
      *      Proceso si el Entry cumple con los filtros que estuvieran definidos al inicio de la ejecución
      * @param entry Objeto Entry que se está procesando
@@ -92,6 +126,7 @@ public final class EntryHelper {
 
             // Entry NO cumple con los filtros --> RECHAZADO
             estadistica.aumentarNEntryRechazados();
+            log.debug("[procesarEntrySegunExistencia] - Aumento del número de EntryRechazados: {}", estadistica.getNEntryRechazados());
 
             // Creo un histórico asociado al Entry
             Historico historico = new Historico(entry, EntryOpcion.RECHAZADO, evaluacionFiltrosEntry);
@@ -101,6 +136,7 @@ public final class EntryHelper {
         }
 
         log.info("[procesarEntry] - {} - {}", entry.toStringResumido(), evaluacionFiltrosEntry);
+
     }
 
     /**
@@ -113,13 +149,16 @@ public final class EntryHelper {
     private static void procesarEntrySegunExistencia(Entry entry, Estadistica estadistica) {
 
         //
-        boolean existeEntryEnMapBd = VariablesGlobales.getMapBaseDatos().containsKey(entry.getIdEntry());
+        boolean existeEntryEnMapBd = VariablesGlobales.getMapEntriesFromAtoms().containsKey(entry.getIdEntry());
         log.debug("[procesarEntrySegunExistencia] - Entry pertenece al MapBd: {}", existeEntryEnMapBd);
+
+        estadistica.aumentarNEntryProcesados();
+        log.debug("[procesarEntrySegunExistencia] - Aumento del número de EntryProcesados: {}", estadistica.getNEntryProcesados());
 
         if (existeEntryEnMapBd) {
             // Si existe en el MAP, lo procesamos
 
-            Entry entryEnMap = VariablesGlobales.getMapBaseDatos().get(entry.getIdEntry());
+            Entry entryEnMap = VariablesGlobales.getMapEntriesFromAtoms().get(entry.getIdEntry());
             log.debug("[procesarEntrySegunExistencia] - Datos del Entry en el MapBd: {}", entryEnMap.toStringResumido());
 
             procesarEntryExistenteEnMAP(entry, entryEnMap, estadistica);
@@ -130,7 +169,7 @@ public final class EntryHelper {
             log.debug("[procesarEntrySegunExistencia] - NO existe en en el Map.");
 
             // Lo agrego al MAP
-            VariablesGlobales.getMapBaseDatos().put(entry.getIdEntry(), entry);
+            VariablesGlobales.getMapEntriesFromAtoms().put(entry.getIdEntry(), entry);
 
             // Creo el histórico asociado
             Historico historico = new Historico(entry, EntryOpcion.INSERTAR, Mensajes.ENTRY_NUEVO);
@@ -138,8 +177,6 @@ public final class EntryHelper {
             // Añado el histórico
             VariablesGlobales.getListHistoricos().add(historico);
 
-            // Aumento las estadísticas
-            estadistica.aumentarNEntryGrabados();
         }
     }
 
@@ -172,6 +209,7 @@ public final class EntryHelper {
             VariablesGlobales.getListHistoricos().add(historico);
 
             estadistica.aumentarNEntryRechazados();
+            log.debug("[procesarEntrySegunExistencia] - Aumento del número de EntryRechazado: {}", estadistica.getNEntryRechazados());
 
         } else {
             // La fecha del Entry en el MAP es más antigua, actualizamos el Entry en el MAP
@@ -182,19 +220,21 @@ public final class EntryHelper {
                             entryEnMap.getUpdated());
 
             // Borro el entryMapBaseDatos del MAP
-            VariablesGlobales.getMapBaseDatos().remove(entryEnMap.getIdEntry());
+            VariablesGlobales.getMapEntriesFromAtoms().remove(entryEnMap.getIdEntry());
             Historico historicoEnMapBd = new Historico(entryEnMap, EntryOpcion.BORRAR, motivo);
             VariablesGlobales.getListHistoricos().add(historicoEnMapBd);
 
             estadistica.aumentarNEntryBorradosEnMap();
+            log.debug("[procesarEntrySegunExistencia] - Aumento del número de EntryBorradosEnMap: {}", estadistica.getNEntryBorradosEnMap());
 
             // Añado el newEntry al MAP
-            VariablesGlobales.getMapBaseDatos().put(entryEnMemoria.getIdEntry(), entryEnMemoria);
+            VariablesGlobales.getMapEntriesFromAtoms().put(entryEnMemoria.getIdEntry(), entryEnMemoria);
             Historico historicoEnMemoria= new Historico(entryEnMemoria, EntryOpcion.INSERTAR, motivo);
             VariablesGlobales.getListHistoricos().add(historicoEnMemoria);
 
             // Actualizo las estadísticas
             estadistica.aumentarNEntryActualizados();
+            log.debug("[procesarEntrySegunExistencia] - Aumento del número de EntryActualizados: {}", estadistica.getNEntryActualizados());
         }
 
         log.debug("[procesarEntryExistenteEnMAP] - {}", motivo);

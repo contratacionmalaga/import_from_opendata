@@ -5,14 +5,11 @@ import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.*;
 import local.jarios.interfaces.FeedSource;
 import local.jarios.mappers.MapperFeed;
 import local.jarios.parsers.LocalFeedSource;
 import local.jarios.parsers.RemoteFeedSource;
-import local.jarios.services.ServicePrincipal;
-import local.jarios.services.ServicePrincipalImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.w3._2005.atom.FeedType;
 
@@ -21,7 +18,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -75,14 +71,18 @@ public final class FeedHelper {
 
                     // Mapeo el fichero FeedType al objeto Feed
                     var feed = MapperFeed.getFeed(miLog, feedType);
-                    log.info("[parsearFeeds] - Parseo correcto del FeedType. '{}' objetos Entry.",
-                            StringHelper.getNumeroConFormato(feed.getListEntry().size()));
+                    log.info("[parsearFeeds] - Procesado del feed correctamente.");
 
                     // Aumento el NFicheros procesados
                     estadistica.aumentarNFicheros();
+                    String nFicheros = StringHelper.getNumeroConFormato(estadistica.getNFicheros());
+                    log.info("[parsearFeeds] - Nº de ficheros Atom procesados: {}", nFicheros);
+
+                    List<Entry> listEntry = feed.getListEntry();
+                    log.info("[parsearFeeds] - Nº de objetos Entry en en Feed: {}", listEntry.size());
 
                     // Proceso los Entrys del objeto Feed
-                    superadoNewestEntry = procesarFeed(feed, estadistica, newestEntry);
+                    superadoNewestEntry = EntryHelper.procesarListaEntry(listEntry, estadistica, newestEntry);
                     if (!superadoNewestEntry) {
                         nextLink = source.getNextLink(feed);
                         log.info(
@@ -102,41 +102,6 @@ public final class FeedHelper {
     // ==========================
     // MÉTODOS PRIVADOS
     // ==========================
-
-    private static boolean procesarFeed(Feed feed, Estadistica estadistica, Entry newestEntry)
-            throws MiInvalidDateFormatException {
-
-        // Obtengo la lista
-        List<Entry> entries = feed.getListEntry();
-
-        // Ordeno la lista de mayor a menor según Updated
-        entries.sort(Comparator.comparing(Entry::getUpdated).reversed());
-        log.info("[procesarFeed] - Ordeno la lista de Entrys mediante el campo Updated (DESC).");
-
-        estadistica.setNEntryLeidos(estadistica.getNEntryLeidos() + entries.size());
-
-        boolean superadoNewestEntry = false;
-        int nEntryProcesadosAxu = estadistica.getNEntryProcesados();
-
-        for (Entry entry : entries) {
-            if (newestEntry == null || entry.getUpdated().isAfter(newestEntry.getUpdated())) {
-                EntryHelper.procesarEntry(entry, estadistica);
-                estadistica.aumentarNEntryProcesados();
-            } else {
-                superadoNewestEntry = true;
-                break;
-            }
-        }
-
-        //
-        log.info(
-                "[procesarFeed] - Entrys procesados: {}",
-                StringHelper.getNumeroConFormato(estadistica.getNEntryProcesados() - nEntryProcesadosAxu));
-
-        //
-        log.info("[procesarFeed] - ¿Superado NewestEntry?: {}", superadoNewestEntry);
-        return superadoNewestEntry;
-    }
 
     @SuppressWarnings("unchecked")
     private static FeedType getFeedType(Unmarshaller unmarshaller, BufferedReader reader) throws JAXBException {

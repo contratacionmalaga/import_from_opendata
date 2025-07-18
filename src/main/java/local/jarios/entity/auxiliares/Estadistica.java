@@ -105,15 +105,21 @@ public class Estadistica extends Auditable {
     }
 
     //
+    public void aumentarNEntryLeidos() {
+
+        nEntryLeidos++;
+    }
+
+    //
     public void aumentarNEntryProcesados() {
 
         nEntryProcesados++;
     }
 
     //
-    public void aumentarNEntryGrabados() {
+    public void aumentarNEntryGrabados(int nRegistros) {
 
-        nEntryGrabados++;
+        nEntryGrabados = nRegistros;
     }
 
     //

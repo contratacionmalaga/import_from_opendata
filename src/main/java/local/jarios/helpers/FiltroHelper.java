@@ -44,15 +44,15 @@ public final class FiltroHelper {
 
         //
         Map<String, String> mapFiltro = new HashMap<>();
-        log.info("[getMapFiltroSql] - Creado el HashMap que almacenará el filtro.");
+        log.debug("[getMapFiltroSql] - Creado el HashMap que almacenará el filtro.");
 
         // Creo el objeto Servicio
         ServiceFiltro serviceFiltro = new ServiceFiltroImpl();
-        log.info("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
+        log.debug("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
 
         // Llamar al método para la obtención de la lista con el filtro
         List<FiltroOrganoContratacion> listFiltroOCs = serviceFiltro.getListFiltroOcsFromFiltroSql(sql);
-        log.info("[getMapFiltroSql] - Lista de Órganos de Contratación: {}", listFiltroOCs);
+        log.debug("[getMapFiltroSql] - Lista de Órganos de Contratación: {}", listFiltroOCs);
 
         // Analizo si la lista con el filtro es vacía
         //     (lo que implicaría que ningún ENTRY podría pertenecer al filtro)
@@ -61,7 +61,7 @@ public final class FiltroHelper {
 
             // Paso de una Lista a un Map (para mejorar la eficiencia a la hora de realizar la búsqueda)
             mapFiltro = MapHelper.getMapFromList(listFiltroOCs);
-            log.info("[getMapFiltroSql] - Pasada la lista a un Map para acelerar las búsquedas.");
+            log.debug("[getMapFiltroSql] - Pasada la lista a un Map para acelerar las búsquedas.");
 
         }
 
@@ -227,35 +227,36 @@ public final class FiltroHelper {
 
     private static void loadFilterNuts() throws PropertiesManagerException {
 
-        String filter = PropertiesHelper
-                            .getProperty(
-                                    PropertiesFiles.FILTER,
-                                    PropertiesKeys.FILTER_NUTS);
-
-        if (StringHelper.isInvalidString(filter)) {
-
-            log.debug(
-                    "[loadFilterNuts] - Valor inválido para fichero: '{}', propiedad: '{}'",
-                    PropertiesFiles.FILTER,
-                    PropertiesKeys.FILTER_NUTS);
-            return;
-        }
+        String filter = PropertiesHelper.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_NUTS);
+        log.debug("[loadFilterNuts] Valor del filtro en el fichero properties: {}", filter);
 
         HashSet<String> nutsSet = new HashSet<>();
-        String[] nutsArray = filter.split(",");
 
-        // Validar cada código NUTS
-        for (String nutsCode : nutsArray) {
-            nutsCode = nutsCode.trim(); // Eliminar espacios alrededor del código NUTS
+        if (filter != null && !filter.trim().isEmpty()) {
+            String[] nutsArray = filter.split(",");
+            log.debug("[loadFilterNuts] Array de String tras realizar split de filter (,): {}", (Object) nutsArray);
 
-            // Agregar el código NUTS al conjunto
-            nutsSet.add(nutsCode);
+            // Validar cada código NUTS
+            for (String nutsCode : nutsArray) {
+
+                // Procesando
+                log.debug("[loadFilterNuts] Procesando: {}", nutsCode);
+
+                // Eliminar espacios alrededor del código NUTS
+                nutsCode = nutsCode.trim();
+                log.debug("[loadFilterNuts] Eliminados los espacios alrededor: {}", nutsCode);
+
+                // Agregar el código NUTS al conjunto
+                nutsSet.add(nutsCode);
+                log.debug("[loadFilterNuts] Agregada al conjunto correctamente: {}", nutsCode);
+            }
         }
-        log.debug("[loadFilterNuts] - nutsSet('{}')", nutsSet);
+
+        log.debug("[loadFilterNuts] - Conjunto de Nuts: {}", nutsSet);
 
         // Almacenamos el conjunto de códigos NUTS en VariablesGlobales
         VariablesGlobales.setFiltroNuts(nutsSet);
-        log.debug("[loadFilterNuts] - VariablesGlobales.setFiltroNuts('{}')", filter);
+        log.debug("[loadFilterNuts] - Establecido el filtro - VariablesGlobales.setFiltroNuts({})", nutsSet);
 
     }
 
@@ -265,15 +266,6 @@ public final class FiltroHelper {
                             .getProperty(
                                     PropertiesFiles.FILTER,
                                     PropertiesKeys.FILTER_OBJETO);
-
-        if (StringHelper.isInvalidString(filter)) {
-
-            log.debug(
-                    "[loadFilterObjeto] - Valor inválido para fichero: '{}', propiedad: '{}'",
-                    PropertiesFiles.FILTER,
-                    PropertiesKeys.FILTER_OBJETO);
-            return;
-        }
 
         // Almaceno el filtro Objeto
         VariablesGlobales.setFiltroObjeto(filter);
@@ -297,47 +289,56 @@ public final class FiltroHelper {
 
         // Almaceno el filtro SQL
         VariablesGlobales.setFiltroSql(filter);
-        log.info("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
+        log.debug("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
 
         Map<String, String> mapFilter = getMapFromFiltroSql(filter);
-        log.info("[loadFilterSql] - Mapa asociado al filtro obtenido correctamente('{}')", mapFilter.size());
+        log.debug("[loadFilterSql] - Mapa asociado al filtro obtenido correctamente('{}')", mapFilter.size());
 
         VariablesGlobales.setMapFiltro(mapFilter);
-        log.info("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
+        log.debug("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
 
     }
 
     public static void loadFilters() throws PropertiesManagerException {
 
         loadFilterFechas();
-        log.info("[loadFilters] - FilterFechas cargado correctamente.");
-
-        loadFilterNuts();
-        log.info("[loadFilters] - FilterNuts cargado correctamente.");
-
-        loadFilterObjeto();
-        log.info("[loadFilters] - FilterObjeto cargado correctamente.");
-
-        loadFilterSql();
-        log.info("[loadFilters] - FilterSql cargado correctamente.");
-
-    }
-
-    public static void printFilters() {
-
-        log.info(
-                "[printFilters] - Filtro fechas. Inicial: '{}', Final: '{}'.",
+        String msg = String.format(
+                "[loadFilters] - Filtro Fechas cargado correctamente. Inicial: '%s', Final: '%s'",
                 VariablesGlobales.getFiltroFechaInicial(),
                 VariablesGlobales.getFiltroFechaFinal());
 
-        log.info("[printFilters] - Filtro Nuts: '{}'.", VariablesGlobales.getFiltroNuts());
+        log.info(msg);
 
-        log.info("[printFilters] - Filtro Objeto: '{}'.", VariablesGlobales.getFiltroObjeto());
+        loadFilterNuts();
+        if (VariablesGlobales.getFiltroNuts().isEmpty()) {
+            msg = "[loadFilters] - Filtro Nuts se encuentra vacío.";
+        } else {
+            msg = String.format (
+                    "[loadFilters] - Filtro Nuts cargado correctamente. %s",
+                    VariablesGlobales.getFiltroNuts());
+        }
+        log.info(msg);
 
-        log.info("[printFilters] - Filtro Sql: '{}'.", VariablesGlobales.getFiltroSql());
-        log.info("[printFilters] ----- LISTADO MapFiltro. '{}' registros.", VariablesGlobales.getMapFiltro().size());
-        MapHelper.printMap(VariablesGlobales.getMapFiltro());
-        log.info("[printFilters] ----- FINAL LISTADO MapFiltro.");
+        loadFilterObjeto();
+        if (VariablesGlobales.getFiltroObjeto().isBlank()) {
+            msg = "[loadFilters] - Filtro Objeto se encuentra vacío.";
+        } else {
+            msg = String.format (
+                    "[loadFilters] - Filtro Objeto cargado correctamente. %s",
+                    VariablesGlobales.getFiltroObjeto());
+        }
+        log.info(msg);
+
+        loadFilterSql();
+        if (VariablesGlobales.getFiltroSql().isBlank()) {
+            msg = "[loadFilters] - Filtro Sql se encuentra vacío.";
+        } else {
+            msg = String.format (
+                    "[loadFilters] - Filtro Sql cargado correctamente ('%s'). %s",
+                    VariablesGlobales.getMapFiltro().size(),
+                    VariablesGlobales.getFiltroSql());
+        }
+        log.info(msg);
     }
 
     public static String entryCumpleFiltros(Entry entry) {

@@ -49,7 +49,9 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     private LocalDateTime updated;
 
     // Relaciones
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "feed_id",
             nullable = false,

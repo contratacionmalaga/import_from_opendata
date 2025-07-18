@@ -134,9 +134,6 @@ public abstract class AbstractOpenData {
             log.info("[procesar] - Cargamos los filtros asociados a esta ejecución.");
             FiltroHelper.loadFilters();
 
-            log.info("[procesar] - Filtros cargados correctamente. Impresión de los filtros.");
-            FiltroHelper.printFilters();
-
             // Asigno la lista de órganos de contratación a miLog
             miLog.setListOrganoContratacion(
                     VariablesGlobales
@@ -145,7 +142,7 @@ public abstract class AbstractOpenData {
                             .stream()
                             .map(e -> new OrganoContratacion(miLog, e.getKey(), e.getValue()))
                             .collect(Collectors.toList()));
-            log.info("[procesar] - Asignados los órganos de contratación del filtro sql al Log.");
+            log.info("[procesar] - Asignados los órganos de contratación del filtro Sql al Log.");
 
             // Creo el objeto Configuracion
             Configuracion configuracion = new Configuracion(miLog);
@@ -155,43 +152,48 @@ public abstract class AbstractOpenData {
             miLog.setConfiguracion(configuracion);
             log.info("[procesar] - Asignado el objeto configuración al Log correctamente.");
 
-            //
-            //     COMIENZO EL PARSEO DE LOS FEEDS
-            //
-
             // Parseo de los Feeds
             log.info("[procesar] - Inicio del parseo de los ficheros ATOM.");
             parsearAtomsFeeds(miLog, estadistica);
 
-            Map<String, Entry> entryMap = VariablesGlobales.getMapBaseDatos();
+
+            Map<String, Entry> mapEntriesFromAtoms = new HashMap<>();
+
+            if (lugarImportacion.equals(LugarImportacion.INTERNET)) {
+                mapEntriesFromAtoms = ((OpenDataInternet) this).getResultado();
+
+            } else {
+                // Obtengo el Map con los datos del Entry de la Base de Datos
+                mapEntriesFromAtoms = VariablesGlobales.getMapEntriesFromAtoms();
+            }
+            log.info("[procesar] - Nº Entries from Atoms: {}", StringHelper.getNumeroConFormato(mapEntriesFromAtoms.size()));
 
             // Mapa auxiliar para agrupar Feeds por su lista de Entry
             Map<Feed, List<Entry>> feedEntryMap = new HashMap<>();
 
-            //
-            // PASO DEL MAP A LA ESTRUCTURA CODICE
-            //
+            // Recorro el mapEntriesFromAtoms
+            for (Entry entry : mapEntriesFromAtoms.values()) {
 
-            // Asocio los Entry en el MapBaseDatos a los Feeds correspondientes
-            log.info(
-                    "[procesar] - Asocio los Entries del MapBaseDatos a sus Feeds correspondientes. Nº Entries: {}",
-                    StringHelper.getNumeroConFormato(entryMap.size()));
-            for (Entry entry : entryMap.values()) {
-                log.info("[procesar] - {}", entry.toStringResumido());
+                // Obtengo el feed del Entry
                 Feed feed = entry.getFeed();
-                // Asegurarse de que el Feed esté en el mapa
+
+                // Si no es null lo añado a la lista
                 feedEntryMap.computeIfAbsent(feed, k -> new ArrayList<>()).add(entry);
+
+                log.info("[procesar] - Asociado el {} al {}", entry.toStringResumido(), feed.toStringResumido());
             }
 
             // Asociar feeds y entries a miLog
-            log.info(
-                    "[procesar] - Asocio los Feeds al Log. Nº Feeds: {}",
-                    StringHelper.getNumeroConFormato(feedEntryMap.size()));
+            log.info("[procesar] - Nº Feeds resultantes: {}", StringHelper.getNumeroConFormato(feedEntryMap.size()));
 
-            for (Map.Entry<Feed, List<Entry>> entry : feedEntryMap.entrySet()) {
-                Feed feed = entry.getKey();
-                log.info("[procesar] - {}", feed.toStringResumido());
-                List<Entry> entries = entry.getValue();
+            // Recorro el map con los Feeds resultantes
+            for (Map.Entry<Feed, List<Entry>> map : feedEntryMap.entrySet()) {
+
+                // Obtengo el Feed a partir del Map
+                Feed feed = map.getKey();
+
+                // Obteng la lista de Entry a partir del Map
+                List<Entry> entries = map.getValue();
 
                 // Asignar miLog al feed
                 feed.setMiLog(miLog);
@@ -199,22 +201,23 @@ public abstract class AbstractOpenData {
                 // Asignar las entries al feed
                 feed.setListEntry(entries);
 
-                // También se asegura que cada entry apunte a su feed (por si acaso)
+                // Asigno a cada Entry el Feed
                 for (Entry e : entries) {
                     e.setFeed(feed);
                 }
 
-                // Añadir el feed a la lista de feeds del Log
+                // Añado el feed a la lista de feeds del Log
                 miLog.getListFeed().add(feed);
+                log.info("[procesar] - Asociado el Feed {} al Log", feed.toStringResumido());
             }
 
             // ASIGNO LOS HISTÓRICOS DE ACCIONES QUE HAN OCURRIDO SOBRE CADA ENTRY AL LOG
             List<Historico> listHistoricos = VariablesGlobales.getListHistoricos();
             miLog.setListHistorio(listHistoricos);
             log.info(
-                    "[procesar] - Asigno los históricos generados durante la ejecución al Log. Nº Históricos: {}",
+                    "[procesar] - Asigno los históricos al Log. Nº Históricos: {}",
                     StringHelper.getNumeroConFormato(VariablesGlobales.getListHistoricos().size()));
-            listHistoricos.forEach(h -> log.debug("[procesar] - {}", h.toStringReducido()));
+            listHistoricos.forEach(h -> log.info("[procesar] - Historico a Log: {}", h.toStringReducido()));
 
             // RELLENO LOS ÚLTIMOS DATOS ASOCIADOS AL OBJETO ESTADISTICA
             LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();
@@ -237,19 +240,10 @@ public abstract class AbstractOpenData {
             String baseDatos = propertiesManager.getProperty(
                     PropertiesFiles.JAKARTA_PRINCIPAL, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL);
 
-            log.info("[procesar] - Base de datos: {}", baseDatos);
-            log.info("[procesar] - Conexión correcta con la base de datos.");
-            log.info(
-                    "[procesar] - Entrys a grabar en la base de datos: {}",
-                    StringHelper.getNumeroConFormato(entryMap.size()));
-            miLog.getListFeed().forEach(f -> f.getListEntry().forEach(e->log.debug(e.toStringResumido())));
+            log.info("[procesar] - Cadena de Conexión: {}", baseDatos);
 
             // PERSISTO EN LA BASE DE DATOS SEGÚN PROVENGAN LOS DATOS (INTERNET | LOCAL)
-            if (lugarImportacion.equals(LugarImportacion.INTERNET)) {
-                servicePrincipal.persistirMiLogInternet(miLog, ((OpenDataInternet) this).getEntriesAEliminar());
-            } else {
-                servicePrincipal.persistirMiLogLocal(miLog);
-            }
+            servicePrincipal.persistirMiLogLocal(miLog);
             log.info("[procesar] - Se han persistido correctamente las entidades en la base de datos.");
 
             // ENVÍO EMAIL CON LAS ESTADÍSTICAS

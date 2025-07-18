@@ -1,5 +1,6 @@
 package local.jarios;
 
+import local.jarios.common.util.VariablesGlobales;
 import local.jarios.entity.Log;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.enums.LugarImportacion;
@@ -30,6 +31,7 @@ public class OpenDataLocal extends AbstractOpenData {
     protected void parsearAtomsFeeds(Log log, Estadistica estadistica) throws MiParseException {
 
         FeedHelper.parsearFeedsDesdeLocal(log, estadistica);
+        estadistica.setNEntryGrabados(VariablesGlobales.getMapEntriesFromAtoms().size());
     }
 
     public static void main(String[] args) {

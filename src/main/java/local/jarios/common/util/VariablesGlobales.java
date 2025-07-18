@@ -30,7 +30,7 @@ public final class VariablesGlobales {
     /** Estructura utilizada para almacenar los Entry junto con su identificador duranet la ejecución del aplicativo */
     @Getter
     @Setter
-    private static Map<String, Entry> mapBaseDatos = new HashMap<>();
+    private static Map<String, Entry> mapEntriesFromAtoms = new HashMap<>();
 
     /** Conjunto de Feeds que se procesan durante una ejecución */
     @Getter

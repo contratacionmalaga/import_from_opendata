@@ -34,24 +34,23 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         }, "persistirMiLogLocal");
     }
 
-    public void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete)
-            throws MiRepositoryException {
+    public void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete) throws MiRepositoryException {
+
+        for (Feed feed : miLog.getListFeed()) {
+            log.info("Feed: {}", feed.toStringResumido());
+            for (Entry entry : feed.getListEntry()) {
+                log.info("   Entry: {}", entry.toStringResumido());
+            }
+        }
+
+        System.exit(0);
 
         ejecutarDentroDeTransaccion(session -> {
+
             setEntriesToDelete.forEach(session::remove);
-            log.debug("[persistirMiLogInternet] - Borrados '{}' Entries de la base de datos.", setEntriesToDelete.size());
-            flushAndClear(session);
-            log.debug("[persistirMiLogInternet] - Flush # Clear de la session.");
-/*
-            setEntriesToDelete.forEach(session::remove);
-            log.debug("[persistirMiLogInternet] - Borrados '{}' Entries de la base de datos.", setEntriesToDelete.size());
-            flushAndClear(session);
-            log.debug("[persistirMiLogInternet] - Flush # Clear de la session.");
- */
-            // session.merge(miLog);
-            //log.debug("[persistirMiLogInternet] - Persistencia de Log completada.");
-            flushAndClear(session);
-            log.debug("[persistirMiLogInternet] - Flush # Clear de la session.");
+            log.info("[persistirMiLogInternet] - Borraddos Entry de la base de datos. {}", setEntriesToDelete.size());
+            session.merge(miLog);
+            log.info("[persistirMiLogInternet] - Persistencia de Log completada.");
             return null;
         }, "persistirMiLogInternet");
     }
@@ -84,11 +83,12 @@ public class RepositoryImpl implements Repository, AutoCloseable {
             Transaction transaction = session.beginTransaction(); // Usamos beginTransaction directamente.
 
             try {
-                session.setFlushMode(FlushMode.AUTO.toJpaFlushMode());
+                // session.setFlushMode(FlushMode.AUTO.toJpaFlushMode());
                 R result = function.apply(session);
                 transaction.commit();
                 return result;
             } catch (Exception ex) {
+                ex.getStackTrace();
                 handleTransactionError(metodo, transaction, ex);
                 throw new MiRepositoryException("[" + metodo + "] - Error en transacción", ex);
             }

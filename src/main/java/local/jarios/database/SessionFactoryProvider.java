@@ -45,25 +45,24 @@ public class SessionFactoryProvider {
 
         try {
             final var hibernateProperties = getHibernateProperties(tipoConexion);
-            log.info("[getSessionFactory] - Propiedades Hibernate obtenidas correctamente para tipo de conexión: {}. {}", tipoConexion, hibernateProperties);
+            log.debug("[getSessionFactory] - Propiedades Hibernate obtenidas correctamente para tipo de conexión: {}. {}", tipoConexion, hibernateProperties);
 
             final var hibernateConfigurer = new HibernateConfigurer();
             final Configuration configuration = hibernateConfigurer.buildConfiguration(hibernateProperties);
-            log.info("[getSessionFactory] - Objeto Configuration obtenido correctamente.");
+            log.debug("[getSessionFactory] - Objeto Configuration obtenido correctamente.");
 
             if (tipoConexion == TipoConexion.MARIADB) {
-                log.info("[getSessionFactory] - El tipo de conexión es MariaDB.");
+                log.debug("[getSessionFactory] - El tipo de conexión es MariaDB.");
                 final var entityScanner = new EntityScanner();
                 entityScanner.scanAndAddEntities(configuration, CONFIG_PACKAGE_NAME);
-                log.info("[getSessionFactory] - Entidades escaneadas desde el paquete '{}'", CONFIG_PACKAGE_NAME);
+                log.debug("[getSessionFactory] - Entidades escaneadas desde el paquete '{}'", CONFIG_PACKAGE_NAME);
             }
 
             final var sessionFactory = configuration.buildSessionFactory();
-            log.info("[getSessionFactory] - SessionFactory creada exitosamente.");
+            log.debug("[getSessionFactory] - SessionFactory creada exitosamente.");
             return sessionFactory;
 
         } catch (HibernateException | IllegalArgumentException ex) {
-            ex.printStackTrace();
             final var msg = String.format("[getSessionFactory] - Error creando SessionFactory: %s", ex.getMessage());
             log.error(msg, ex);
             throw new MiSessionFactoryProvider(msg, ex);
@@ -114,6 +113,6 @@ public class SessionFactoryProvider {
         props.setProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD,
                 propertyManager.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
 
-        log.info("[setCommonConnectionProperties] Propiedades configuradas desde archivo '{}': {}", file, props);
+        log.debug("[setCommonConnectionProperties] Propiedades configuradas desde archivo '{}': {}", file, props);
     }
 }

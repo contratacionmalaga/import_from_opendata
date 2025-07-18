@@ -3,6 +3,7 @@ package local.jarios.entity.auxiliares;
 import jakarta.persistence.*;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
+import local.jarios.common.util.VariablesGlobales;
 import local.jarios.entity.Log;
 import local.jarios.common.util.Constantes;
 import local.jarios.properties.api.PropertiesManagerService;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 
@@ -43,10 +45,10 @@ public class Configuracion extends Auditable {
     private String url;
 
     @Column(name = "filtro_fecha_inicio_lectura")
-    private String filtroFechaInicioLectura;
+    private LocalDateTime filtroFechaInicioLectura;
 
     @Column(name = "filtro_fecha_fin_lectura")
-    private String filtroFechaFinLectura;
+    private LocalDateTime filtroFechaFinLectura;
 
     @Column(name = "filtro_sql", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
     private String filtroSql;
@@ -95,8 +97,8 @@ public class Configuracion extends Auditable {
             }
         }
 
-        this.filtroFechaInicioLectura = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_FECHAINICIALLECTURA);
-        this.filtroFechaFinLectura = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_FECHAFINALLECTURA);
+        this.filtroFechaInicioLectura = VariablesGlobales.getFiltroFechaInicial();
+        this.filtroFechaFinLectura =  VariablesGlobales.getFiltroFechaFinal();
         this.filtroSql = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_SQL);
         this.filtroObjeto = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_OBJETO);
         this.filtroNuts = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_NUTS);
