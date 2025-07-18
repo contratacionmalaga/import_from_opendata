@@ -9,42 +9,54 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description: Importaciones de Ficheros Excel desde Internet
- * Author: Juan Antonio
- * Date: 04/06/2024
- * Team: Juan Antonio
+ * Representa una categoría de clasificación utilizada para definir requisitos de participación
+ * en un proceso de licitación.
+ * <p>
+ * Esta entidad corresponde a capacidades requeridas a los licitadores, que pueden aplicarse
+ * tanto a nivel de lote como para toda la licitación.
+ * </p>
+ *
+ * <p>
+ * Cada categoría está asociada a un esquema de clasificación específico, definido en
+ * {@link ClassificationScheme}.
+ * </p>
+ *
+ * <p><b>Author:</b> Juan Antonio</p>
+ * <p><b>Date:</b> 04/06/2024</p>
+ * <p><b>Team:</b> Juan Antonio</p>
  */
-
 @Setter
 @Getter
 @Entity
-@Table(
-        name = "classification_category"
-)
-
-// 4.30 Requisitos de participación
-// Capacidades requeridas a los licitadores durante el proceso de licitación.
-// Puede aparecer tanto a nivel de lote como para toda la licitación
+@Table(name = "classification_category")
 public class ClassificationCategory extends Auditable {
 
-    //
-    //
-    //
+    /**
+     * Identificador único universal (UUID) de la categoría de clasificación.
+     * <p>
+     * Clave primaria generada automáticamente.
+     * No puede ser actualizada ni ser nula.
+     * </p>
+     */
     @Id
     @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    // Código
+    /**
+     * Código que identifica el valor de la categoría de clasificación.
+     */
     @Column(name = "code_value", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String codeValue;
 
-    //
-    //
-    //
-    @ManyToOne(
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+    /**
+     * Esquema de clasificación al que pertenece esta categoría.
+     * <p>
+     * Relación muchos a uno con la entidad {@link ClassificationScheme}.
+     * La eliminación en cascada está configurada en la clave foránea.
+     * </p>
+     */
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(
             name = "classification_scheme_id",
             referencedColumnName = "id",
@@ -52,12 +64,11 @@ public class ClassificationCategory extends Auditable {
                     name = "fk_classificationscheme_classificationscheme",
                     foreignKeyDefinition =
                             "FOREIGN KEY (classification_scheme_id) " +
-                            "REFERENCES classification_scheme(id) ON DELETE CASCADE"))
+                                    "REFERENCES classification_scheme(id) ON DELETE CASCADE"))
     private ClassificationScheme classificationScheme;
 
     @Override
     public String toString() {
-
         return "ClassificationCategory: " +
                 "[codeValue='" + codeValue + "']";
     }

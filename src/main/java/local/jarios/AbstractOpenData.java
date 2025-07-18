@@ -38,6 +38,15 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Clase abstracta que gestiona el procesamiento general para la importación y análisis
+ * de datos OpenData basados en feeds ATOM, incluyendo carga de configuración,
+ * parseo, persistencia y notificaciones.
+ * <p>
+ * Las subclases deben implementar métodos específicos para definir el tipo de sindicacion,
+ * lugar de importación y la lógica de parseo de los feeds.
+ * </p>
+ */
 @Slf4j
 public abstract class AbstractOpenData {
 
@@ -68,16 +77,51 @@ public abstract class AbstractOpenData {
      */
     public static String appVersion = null;
 
-    //
+    /**
+     * Obtiene el tipo de sindicacion que será usado en el proceso.
+     * <p>
+     * Método abstracto que debe implementar la subclase para indicar
+     * el tipo de sindicacion específico.
+     * </p>
+     *
+     * @return TipoSindicacion a utilizar en el proceso.
+     */
     protected abstract TipoSindicacion getTipoSindicacion();
 
-    //
+    /**
+     * Parsea los feeds ATOM para extraer las entradas (entries) y otros datos
+     * relevantes, actualizando el log y estadísticas asociados.
+     * <p>
+     * Método abstracto que debe implementar la subclase para definir
+     * la lógica específica de parseo según la fuente o formato.
+     * </p>
+     *
+     * @param log objeto {@link Log} que recoge la información del proceso.
+     * @param estadistica objeto {@link Estadistica} que recopila datos estadísticos.
+     * @throws MiParseException si ocurre un error durante el parseo.
+     */
     protected abstract void parsearAtomsFeeds(Log log, Estadistica estadistica) throws MiParseException;
 
-    // Método que determina el lugar de importación (Local o Internet)
+    /**
+     * Obtiene el lugar de importación de los datos, que puede ser local o desde internet.
+     * <p>
+     * Método abstracto que debe implementar la subclase para definir
+     * el lugar de importación correspondiente.
+     * </p>
+     *
+     * @return LugarImportacion que indica el origen de los datos.
+     */
     protected abstract LugarImportacion getLugarImportacion();
 
-    //
+    /**
+     * Método principal que ejecuta el flujo completo de procesamiento:
+     * carga de configuración, inicialización, parseo, persistencia,
+     * envío de notificaciones y gestión de errores.
+     * <p>
+     * Controla y registra logs detallados, maneja excepciones específicas,
+     * y finaliza el programa según el resultado.
+     * </p>
+     */
     protected void procesar() {
 
         // Inicio del log
