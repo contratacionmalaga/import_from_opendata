@@ -20,10 +20,16 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Interfaz para acciones sobre objetos Feed
+ */
 @Slf4j
 public final class FeedHelper {
 
-    private FeedHelper() { }
+    /** Constructor privado */
+    private FeedHelper() {
+        //
+    }
 
     // ==========================
     // MÉTODOS PÚBLICOS

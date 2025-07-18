@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * @author Juan Antonio
+ * Interfaz para acciones sobre objetos Map
  */
 @Slf4j
 public final class MapHelper {

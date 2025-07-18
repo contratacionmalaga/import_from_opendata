@@ -62,9 +62,6 @@ public class Estadistica extends Auditable {
     @Column(name = "nEntryRechazados", nullable = false)
     private int nEntryRechazados;
 
-    @Column(name = "nEntryBorradosEnMap", nullable = false)
-    private int nEntryBorradosEnMap;
-
     @Column(name = "fechaHoraInicial", nullable = false)
     private LocalDateTime fechaHoraInicial;
 
@@ -134,12 +131,6 @@ public class Estadistica extends Auditable {
         nEntryRechazados++;
     }
 
-    //
-    public void aumentarNEntryBorradosEnMap() {
-
-        nEntryBorradosEnMap++;
-    }
-
     public String toStringReducido() {
 
         return "Estadistica: [" +
@@ -149,7 +140,6 @@ public class Estadistica extends Auditable {
                     "nEntryGrabados='" + StringHelper.getNumeroConFormato(nEntryGrabados) + "', " +
                     "nEntryActualizados='" + StringHelper.getNumeroConFormato(nEntryActualizados) + "', " +
                     "nEntryRechazados='" + StringHelper.getNumeroConFormato(nEntryRechazados) + "', " +
-                    "nEntryBorradosEnMap='" + StringHelper.getNumeroConFormato(nEntryBorradosEnMap) + "'" +
                 "]";
     }
 }

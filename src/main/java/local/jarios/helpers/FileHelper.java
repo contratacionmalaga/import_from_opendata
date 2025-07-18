@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 
 /**
- * @author Juan Antonio
+ * Interfaz para acciones sobre objetos File
  */
 @Slf4j
 public final class FileHelper {

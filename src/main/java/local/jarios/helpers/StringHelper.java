@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * @author Juan Antonio
+ * Interfaz para acciones sobre objetos String
  */
 @Slf4j
 public final class StringHelper {

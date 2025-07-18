@@ -4,10 +4,10 @@ import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.entity.atom.Feed;
 import local.jarios.exceptions.MiUrlException;
-import local.jarios.helpers.PropertiesHelper;
 import local.jarios.interfaces.FeedSource;
+import local.jarios.properties.api.PropertiesManagerService;
+import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import local.jarios.properties.exception.PropertiesManagerException;
-import local.jarios.properties.helpers.StringHelper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -29,9 +29,17 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class RemoteFeedSource implements FeedSource {
 
+    /** Servicio centralizado para la gestión de properties */
+    private final PropertiesManagerService propertyManager;
+
+    /** Constructor por defecto usando la implementación singleton */
+    public RemoteFeedSource() {
+        this.propertyManager = PropertiesManagerServiceImpl.getInstance();
+    }
+
     @Override
     public String getInitialLink() throws PropertiesManagerException, MiUrlException {
-        String url = PropertiesHelper.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_URL);
+        String url = propertyManager.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_URL);
         log.debug("[getInitialLink] URL desde propiedades → {}", url);
         validateUrl(url);
         return url;

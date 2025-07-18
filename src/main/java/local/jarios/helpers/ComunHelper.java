@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 /**
- * @author Juan Antonio
+ * Interfaz para acciones comunes
  */
 @Slf4j
 public final class ComunHelper {

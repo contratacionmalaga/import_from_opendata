@@ -35,7 +35,7 @@ public enum PropertyFile {
     //
     private final String ruta;
 
-    // Constructor del enum para asignar la ruta
+    /** Constructor */
     PropertyFile(String ruta) {
 
         //
@@ -45,7 +45,7 @@ public enum PropertyFile {
     /**
      * Devuelve la lista con todos los ficheros de configuración que se deben procesar
      *
-     * @return List<String> con la lista de todos los ficheros de configuración
+     * @return lista de todos los ficheros de configuración
      */
     public static List<String> getAllFilePaths() {
         List<String> paths = new ArrayList<>();

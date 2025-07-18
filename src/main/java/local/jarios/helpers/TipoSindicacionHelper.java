@@ -4,6 +4,8 @@ import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.common.util.Constantes;
+import local.jarios.properties.api.PropertiesManagerService;
+import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import local.jarios.properties.exception.PropertiesManagerException;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Objects;
@@ -18,8 +20,12 @@ import java.util.Optional;
 @Slf4j
 public final class TipoSindicacionHelper {
 
-    private TipoSindicacionHelper() {
-        // No instanciable
+
+    /** Variable asociada al servicio de consulta de los ficheros properties */
+    private final PropertiesManagerService propertyManager;
+
+    public TipoSindicacionHelper() {
+        this.propertyManager = PropertiesManagerServiceImpl.getInstance();
     }
 
     /**
@@ -71,8 +77,8 @@ public final class TipoSindicacionHelper {
      * @return Tipo de sindicación según el nombre de fichero en propiedades
      * @throws PropertiesManagerException si la propiedad es inválida o no existe
      */
-    public static TipoSindicacion getTipoSindicacionLocal() throws PropertiesManagerException {
-        String filename = PropertiesHelper.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_FILENAME);
+    public TipoSindicacion getTipoSindicacionLocal() throws PropertiesManagerException {
+        String filename = propertyManager.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_FILENAME);
         log.debug("getTipoSindicacionLocal - archivo: '{}'", filename);
         assertNotBlank(filename, "La propiedad APP_FILENAME no puede estar vacía");
         TipoSindicacion tipo = mapFilenameToTipo(filename);
@@ -87,8 +93,8 @@ public final class TipoSindicacionHelper {
      * @return Tipo de sindicación según el nombre en la URL
      * @throws PropertiesManagerException si la propiedad es inválida o no existe
      */
-    public static TipoSindicacion getTipoSindicacionRemota() throws PropertiesManagerException {
-        String url = PropertiesHelper.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_URL);
+    public TipoSindicacion getTipoSindicacionRemota() throws PropertiesManagerException {
+        String url = propertyManager.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_URL);
         log.debug("getTipoSindicacionRemota - url: '{}'", url);
         assertNotBlank(url, "La propiedad APP_URL no puede estar vacía");
         String filename = extractFilenameFromUrl(url);

@@ -10,6 +10,7 @@ import local.jarios.helpers.FeedHelper;
 import local.jarios.helpers.TipoSindicacionHelper;
 
 /**
+ * Proceso de importación desde Local
  * @author Juan Antonio
  */
 
@@ -18,7 +19,8 @@ public class OpenDataLocal extends AbstractOpenData {
     @Override
     protected TipoSindicacion getTipoSindicacion() {
 
-        return TipoSindicacionHelper.getTipoSindicacionLocal();
+        TipoSindicacionHelper tipoSindicacionHelper = new TipoSindicacionHelper();
+        return tipoSindicacionHelper.getTipoSindicacionLocal();
     }
 
     @Override

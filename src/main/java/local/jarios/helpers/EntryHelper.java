@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @author Juan Antonio
+ * Interfaz para acciones sobre objetos Entry
  */
 @Slf4j
 public final class EntryHelper {
@@ -223,9 +223,6 @@ public final class EntryHelper {
             VariablesGlobales.getMapEntriesFromAtoms().remove(entryEnMap.getIdEntry());
             Historico historicoEnMapBd = new Historico(entryEnMap, EntryOpcion.BORRAR, motivo);
             VariablesGlobales.getListHistoricos().add(historicoEnMapBd);
-
-            estadistica.aumentarNEntryBorradosEnMap();
-            log.debug("[procesarEntrySegunExistencia] - Aumento del número de EntryBorradosEnMap: {}", estadistica.getNEntryBorradosEnMap());
 
             // Añado el newEntry al MAP
             VariablesGlobales.getMapEntriesFromAtoms().put(entryEnMemoria.getIdEntry(), entryEnMemoria);

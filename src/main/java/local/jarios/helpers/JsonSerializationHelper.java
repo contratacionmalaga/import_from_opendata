@@ -9,10 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Description:
- * Author: juan
- * Date: 03/06/2025
- * Team:
+ * Interfaz para acciones sobre objetos Json
  */
 public final class JsonSerializationHelper {
 

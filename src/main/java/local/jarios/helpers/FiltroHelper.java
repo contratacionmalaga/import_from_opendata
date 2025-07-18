@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * @author Juan Antonio
+ * Interfaz para acciones sobre los posibles filtros que se pueden realizar durante el proceso de importación
  */
 @Slf4j
 public final class FiltroHelper {
@@ -37,7 +37,7 @@ public final class FiltroHelper {
 
     /**
      *
-     * @return Devuelve un Map del tipo Map<IdPlataforma, NombreOrganoContratacion>
+     * @return Devuelve un Map del tipo Map
      * @throws MiServiceException Excepción a la hora de generar el objeto Session de Hibernate
      */
     public static Map<String, String> getMapFromFiltroSql(String sql) throws MiServiceException {

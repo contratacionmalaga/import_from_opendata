@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
- * @author Juan Antonio
+ * Interfaz para acciones sobre objetos GregorianCalendar
  */
 public final class GregorianCalendarHelper {
 
