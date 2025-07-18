@@ -201,7 +201,7 @@ public abstract class AbstractOpenData {
             parsearAtomsFeeds(miLog, estadistica);
 
 
-            Map<String, Entry> mapEntriesFromAtoms = new HashMap<>();
+            Map<String, Entry> mapEntriesFromAtoms;
 
             if (lugarImportacion.equals(LugarImportacion.INTERNET)) {
                 mapEntriesFromAtoms = ((OpenDataInternet) this).getResultado();

@@ -14,17 +14,29 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Mapper para transformar objetos {@link AwardingCriteriaType} del modelo Codice
+ * a entidades internas {@link AwardingCriteria}.
+ *
+ * <p>Proporciona métodos para convertir listas de tipos Codice
+ * a listas de entidades de dominio.</p>
+ *
+ * @author juan
  */
 @Slf4j
 public final class MapperAwardingCriteria {
 
     private MapperAwardingCriteria() {
+        // Constructor privado para evitar instanciación
     }
 
+    /**
+     * Convierte una lista de objetos {@link AwardingCriteriaType} en
+     * una lista de entidades {@link AwardingCriteria}, asignadas al {@link AwardingTerms} dado.
+     *
+     * @param awardingTerms Entidad padre {@link AwardingTerms} para asignar a cada {@link AwardingCriteria}
+     * @param listAwardingCriteriaType Lista de objetos {@link AwardingCriteriaType} a transformar
+     * @return Lista de entidades {@link AwardingCriteria} mapeadas
+     */
     public static List<AwardingCriteria> getListAwardingCriteria(
             AwardingTerms awardingTerms,
             List<AwardingCriteriaType> listAwardingCriteriaType) {
@@ -35,45 +47,48 @@ public final class MapperAwardingCriteria {
                 .toList();
     }
 
-
+    /**
+     * Transforma un objeto {@link AwardingCriteriaType} en una entidad {@link AwardingCriteria}.
+     *
+     * @param awardingTerms Entidad padre {@link AwardingTerms} para asignar a la entidad resultado
+     * @param awardingCriteriaType Objeto {@link AwardingCriteriaType} a transformar
+     * @return Entidad {@link AwardingCriteria} resultante
+     */
     private static AwardingCriteria getAwardingCriteria(
             AwardingTerms awardingTerms,
             AwardingCriteriaType awardingCriteriaType) {
 
-        //
         AwardingCriteria awardingCriteria = new AwardingCriteria();
 
-        //
         awardingCriteria.setAwardingTerms(awardingTerms);
 
-        // AwardingCriteriaTypeCode
+        // Mapeo seguro y limitado de AwardingCriteriaTypeCode
         Optional.ofNullable(awardingCriteriaType.getAwardingCriteriaTypeCode())
                 .map(AwardingCriteriaTypeCodeType::getValue)
                 .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(awardingCriteria::setAwardingCriteriaTypeCode);
 
-        // AwardingCriteriaSubTypeCodeType
+        // Mapeo seguro y limitado de AwardingCriteriaSubTypeCode
         Optional.ofNullable(awardingCriteriaType.getAwardingCriteriaSubTypeCode())
                 .map(AwardingCriteriaSubTypeCodeType::getValue)
                 .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
                 .ifPresent(awardingCriteria::setAwardingCriteriaSubTypeCode);
 
-        // WeightNumeric
+        // Mapeo del peso numérico
         Optional.ofNullable(awardingCriteriaType.getWeightNumeric())
                 .map(n -> n.getValue().doubleValue())
                 .ifPresent(awardingCriteria::setWeightNumeric);
 
-        // Description (probablemente no nulo, pero igual se puede proteger si hace falta)
+        // Mapeo de descripción usando helper
         awardingCriteria.setDescription(
                 MapperStringFromList.getStringFromListDescriptionType(
                         awardingCriteriaType.getDescription()));
 
-        // Note
+        // Mapeo de notas usando helper
         awardingCriteria.setNote(
                 MapperStringFromList.getStringFromListNoteType(
                         awardingCriteriaType.getNote()));
 
-        //
         return awardingCriteria;
     }
 }

@@ -15,52 +15,86 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Description: Variables globales del proyecto
- * Author: juan
- * Date: 16/03/2024
- * Team: Juan Antonio Ríos
+ * Clase final que contiene variables globales utilizadas en todo el proyecto.
+ * <p>
+ * Esta clase agrupa estructuras de datos estáticas que almacenan información
+ * compartida durante la ejecución del programa, como filtros, entradas procesadas,
+ * feeds y acciones históricas sobre entradas.
+ * </p>
+ * <p>
+ * No debe ser instanciada.
+ * </p>
+ *
+ * @author juan
  */
 public final class VariablesGlobales {
 
-    /** Almacena los idplataforma y órganos de contratación que se aplican mediante el filtro sql */
+    /**
+     * Mapa que almacena los identificadores de plataforma y los órganos de contratación
+     * que se aplican mediante el filtro SQL.
+     */
     @Getter
     @Setter
     private static Map<String, String> mapFiltro = new HashMap<>();
 
-    /** Estructura utilizada para almacenar los Entry junto con su identificador duranet la ejecución del aplicativo */
+    /**
+     * Mapa que contiene los objetos Entry indexados por su identificador durante la ejecución.
+     */
     @Getter
     @Setter
     private static Map<String, Entry> mapEntriesFromAtoms = new HashMap<>();
 
-    /** Conjunto de Feeds que se procesan durante una ejecución */
+    /**
+     * Conjunto de objetos Feed que se procesan en una ejecución.
+     */
     @Getter
     @Setter
     private static Set<Feed> setFeeds = new HashSet<>();
 
-    /** Lista que almacena las acciones que se realizan sobre cada Entry que se analiza */
+    /**
+     * Lista que almacena las acciones (historias) realizadas sobre cada Entry analizada.
+     */
     @Getter
     @Setter
     private static List<Historico> listHistoricos = new ArrayList<>();
 
+    /**
+     * Fecha y hora inicial usada como filtro para procesar entradas.
+     */
     @Getter
     @Setter
     private static LocalDateTime filtroFechaInicial;
 
+    /**
+     * Fecha y hora final usada como filtro para procesar entradas.
+     */
     @Getter
     @Setter
     private static LocalDateTime filtroFechaFinal;
 
+    /**
+     * Filtro basado en objeto, utilizado durante el procesamiento.
+     */
     @Getter
     @Setter
     private static String filtroObjeto;
 
+    /**
+     * Conjunto de filtros NUTS aplicados durante la ejecución.
+     */
     @Getter
     @Setter
     private static HashSet<String> filtroNuts;
 
+    /**
+     * Cadena SQL utilizada como filtro durante la ejecución.
+     */
     @Getter
     @Setter
     private static String filtroSql;
 
+    /**
+     * Constructor privado para evitar instanciación.
+     */
     private VariablesGlobales() { }
 }

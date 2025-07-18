@@ -1,7 +1,6 @@
 package local.jarios.entity.placsp;
 
 import jakarta.persistence.*;
-import local.jarios.common.util.ToStringUtil;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,15 +54,4 @@ public class AuctionTerms extends Auditable {
                     foreignKeyDefinition = "FOREIGN KEY (tenderin_gprocess_id) REFERENCES tendering_process(id) ON DELETE CASCADE")
     )
     private TenderingProcess tenderingProcess;
-
-    /**
-     * Devuelve una representación en texto de esta entidad.
-     * Utiliza {@link ToStringUtil#autoToString(Object)} para generar dinámicamente los campos.
-     *
-     * @return representación textual del objeto
-     */
-    @Override
-    public String toString() {
-        return ToStringUtil.autoToString(this);
-    }
 }

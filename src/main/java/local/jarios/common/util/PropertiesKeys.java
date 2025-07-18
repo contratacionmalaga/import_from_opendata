@@ -1,51 +1,76 @@
 package local.jarios.common.util;
 
 /**
+ * Clase final que contiene las claves (keys) de propiedades utilizadas en los diferentes ficheros
+ * de configuración de la aplicación.
+ * <p>
+ * Estas constantes representan los nombres de las propiedades definidas en ficheros como
+ * <code>app.properties</code>, <code>filter.properties</code>, <code>hibernate.properties</code>,
+ * <code>validation.properties</code> y <code>mail.properties</code>.
+ * </p>
+ * <p>
+ * Esta clase no debe ser instanciada.
+ * </p>
  *
  * @author Home
  */
-
 public final class PropertiesKeys {
 
-    /* Nombre de las propiedades del fichero app.properties */
+    /* Claves de propiedades para el fichero app.properties */
+
+    /** Clave para el nombre de la aplicación. */
     public static final String APP_NAME = "app.name";
-    public static final String APP_DESCRIPTION = "app.description";
+
+    /** Clave para la URL de la aplicación. */
     public static final String APP_URL = "app.url";
+
+    /** Clave para la ruta (path) de la aplicación. */
     public static final String APP_PATH = "app.path";
+
+    /** Clave para el nombre del fichero principal de la aplicación. */
     public static final String APP_FILENAME = "app.filename";
 
-    /* Nombre de las propiedades del fichero filter.properties */
+    /* Claves de propiedades para el fichero filter.properties */
+
+    /** Clave para la fecha inicial de lectura del filtro. */
     public static final String FILTER_FECHAINICIALLECTURA = "filter.fechaInicialLectura";
+
+    /** Clave para la fecha final de lectura del filtro. */
     public static final String FILTER_FECHAFINALLECTURA = "filter.fechaFinalLectura";
+
+    /** Clave para la sentencia SQL del filtro. */
     public static final String FILTER_SQL = "filter.sql";
+
+    /** Clave para el objeto del filtro. */
     public static final String FILTER_OBJETO = "filter.objeto";
+
+    /** Clave para el filtro NUTS. */
     public static final String FILTER_NUTS = "filter.nuts";
 
-    /* Nombre de las propiedades del fichero hibernate.properties */
-    public static final String HIBERNATE_JDBC_BATCH_SIZE = "hibernate.jdbc.batch_size";
+    /* Claves de propiedades para Jakarta Persistence */
 
-    /*  */
+    /** Clave para la URL JDBC en Jakarta Persistence. */
     public static final String JAKARTA_PERSISTENCE_JDBC_URL = "jakarta.persistence.jdbc.url";
+
+    /** Clave para el driver JDBC en Jakarta Persistence. */
     public static final String JAKARTA_PERSISTENCE_JDBC_DRIVER = "jakarta.persistence.jdbc.driver";
+
+    /** Clave para el usuario JDBC en Jakarta Persistence. */
     public static final String JAKARTA_PERSISTENCE_JDBC_USER = "jakarta.persistence.jdbc.user";
-    public static final String JAKARTA_PERSISTENCE_JDBC_PASSWORD= "jakarta.persistence.jdbc.password";
 
-    /* Nombre de las propiedades del fichero validation.properties */
-    public static final String VALIDATION_URI_SCHEME = "validation.uri.scheme";
-    public static final String VALIDATION_URI_HOST = "validation.uri.host";
-    public static final String VALIDATION_URI_PATH = "validation.uri.path";
+    /** Clave para la contraseña JDBC en Jakarta Persistence. */
+    public static final String JAKARTA_PERSISTENCE_JDBC_PASSWORD = "jakarta.persistence.jdbc.password";
 
-    /* Nombre de las propiedades del fichero mail.properties */
-    public static final String MAIL_USER = "mail.user";
-    public static final String MAIL_PASSWORD = "mail.password";
+    /* Claves de propiedades para el fichero mail.properties */
+    /** Clave para la dirección del remitente del correo. */
     public static final String MAIL_FROM = "mail.from";
+
+    /** Clave para la dirección del destinatario del correo. */
     public static final String MAIL_TO = "mail.to";
 
-    private PropertiesKeys() {/* CONSTRUCTOR PRIVADO PRA EVITAR LA INSTANCIACIÓN */}
+    /**
+     * Constructor privado para evitar instanciación.
+     */
+    private PropertiesKeys() { /* CONSTRUCTOR PRIVADO PARA EVITAR LA INSTANCIACIÓN */ }
 
 }
-
-
-
-
-
