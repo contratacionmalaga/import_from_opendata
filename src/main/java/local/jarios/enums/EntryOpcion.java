@@ -9,8 +9,8 @@ package local.jarios.enums;
 public enum EntryOpcion {
     INSERTAR,
     ACTUALIZAR,
-    BORRAR,
-    RECHAZADO;
+    ELIMINAR,
+    RECHAZAR;
 
     EntryOpcion() {
 

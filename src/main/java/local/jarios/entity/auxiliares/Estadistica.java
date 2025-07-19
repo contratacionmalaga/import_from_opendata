@@ -62,6 +62,30 @@ public class Estadistica extends Auditable {
     @Column(name = "nEntryRechazados", nullable = false)
     private int nEntryRechazados;
 
+    /**
+     * Número de registros históricos que se deben crear.
+     */
+    @Column(name = "nRegistrosHistoricosInsertar")
+    private Long nRegistrosHistoricosInsertar;
+
+    /**
+     * Número de registros históricos que se deben eliminar.
+     */
+    @Column(name = "nRegistrosHistoricosEliminar")
+    private Long nRegistrosHistoricosEliminar;
+
+    /**
+     * Número de registros históricos que se deben actualizar.
+     */
+    @Column(name = "nRegistrosHistoricosActualizar")
+    private Long nRegistrosHistoricosActualizar;
+
+    /**
+     * Número de registros históricos que se deben actualizar.
+     */
+    @Column(name = "nRegistrosHistoricosRechazar")
+    private Long nRegistrosHistoricosRechazar;
+
     @Column(name = "fechaHoraInicial", nullable = false)
     private LocalDateTime fechaHoraInicial;
 
@@ -140,6 +164,10 @@ public class Estadistica extends Auditable {
                     "nEntryGrabados='" + StringHelper.getNumeroConFormato(nEntryGrabados) + "', " +
                     "nEntryActualizados='" + StringHelper.getNumeroConFormato(nEntryActualizados) + "', " +
                     "nEntryRechazados='" + StringHelper.getNumeroConFormato(nEntryRechazados) + "', " +
+                    "nRegistrosHistoricosInsertar='" + StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosInsertar)) + "', " +
+                    "nRegistrosHistoricosEliminar='" + StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosEliminar)) + "', " +
+                    "nRegistrosHistoricosActualizar='" + StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosActualizar)) + "', " +
+                    "nRegistrosHistoricosRechazar='" + StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosRechazar)) + "', " +
                 "]";
     }
 }

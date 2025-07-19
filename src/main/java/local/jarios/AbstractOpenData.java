@@ -17,6 +17,7 @@ import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.auxiliares.OrganoContratacion;
+import local.jarios.enums.EntryOpcion;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiParseException;
@@ -258,10 +259,36 @@ public abstract class AbstractOpenData {
             // ASIGNO LOS HISTÓRICOS DE ACCIONES QUE HAN OCURRIDO SOBRE CADA ENTRY AL LOG
             List<Historico> listHistoricos = VariablesGlobales.getListHistoricos();
             miLog.setListHistorio(listHistoricos);
-            log.info(
-                    "[procesar] - Asigno los históricos al Log. Nº Históricos: {}",
-                    StringHelper.getNumeroConFormato(VariablesGlobales.getListHistoricos().size()));
-            listHistoricos.forEach(h -> log.info("[procesar] - Historico a Log: {}", h.toStringReducido()));
+            String nHistoricos = StringHelper.getNumeroConFormato(VariablesGlobales.getListHistoricos().size());
+            log.info("[procesar] - Asigno los históricos al Log. Nº Históricos: {}", nHistoricos);
+
+            // La lista de Historico la paso a un mapa para poder realizar filtrado por el tipo de acción realizada
+            Map<EntryOpcion, Long> mapOcHistorico =
+                    listHistoricos
+                            .stream()
+                            .collect(Collectors.groupingBy(Historico::getEntryOpcion, Collectors.counting()));
+            log.info ("[procesar] - Generado Map a partir de ListHistorico");
+
+            // Asigno valores según el tipo de acción almacenada en el map de historico de OC
+            Long nHistoricosPorTipo = mapOcHistorico.getOrDefault(EntryOpcion.INSERTAR, 0L);
+            estadistica.setNRegistrosHistoricosInsertar(nHistoricosPorTipo);
+            String valor = StringHelper.getNumeroConFormato(Math.toIntExact(nHistoricosPorTipo));
+            log.info("[procesar] - OcHistoricos importados (CREAR): {}", valor);
+
+            nHistoricosPorTipo = mapOcHistorico.getOrDefault(EntryOpcion.ELIMINAR, 0L);
+            estadistica.setNRegistrosHistoricosEliminar(nHistoricosPorTipo);
+            valor = StringHelper.getNumeroConFormato(Math.toIntExact(nHistoricosPorTipo));
+            log.info("[procesar] - OcHistoricos importados (ELIMINAR): {}", valor);
+
+            nHistoricosPorTipo = mapOcHistorico.getOrDefault(EntryOpcion.ACTUALIZAR, 0L);
+            estadistica.setNRegistrosHistoricosActualizar(nHistoricosPorTipo);
+            valor = StringHelper.getNumeroConFormato(Math.toIntExact(nHistoricosPorTipo));
+            log.info("[procesar] - OcHistoricos importados (ACTUALIZAR): {}", valor);
+
+            nHistoricosPorTipo = mapOcHistorico.getOrDefault(EntryOpcion.RECHAZAR, 0L);
+            estadistica.setNRegistrosHistoricosRechazar(nHistoricosPorTipo);
+            valor = StringHelper.getNumeroConFormato(Math.toIntExact(nHistoricosPorTipo));
+            log.info("[procesar] - OcHistoricos importados (ACTUALIZAR): {}", valor);
 
             // RELLENO LOS ÚLTIMOS DATOS ASOCIADOS AL OBJETO ESTADISTICA
             LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();

@@ -129,7 +129,7 @@ public final class EntryHelper {
             log.debug("[procesarEntrySegunExistencia] - Aumento del número de EntryRechazados: {}", estadistica.getNEntryRechazados());
 
             // Creo un histórico asociado al Entry
-            Historico historico = new Historico(entry, EntryOpcion.RECHAZADO, evaluacionFiltrosEntry);
+            Historico historico = new Historico(entry, EntryOpcion.RECHAZAR, evaluacionFiltrosEntry);
 
             // Añado el histórico a la lista de históricos de esta ejecución
             VariablesGlobales.getListHistoricos().add(historico);
@@ -204,7 +204,7 @@ public final class EntryHelper {
                             entryEnMemoria.getUpdated(),
                             entryEnMap.getUpdated());
 
-            Historico historico = new Historico(entryEnMemoria, EntryOpcion.RECHAZADO, motivo);
+            Historico historico = new Historico(entryEnMemoria, EntryOpcion.RECHAZAR, motivo);
 
             VariablesGlobales.getListHistoricos().add(historico);
 
@@ -221,7 +221,7 @@ public final class EntryHelper {
 
             // Borro el entryMapBaseDatos del MAP
             VariablesGlobales.getMapEntriesFromAtoms().remove(entryEnMap.getIdEntry());
-            Historico historicoEnMapBd = new Historico(entryEnMap, EntryOpcion.BORRAR, motivo);
+            Historico historicoEnMapBd = new Historico(entryEnMap, EntryOpcion.ELIMINAR, motivo);
             VariablesGlobales.getListHistoricos().add(historicoEnMapBd);
 
             // Añado el newEntry al MAP
