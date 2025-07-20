@@ -88,7 +88,7 @@ public final class FiltroHelper {
     public static boolean hasEntryInFiltroSql(Entry entry) {
 
         // Discrimino si existe o no filtro de carga
-        if (VariablesGlobales.getMapFiltro().isEmpty()) {
+        if (VariablesGlobales.getMapFiltroSql().isEmpty()) {
             // En caso de NO APLIAR FILTRO DE CARGA --> Devuelvo TRUE
 
             log.debug("[hasEntryInFiltroSql] - VariablesGlobales.getMapFiltro() EMPTY.");
@@ -107,7 +107,7 @@ public final class FiltroHelper {
             log.debug("[hasEntryInFiltroSql] - IdPlataforma en Entry: {}", idPlataforma);
 
             // Comprobamos si el idPlataforma está en el mapa de filtros
-            boolean encontrado = VariablesGlobales.getMapFiltro().containsKey(idPlataforma);
+            boolean encontrado = VariablesGlobales.getMapFiltroSql().containsKey(idPlataforma);
             log.debug("[hasEntryInFiltroSql] - No figura en VariablesGlobales.getMapFiltro().");
 
             //
@@ -286,23 +286,24 @@ public final class FiltroHelper {
                                     PropertiesFiles.FILTER,
                                     PropertiesKeys.FILTER_SQL);
 
-        if (StringHelper.isInvalidString(filter)) {
-            log.info(
-                    "[loadFilterSql] - Valor inválido para fichero: '{}', propiedad: '{}'",
-                    PropertiesFiles.FILTER,
-                    PropertiesKeys.FILTER_OBJETO);
-            return;
+        //
+        Map<String, String> mapFilter = new HashMap<>();
+
+        //
+        if (StringHelper.isValidString(filter)) {
+
+            // Almaceno el filtro SQL
+            VariablesGlobales.setFiltroSql(filter);
+            log.debug("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
+
+            mapFilter = getMapFromFiltroSql(filter);
+            log.debug("[loadFilterSql] - Mapa asociado al filtro obtenido correctamente('{}')", mapFilter.size());
+
         }
 
-        // Almaceno el filtro SQL
-        VariablesGlobales.setFiltroSql(filter);
-        log.debug("[loadFilterSql] - VariablesGlobales.setFiltroSql('{}')", filter);
-
-        Map<String, String> mapFilter = getMapFromFiltroSql(filter);
-        log.debug("[loadFilterSql] - Mapa asociado al filtro obtenido correctamente('{}')", mapFilter.size());
-
-        VariablesGlobales.setMapFiltro(mapFilter);
-        log.debug("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro.");
+        String valor = StringHelper.getNumeroConFormato(mapFilter.size());
+        VariablesGlobales.setMapFiltroSql(mapFilter);
+        log.debug("[loadFilterSql] - Asisgnado el Map a VariablesGlobales.setMapFiltro. ({})", valor);
 
     }
 
@@ -339,12 +340,12 @@ public final class FiltroHelper {
         log.info(msg);
 
         filtroHelper.loadFilterSql();
-        if (VariablesGlobales.getFiltroSql().isBlank()) {
+        if (VariablesGlobales.getMapFiltroSql().isEmpty()) {
             msg = "[loadFilters] - Filtro Sql se encuentra vacío.";
         } else {
             msg = String.format (
                     "[loadFilters] - Filtro Sql cargado correctamente ('%s'). %s",
-                    VariablesGlobales.getMapFiltro().size(),
+                    VariablesGlobales.getMapFiltroSql().size(),
                     VariablesGlobales.getFiltroSql());
         }
         log.info(msg);
@@ -353,7 +354,7 @@ public final class FiltroHelper {
     public static String entryCumpleFiltros(Entry entry) {
 
         // Si existe filtro SQL y no lo cumple, descarto el Entry
-        if (!VariablesGlobales.getMapFiltro().isEmpty() && !hasEntryInFiltroSql(entry)) {
+        if (!VariablesGlobales.getMapFiltroSql().isEmpty() && !hasEntryInFiltroSql(entry)) {
             log.debug("[entryCumpleFiltros] - {}", Mensajes.ENTRY_NO_FILTRO_SQL);
             return Mensajes.ENTRY_NO_FILTRO_SQL;
         }

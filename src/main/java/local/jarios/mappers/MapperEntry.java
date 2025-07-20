@@ -2,6 +2,7 @@ package local.jarios.mappers;
 
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
+import local.jarios.enums.TipoSindicacion;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.mappers.auxiliares.MapperStringFromList;
 import local.jarios.common.util.Constantes;
@@ -28,8 +29,11 @@ import java.util.Optional;
 @Slf4j
 public final class MapperEntry {
 
+    /**
+     * Constructor privado
+     */
     private MapperEntry() {
-        // Constructor privado para evitar instanciación
+        //
     }
 
     /**
@@ -40,11 +44,18 @@ public final class MapperEntry {
      * @param feedType Objeto {@link FeedType} que contiene las entradas Atom.
      * @return Lista de objetos {@link Entry} convertidos desde {@link EntryType}.
      */
-    public static List<Entry> getListEntryFromEntryType(Feed feed, FeedType feedType) {
+    public static List<Entry> getListEntryFromEntryType(Feed feed, FeedType feedType, TipoSindicacion tipoSindicacion) {
+
+        //
         List<Entry> listEntry = new ArrayList<>();
 
         for (EntryType entryType : feedType.getEntry()) {
-            listEntry.add(getEntryFromEntryType(feed, entryType));
+
+            //
+            Entry entry = getEntryFromEntryType(feed, entryType, tipoSindicacion);
+
+            //
+            listEntry.add(entry);
         }
 
         return listEntry;
@@ -58,10 +69,13 @@ public final class MapperEntry {
      * @param entryType Objeto {@link EntryType} a convertir.
      * @return Objeto {@link Entry} construido a partir de {@code entryType}.
      */
-    private static Entry getEntryFromEntryType(Feed feed, EntryType entryType) {
+    private static Entry getEntryFromEntryType(Feed feed, EntryType entryType, TipoSindicacion tipoSindicacion) {
+
+        //
         var entry = new Entry();
         entry.setFeed(feed);
 
+        //
         Optional.ofNullable(entryType.getId())
                 .map(id -> ComunHelper.limitarRegistro(id.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_500))
                 .ifPresent(entry::setIdEntry);
@@ -84,8 +98,13 @@ public final class MapperEntry {
                 .map(updated -> updated.getValue().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
                 .ifPresent(entry::setUpdated);
 
-        entry.setListContractFolderStatus(
-                MapperContractFolderStatus.getListContractFolderStatusFromListType(entry, entryType));
+        if (tipoSindicacion.equals(TipoSindicacion.CPM)) {
+            entry.setListPreliminaryMarketConsultationStatus(
+                    MapperPreliminaryMarketConsultationStatus.getListPreliminaryMarketConsultationStatusFromListType(entry, entryType));
+        } else {
+            entry.setListContractFolderStatus(
+                    MapperContractFolderStatus.getListContractFolderStatusFromListType(entry, entryType));
+        }
 
         return entry;
     }

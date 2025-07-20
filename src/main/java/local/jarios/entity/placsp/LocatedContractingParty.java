@@ -51,6 +51,19 @@ public class LocatedContractingParty extends Auditable {
                             "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
     private ContractFolderStatus contractFolderStatus;
 
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "preliminary_market_consultation_status_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "fk_lcp_preliminarymarketconsultationstatus",
+                    foreignKeyDefinition =
+                            "FOREIGN KEY (preliminary_market_consultation_status_id) " +
+                            "REFERENCES preliminary_market_consultation_status(id) ON DELETE CASCADE"))
+    private PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus;
+
     //
     //
     // Datos de la entidad que licita

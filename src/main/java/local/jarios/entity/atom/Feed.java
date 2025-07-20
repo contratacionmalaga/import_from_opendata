@@ -70,9 +70,9 @@ public class Feed extends Auditable {
     }
 
     public String toStringResumido() {
-        return "[" +
+        return "Feed: [" +
                     "linkSelf='" + linkSelf + "', " +
-                    "updated='" + updated + "'" +
+                    "updated='" + updated +
                 "']";
     }
 }

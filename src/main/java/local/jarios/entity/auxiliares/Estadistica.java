@@ -26,41 +26,29 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "estadistica",
-        uniqueConstraints = @UniqueConstraint(
-                name = "unique_estadistica_log",
-                columnNames = "log_id")
+        name = "estadistica"
 )
 public class Estadistica extends Auditable {
 
-    //
-    //
-    //
+    /**
+     * Identificador
+     */
     @Id
     @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    /**
+     * Equipo desde el que se realiza la importación
+     */
     @Column(name = "equipo", nullable = false, length = TamanoCampos.TAMANO_100)
     private String equipo;
 
+    /**
+     * Numerode ficheros importados
+     */
     @Column(name = "nFicheros", nullable = false)
     private int nFicheros;
-
-    @Column(name = "nEntryLeidos", nullable = false)
-    private int nEntryLeidos;
-
-    @Column(name = "nEntryProcesados", nullable = false)
-    private int nEntryProcesados;
-
-    @Column(name = "nEntryGrabados", nullable = false)
-    private int nEntryGrabados;
-
-    @Column(name = "nEntryActualizados", nullable = false)
-    private int nEntryActualizados;
-
-    @Column(name = "nEntryRechazados", nullable = false)
-    private int nEntryRechazados;
 
     /**
      * Número de registros históricos que se deben crear.
@@ -86,12 +74,21 @@ public class Estadistica extends Auditable {
     @Column(name = "nRegistrosHistoricosRechazar")
     private Long nRegistrosHistoricosRechazar;
 
+    /**
+     * Fecha hora inicial
+     */
     @Column(name = "fechaHoraInicial", nullable = false)
     private LocalDateTime fechaHoraInicial;
 
+    /**
+     * Fecha hora final
+     */
     @Column(name = "fechaHoraFinal", nullable = false)
     private LocalDateTime fechaHoraFinal;
 
+    /**
+     * Duración
+     */
     @Column(name = "duracion", nullable = false, length = TamanoCampos.TAMANO_100)
     private String duracion;
 
@@ -119,55 +116,23 @@ public class Estadistica extends Auditable {
         this.equipo = ComunHelper.getHostName();
     }
 
-    //
-    public void aumentarNFicheros() {
-
-        nFicheros++;
-    }
-
-    //
-    public void aumentarNEntryLeidos() {
-
-        nEntryLeidos++;
-    }
-
-    //
-    public void aumentarNEntryProcesados() {
-
-        nEntryProcesados++;
-    }
-
-    //
-    public void aumentarNEntryGrabados(int nRegistros) {
-
-        nEntryGrabados = nRegistros;
-    }
-
-    //
-    public void aumentarNEntryActualizados() {
-
-        nEntryActualizados++;
-    }
-
-    //
-    public void aumentarNEntryRechazados() {
-
-        nEntryRechazados++;
-    }
-
     public String toStringReducido() {
 
+        String nficheros = StringHelper.getNumeroConFormato(nFicheros);
+        String nInsertar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosInsertar));
+        String nEliminar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosEliminar));
+        String nActualizar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosActualizar));
+        String nRechazar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosRechazar));
+
         return "Estadistica: [" +
-                    "nFicheros='" + StringHelper.getNumeroConFormato(nFicheros) + "', " +
-                    "nEntryLeidos='" + StringHelper.getNumeroConFormato(nEntryLeidos) + "', " +
-                    "nEntryProcesados='" + StringHelper.getNumeroConFormato(nEntryProcesados) + "', " +
-                    "nEntryGrabados='" + StringHelper.getNumeroConFormato(nEntryGrabados) + "', " +
-                    "nEntryActualizados='" + StringHelper.getNumeroConFormato(nEntryActualizados) + "', " +
-                    "nEntryRechazados='" + StringHelper.getNumeroConFormato(nEntryRechazados) + "', " +
-                    "nRegistrosHistoricosInsertar='" + StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosInsertar)) + "', " +
-                    "nRegistrosHistoricosEliminar='" + StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosEliminar)) + "', " +
-                    "nRegistrosHistoricosActualizar='" + StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosActualizar)) + "', " +
-                    "nRegistrosHistoricosRechazar='" + StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosRechazar)) + "', " +
+                    "nFicheros='" + nficheros + "', " +
+                    "nRegistrosHistoricosInsertar='" + nInsertar + "', " +
+                    "nRegistrosHistoricosEliminar='" + nEliminar + "', " +
+                    "nRegistrosHistoricosActualizar='" + nActualizar + "', " +
+                    "nRegistrosHistoricosRechazar='" + nRechazar + "', " +
+                    "fechaHoraInicial='" + nRechazar + "', " +
+                    "fechaHoraFinal='" + nRechazar + "', " +
+                    "duracion='" + nRechazar + "', " +
                 "]";
     }
 }

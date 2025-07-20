@@ -34,32 +34,26 @@ public record EstadisticaAdapter() implements JsonSerializer<Estadistica> {
         JsonSerializationHelper
                 .addProperty(
                         jsonObject,
-                        "nEntriesLeidos",
-                        estadistica.getNEntryLeidos());
+                        "nRegistrosHistoricosInsertar",
+                        estadistica.getNRegistrosHistoricosInsertar());
 
         JsonSerializationHelper
                 .addProperty(
                         jsonObject,
-                        "nEntriesProcesados",
-                        estadistica.getNEntryProcesados());
+                        "nRegistrosHistoricosEliminar",
+                        estadistica.getNRegistrosHistoricosEliminar());
 
         JsonSerializationHelper
                 .addProperty(
                         jsonObject,
-                        "nEntriesGrabados",
-                        estadistica.getNEntryGrabados());
+                        "nRegistrosHistoricosActualizar",
+                        estadistica.getNRegistrosHistoricosActualizar());
 
         JsonSerializationHelper
                 .addProperty(
                         jsonObject,
-                        "nEntriesActualizados",
-                        estadistica.getNEntryActualizados());
-
-        JsonSerializationHelper
-                .addProperty(
-                        jsonObject,
-                        "nEntriesRechazados",
-                        estadistica.getNEntryRechazados());
+                        "nRegistrosHistoricosRechazar",
+                        estadistica.getNRegistrosHistoricosRechazar());
 
         JsonSerializationHelper
                 .addProperty(

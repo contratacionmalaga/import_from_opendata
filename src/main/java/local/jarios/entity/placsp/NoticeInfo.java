@@ -53,6 +53,20 @@ public class NoticeInfo extends Auditable {
     private ContractFolderStatus contractFolderStatus;
 
     //
+    @ManyToOne(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "preliminary_market_consultation_status_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "fk_noticeinfo_preliminarymarketconsultationstatus",
+                    foreignKeyDefinition =
+                            "FOREIGN KEY (preliminary_market_consultation_status_id) " +
+                                    "REFERENCES preliminary_market_consultation_status(id) ON DELETE CASCADE"))
+    private PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus;
+
+    //
     //
     //
     @OneToMany(mappedBy = "noticeInfo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

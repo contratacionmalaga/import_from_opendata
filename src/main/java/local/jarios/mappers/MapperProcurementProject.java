@@ -1,6 +1,7 @@
 package local.jarios.mappers;
 
 import local.jarios.entity.placsp.ContractFolderStatus;
+import local.jarios.entity.placsp.PreliminaryMarketConsultationStatus;
 import local.jarios.entity.placsp.ProcurementProject;
 import local.jarios.entity.placsp.ProcurementProjectLot;
 import local.jarios.helpers.ComunHelper;
@@ -25,12 +26,14 @@ public final class MapperProcurementProject {
 
     public static ProcurementProject getProcurementProjectFromType(
             ContractFolderStatus contractFolderStatus,
+            PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
             ProcurementProjectLot procurementProjectLot,
             ProcurementProjectType procurementProjectType) {
 
         //
         ProcurementProject procurementProject = new ProcurementProject();
         procurementProject.setContractFolderStatus(contractFolderStatus);
+        procurementProject.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
         procurementProject.setProcurementProjectLot(procurementProjectLot);
 
         Optional.ofNullable(procurementProjectType).ifPresent(ppt -> {

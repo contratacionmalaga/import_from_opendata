@@ -61,7 +61,9 @@ public class Log extends Auditable {
 
     @Override
     public String toString() {
-        return "Log: [TipoSindicacion=" + tipoSindicacion +
-                ", LugarImportacion=" + lugarImportacion + "]";
+        return "Log: [" +
+                    "tipoSindicacion='" + tipoSindicacion + "', " +
+                    "lugarImportacion=" + lugarImportacion +
+                "]";
     }
 }

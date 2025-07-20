@@ -3,14 +3,12 @@ package local.jarios;
 import local.jarios.common.util.VariablesGlobales;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.auxiliares.Historico;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.exceptions.MiServiceException;
-import local.jarios.helpers.EntryHelper;
 import local.jarios.helpers.FeedHelper;
 import local.jarios.helpers.TipoSindicacionHelper;
 import local.jarios.services.ServicePrincipal;
@@ -32,6 +30,12 @@ import java.util.Map;
  */
 @Slf4j
 public class OpenDataInternet extends AbstractOpenData {
+
+    /** Mensaje insertar */
+    private final String MSG_INSERTAR = "No figura en la base de datos.";
+
+    /** Mensaje actualizar */
+    private final String MSG_ACTUALIZAR = "Figura en la base de datos con fecha anterior.";
 
     /**
      * Mapa que contiene los {@link Entry} que deben ser insertados o actualizados en la base de datos.
@@ -62,39 +66,31 @@ public class OpenDataInternet extends AbstractOpenData {
      * Procesa los feeds obtenidos desde internet y los compara con la base de datos para
      * determinar qué entradas se deben insertar o actualizar.
      *
-     * @param miLog       objeto de log del proceso
-     * @param estadistica objeto de estadísticas del proceso
      * @throws MiServiceException si hay errores al consultar datos de base de datos
      * @throws MiParseException   si hay errores al parsear feeds remotos
      */
     @Override
-    protected void parsearAtomsFeeds(Log miLog, Estadistica estadistica) throws MiServiceException, MiParseException {
-        log.info("[parsearAtomsFeeds] - Iniciando procesamiento de AtomsFeeds desde INTERNET.");
+    protected void parsearAtomsFeeds(Log miLog, TipoSindicacion tipoSindicacion, Entry newestEntry)
+            throws MiServiceException, MiParseException {
 
-        // 1. Obtener el tipo de sindicación y el Entry más reciente desde BD
-        TipoSindicacion tipoSindicacion = getTipoSindicacion();
-        Entry newestEntry = EntryHelper.getNewestEntry(tipoSindicacion);
-        if (newestEntry != null) {
-            log.info("[parsearAtomsFeeds] - NewestEntry encontrado: {}", newestEntry.toStringResumido());
-        } else {
-            log.info("[parsearAtomsFeeds] - No se encontró un Entry previo en la BD. Se procesarán todos los entries.");
-        }
+        // Parsear feeds remotos y cargar resultado en VariablesGlobales
+        FeedHelper.parsearFeedsDesdeInternet(miLog, tipoSindicacion, newestEntry);
 
-        // 2. Parsear feeds remotos y cargar resultado en VariablesGlobales
-        FeedHelper.parsearFeedsDesdeInternet(miLog, newestEntry, estadistica);
-        Map<String, Entry> entriesInternet = VariablesGlobales.getMapEntriesFromAtoms();
-        log.info("[parsearAtomsFeeds] - Total entries obtenidos desde INTERNET: {}", entriesInternet.size());
-        entriesInternet.values().forEach(e -> log.info("[INTERNET] {}", e.toStringResumido()));
+        // Recupero el Map con los Entries importados desde Atoms
+        Map<String, Entry> mapEntryFromAtoms = VariablesGlobales.getMapEntriesFromAtoms();
+        log.info("[parsearAtomsFeeds] - Total entries obtenidos desde INTERNET: {}", mapEntryFromAtoms.size());
+        mapEntryFromAtoms.values().forEach(e -> log.info("[INTERNET] {}", e.toStringResumido()));
 
-        // 3. Obtener entries actuales desde BD
+        // Obtengo el Map con los Entries actuales en Base de Datos
         ServicePrincipal servicePrincipal = new ServicePrincipalImpl();
-        Map<String, Entry> entriesBD = servicePrincipal.getMapEntries(tipoSindicacion);
-        log.info("[parsearAtomsFeeds] - Total entries en base de datos: {}", entriesBD.size());
-        entriesBD.values().forEach(e -> log.info("[BASE_DATOS] {}", e.toStringResumido()));
+        Map<String, Entry> mapEntryFromBD = servicePrincipal.getMapEntries(tipoSindicacion);
+        log.info("[parsearAtomsFeeds] - Total entries en base de datos: {}", mapEntryFromBD.size());
+        mapEntryFromBD.values().forEach(e -> log.info("[BASE_DATOS] {}", e.toStringResumido()));
 
-        // 4. Comparar y decidir qué insertar o actualizar
-        entriesInternet.forEach((idEntry, entryInternet) -> {
-            Entry entryBD = entriesBD.get(idEntry);
+        // Comparo ambos Mapas y me quedo con otro Map que tenga aquellos que son mayores que los existentes en
+        //      Base de datos o lo que no existan en Base de Datsos
+        mapEntryFromAtoms.forEach((idEntry, entryInternet) -> {
+            Entry entryBD = mapEntryFromBD.get(idEntry);
             log.info("[COMPARACIÓN] Entry desde internet: {}", entryInternet.toStringResumido());
 
             if (entryBD == null) {
@@ -102,7 +98,7 @@ public class OpenDataInternet extends AbstractOpenData {
                 resultado.put(idEntry, entryInternet);
                 log.info("[NUEVO] No figura en la BD → insertar.");
                 VariablesGlobales.getListHistoricos()
-                        .add(new Historico(entryInternet, EntryOpcion.INSERTAR, "No figura en la base de datos."));
+                        .add(new Historico(entryInternet, EntryOpcion.INSERTAR, MSG_INSERTAR));
             } else {
                 // Existe → comparar fechas
                 LocalDateTime updatedInternet = entryInternet.getUpdated();
@@ -114,15 +110,12 @@ public class OpenDataInternet extends AbstractOpenData {
                     resultado.put(idEntry, entryInternet);
                     log.info("[ACTUALIZAR] Existe en BD pero es más antiguo → actualizar.");
                     VariablesGlobales.getListHistoricos()
-                            .add(new Historico(entryInternet, EntryOpcion.ACTUALIZAR, "Figura en la base de datos con fecha anterior."));
+                            .add(new Historico(entryInternet, EntryOpcion.ACTUALIZAR, MSG_ACTUALIZAR));
                 } else {
                     log.info("[SIN CAMBIOS] La versión en BD es más reciente o igual.");
                 }
             }
         });
-
-        // 5. Actualizar estadísticas
-        estadistica.aumentarNEntryGrabados(resultado.size());
 
         // 6. Log final
         log.info("[FINAL] Nº total de registros a enviar a la BD: {}", resultado.size());

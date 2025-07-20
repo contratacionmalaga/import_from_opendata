@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.entity.placsp.ContractFolderStatus;
+import local.jarios.entity.placsp.PreliminaryMarketConsultationStatus;
 import local.jarios.interfaces.HasIdEntry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,6 +66,9 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     @OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ContractFolderStatus> listContractFolderStatus = new ArrayList<>();
 
+    @OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<PreliminaryMarketConsultationStatus> listPreliminaryMarketConsultationStatus = new ArrayList<>();
+
     // Representaciones en texto
     @Override
     public String toString() {
@@ -77,8 +81,10 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     }
 
     public String toStringResumido() {
-        return "[idEntry='" + idEntry + "', " +
-                "updated='" + updated + "', " +
-                "id='" + id + "']";
+        return "Entry: [" +
+                    "idEntry='" + idEntry + "', " +
+                    "updated='" + updated + "', " +
+                    "id='" + id +
+                "']";
     }
 }

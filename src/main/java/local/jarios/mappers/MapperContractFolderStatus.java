@@ -61,28 +61,34 @@ public final class MapperContractFolderStatus {
 
         Optional.ofNullable(contractFolderStatusType.getProcurementProject())
                 .ifPresent(pp -> contractFolderStatus.setProcurementProject(
-                        MapperProcurementProject.getProcurementProjectFromType(contractFolderStatus, null, pp)));
+                        MapperProcurementProject.getProcurementProjectFromType(
+                                contractFolderStatus, null,null, pp)));
 
         Optional.ofNullable(contractFolderStatusType.getTenderingProcess())
                 .ifPresent(tp -> contractFolderStatus.setTenderingProcess(
-                        MapperTenderingProcess.getTenderingProcessFromType(contractFolderStatus, tp)));
+                        MapperTenderingProcess.getTenderingProcessFromType(
+                                contractFolderStatus, null, tp)));
 
         // LocatedContractingParty no es nullable según el original, pero si quieres ser más seguro:
         Optional.ofNullable(contractFolderStatusType.getLocatedContractingParty())
                 .ifPresent(lcp -> contractFolderStatus.setLocatedContractingParty(
-                        MapperLocatedContractingParty.getLocatedContractingPartyFromType(contractFolderStatus, lcp)));
+                        MapperLocatedContractingParty.getLocatedContractingPartyFromType(
+                                contractFolderStatus, null, lcp)));
 
         Optional.ofNullable(contractFolderStatusType.getTenderingTerms())
                 .ifPresent(tt -> contractFolderStatus.setTenderingTerms(
-                        MapperTenderingTerms.getTenderingTermsFromType(contractFolderStatus, null, tt)));
+                        MapperTenderingTerms.getTenderingTermsFromType(
+                                contractFolderStatus, null, tt)));
 
         Optional.ofNullable(contractFolderStatusType.getTechnicalDocumentReference())
                 .ifPresent(tdr -> contractFolderStatus.setTechnicalDocumentReference(
-                        MapperTechnicalDocumentReference.getTechnicalDocumentReferenceFromDocumentReferenceType(contractFolderStatus, tdr)));
+                        MapperTechnicalDocumentReference.getTechnicalDocumentReferenceFromDocumentReferenceType(
+                                contractFolderStatus, tdr)));
 
         Optional.ofNullable(contractFolderStatusType.getLegalDocumentReference())
                 .ifPresent(ldr -> contractFolderStatus.setLegalDocumentReference(
-                        MapperLegalDocumentReference.getLegalDocumentReferenceFromDocumentReferenceType(contractFolderStatus, ldr)));
+                        MapperLegalDocumentReference.getLegalDocumentReferenceFromDocumentReferenceType(
+                                contractFolderStatus, ldr)));
 
         contractFolderStatus.setListAdditionalDocumentReference(
                 MapperAdditionalDocumentReference.getListAdditionalDocumentReferenceFromType(
@@ -92,6 +98,7 @@ public final class MapperContractFolderStatus {
         contractFolderStatus.setListGeneralDocument(
                 MapperGeneralDocument.getListGeneralDocumentFromType(
                         contractFolderStatus,
+                        null,
                         contractFolderStatusType.getGeneralDocument()));
 
         contractFolderStatus.setListContractModification(
@@ -106,8 +113,7 @@ public final class MapperContractFolderStatus {
 
         contractFolderStatus.setListNoticeInfo(
                 MapperNoticeInfo.getListNoticeInfoFromType(
-                        contractFolderStatus,
-                        contractFolderStatusType.getValidNoticeInfo()));
+                        contractFolderStatus,null, contractFolderStatusType.getValidNoticeInfo()));
 
         contractFolderStatus.setListTenderResult(
                 MapperTenderResult.getListTenderResultFromType(

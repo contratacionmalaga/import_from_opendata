@@ -97,11 +97,12 @@ public abstract class AbstractOpenData {
      * la lógica específica de parseo según la fuente o formato.
      * </p>
      *
-     * @param log objeto {@link Log} que recoge la información del proceso.
-     * @param estadistica objeto {@link Estadistica} que recopila datos estadísticos.
+     * @param tipoSindicacion objeto
+     * @param newestEntry objeto {@link Entry} que recopila datos estadísticos.
      * @throws MiParseException si ocurre un error durante el parseo.
      */
-    protected abstract void parsearAtomsFeeds(Log log, Estadistica estadistica) throws MiParseException;
+    protected abstract void parsearAtomsFeeds(Log miLog, TipoSindicacion tipoSindicacion, Entry newestEntry)
+            throws MiParseException;
 
     /**
      * Obtiene el lugar de importación de los datos, que puede ser local o desde internet.
@@ -135,15 +136,15 @@ public abstract class AbstractOpenData {
             log.info("[procesar] - El servicio de consulta de la versión del JAR se ha creado correctamente.");
 
             propertiesManager = PropertiesManagerServiceImpl.getInstance();
-            log.info("[procesar] - El servicio de consulta de los ficheros properties se ha creado correctamente.");
+            log.info("[procesar] - El servicio de consulta de los ficheros .properties se ha creado correctamente.");
 
             propertiesManager.setConfigDir(Constantes.CONFIG_DIR);
-            log.info("[procesar] - Establezco el directorio donde se encuentra .properties: {}", Constantes.CONFIG_DIR);
+            log.info("[procesar] - Directorio donde se encuentran los ficheros .properties: {}", Constantes.CONFIG_DIR);
 
             // === Configuración inicial ===
             Set<String> clavesSensibles = Set.of("password");
             propertiesManager.setSensitiveKeys(clavesSensibles);  // Ahora se aplica sobre la instancia
-            log.info("[procesar] - Establezco el conjunto de claves sensibles: {}", clavesSensibles);
+            log.info("[procesar] - Conjunto de claves sensibles: {}", clavesSensibles);
 
             // Cargar todas las propiedades desde el directorio de configuración
             propertiesManager.loadAllProperties();
@@ -182,7 +183,7 @@ public abstract class AbstractOpenData {
             // Asigno la lista de órganos de contratación a miLog
             miLog.setListOrganoContratacion(
                     VariablesGlobales
-                            .getMapFiltro()
+                            .getMapFiltroSql()
                             .entrySet()
                             .stream()
                             .map(e -> new OrganoContratacion(miLog, e.getKey(), e.getValue()))
@@ -193,14 +194,20 @@ public abstract class AbstractOpenData {
             Configuracion configuracion = new Configuracion(miLog);
             log.info("[procesar] - Creación correcta del objeto {}", configuracion);
 
-            //
+            // Cargo la configuración
             miLog.setConfiguracion(configuracion);
             log.info("[procesar] - Asignado el objeto configuración al Log correctamente.");
 
+            // Obtengo el newestEntry en caso de que la importación sea desde INTERNET (para LOCAL es null)
+            Entry newestEntry = null;
+            if (lugarImportacion.equals(LugarImportacion.INTERNET)) {
+                newestEntry = EntryHelper.getNewestEntry(tipoSindicacion);
+            }
+            log.info("[procesar] - NewestEntry: {}", newestEntry);
+
             // Parseo de los Feeds
             log.info("[procesar] - Inicio del parseo de los ficheros ATOM.");
-            parsearAtomsFeeds(miLog, estadistica);
-
+            parsearAtomsFeeds(miLog, tipoSindicacion, newestEntry);
 
             Map<String, Entry> mapEntriesFromAtoms;
 
@@ -211,7 +218,9 @@ public abstract class AbstractOpenData {
                 // Obtengo el Map con los datos del Entry de la Base de Datos
                 mapEntriesFromAtoms = VariablesGlobales.getMapEntriesFromAtoms();
             }
-            log.info("[procesar] - Nº Entries from Atoms: {}", StringHelper.getNumeroConFormato(mapEntriesFromAtoms.size()));
+
+            String valor = StringHelper.getNumeroConFormato(mapEntriesFromAtoms.size());
+            log.info("[procesar] - Nº Entries from Atoms que cumplan los filtros: {}", valor);
 
             // Mapa auxiliar para agrupar Feeds por su lista de Entry
             Map<Feed, List<Entry>> feedEntryMap = new HashMap<>();
@@ -221,6 +230,7 @@ public abstract class AbstractOpenData {
 
                 // Obtengo el feed del Entry
                 Feed feed = entry.getFeed();
+                feed.setMiLog(miLog);
 
                 // Si no es null lo añado a la lista
                 feedEntryMap.computeIfAbsent(feed, k -> new ArrayList<>()).add(entry);
@@ -229,7 +239,8 @@ public abstract class AbstractOpenData {
             }
 
             // Asociar feeds y entries a miLog
-            log.info("[procesar] - Nº Feeds resultantes: {}", StringHelper.getNumeroConFormato(feedEntryMap.size()));
+            valor = StringHelper.getNumeroConFormato(feedEntryMap.size());
+            log.info("[procesar] - Nº Feeds con Entries que cumplan los filtros: {}", valor);
 
             // Recorro el map con los Feeds resultantes
             for (Map.Entry<Feed, List<Entry>> map : feedEntryMap.entrySet()) {
@@ -253,7 +264,7 @@ public abstract class AbstractOpenData {
 
                 // Añado el feed a la lista de feeds del Log
                 miLog.getListFeed().add(feed);
-                log.info("[procesar] - Asociado el Feed {} al Log", feed.toStringResumido());
+                log.info("[procesar] - Asociado {} a {}", feed.toStringResumido(), miLog);
             }
 
             // ASIGNO LOS HISTÓRICOS DE ACCIONES QUE HAN OCURRIDO SOBRE CADA ENTRY AL LOG
@@ -263,43 +274,16 @@ public abstract class AbstractOpenData {
             log.info("[procesar] - Asigno los históricos al Log. Nº Históricos: {}", nHistoricos);
 
             // La lista de Historico la paso a un mapa para poder realizar filtrado por el tipo de acción realizada
-            Map<EntryOpcion, Long> mapOcHistorico =
+            Map<EntryOpcion, Long> mapHistorico =
                     listHistoricos
                             .stream()
                             .collect(Collectors.groupingBy(Historico::getEntryOpcion, Collectors.counting()));
             log.info ("[procesar] - Generado Map a partir de ListHistorico");
 
-            // Asigno valores según el tipo de acción almacenada en el map de historico de OC
-            Long nHistoricosPorTipo = mapOcHistorico.getOrDefault(EntryOpcion.INSERTAR, 0L);
-            estadistica.setNRegistrosHistoricosInsertar(nHistoricosPorTipo);
-            String valor = StringHelper.getNumeroConFormato(Math.toIntExact(nHistoricosPorTipo));
-            log.info("[procesar] - OcHistoricos importados (CREAR): {}", valor);
-
-            nHistoricosPorTipo = mapOcHistorico.getOrDefault(EntryOpcion.ELIMINAR, 0L);
-            estadistica.setNRegistrosHistoricosEliminar(nHistoricosPorTipo);
-            valor = StringHelper.getNumeroConFormato(Math.toIntExact(nHistoricosPorTipo));
-            log.info("[procesar] - OcHistoricos importados (ELIMINAR): {}", valor);
-
-            nHistoricosPorTipo = mapOcHistorico.getOrDefault(EntryOpcion.ACTUALIZAR, 0L);
-            estadistica.setNRegistrosHistoricosActualizar(nHistoricosPorTipo);
-            valor = StringHelper.getNumeroConFormato(Math.toIntExact(nHistoricosPorTipo));
-            log.info("[procesar] - OcHistoricos importados (ACTUALIZAR): {}", valor);
-
-            nHistoricosPorTipo = mapOcHistorico.getOrDefault(EntryOpcion.RECHAZAR, 0L);
-            estadistica.setNRegistrosHistoricosRechazar(nHistoricosPorTipo);
-            valor = StringHelper.getNumeroConFormato(Math.toIntExact(nHistoricosPorTipo));
-            log.info("[procesar] - OcHistoricos importados (ACTUALIZAR): {}", valor);
-
             // RELLENO LOS ÚLTIMOS DATOS ASOCIADOS AL OBJETO ESTADISTICA
             LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();
             estadistica.setFechaHoraFinal(localDateTime);
-            String duracion = LocalDateTimeHelper
-                                    .getDiferenciaLocalDateTime(
-                                            estadistica.getFechaHoraInicial(),
-                                            estadistica.getFechaHoraFinal());
-            estadistica.setDuracion(duracion);
             miLog.setEstadistica(estadistica);
-            log.info("[procesar] - Duración del parseo: {}", duracion);
 
             //
             //     PERSISTENCIA EN LA BASE DE DATOS
@@ -317,7 +301,9 @@ public abstract class AbstractOpenData {
             servicePrincipal.persistirMiLogLocal(miLog);
             log.info("[procesar] - Se han persistido correctamente las entidades en la base de datos.");
 
-            // ENVÍO EMAIL CON LAS ESTADÍSTICAS
+            log.info("[procesar] - {}", estadistica.toStringReducido());
+
+            // Envío de las estadísticas por correo
             enviarEmail(estadistica, null, true);
             log.info("[procesar] - Email enviado correctamente.");
 

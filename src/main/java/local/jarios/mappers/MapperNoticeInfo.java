@@ -33,23 +33,25 @@ public final class MapperNoticeInfo {
 
     public static List<NoticeInfo> getListNoticeInfoFromType(
             ContractFolderStatus contractFolderStatus,
+            PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
             List<NoticeInfoType> listNoticeInfoType) {
 
         List<NoticeInfo> listNoticeInfo = new ArrayList<>();
 
         for (NoticeInfoType noticeInfoType : listNoticeInfoType) {
-            listNoticeInfo.add(getNoticeInfoFromType(contractFolderStatus, noticeInfoType));
+            listNoticeInfo.add(getNoticeInfoFromType(contractFolderStatus, preliminaryMarketConsultationStatus, noticeInfoType));
         }
 
         return listNoticeInfo;
     }
 
     private static NoticeInfo getNoticeInfoFromType(
-            ContractFolderStatus contractFolderStatus, NoticeInfoType noticeInfoType) {
+            ContractFolderStatus contractFolderStatus, PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus, NoticeInfoType noticeInfoType) {
 
         NoticeInfo noticeInfo = new NoticeInfo();
 
         noticeInfo.setContractFolderStatus(contractFolderStatus);
+        noticeInfo.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
 
         // NoticeTypeCode es obligatorio, sin Optional porque se asume que no es null
         noticeInfo
@@ -65,7 +67,6 @@ public final class MapperNoticeInfo {
                                         .ofNullable(noticeInfoType
                                         .getAdditionalPublicationStatus())
                                         .orElse(Collections.emptyList())));
-
 
         return noticeInfo;
     }
@@ -194,7 +195,8 @@ public final class MapperNoticeInfo {
         additionalPublicationDocumentReference.setDocumentTypeCode(docTypeCode);
 
         Optional.ofNullable(additionalPublicationDocumentReferenceType.getAttachment())
-                .map(att -> MapperAttachment.getAttachment(null, additionalPublicationDocumentReference, att))
+                .map(att -> MapperAttachment.getAttachmentFromType(
+                        null, additionalPublicationDocumentReference, null, att))
                 .ifPresent(additionalPublicationDocumentReference::setAttachment);
 
         //

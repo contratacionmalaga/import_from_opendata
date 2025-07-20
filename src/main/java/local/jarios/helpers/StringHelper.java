@@ -66,35 +66,6 @@ public final class StringHelper {
         return PATTERN.matcher(sinAcentos).replaceAll("").toLowerCase(Locale.ROOT);
     }
 
-    /**
-     * Función encargada de limitar el mensaje que se muestra en una línea de log
-     * @param mensaje String que se limitará
-     * @return String con el valor truncado
-     */
-    public static String limitarLineaLog(String mensaje) {
-
-        //
-        final var TAMANO_MAXIMO_LINEA_LOG = 50;
-
-        if ((mensaje == null) || (mensaje.isEmpty())) {
-
-            return "";
-
-        } else {
-
-            //
-            if (mensaje.length() > TAMANO_MAXIMO_LINEA_LOG) {
-
-                //
-                mensaje = mensaje.substring(0, TAMANO_MAXIMO_LINEA_LOG - 1);
-            }
-
-            //
-            return mensaje;
-
-        }
-    }
-
     public static String getNumeroConFormato (int numero) throws IllegalArgumentException {
 
         // Crear símbolos decimales personalizados
@@ -129,6 +100,18 @@ public final class StringHelper {
         }
 
         log.debug("[isInvalidString] - La cadena no es NULL ni BLANK. Cadena: {}", cadena);
+        return false;
+
+    }
+
+    public static boolean isValidString(String cadena) {
+
+        if ((cadena != null) && (!cadena.isBlank())) {
+            log.debug("[isValidString] - La cadena no es NULL ni BLANK. Cadena: {}", cadena);
+            return true;
+        }
+
+        log.debug("[isValidString] - La cadena es NULL o BLANK. Cadena: {}", cadena);
         return false;
 
     }

@@ -3,6 +3,7 @@ package local.jarios.mappers;
 import local.jarios.entity.placsp.AdditionalPublicationDocumentReference;
 import local.jarios.entity.placsp.Attachment;
 import local.jarios.entity.placsp.DocumentReference;
+import local.jarios.entity.placsp.PreliminaryMarketConsultationStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.AttachmentType;
 
@@ -33,17 +34,19 @@ public final class MapperAttachment {
      * @param attachmentType Objeto {@link AttachmentType} fuente de datos para el mapeo.
      * @return Instancia de {@link Attachment} construida.
      */
-    public static Attachment getAttachment(
+    public static Attachment getAttachmentFromType(
             DocumentReference documentReference,
             AdditionalPublicationDocumentReference additionalPublicationDocumentReference,
+            PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
             AttachmentType attachmentType) {
 
+        //
         Attachment attachment = new Attachment();
-
         attachment.setDocumentReference(documentReference);
-
         attachment.setAdditionalPublicationDocumentReference(additionalPublicationDocumentReference);
+        attachment.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
 
+        //
         Optional.ofNullable(attachmentType.getExternalReference())
                 .map(extRef -> MapperExternalReference.getExternalReference(attachment, extRef))
                 .ifPresent(attachment::setExternalReference);

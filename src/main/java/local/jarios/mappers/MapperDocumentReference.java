@@ -62,7 +62,8 @@ public final class MapperDocumentReference {
 
         Optional.ofNullable(documentReferenceType.getAttachment())
                 .ifPresent(attachmentType -> documentReference.setAttachment(
-                        MapperAttachment.getAttachment(documentReference, null, attachmentType)));
+                        MapperAttachment.getAttachmentFromType(
+                                documentReference, null, null, attachmentType)));
 
         return documentReference;
     }

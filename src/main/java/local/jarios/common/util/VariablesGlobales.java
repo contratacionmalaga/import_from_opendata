@@ -35,7 +35,7 @@ public final class VariablesGlobales {
      */
     @Getter
     @Setter
-    private static Map<String, String> mapFiltro = new HashMap<>();
+    private static Map<String, String> mapFiltroSql = new HashMap<>();
 
     /**
      * Mapa que contiene los objetos Entry indexados por su identificador durante la ejecución.

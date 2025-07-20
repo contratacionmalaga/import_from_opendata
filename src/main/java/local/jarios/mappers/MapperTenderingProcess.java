@@ -2,6 +2,7 @@ package local.jarios.mappers;
 
 import local.jarios.entity.placsp.ContractFolderStatus;
 import local.jarios.entity.placsp.Period;
+import local.jarios.entity.placsp.PreliminaryMarketConsultationStatus;
 import local.jarios.entity.placsp.TenderingProcess;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.helpers.StringHelper;
@@ -26,11 +27,13 @@ public final class MapperTenderingProcess {
 
     public static TenderingProcess getTenderingProcessFromType(
             ContractFolderStatus contractFolderStatus,
+            PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
             TenderingProcessType tenderingProcessType) {
 
         //
         TenderingProcess tenderingProcess = new TenderingProcess();
         tenderingProcess.setContractFolderStatus(contractFolderStatus);
+        tenderingProcess.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
 
         Optional.ofNullable(tenderingProcessType.getProcedureCode())
                 .map(ProcedureCodeType::getValue)

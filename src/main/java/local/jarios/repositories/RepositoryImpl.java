@@ -75,15 +75,8 @@ public class RepositoryImpl implements Repository, AutoCloseable {
      * @throws MiRepositoryException si ocurre algún error en la transacción.
      */
     public void persistirMiLogInternet(Log miLog, Set<Entry> setEntriesToDelete) throws MiRepositoryException {
-        for (Feed feed : miLog.getListFeed()) {
-            log.info("Feed: {}", feed.toStringResumido());
-            for (Entry entry : feed.getListEntry()) {
-                log.info("   Entry: {}", entry.toStringResumido());
-            }
-        }
 
-        System.exit(0);
-
+        //
         ejecutarDentroDeTransaccion(session -> {
             setEntriesToDelete.forEach(session::remove);
             log.info("[persistirMiLogInternet] - Borrados Entry de la base de datos. {}", setEntriesToDelete.size());

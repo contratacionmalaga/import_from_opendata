@@ -4,6 +4,7 @@ import ext.place.codice.common.caclib.GeneralDocumentType;
 import local.jarios.entity.placsp.ContractFolderStatus;
 import local.jarios.entity.placsp.GeneralDocument;
 import local.jarios.entity.placsp.GeneralDocumentDocumentReference;
+import local.jarios.entity.placsp.PreliminaryMarketConsultationStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.DocumentReferenceType;
 
@@ -23,15 +24,20 @@ public final class MapperGeneralDocument {
 
     public static List<GeneralDocument> getListGeneralDocumentFromType(
             ContractFolderStatus contractFolderStatus,
+            PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
             List<GeneralDocumentType> listGeneralDocumentType) {
 
         //
         List<GeneralDocument> listGeneralDocument = new ArrayList<>();
 
         for (GeneralDocumentType generalDocumentType : listGeneralDocumentType) {
+
+            //
             GeneralDocument generalDocument = new GeneralDocument();
             generalDocument.setContractFolderStatus(contractFolderStatus);
+            generalDocument.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
 
+            //
             GeneralDocumentDocumentReference documentReference =
                     getGeneralDocumentDocumentFromType(
                             generalDocument,

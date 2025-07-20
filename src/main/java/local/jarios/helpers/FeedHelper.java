@@ -4,7 +4,7 @@ import local.jarios.common.util.*;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
-import local.jarios.entity.auxiliares.Estadistica;
+import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.*;
 import local.jarios.interfaces.FeedSource;
 import local.jarios.mappers.MapperFeed;
@@ -35,24 +35,24 @@ public final class FeedHelper {
     // MÉTODOS PÚBLICOS
     // ==========================
 
-    public static void parsearFeedsDesdeLocal(Log miLog, Estadistica estadistica)
+    public static void parsearFeedsDesdeLocal(Log miLog, TipoSindicacion tipoSindicacion)
             throws MiParseException {
 
         //
-        parsearFeeds(miLog, estadistica, new LocalFeedSource(), null);
+        parsearFeeds(miLog, tipoSindicacion, new LocalFeedSource(), null);
     }
 
-    public static void parsearFeedsDesdeInternet(Log miLog, Entry newestEntry, Estadistica estadistica)
+    public static void parsearFeedsDesdeInternet(Log miLog, TipoSindicacion tipoSindicacion, Entry newestEntry)
             throws MiParseException {
 
         //
-        parsearFeeds(miLog, estadistica, new RemoteFeedSource(), newestEntry);
+        parsearFeeds(miLog, tipoSindicacion, new RemoteFeedSource(), newestEntry);
     }
 
     /**
      * Obtiene la lista de feeds parseados desde local o remoto.
      */
-    private static void parsearFeeds(Log miLog, Estadistica estadistica, FeedSource source, Entry newestEntry)
+    private static void parsearFeeds(Log miLog, TipoSindicacion tipoSincidacion, FeedSource source, Entry newestEntry)
             throws MiParseException {
 
         // Definición de variables locales
@@ -71,24 +71,21 @@ public final class FeedHelper {
             while (source.isNextLinkValid(nextLink) && (!superadoNewestEntry)) {
 
                 try (var reader = source.openBufferedReader(nextLink)) {
+
                     // Obtengo el FeedType desde el fichero Atom
                     var feedType = getFeedType(unmarshaller, reader);
                     log.info("[parsearFeeds] - Obtenido el objeto FeedType desde el fichero Atom correctamente.");
 
                     // Mapeo el fichero FeedType al objeto Feed
-                    var feed = MapperFeed.getFeed(miLog, feedType);
+                    var feed = MapperFeed.getFeed(miLog, feedType, tipoSincidacion);
                     log.info("[parsearFeeds] - Procesado del feed correctamente.");
-
-                    // Aumento el NFicheros procesados
-                    estadistica.aumentarNFicheros();
-                    String nFicheros = StringHelper.getNumeroConFormato(estadistica.getNFicheros());
-                    log.info("[parsearFeeds] - Nº de ficheros Atom procesados: {}", nFicheros);
 
                     List<Entry> listEntry = feed.getListEntry();
                     log.info("[parsearFeeds] - Nº de objetos Entry en en Feed: {}", listEntry.size());
 
-                    // Proceso los Entrys del objeto Feed
-                    superadoNewestEntry = EntryHelper.procesarListaEntry(listEntry, estadistica, newestEntry);
+                    // Proceso los Entrys del objeto Feed devolviendo TRUE | FALSE según se haya superado el valor
+                    //      de updated asocaido al newestEntry
+                    superadoNewestEntry = EntryHelper.procesarListaEntry(listEntry, newestEntry);
                     if (!superadoNewestEntry) {
                         nextLink = source.getNextLink(feed);
                         log.info(
@@ -97,8 +94,6 @@ public final class FeedHelper {
                     }
                 }
             }
-
-            log.info("[parsearFeeds] - {}", estadistica.toStringReducido());
 
         } catch (Exception e) {
             throw new MiParseException(e);

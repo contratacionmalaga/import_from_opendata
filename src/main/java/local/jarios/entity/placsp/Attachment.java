@@ -53,7 +53,9 @@ public class Attachment extends Auditable {
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_attachment_documentreference",
-                    foreignKeyDefinition = "FOREIGN KEY (document_reference_id) REFERENCES document_reference(id) ON DELETE CASCADE"))
+                    foreignKeyDefinition =
+                            "FOREIGN KEY (document_reference_id) " +
+                            "REFERENCES document_reference(id) ON DELETE CASCADE"))
     private DocumentReference documentReference;
 
     /**
@@ -72,6 +74,23 @@ public class Attachment extends Auditable {
                     name = "fk_attachment_additionalpublicationdocumentreference",
                     foreignKeyDefinition = "FOREIGN KEY (additional_publication_document_reference_id) REFERENCES additional_publication_document_reference(id) ON DELETE CASCADE"))
     private AdditionalPublicationDocumentReference additionalPublicationDocumentReference;
+
+    /**
+     * Referencia al documento de publicación adicional asociado al adjunto.
+     * <p>
+     * Relación uno a uno con {@link AdditionalPublicationDocumentReference}.
+     * Se aplica cascada completa y carga perezosa.
+     * La eliminación en cascada se asegura mediante la clave foránea.
+     * </p>
+     */
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "preliminary_market_consultation_status_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "fk_attachment_preliminarymarketconsultationstatus",
+                    foreignKeyDefinition = "FOREIGN KEY (preliminary_market_consultation_status_id) REFERENCES preliminary_market_consultation_status(id) ON DELETE CASCADE"))
+    private PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus;
 
     /**
      * Referencia externa asociada a este adjunto.

@@ -67,6 +67,19 @@ public class ProcurementProject extends Auditable {
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
+            name = "preliminary_market_consultation_status_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(
+                    name = "fk_pp_preliminarymarketconsultationstatus",
+                    foreignKeyDefinition =
+                            "FOREIGN KEY (preliminary_market_consultation_status_id) " +
+                                    "REFERENCES preliminary_market_consultation_status(id) ON DELETE CASCADE"))
+    private PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus;
+
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
+    @JoinColumn(
             name = "procurement_project_lot_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(

@@ -48,13 +48,12 @@ public final class MapperProcurementProjectLot {
 
         procurementProjectLot.setProcurementProject(
                 MapperProcurementProject.getProcurementProjectFromType(
-                        null,
-                        procurementProjectLot,
-                        procurementProjectLotType.getProcurementProject()));
+                        null,null, procurementProjectLot, procurementProjectLotType.getProcurementProject()));
 
         Optional.ofNullable(procurementProjectLotType.getTenderingTerms()).ifPresent(tenderingTerms ->
                 procurementProjectLot.setTenderingTerms(
-                        MapperTenderingTerms.getTenderingTermsFromType(null, procurementProjectLot, tenderingTerms))
+                        MapperTenderingTerms.getTenderingTermsFromType(
+                                null, procurementProjectLot, tenderingTerms))
         );
 
         return procurementProjectLot;
