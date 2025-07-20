@@ -85,7 +85,7 @@ public final class FeedHelper {
 
                     // Proceso los Entrys del objeto Feed devolviendo TRUE | FALSE según se haya superado el valor
                     //      de updated asocaido al newestEntry
-                    superadoNewestEntry = EntryHelper.procesarListaEntry(listEntry, newestEntry);
+                    superadoNewestEntry = EntryHelper.procesarListaEntry(listEntry, newestEntry, tipoSincidacion);
                     if (!superadoNewestEntry) {
                         nextLink = source.getNextLink(feed);
                         log.info(

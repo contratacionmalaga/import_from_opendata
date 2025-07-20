@@ -93,25 +93,30 @@ public final class MapperPreliminaryMarketConsultationStatus {
         Optional.ofNullable(preliminaryMarketConsultationStatusType.getProcurementProject())
                 .ifPresent(pp -> preliminaryMarketConsultationStatus.setProcurementProject(
                         MapperProcurementProject.getProcurementProjectFromType(
-                                null, preliminaryMarketConsultationStatus, null, pp)));
+                                null,
+                                preliminaryMarketConsultationStatus,
+                                null,
+                                pp)));
 
         Optional.ofNullable(preliminaryMarketConsultationStatusType.getTenderingProcess())
                 .ifPresent(tp -> preliminaryMarketConsultationStatus.setTenderingProcess(
                         MapperTenderingProcess.getTenderingProcessFromType(
-                                null, preliminaryMarketConsultationStatus, tp)));
+                                null,
+                                preliminaryMarketConsultationStatus,
+                                tp)));
 
         Optional.ofNullable(preliminaryMarketConsultationStatusType.getAttachment())
                 .ifPresent(attachment -> preliminaryMarketConsultationStatus.setAttachment(
                         MapperAttachment.getAttachmentFromType(
-                                null, null, preliminaryMarketConsultationStatus, attachment)));
+                                null,
+                                null,
+                                preliminaryMarketConsultationStatus, attachment)));
 
-        // LocatedContractingParty no es nullable según el original, pero si quieres ser más seguro:
-        /*
-        Optional.ofNullable(preliminaryMarketConsultationStatusType.getLocatedContractingParty())
-                .ifPresent(lcp -> preliminaryMarketConsultationStatus.setLocatedContractingParty(
-                        MapperLocatedContractingParty.getLocatedContractingPartyFromType(
-                                null, preliminaryMarketConsultationStatus, lcp)));
-        */
+        preliminaryMarketConsultationStatus.setLocatedContractingParty(
+                MapperLocatedContractingParty.getLocatedContractingPartyFromType(
+                        null,
+                        preliminaryMarketConsultationStatus,
+                        preliminaryMarketConsultationStatusType.getLocatedContractingParty()));
 
         preliminaryMarketConsultationStatus.setListGeneralDocument(
                 MapperGeneralDocument.getListGeneralDocumentFromType(
@@ -126,5 +131,6 @@ public final class MapperPreliminaryMarketConsultationStatus {
                         preliminaryMarketConsultationStatusType.getValidNoticeInfo()));
 
         return preliminaryMarketConsultationStatus;
+
     }
 }

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Interfaz para acciones sobre objetos Entry
@@ -62,20 +63,26 @@ public final class EntryHelper {
      * @param entry Entry del que devolvemos el valor PartyIdentificationIdPlataforma
      * @return Optional con el código IdPlataforma (puede que no esté incluído en el modelo, motivo del Optional)
      */
-    public static Optional<String> getIdPlataformaFromEntry(Entry entry) {
+    public static Optional<String> getIdPlataformaFromEntry(Entry entry, TipoSindicacion tipoSindicacion) {
 
-        return entry.getListContractFolderStatus().stream()
-                .findFirst()
-                .map(ContractFolderStatus::getLocatedContractingParty)
+        Stream<? extends LocatedContractingParty> stream = switch (tipoSindicacion) {
+            case CPM -> entry.getListPreliminaryMarketConsultationStatus().stream()
+                    .map(PreliminaryMarketConsultationStatus::getLocatedContractingParty);
+            default -> entry.getListContractFolderStatus().stream()
+                    .map(ContractFolderStatus::getLocatedContractingParty);
+        };
+
+        return stream
                 .map(LocatedContractingParty::getParty)
                 .map(Party::getPartyIdentification)
-                .map(PartyIdentification::getIdPlataforma);
+                .map(PartyIdentification::getIdPlataforma)
+                .findFirst();
     }
 
     /**
      * Obtiene la lista de feeds parseados desde local o remoto.
      */
-    public static boolean procesarListaEntry(List<Entry> listEntry, Entry newestEntry)
+    public static boolean procesarListaEntry(List<Entry> listEntry, Entry newestEntry, TipoSindicacion tipoSindicacion)
             throws MiInvalidDateFormatException {
 
         // Ordeno la lista de mayor a menor según Updated
@@ -88,7 +95,7 @@ public final class EntryHelper {
 
             if (newestEntry == null || entry.getUpdated().isAfter(newestEntry.getUpdated())) {
                 nEntryLeidos++;
-                procesarEntry(entry);
+                procesarEntry(entry, tipoSindicacion);
             } else {
                 superadoNewestEntry = true;
                 break;
@@ -108,9 +115,9 @@ public final class EntryHelper {
      * @param entry Objeto Entry que se está procesando
      * @throws MiInvalidDateFormatException Excepción en caso de error
      */
-    public static void procesarEntry(Entry entry) {
+    public static void procesarEntry(Entry entry, TipoSindicacion tipoSindicacion) {
 
-        String evaluacionFiltrosEntry = FiltroHelper.entryCumpleFiltros(entry);
+        String evaluacionFiltrosEntry = FiltroHelper.entryCumpleFiltros(entry, tipoSindicacion);
         log.debug("[procesarEntry] - Evaluación de los filtros del entry: {}", evaluacionFiltrosEntry);
 
         if (evaluacionFiltrosEntry.equals(Mensajes.ENTRY_CUMPLE_FILTROS)) {

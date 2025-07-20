@@ -5,6 +5,7 @@ import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.entity.atom.Entry;
 import local.jarios.enums.TipoConexion;
+import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiServiceException;
 import local.jarios.models.FiltroOrganoContratacion;
 
@@ -85,19 +86,19 @@ public final class FiltroHelper {
      *                      TRUE --> No aplica filtro || Tiene idPlataforma y pertenece al filtro
      *                      FALSE -> En cualquier otra situación
      */
-    public static boolean hasEntryInFiltroSql(Entry entry) {
+    public static boolean hasEntryInFiltroSql(Entry entry, TipoSindicacion tipoSindicacion) {
 
         // Discrimino si existe o no filtro de carga
         if (VariablesGlobales.getMapFiltroSql().isEmpty()) {
             // En caso de NO APLIAR FILTRO DE CARGA --> Devuelvo TRUE
 
             log.debug("[hasEntryInFiltroSql] - VariablesGlobales.getMapFiltro() EMPTY.");
-            System.exit(0);
             return true;
         }
 
         // Compruebo si el ENTRY tiene IdPlataforma
-        Optional<String> idPlataformaOpt = EntryHelper.getIdPlataformaFromEntry(entry);
+        Optional<String> idPlataformaOpt = EntryHelper.getIdPlataformaFromEntry(entry, tipoSindicacion);
+        log.info("[hasEntryInFiltroSql] - {}", entry.toStringResumido());
 
         // Si el Entry tiene IdPlataforma, comprobar si está en el mapa de filtros
         if (idPlataformaOpt.isPresent()) {
@@ -351,10 +352,10 @@ public final class FiltroHelper {
         log.info(msg);
     }
 
-    public static String entryCumpleFiltros(Entry entry) {
+    public static String entryCumpleFiltros(Entry entry, TipoSindicacion tipoSindicacion) {
 
         // Si existe filtro SQL y no lo cumple, descarto el Entry
-        if (!VariablesGlobales.getMapFiltroSql().isEmpty() && !hasEntryInFiltroSql(entry)) {
+        if (!VariablesGlobales.getMapFiltroSql().isEmpty() && !hasEntryInFiltroSql(entry, tipoSindicacion)) {
             log.debug("[entryCumpleFiltros] - {}", Mensajes.ENTRY_NO_FILTRO_SQL);
             return Mensajes.ENTRY_NO_FILTRO_SQL;
         }
