@@ -24,13 +24,6 @@ public record EstadisticaAdapter() implements JsonSerializer<Estadistica> {
         //
         JsonObject jsonObject = new JsonObject();
 
-        //
-        JsonSerializationHelper
-                .addProperty(
-                        jsonObject,
-                        "nFicheros",
-                        estadistica.getNFicheros());
-
         JsonSerializationHelper
                 .addProperty(
                         jsonObject,

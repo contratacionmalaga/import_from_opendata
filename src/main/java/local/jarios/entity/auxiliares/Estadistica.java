@@ -4,14 +4,12 @@ import jakarta.persistence.*;
 import local.jarios.entity.Log;
 import local.jarios.exceptions.MiUnknownHostException;
 import local.jarios.helpers.ComunHelper;
-import local.jarios.helpers.LocalDateTimeHelper;
 import local.jarios.common.util.TamanoCampos;
 import local.jarios.helpers.StringHelper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -45,12 +43,6 @@ public class Estadistica extends Auditable {
     private String equipo;
 
     /**
-     * Numerode ficheros importados
-     */
-    @Column(name = "nFicheros", nullable = false)
-    private int nFicheros;
-
-    /**
      * Número de registros históricos que se deben crear.
      */
     @Column(name = "nRegistrosHistoricosInsertar")
@@ -73,18 +65,6 @@ public class Estadistica extends Auditable {
      */
     @Column(name = "nRegistrosHistoricosRechazar")
     private Long nRegistrosHistoricosRechazar;
-
-    /**
-     * Fecha hora inicial
-     */
-    @Column(name = "fechaHoraInicial", nullable = false)
-    private LocalDateTime fechaHoraInicial;
-
-    /**
-     * Fecha hora final
-     */
-    @Column(name = "fechaHoraFinal", nullable = false)
-    private LocalDateTime fechaHoraFinal;
 
     /**
      * Duración
@@ -112,27 +92,22 @@ public class Estadistica extends Auditable {
     public Estadistica(Log miLog) throws MiUnknownHostException {
 
         this.miLog = miLog;
-        this.fechaHoraInicial = LocalDateTimeHelper.getLocalDateTimeNow();
         this.equipo = ComunHelper.getHostName();
     }
 
     public String toStringReducido() {
 
-        String nficheros = StringHelper.getNumeroConFormato(nFicheros);
         String nInsertar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosInsertar));
         String nEliminar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosEliminar));
         String nActualizar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosActualizar));
         String nRechazar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosRechazar));
 
         return "Estadistica: [" +
-                    "nFicheros='" + nficheros + "', " +
                     "nRegistrosHistoricosInsertar='" + nInsertar + "', " +
                     "nRegistrosHistoricosEliminar='" + nEliminar + "', " +
                     "nRegistrosHistoricosActualizar='" + nActualizar + "', " +
                     "nRegistrosHistoricosRechazar='" + nRechazar + "', " +
-                    "fechaHoraInicial='" + nRechazar + "', " +
-                    "fechaHoraFinal='" + nRechazar + "', " +
-                    "duracion='" + nRechazar + "', " +
-                "]";
+                    "duracion='" + duracion +
+                "']";
     }
 }

@@ -17,7 +17,7 @@ public interface ServicePrincipal {
      *
      * @param miLog el objeto de log que se desea almacenar.
      */
-    void persistirMiLogLocal(Log miLog) throws MiServiceException;
+    void persistirEnBaseDatos(Log miLog) throws MiServiceException;
 
     /**
      * Obtiene el entry más reciente correspondiente a un tipo específico de sindicación.

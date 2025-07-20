@@ -176,6 +176,9 @@ public abstract class AbstractOpenData {
             Estadistica estadistica = new Estadistica(miLog);
             log.info("[procesar] - Creación correcta del objeto {}", estadistica);
 
+            //
+            LocalDateTime fechaHoraInicial =  LocalDateTimeHelper.getLocalDateTimeNow();
+
             // Cargo los filtros que se amplican y los imprimo
             log.info("[procesar] - Cargamos los filtros asociados a esta ejecución.");
             FiltroHelper.loadFilters();
@@ -202,8 +205,10 @@ public abstract class AbstractOpenData {
             Entry newestEntry = null;
             if (lugarImportacion.equals(LugarImportacion.INTERNET)) {
                 newestEntry = EntryHelper.getNewestEntry(tipoSindicacion);
+                if (newestEntry != null) {
+                    log.info("[procesar] - NewestEntry: {}", newestEntry.toStringResumido());
+                }
             }
-            log.info("[procesar] - NewestEntry: {}", newestEntry);
 
             // Parseo de los Feeds
             log.info("[procesar] - Inicio del parseo de los ficheros ATOM.");
@@ -274,15 +279,25 @@ public abstract class AbstractOpenData {
             log.info("[procesar] - Asigno los históricos al Log. Nº Históricos: {}", nHistoricos);
 
             // La lista de Historico la paso a un mapa para poder realizar filtrado por el tipo de acción realizada
-            Map<EntryOpcion, Long> mapHistorico =
-                    listHistoricos
-                            .stream()
-                            .collect(Collectors.groupingBy(Historico::getEntryOpcion, Collectors.counting()));
-            log.info ("[procesar] - Generado Map a partir de ListHistorico");
+            Map<EntryOpcion, Long> mapHistorico = listHistoricos
+                                                        .stream()
+                                                        .collect(
+                                                                Collectors
+                                                                        .groupingBy(
+                                                                                Historico::getEntryOpcion,
+                                                                                Collectors.counting()));
+            log.info ("[procesar] - Generado MapHistorico a partir de ListHistorico");
 
-            // RELLENO LOS ÚLTIMOS DATOS ASOCIADOS AL OBJETO ESTADISTICA
-            LocalDateTime localDateTime = LocalDateTimeHelper.getLocalDateTimeNow();
-            estadistica.setFechaHoraFinal(localDateTime);
+            // Asigno valores según el tipo de acción almacenada en el map de historico de OC
+            estadistica.setNRegistrosHistoricosInsertar(mapHistorico.getOrDefault(EntryOpcion.INSERTAR, 0L));
+            estadistica.setNRegistrosHistoricosEliminar(mapHistorico.getOrDefault(EntryOpcion.ELIMINAR, 0L));
+            estadistica.setNRegistrosHistoricosActualizar(mapHistorico.getOrDefault(EntryOpcion.ACTUALIZAR, 0L));
+            estadistica.setNRegistrosHistoricosRechazar(mapHistorico.getOrDefault(EntryOpcion.RECHAZAR, 0L));
+
+            // Obtengo la duración, la almaceno en Estadistica y asigno esta a miLog
+            LocalDateTime fechaHoraFinal =  LocalDateTimeHelper.getLocalDateTimeNow();
+            String duracion = LocalDateTimeHelper.getDiferenciaLocalDateTime(fechaHoraInicial, fechaHoraFinal);
+            estadistica.setDuracion(duracion);
             miLog.setEstadistica(estadistica);
 
             //
@@ -298,7 +313,7 @@ public abstract class AbstractOpenData {
             log.info("[procesar] - Cadena de Conexión: {}", baseDatos);
 
             // PERSISTO EN LA BASE DE DATOS SEGÚN PROVENGAN LOS DATOS (INTERNET | LOCAL)
-            servicePrincipal.persistirMiLogLocal(miLog);
+            servicePrincipal.persistirEnBaseDatos(miLog);
             log.info("[procesar] - Se han persistido correctamente las entidades en la base de datos.");
 
             log.info("[procesar] - {}", estadistica.toStringReducido());

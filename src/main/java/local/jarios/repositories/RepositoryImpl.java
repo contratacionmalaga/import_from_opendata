@@ -56,7 +56,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
      * @throws MiRepositoryException si ocurre algún error en la transacción.
      */
     @Override
-    public void persistirMiLogLocal(Log miLog) throws MiRepositoryException {
+    public void persistirEnBaseDatos(Log miLog) throws MiRepositoryException {
         ejecutarDentroDeTransaccion(session -> {
             log.debug("[persistirMiLogLocal] - Persistiendo Log.");
             session.persist(miLog);
@@ -166,21 +166,6 @@ public class RepositoryImpl implements Repository, AutoCloseable {
             }
             return mapEntries;
         }, "getListEntries");
-    }
-
-    /**
-     * Obtiene el feed más reciente de acuerdo con la consulta proporcionada.
-     *
-     * @param sql consulta HQL para obtener el feed más reciente.
-     * @return objeto {@link Feed} o null si no existe.
-     * @throws MiRepositoryException si ocurre error en la consulta.
-     */
-    @Override
-    public Feed getNewestFeed(String sql) throws MiRepositoryException {
-        return ejecutarDentroDeTransaccion(session -> {
-            TypedQuery<Feed> query = session.createQuery(sql, Feed.class);
-            return query.getResultList().stream().findFirst().orElse(null);
-        }, "getNewestFeed");
     }
 
     /**

@@ -59,10 +59,10 @@ public class ServicePrincipalImpl implements ServicePrincipal {
      * @throws MiServiceException En caso de error durante la persistencia.
      */
     @Override
-    public void persistirMiLogLocal(Log miLog) throws MiServiceException {
+    public void persistirEnBaseDatos(Log miLog) throws MiServiceException {
         try {
             // El repositorio se encarga de la persistencia y manejo de las transacciones
-            repository.persistirMiLogLocal(miLog);
+            repository.persistirEnBaseDatos(miLog);
         } catch (MiRepositoryException ex) {
             String msg = String.format("[persistirLog] - Error persistiendo Log con ID %s: %s", miLog.getId(), ex.getMessage());
             log.error(msg, ex);

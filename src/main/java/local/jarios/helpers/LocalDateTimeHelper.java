@@ -50,13 +50,18 @@ public final class LocalDateTimeHelper {
      * @param localDateTimeFinal Fecha y hora final.
      * @return Cadena formateada con la duración entre las dos fechas.
      */
-    public static String getDiferenciaLocalDateTime(LocalDateTime localDateTimeInicial, LocalDateTime localDateTimeFinal) {
+    public static String getDiferenciaLocalDateTime(
+            LocalDateTime localDateTimeInicial, LocalDateTime localDateTimeFinal) {
+
+        //
         Duration duracion = Duration.between(localDateTimeInicial, localDateTimeFinal);
         long horas = duracion.toHours();
         long minutos = duracion.toMinutesPart();
         long segundos = duracion.toSecondsPart();
         long milisegundos = duracion.toMillisPart();
-        return String.format("%dh %dm %ds %dms", horas, minutos, segundos, milisegundos);
+        String msg = String.format("%dh %dm %ds %dms", horas, minutos, segundos, milisegundos);
+        log.debug("[getDiferenciaLocalDateTime] {}", msg);
+        return msg;
     }
 
     public static String getFechaHoraFormateada(LocalDateTime fechaHora) {

@@ -221,7 +221,11 @@ public final class EntryHelper {
     public static Entry getNewestEntry(TipoSindicacion tipoSindicacion) throws MiServiceException {
         ServicePrincipal servicePrincipal = new ServicePrincipalImpl();
         Entry entry = servicePrincipal.getNewestEntry(tipoSindicacion);
-        log.info("[getNewestEntry] - TipoSindicacion: {}. NewestEntry: {}", tipoSindicacion, entry.toStringResumido());
+        if (entry != null) {
+            log.info("[getNewestEntry] - TipoSindicacion: {}. NewestEntry: {}", tipoSindicacion, entry.toStringResumido());
+        } else {
+            log.warn("[getNewestEntry] - TipoSindicacion: {}. NewestEntry: null", tipoSindicacion);
+        }
         return entry;
     }
 }
