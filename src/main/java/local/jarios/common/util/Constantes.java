@@ -16,6 +16,9 @@ package local.jarios.common.util;
  */
 public final class Constantes {
 
+    /** Formato de fecha para logs y visualización. */
+    public static final String JSON_VACIO = "{}";
+
     /**
      * Nombre del directorio donde se almacenan los archivos de configuración
      * de la aplicación, como properties u otros ficheros de ajustes.
