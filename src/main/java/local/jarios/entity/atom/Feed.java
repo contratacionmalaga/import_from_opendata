@@ -43,18 +43,19 @@ public class Feed extends Auditable {
     private LocalDateTime updated;
 
     // Relaciones
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "log_id",
             nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_feed_log",
+                    name = "fk_feed_milog",
                     foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE")
     )
     private Log miLog;
 
-    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Entry> listEntry = new ArrayList<>();
 
     // Representaciones en texto

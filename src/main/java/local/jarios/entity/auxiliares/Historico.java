@@ -15,7 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "historico")
-@ToString(exclude = "miLog") // Evita recursividad con relaciones
 public class Historico extends Auditable {
 
     // Primary Key
@@ -51,13 +50,14 @@ public class Historico extends Auditable {
     private String entryMotivo;
 
     // Relationship
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "log_id",
             nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_historico_log",
+                    name = "fk_historico_milog",
                     foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE")
     )
     private Log miLog;
@@ -76,7 +76,8 @@ public class Historico extends Auditable {
     }
 
     // String representaciones
-    public String toStringReducido() {
+    @Override
+    public String toString() {
         return "Historico: [" +
                 "entryId='" + entryId + "', " +
                 "feedLinkSelf='" + feedLinkSelf + "', " +

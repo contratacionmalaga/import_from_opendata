@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "uuid"
@@ -38,10 +40,10 @@ public class Uuid extends Auditable {
     private String uuid;
 
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_uuid_contractfolderstatus",

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "party_identification"
@@ -50,39 +52,36 @@ public class PartyIdentification extends Auditable {
     //
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "party_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_party_partyidentification",
+                    name = "fk_partyidentification_party",
                     foreignKeyDefinition =
                             "FOREIGN KEY (party_id) " +
                             "REFERENCES party(id) ON DELETE CASCADE"))
     private Party party;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "agent_party_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_agentparty_partyidentification",
+                    name = "fk_partyidentification_agentparty",
                     foreignKeyDefinition =
                             "FOREIGN KEY (agent_party_id) " +
                             "REFERENCES agent_party(id) ON DELETE CASCADE"))
     private AgentParty agentParty;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "winning_party_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_winningparty_partyidentification",
+                    name = "fk_partyidentification_winningparty",
                     foreignKeyDefinition =
                             "FOREIGN KEY (winning_party_id) " +
                             "REFERENCES winning_party(id) ON DELETE CASCADE"))

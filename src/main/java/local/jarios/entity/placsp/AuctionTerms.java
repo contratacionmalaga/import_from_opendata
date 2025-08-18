@@ -25,6 +25,17 @@ import java.util.UUID;
 public class AuctionTerms extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public AuctionTerms() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único de la entidad. Se genera automáticamente como UUID.
      */
     @Id
@@ -44,14 +55,20 @@ public class AuctionTerms extends Auditable {
      * <p>Si se elimina el proceso, también se elimina esta entidad gracias a {@code ON DELETE CASCADE}.</p>
      */
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "tenderin_gprocess_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_tenderingprocess_auctionterms",
+                    name = "fk_auctionterms_tenderingprocess",
                     foreignKeyDefinition = "FOREIGN KEY (tenderin_gprocess_id) REFERENCES tendering_process(id) ON DELETE CASCADE")
     )
     private TenderingProcess tenderingProcess;
+
+    @Override
+    public String toString() {
+
+        return "AuctionTerms: []";
+    }
 }

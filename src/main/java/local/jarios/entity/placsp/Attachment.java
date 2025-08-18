@@ -28,6 +28,17 @@ import java.util.UUID;
 public class Attachment extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public Attachment() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único universal (UUID) del adjunto.
      * <p>
      * Clave primaria generada automáticamente.
@@ -47,7 +58,8 @@ public class Attachment extends Auditable {
      * La eliminación en cascada se asegura mediante la clave foránea.
      * </p>
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "document_reference_id",
             referencedColumnName = "id",
@@ -66,7 +78,8 @@ public class Attachment extends Auditable {
      * La eliminación en cascada se asegura mediante la clave foránea.
      * </p>
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "additional_publication_document_reference_id",
             referencedColumnName = "id",
@@ -83,7 +96,8 @@ public class Attachment extends Auditable {
      * La eliminación en cascada se asegura mediante la clave foránea.
      * </p>
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "preliminary_market_consultation_status_id",
             referencedColumnName = "id",
@@ -99,7 +113,12 @@ public class Attachment extends Auditable {
      * Se aplican cascada completa y eliminación de huérfanos.
      * </p>
      */
-    @OneToOne(mappedBy = "attachment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "attachment", cascade = CascadeType.MERGE, orphanRemoval = true)
     private ExternalReference externalReference;
 
+    @Override
+    public String toString() {
+
+        return "Attachment: []";
+    }
 }

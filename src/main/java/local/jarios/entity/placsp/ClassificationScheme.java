@@ -32,6 +32,17 @@ import java.util.UUID;
 public class ClassificationScheme extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public ClassificationScheme() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único universal (UUID) del esquema de clasificación.
      * <p>
      * Clave primaria generada automáticamente.
@@ -74,12 +85,14 @@ public class ClassificationScheme extends Auditable {
      * La eliminación en cascada está configurada en la clave foránea.
      * </p>
      */
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "tenderer_qualification_request_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_classificationscheme_tenderqualificationrequest",
+                    name = "fk_classificationscheme_tendererqualificationrequest",
                     foreignKeyDefinition =
                             "FOREIGN KEY (tenderer_qualification_request_id) " +
                                     "REFERENCES tenderer_qualification_request(id) ON DELETE CASCADE"))
@@ -92,7 +105,7 @@ public class ClassificationScheme extends Auditable {
      * La eliminación en cascada y la remoción huérfana están habilitadas.
      * </p>
      */
-    @OneToMany(mappedBy = "classificationScheme", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "classificationScheme", cascade = CascadeType.MERGE, orphanRemoval = true)
     private List<ClassificationCategory> classificationCategory;
 
     @Override

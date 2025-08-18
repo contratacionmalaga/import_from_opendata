@@ -3,6 +3,7 @@ package local.jarios.entity.placsp;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "general_document"
@@ -35,7 +37,6 @@ public class GeneralDocument extends Auditable {
     //
     //
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
@@ -48,7 +49,6 @@ public class GeneralDocument extends Auditable {
     private ContractFolderStatus contractFolderStatus;
 
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "preliminary_market_consultation_status_id",
@@ -63,6 +63,12 @@ public class GeneralDocument extends Auditable {
     //
     //
     //
-    @OneToOne(mappedBy = "generalDocument", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "generalDocument", cascade = CascadeType.MERGE, orphanRemoval = true)
     private GeneralDocumentDocumentReference generalDocumentDocumentReference;
+
+    @Override
+    public String toString() {
+
+        return "GeneralDocument: []";
+    }
 }

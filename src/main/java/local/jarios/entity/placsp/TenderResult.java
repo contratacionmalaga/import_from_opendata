@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "tender_result"
@@ -86,10 +88,10 @@ public class TenderResult extends Auditable {
     private Boolean abnormallyLowTendersIndicator;
 
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_tenderresult_contractfolderstatus",
@@ -103,19 +105,19 @@ public class TenderResult extends Auditable {
     //
 
     // Datos del Contrato
-    @OneToOne(mappedBy = "tenderResult", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "tenderResult", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Contract contract;
 
     // Datos del Adjudicatario del de este TenderResult
-    @OneToOne(mappedBy = "tenderResult", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "tenderResult", cascade = CascadeType.MERGE, orphanRemoval = true)
     private WinningParty winningParty;
 
     // Importe de adjudicación de este TenderResult
-    @OneToOne(mappedBy = "tenderResult", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "tenderResult", cascade = CascadeType.MERGE, orphanRemoval = true)
     private TenderedProject awardedTenderedProject;
 
     // Información de la subcontratación de este TenderResult
-    @OneToMany(mappedBy = "tenderResult", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tenderResult", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SubcontractTerms> listSubcontractTerms = new ArrayList<>();
 
     @Override

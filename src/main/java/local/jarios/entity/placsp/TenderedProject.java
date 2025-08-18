@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "tendered_project"
@@ -45,13 +47,13 @@ public class TenderedProject extends Auditable {
     //
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "tender_result_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_tenderresult_tenderedproject",
+                    name = "fk_tenderedproject_tenderresult",
                     foreignKeyDefinition =
                             "FOREIGN KEY (tender_result_id) " +
                             "REFERENCES tender_result(id) ON DELETE CASCADE"))
@@ -60,7 +62,7 @@ public class TenderedProject extends Auditable {
     //
     //
     //
-    @OneToOne(mappedBy = "awardedTenderedProject", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "awardedTenderedProject", cascade = CascadeType.MERGE, orphanRemoval = true)
     private LegalMonetaryTotal legalMonetaryTotal;
 
     @Override

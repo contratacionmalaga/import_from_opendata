@@ -1,8 +1,8 @@
 package local.jarios.helpers;
 
 import local.jarios.exceptions.MiUnknownHostException;
-import local.jarios.managers.ManagerGsons;
 import local.jarios.common.util.Constantes;
+import local.jarios.managers.ManagerJackson;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
@@ -68,14 +68,9 @@ public final class ComunHelper {
      *
      * @param object El objeto que voy a imprimir
      */
-    public static void imprimir(Object object, boolean imprimirHijos) {
-
-        // Imprimiendo el objeto
+    public static void imprimir(Object object) {
         Arrays
-                .stream(
-                        ManagerGsons
-                                .objectToJsonPretty(object, imprimirHijos)
-                                .split(Constantes.CR))
+                .stream(ManagerJackson.objectToJsonPretty(object).split(Constantes.CR))
                 .forEach(log::info);
     }
 

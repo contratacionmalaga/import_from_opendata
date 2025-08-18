@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "tender_recipient_party"
@@ -38,13 +40,13 @@ public class TenderRecipientParty extends Auditable {
     //
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "tendering_terms_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_tenderingterms_tenderrecipientparty",
+                    name = "fk_tenderrecipientparty_tenderingterms",
                     foreignKeyDefinition =
                             "FOREIGN KEY (tendering_terms_id) " +
                             "REFERENCES tendering_terms(id) ON DELETE CASCADE"))

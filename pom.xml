@@ -383,6 +383,14 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <additionalJOptions>
+                        <additionalJOption>-Xdoclint:all,-missing</additionalJOption>
+                        <!-- Aumenta el máximo de warnings que muestra javadoc -->
+                        <additionalJOption>-Xmaxwarns</additionalJOption>
+                        <additionalJOption>500</additionalJOption>
+                        <additionalJOption>-Xmaxerrs</additionalJOption>
+                        <additionalJOption>500</additionalJOption>
+                    </additionalJOptions>
                     <show>private</show>
                     <nohelp>true</nohelp>
                 </configuration>

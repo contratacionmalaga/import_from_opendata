@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(
         name = "external_reference"
 )
@@ -44,7 +46,6 @@ public class ExternalReference extends Auditable {
     //
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "attachment_id",

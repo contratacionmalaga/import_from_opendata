@@ -23,6 +23,17 @@ import java.util.UUID;
 )
 public class CommodityClassification extends Auditable {
 
+    /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public CommodityClassification() {
+        // Constructor vacío requerido por JPA
+    }
+
     //
     // PROPIEDADES DEL MODELO
     //
@@ -38,10 +49,10 @@ public class CommodityClassification extends Auditable {
     // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
     //
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "procurement_project_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_commodityclassification_procurementproject",

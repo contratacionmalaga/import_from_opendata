@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "location"
@@ -42,39 +44,36 @@ public class Location extends Auditable {
     // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "procurement_project_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_procurementproject_realizedlocation",
+                    name = "fk_location_procurementproject",
                     foreignKeyDefinition =
                             "FOREIGN KEY (procurement_project_id) " +
                             "REFERENCES procurement_project(id) ON DELETE CASCADE"))
     private ProcurementProject procurementProject;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "party_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_party_location",
+                    name = "fk_location_party",
                     foreignKeyDefinition =
                             "FOREIGN KEY (party_id) " +
                             "REFERENCES party(id) ON DELETE CASCADE"))
     private Party party;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "winning_party_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_winningparty_location",
+                    name = "fk_location_winningparty",
                     foreignKeyDefinition =
                             "FOREIGN KEY (winning_party_id) " +
                             "REFERENCES winning_party(id) ON DELETE CASCADE"))
@@ -83,7 +82,7 @@ public class Location extends Auditable {
     //
     // RELACIONES CON ENTIDADES HIJAS DEPENDIENTE DE ESTA
     //
-    @OneToOne(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "location", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Address address;
 
     @Override

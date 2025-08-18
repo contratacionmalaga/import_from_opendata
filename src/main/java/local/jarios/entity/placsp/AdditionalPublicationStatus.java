@@ -30,6 +30,17 @@ import java.util.UUID;
 public class AdditionalPublicationStatus extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public AdditionalPublicationStatus() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único universal (UUID) del estado de publicación.
      * <p>
      * Clave primaria, generado automáticamente.
@@ -58,12 +69,14 @@ public class AdditionalPublicationStatus extends Auditable {
      * La eliminación en cascada se asegura con la definición de clave foránea.
      * </p>
      */
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "notice_info_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_aps_noticeinfo",
+                    name = "fk_additionalpublicationstatus_noticeinfo",
                     foreignKeyDefinition = "FOREIGN KEY (notice_info_id) REFERENCES notice_info(id) ON DELETE CASCADE"))
     private NoticeInfo noticeInfo;
 
@@ -74,7 +87,7 @@ public class AdditionalPublicationStatus extends Auditable {
      * Operaciones en cascada para todas las acciones, y eliminación en cascada (orphan removal) al desvincular.
      * </p>
      */
-    @OneToMany(mappedBy = "additionalPublicationStatus", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "additionalPublicationStatus", cascade = CascadeType.MERGE, orphanRemoval = true)
     private List<AdditionalPublicationRequest> additionalPublicationRequestList = new ArrayList<>();
 
     /**
@@ -84,7 +97,7 @@ public class AdditionalPublicationStatus extends Auditable {
      * Operaciones en cascada para todas las acciones, y eliminación en cascada (orphan removal) al desvincular.
      * </p>
      */
-    @OneToMany(mappedBy = "additionalPublicationStatus", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "additionalPublicationStatus", cascade = CascadeType.MERGE, orphanRemoval = true)
     private List<AdditionalPublicationDocumentReference> additionalPublicationDocumentReferenceList = new ArrayList<>();
 
     /**

@@ -9,51 +9,97 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description:
- * Author: juan
- * Date: 20/03/2025
- * Team:
+ * Entidad que representa un país dentro del sistema.
+ * <p>
+ * La clase modela los datos básicos de un país (código de identificación y nombre),
+ * así como su relación con una dirección asociada.
+ * </p>
+ *
+ * <p>
+ * Hereda de {@link Auditable}, lo que permite registrar información de auditoría
+ * como fecha de creación, última modificación y usuario responsable.
+ * </p>
+ *
+ * <p>
+ * Cada instancia de esta entidad se corresponde con un registro en la tabla
+ * <b>country</b> de la base de datos.
+ * </p>
+ *
+ * @author Juan
+ * @version 1.0
+ * @since 20/03/2025
  */
-
 @Setter
 @Getter
 @Entity
-@Table(
-        name = "country"
-)
+@Table(name = "country")
 public class Country extends Auditable {
 
-    //
-    // PROPIEDADES DEL MODELO
-    //
+    /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public Country() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
+     * Identificador único de la entidad en formato UUID.
+     * Se genera automáticamente al persistir la entidad en la base de datos.
+     */
     @Id
     @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    /**
+     * Código de identificación único del país.
+     * <p>
+     * Por ejemplo, puede corresponderse con un código ISO alfa-2 o alfa-3.
+     * </p>
+     */
     @Column(name = "identification_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String identificationCode;
 
+    /**
+     * Nombre completo del país.
+     * <p>
+     * Se almacena como texto con un máximo de 500 caracteres.
+     * </p>
+     */
     @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String name;
 
-    //
-    // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-    //
+    /**
+     * Relación uno a uno con la entidad {@link Address}.
+     * <p>
+     * Permite asociar el país a una dirección concreta.
+     * Esta relación está definida con eliminación en cascada
+     * para mantener la integridad referencial.
+     * </p>
+     */
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "address_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_address_country",
+                    name = "fk_country_address",
                     foreignKeyDefinition = "FOREIGN KEY (address_id) REFERENCES address(id) ON DELETE CASCADE"))
     private Address address;
 
+    /**
+     * Devuelve una representación en cadena del objeto con los
+     * valores principales de la entidad.
+     *
+     * @return cadena con los valores de {@code identificationCode} y {@code name}.
+     */
     @Override
     public String toString() {
-
         return "Country: " +
                 "[identificationCode='" + identificationCode + "', " +
                 "name='" + name + "']";

@@ -316,7 +316,7 @@ public abstract class AbstractOpenData {
             servicePrincipal.persistirEnBaseDatos(miLog);
             log.info("[procesar] - Se han persistido correctamente las entidades en la base de datos.");
 
-            log.info("[procesar] - {}", estadistica.toStringReducido());
+            log.info("[procesar] - {}", estadistica.toString());
 
             // Envío de las estadísticas por correo
             enviarEmail(estadistica, null, true);

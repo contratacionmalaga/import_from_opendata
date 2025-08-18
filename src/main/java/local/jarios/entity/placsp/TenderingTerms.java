@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "tendering_terms"
@@ -89,7 +91,6 @@ public class TenderingTerms extends Auditable {
         private Boolean electronicInvoicingIndicator;
 
         @OneToOne(
-                cascade = CascadeType.ALL,
                 fetch = FetchType.LAZY)
         @JoinColumn(
                 name = "contract_folder_status_id",
@@ -102,7 +103,6 @@ public class TenderingTerms extends Auditable {
         private ContractFolderStatus contractFolderStatus;
 
         @OneToOne(
-                cascade = CascadeType.ALL,
                 fetch = FetchType.LAZY)
         @JoinColumn(
                 name = "procurement_project_lot_id",
@@ -115,23 +115,22 @@ public class TenderingTerms extends Auditable {
         private ProcurementProjectLot procurementProjectLot;
 
 
-
-        @OneToOne(mappedBy = "tenderingTerms", cascade = CascadeType.ALL, orphanRemoval = true)
+        @OneToOne(mappedBy = "tenderingTerms", cascade = CascadeType.MERGE, orphanRemoval = true)
         private AwardingTerms awardingTerms;
 
-        @OneToOne(mappedBy = "tenderingTerms", cascade = CascadeType.ALL, orphanRemoval = true)
+        @OneToOne(mappedBy = "tenderingTerms", cascade = CascadeType.MERGE, orphanRemoval = true)
         private TendererQualificationRequest tendererQualificationRequest;
 
-        @OneToMany(mappedBy = "tenderingTerms", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @OneToMany(mappedBy = "tenderingTerms", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
         private List<SubcontractTerms> listAllowedSubcontractTerms = new ArrayList<>();
 
-        @OneToMany(mappedBy = "tenderingTerms", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @OneToMany(mappedBy = "tenderingTerms", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
         private List<ContractExecutionRequirement> listContractExecutionRequirement = new ArrayList<>();
 
-        @OneToMany(mappedBy = "tenderingTerms", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        @OneToMany(mappedBy = "tenderingTerms", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
         private List<FinancialGuarantee> listFinancialGuarantee = new ArrayList<>();
 
-        @OneToOne(mappedBy = "tenderingTerms", cascade = CascadeType.ALL, orphanRemoval = true)
+        @OneToOne(mappedBy = "tenderingTerms", cascade = CascadeType.MERGE, orphanRemoval = true)
         private TenderRecipientParty tenderRecipientParty;
 
         @Override

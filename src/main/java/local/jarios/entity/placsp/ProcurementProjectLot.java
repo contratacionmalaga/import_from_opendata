@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "procurement_project_lot"
@@ -42,10 +44,10 @@ public class ProcurementProjectLot extends Auditable {
     //
 
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_procurementprojectlot_contractfolderstatus",
@@ -58,10 +60,10 @@ public class ProcurementProjectLot extends Auditable {
     // RELACIONES CON ENTIDADES HIJAS DEPENDIENTE DE ESTA
     //
 
-    @OneToOne(mappedBy = "procurementProjectLot", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "procurementProjectLot", cascade = CascadeType.MERGE, orphanRemoval = true)
     private ProcurementProject procurementProject;
 
-    @OneToOne(mappedBy = "procurementProjectLot", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "procurementProjectLot", cascade = CascadeType.MERGE, orphanRemoval = true)
     private TenderingTerms tenderingTerms;
 
     @Override

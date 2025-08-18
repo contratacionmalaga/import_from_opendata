@@ -7,8 +7,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
-
 /**
  * Clase de utilidad para la conversión de objetos Java a su representación en formato JSON,
  * utilizando la librería <b>Jackson</b>.
@@ -44,10 +42,13 @@ import java.util.Map;
 @Slf4j
 public final class JsonHelper {
 
-    /**
-     * Instancia singleton de {@link ObjectMapper} configurada para toda la clase.
-     */
+    /** Instancia singleton de {@link ObjectMapper} configurada para toda la clase. */
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * Constructor privado para evitar instanciación de la clase de utilidad.
+     */
+    private JsonHelper() { }
 
     // Bloque estático de configuración inicial
     static {
@@ -58,30 +59,23 @@ public final class JsonHelper {
     }
 
     /**
-     * Constructor privado para evitar instanciación de la clase de utilidad.
-     */
-    private JsonHelper() {
-    }
-
-    /**
-     * Convierte un {@link Map} de cadenas clave-valor en una cadena JSON.
+     * Serializa una entidad a JSON utilizando Jackson.
      *
-     * <p>Si el mapa proporcionado es {@code null}, devuelve la constante
+     * <p>Si la entidad es {@code null}, devuelve la constante
      * {@link Constantes#JSON_VACIO}. En caso de error durante la serialización,
      * el error se registra en el log y también se devuelve un JSON vacío.</p>
      *
-     * @param map Mapa de cadenas a serializar en formato JSON.
+     * @param <T> tipo de la entidad a serializar
+     * @param entidad instancia de la entidad que debe ser serializada
      * @return Cadena JSON resultante o {@link Constantes#JSON_VACIO} en caso de error o {@code null}.
      */
-    public static String serializeMapToJson(Map<String, String> map) {
-        if (map == null) {
+    public static <T> String serializeEntitytoJson(T entidad) {
+        if (entidad == null) {
             return Constantes.JSON_VACIO;
         }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
         try {
-            return objectMapper.writeValueAsString(map);
+            return mapper.writeValueAsString(entidad);
         } catch (JsonProcessingException ex) {
             log.error("Error serializando el mapa a JSON", ex);
             return Constantes.JSON_VACIO;

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "procurement_project"
@@ -51,7 +53,6 @@ public class ProcurementProject extends Auditable {
     // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
@@ -64,20 +65,18 @@ public class ProcurementProject extends Auditable {
     private ContractFolderStatus contractFolderStatus;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "preliminary_market_consultation_status_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_pp_preliminarymarketconsultationstatus",
+                    name = "fk_procurementproject_preliminarymarketconsultationstatus",
                     foreignKeyDefinition =
                             "FOREIGN KEY (preliminary_market_consultation_status_id) " +
                                     "REFERENCES preliminary_market_consultation_status(id) ON DELETE CASCADE"))
     private PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "procurement_project_lot_id",
@@ -92,19 +91,19 @@ public class ProcurementProject extends Auditable {
     //
     // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
     //
-    @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.MERGE, orphanRemoval = true)
     private BudgetAmount budgetAmount;
 
-    @OneToMany(mappedBy = "procurementProject", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "procurementProject", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CommodityClassification> requiredCommodityClassification = new ArrayList<>();
 
-    @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Location realizedLocation;
 
-    @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Period plannedPeriod;
 
-    @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.MERGE, orphanRemoval = true)
     private ContractExtension contractExtension;
 
     @Override

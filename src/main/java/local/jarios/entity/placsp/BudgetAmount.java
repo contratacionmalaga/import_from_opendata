@@ -28,6 +28,17 @@ import java.util.UUID;
 public class BudgetAmount extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public BudgetAmount() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único universal (UUID) de la cantidad presupuestaria.
      * <p>
      * Clave primaria generada automáticamente.
@@ -64,12 +75,14 @@ public class BudgetAmount extends Auditable {
      * La eliminación en cascada está configurada en la clave foránea.
      * </p>
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "procurement_project_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_procurementproject_budgetamount",
+                    name = "fk_budgetamount_procurementproject",
                     foreignKeyDefinition = "FOREIGN KEY (procurement_project_id) REFERENCES procurement_project(id) ON DELETE CASCADE"))
     private ProcurementProject procurementProject;
 

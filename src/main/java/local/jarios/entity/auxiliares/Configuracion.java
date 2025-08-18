@@ -63,13 +63,13 @@ public class Configuracion extends Auditable {
     //
     //
     @OneToOne(
-            cascade = CascadeType.ALL)
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "log_id",
             nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_configuracion_log",
+                    name = "fk_configuracion_milog",
                     foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
     private Log miLog;
 
@@ -107,7 +107,7 @@ public class Configuracion extends Auditable {
     @Override
     public String toString() {
 
-        return "Configuración: [" +
+        return "Configuracion: [" +
                 "path='" + path + "', " +
                 "filename='" + filename + "', " +
                 "url='" + url + "', " +

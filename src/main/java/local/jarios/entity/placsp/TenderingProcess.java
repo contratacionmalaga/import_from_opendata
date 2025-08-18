@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "tendering_process"
@@ -86,7 +88,6 @@ public class TenderingProcess extends Auditable {
     //
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
@@ -99,13 +100,12 @@ public class TenderingProcess extends Auditable {
     private ContractFolderStatus contractFolderStatus;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "preliminary_market_consultation_status_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_tp_preliminarymarketconsultationstatus",
+                    name = "fk_tenderingprocess_preliminarymarketconsultationstatus",
                     foreignKeyDefinition =
                             "FOREIGN KEY (preliminary_market_consultation_status_id) " +
                                     "REFERENCES preliminary_market_consultation_status(id) ON DELETE CASCADE"))
@@ -118,19 +118,19 @@ public class TenderingProcess extends Auditable {
     // 4.40 Usa Subasta Electrónica
     // Permite indicar si se va a recurrir a una subasta electrónica para adjudicar el contrato
     //
-    @OneToOne(mappedBy = "tenderingProcess", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "tenderingProcess", cascade = CascadeType.MERGE, orphanRemoval = true)
     private AuctionTerms auctionTerms;
 
     // 4.37 Justificación del proceso
     // Justificación del uso de un determinado procedimiento no ordinario como el
     //     procedimiento negociado sin publicidad.
-    @OneToMany(mappedBy = "tenderingProcess", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "tenderingProcess", cascade = CascadeType.MERGE, orphanRemoval = true)
     private List<ProcessJustification> listProcessJustification;
 
     // 4.37 Justificación del proceso
     // Justificación del uso de un determinado procedimiento no ordinario como el
     //     procedimiento negociado sin publicidad.
-    @OneToOne(mappedBy = "tenderingProcess", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "tenderingProcess", cascade = CascadeType.MERGE, orphanRemoval = true)
     private EconomicOperatorShortList economicOperatorShortList;
 
     @Override

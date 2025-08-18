@@ -1,6 +1,7 @@
 package local.jarios.common.util;
 
 /**
+ * Clase para la gestión de los ficheros properties
  *
  * @author Home
  */

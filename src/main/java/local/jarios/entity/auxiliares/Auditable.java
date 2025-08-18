@@ -1,5 +1,6 @@
 package local.jarios.entity.auxiliares;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 public class Auditable {
 
     //Getters y Setters
+    @JsonIgnore
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

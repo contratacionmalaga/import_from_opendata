@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "winning_party"
@@ -32,10 +34,10 @@ public class WinningParty extends Auditable {
     private String partyName;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "tender_result_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_winningparty_tenderresult",
@@ -47,22 +49,22 @@ public class WinningParty extends Auditable {
     //
     //
     //
-    @OneToOne(mappedBy = "winningParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "winningParty", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Address postalAddress;
 
-    @OneToOne(mappedBy = "winningParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "winningParty", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Location physicalLocation;
 
-    @OneToOne(mappedBy = "winningParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "winningParty", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Contact contact;
 
-    @OneToOne(mappedBy = "winningParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "winningParty", cascade = CascadeType.MERGE, orphanRemoval = true)
     private PartyIdentification partyIdentification;
 
     @Override
     public String toString() {
 
-        return "PartyName: " +
+        return "WinningParty: " +
                 "[partyName='" + partyName + "']";
     }
 }

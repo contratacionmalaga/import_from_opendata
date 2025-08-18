@@ -32,6 +32,17 @@ import java.util.UUID;
 public class Address extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public Address() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único universal (UUID) de la dirección.
      * <p>
      * Clave primaria generada automáticamente.
@@ -95,48 +106,51 @@ public class Address extends Auditable {
     /**
      * Entidad {@link Party} asociada a esta dirección.
      * <p>
-     * Relación uno a uno, carga perezosa, con cascada para todas las operaciones.
-     * La eliminación en cascada se asegura mediante la clave foránea.
+     * Relación uno a uno, carga perezosa, La eliminación en cascada se asegura mediante
+     * la clave foránea en la base de datos (ON DELETE CASCADE).
      * </p>
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "party_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_location_party",
+                    name = "fk_address_party",
                     foreignKeyDefinition = "FOREIGN KEY (party_id) REFERENCES party(id) ON DELETE CASCADE"))
     private Party party;
 
     /**
      * Entidad {@link Location} asociada a esta dirección.
      * <p>
-     * Relación uno a uno, carga perezosa, con cascada para todas las operaciones.
-     * La eliminación en cascada se asegura mediante la clave foránea.
+     * Relación uno a uno, carga perezosa, La eliminación en cascada se asegura mediante
+     * la clave foránea en la base de datos (ON DELETE CASCADE).
      * </p>
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "location_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_location_address",
+                    name = "fk_address_location",
                     foreignKeyDefinition = "FOREIGN KEY (location_id) REFERENCES location(id) ON DELETE CASCADE"))
     private Location location;
 
     /**
      * Entidad {@link WinningParty} asociada a esta dirección.
      * <p>
-     * Relación uno a uno, carga perezosa, con cascada para todas las operaciones.
-     * La eliminación en cascada se asegura mediante la clave foránea.
+     * Relación uno a uno, carga perezosa, La eliminación en cascada se asegura mediante
+     * la clave foránea en la base de datos (ON DELETE CASCADE).
      * </p>
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "winningparty_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_winningparty_addres",
+                    name = "fk_address_winningparty",
                     foreignKeyDefinition = "FOREIGN KEY (winningparty_id) REFERENCES winning_party(id) ON DELETE CASCADE"))
     private WinningParty winningParty;
 
@@ -151,7 +165,7 @@ public class Address extends Auditable {
      * Se aplican cascada completa y eliminación de huérfanos.
      * </p>
      */
-    @OneToOne(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "address", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Country country;
 
     /**

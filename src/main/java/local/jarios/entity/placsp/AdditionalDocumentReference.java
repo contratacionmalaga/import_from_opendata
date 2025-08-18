@@ -3,6 +3,7 @@ package local.jarios.entity.placsp;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -19,6 +20,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "additional_document_reference")
 public class AdditionalDocumentReference extends Auditable {
@@ -37,14 +39,16 @@ public class AdditionalDocumentReference extends Auditable {
      * <p>Al eliminar el estado de carpeta de contrato, se eliminarán las referencias asociadas gracias a {@code ON DELETE CASCADE}.</p>
      */
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_aditionaldocumentreference_contractfolderstatus",
-                    foreignKeyDefinition = "FOREIGN KEY (contract_folder_status_id) REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
+                    name = "fk_additionaldocumentreference_contractfolderstatus",
+                    foreignKeyDefinition =
+                            "FOREIGN KEY (contract_folder_status_id) " +
+                            "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
     private ContractFolderStatus contractFolderStatus;
 
     /**
@@ -52,6 +56,12 @@ public class AdditionalDocumentReference extends Auditable {
      * <p>Esta referencia adicional tiene una referencia documental asociada,
      * que se mantiene sincronizada mediante cascada y eliminación en órfano.</p>
      */
-    @OneToOne(mappedBy = "additionalDocumentReference", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "additionalDocumentReference", cascade = CascadeType.MERGE, orphanRemoval = true)
     private DocumentReference documentReference;
+
+    @Override
+    public String toString() {
+
+        return "AdditionalDocumentReference: []";
+    }
 }

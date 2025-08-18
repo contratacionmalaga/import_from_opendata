@@ -3,6 +3,7 @@ package local.jarios.entity.placsp;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "tenderer_qualification_request"
@@ -51,13 +53,13 @@ public class TendererQualificationRequest extends Auditable {
     private String employeeQuantityDescription;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "tendering_terms_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_tenderqualificationrequest_tenderingterms",
+                    name = "fk_tendererqualificationrequest_tenderingterms",
                     foreignKeyDefinition =
                             "FOREIGN KEY (tendering_terms_id) " +
                             "REFERENCES tendering_terms(id) ON DELETE CASCADE"))
@@ -66,15 +68,15 @@ public class TendererQualificationRequest extends Auditable {
     // 4.30.1 Criterio de evaluación (Solvencias)
     //     Técnicos
     //     Económico - Financiera
-    @OneToMany(mappedBy = "tendererQualificationRequest", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tendererQualificationRequest", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<EvaluationCriteria> evaluationCriteria= new ArrayList<>();
 
     // Clasificación empresarial solicitada: Especifica las Clasificaciones requeridas para los Licitadores
-    @OneToMany(mappedBy = "tendererQualificationRequest", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tendererQualificationRequest", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ClassificationScheme> requiredBusinessClassificationScheme= new ArrayList<>();
 
     // Clasificación empresarial solicitada: Especifica las Clasificaciones requeridas para los Licitadores
-    @OneToMany(mappedBy = "tendererQualificationRequest", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tendererQualificationRequest", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<TendererRequirement> specificTendererRequirement= new ArrayList<>();
 
     @Override

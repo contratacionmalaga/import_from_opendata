@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "additional_publication_document_reference")
 public class AdditionalPublicationDocumentReference extends Auditable {
@@ -57,13 +59,13 @@ public class AdditionalPublicationDocumentReference extends Auditable {
      * también se eliminen estas referencias.</p>
      */
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "additional_publication_status_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_apdr_aps",
+                    name = "fk_additionalpublicationdocumentreference_additionalpublicationstatus",
                     foreignKeyDefinition = "FOREIGN KEY (additional_publication_status_id) REFERENCES additional_publication_status(id) ON DELETE CASCADE"))
     private AdditionalPublicationStatus additionalPublicationStatus;
 
@@ -74,7 +76,7 @@ public class AdditionalPublicationDocumentReference extends Auditable {
      */
     @OneToOne(
             mappedBy = "additionalPublicationDocumentReference",
-            cascade = CascadeType.ALL,
+            cascade = CascadeType.MERGE,
             orphanRemoval = true)
     private Attachment attachment;
 

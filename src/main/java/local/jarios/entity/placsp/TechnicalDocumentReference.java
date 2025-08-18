@@ -3,6 +3,7 @@ package local.jarios.entity.placsp;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "technical_document_reference"
@@ -35,13 +37,13 @@ public class TechnicalDocumentReference extends Auditable {
     //
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_tdr_contractfolderstatus",
+                    name = "fk_technicaldocumentreference_contractfolderstatus",
                     foreignKeyDefinition =
                             "FOREIGN KEY (contract_folder_status_id) " +
                             "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
@@ -50,6 +52,12 @@ public class TechnicalDocumentReference extends Auditable {
     //
     //
     //
-    @OneToOne(mappedBy = "technicalDocumentReference", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "technicalDocumentReference", cascade = CascadeType.MERGE, orphanRemoval = true)
     private DocumentReference documentReference;
+
+    @Override
+    public String toString() {
+
+        return "TechnicalDocumentReference: []";
+    }
 }

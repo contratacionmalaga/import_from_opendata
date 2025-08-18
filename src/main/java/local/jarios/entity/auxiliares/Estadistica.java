@@ -76,13 +76,13 @@ public class Estadistica extends Auditable {
     //
     //
     @OneToOne(
-            cascade = CascadeType.ALL)
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "log_id",
             nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_estadistica_log",
+                    name = "fk_estadistica_milog",
                     foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
     private Log miLog;
 
@@ -95,12 +95,17 @@ public class Estadistica extends Auditable {
         this.equipo = ComunHelper.getHostName();
     }
 
-    public String toStringReducido() {
+    @Override
+    public String toString() {
 
-        String nInsertar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosInsertar));
-        String nEliminar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosEliminar));
-        String nActualizar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosActualizar));
-        String nRechazar = StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosRechazar));
+        String nInsertar = nRegistrosHistoricosInsertar == null ? "0" :
+                StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosInsertar));
+        String nEliminar = nRegistrosHistoricosEliminar == null ? "0" :
+                StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosEliminar));
+        String nActualizar = nRegistrosHistoricosActualizar == null ? "0" :
+                StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosActualizar));
+        String nRechazar = nRegistrosHistoricosRechazar == null ? "0" :
+                StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosRechazar));
 
         return "Estadistica: [" +
                     "nRegistrosHistoricosInsertar='" + nInsertar + "', " +

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "notice_info"
@@ -40,7 +42,6 @@ public class NoticeInfo extends Auditable {
     //
     //
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
@@ -54,7 +55,6 @@ public class NoticeInfo extends Auditable {
 
     //
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "preliminary_market_consultation_status_id",
@@ -69,7 +69,7 @@ public class NoticeInfo extends Auditable {
     //
     //
     //
-    @OneToMany(mappedBy = "noticeInfo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "noticeInfo", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AdditionalPublicationStatus> listAdditionalPublicationStatus = new ArrayList<>();
 
     @Override

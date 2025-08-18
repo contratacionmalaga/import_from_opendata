@@ -31,6 +31,17 @@ import java.util.UUID;
 public class AwardingTerms extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public AwardingTerms() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único universal (UUID) de los términos de adjudicación.
      * <p>
      * Clave primaria generada automáticamente.
@@ -49,9 +60,11 @@ public class AwardingTerms extends Auditable {
      * La eliminación en cascada está definida en la clave foránea.
      * </p>
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "tendering_terms_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_awardingterms_tenderingterms",
@@ -65,6 +78,12 @@ public class AwardingTerms extends Auditable {
      * Los elementos de la lista se eliminan en cascada y son removidos si no están asociados.
      * </p>
      */
-    @OneToMany(mappedBy = "awardingTerms", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "awardingTerms", cascade = CascadeType.MERGE, orphanRemoval = true)
     private List<AwardingCriteria> listAwardingCriteria = new ArrayList<>();
+
+    @Override
+    public String toString() {
+
+        return "AwardingTerms: []";
+    }
 }

@@ -31,6 +31,17 @@ import java.util.UUID;
 public class AgentParty extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public AgentParty() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único universal (UUID) de la entidad agente.
      * <p>
      * Clave primaria generada automáticamente.
@@ -67,9 +78,11 @@ public class AgentParty extends Auditable {
      * La eliminación en cascada se asegura mediante la clave foránea.
      * </p>
      */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "party_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_agentparty_party",
@@ -83,7 +96,7 @@ public class AgentParty extends Auditable {
      * Se aplican cascada completa y eliminación de huérfanos.
      * </p>
      */
-    @OneToOne(mappedBy = "agentParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "agentParty", cascade = CascadeType.MERGE, orphanRemoval = true)
     private PartyIdentification partyIdentification;
 
     /**

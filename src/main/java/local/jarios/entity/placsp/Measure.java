@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -21,10 +22,11 @@ import java.util.UUID;
  * @author Juan
  * @since 2024-06
  */
-@Getter
 @Setter
+@Getter
+@NoArgsConstructor
 @Entity
-@Table(name = "meassure")
+@Table(name = "measure")
 public class Measure extends Auditable {
 
     /**
@@ -52,13 +54,12 @@ public class Measure extends Auditable {
      * <p>Define la duración dentro de un período específico.</p>
      */
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "period_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_period_measure",
+                    name = "fk_measure_period",
                     foreignKeyDefinition = "FOREIGN KEY (period_id) REFERENCES period(id) ON DELETE CASCADE")
     )
     private Period period;
@@ -68,13 +69,12 @@ public class Measure extends Auditable {
      * <p>Define la duración dentro de un período específico.</p>
      */
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_modification_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_contract_modification_measure",
+                    name = "fk_measure_contractmodification",
                     foreignKeyDefinition = "FOREIGN KEY (contract_modification_id) " +
                             "REFERENCES contract_modification(id) ON DELETE CASCADE")
     )

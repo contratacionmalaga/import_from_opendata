@@ -3,6 +3,7 @@ package local.jarios.entity.placsp;
 import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "legal_monetary_total"
@@ -48,39 +50,36 @@ public class LegalMonetaryTotal extends Auditable {
     // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "awarded_tendered_project_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_awardedtenderedproject_legalmonetarytotal",
+                    name = "fk_legalmonetarytotal_awardedtenderedproject",
                     foreignKeyDefinition =
                             "FOREIGN KEY (awarded_tendered_project_id) " +
                             "REFERENCES tendered_project(id) ON DELETE CASCADE"))
     private TenderedProject awardedTenderedProject;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_modification_legal_monetary_total_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_contractmodification_legalmonetarytotal",
+                    name = "fk_legalmonetarytotal_contractmodificationlegalmonetarytotal",
                     foreignKeyDefinition =
                             "FOREIGN KEY (contract_modification_legal_monetary_total_id) " +
                             "REFERENCES contract_modification(id) ON DELETE CASCADE"))
     private ContractModification contractModificationLegalMonetaryTotal;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_modification_final_legal_monetary_total_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_contractmodificationfinal_legalmonetarytotal",
+                    name = "fk_legalmonetarytotal_contractmodificationfinallegalmonetarytotal",
                     foreignKeyDefinition =
                             "FOREIGN KEY (contract_modification_final_legal_monetary_total_id) " +
                             "REFERENCES contract_modification(id) ON DELETE CASCADE"))

@@ -5,6 +5,7 @@ import local.jarios.common.util.Constantes;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "preliminary_market_consultation_status"
@@ -91,12 +93,13 @@ public class PreliminaryMarketConsultationStatus extends Auditable {
     //
     //
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "entry_id",
+            nullable = false,
             referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_preliminarymarketconsultationstatus_entry",
+            foreignKey = @ForeignKey(
+                    name = "fk_preliminarymarketconsultationstatus_entry",
                     foreignKeyDefinition = "FOREIGN KEY (entry_id) REFERENCES entry(id) ON DELETE CASCADE"))
     private Entry entry;
 
@@ -104,22 +107,22 @@ public class PreliminaryMarketConsultationStatus extends Auditable {
     //
     //
 
-    @OneToOne(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Attachment attachment;
 
-    @OneToOne(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.MERGE, orphanRemoval = true)
     private LocatedContractingParty locatedContractingParty;
 
-    @OneToMany(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<GeneralDocument> listGeneralDocument = new ArrayList<>();
 
-    @OneToMany(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<NoticeInfo> listNoticeInfo = new ArrayList<>();
 
-    @OneToOne(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.MERGE, orphanRemoval = true)
     private ProcurementProject procurementProject;
 
-    @OneToOne(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.MERGE, orphanRemoval = true)
     private TenderingProcess tenderingProcess;
 
     @Override

@@ -31,6 +31,17 @@ import java.util.UUID;
 public class AwardingCriteria extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public AwardingCriteria() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único universal (UUID) del criterio de adjudicación.
      * <p>
      * Clave primaria generada automáticamente.
@@ -80,9 +91,11 @@ public class AwardingCriteria extends Auditable {
      * La eliminación en cascada está definida en la clave foránea.
      * </p>
      */
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "awarding_terms_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "fk_awardingcriteria_awardingterms",

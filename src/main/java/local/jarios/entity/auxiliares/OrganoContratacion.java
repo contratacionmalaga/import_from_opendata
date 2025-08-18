@@ -42,14 +42,13 @@ public class OrganoContratacion extends Auditable {
     //
     //
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "log_id",
             nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_organocontratacion_log",
+                    name = "fk_organocontratacion_milog",
                     foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
     private Log miLog;
 
@@ -61,6 +60,14 @@ public class OrganoContratacion extends Auditable {
         this.miLog = miLog;
         this.idPlataforma = idPlataforma;
         this.nombre = organoContratacion;
+    }
+
+    @Override
+    public String toString() {
+
+        return "OrganoContratacion: [" +
+                "idPlataforma='" + idPlataforma + "', " +
+                "nombre='" + nombre + "']";
     }
 }
 

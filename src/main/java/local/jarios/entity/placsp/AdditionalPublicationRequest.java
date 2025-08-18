@@ -32,6 +32,17 @@ import java.util.UUID;
 public class AdditionalPublicationRequest extends Auditable {
 
     /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public AdditionalPublicationRequest() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
      * Identificador único universal (UUID) de la solicitud.
      * <p>
      * Clave primaria, generado automáticamente.
@@ -70,14 +81,17 @@ public class AdditionalPublicationRequest extends Auditable {
      * Al eliminar esta entidad, el estado asociado también será eliminado en cascada.
      * </p>
      */
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(
+            fetch = FetchType.LAZY)
     @JoinColumn(
             name = "additional_publication_status_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_apr_additionalpublicationstatus",
+                    name = "fk_additionalpublicationrequest_additionalpublicationstatus",
                     foreignKeyDefinition =
-                            "FOREIGN KEY (additional_publication_status_id) REFERENCES additional_publication_status(id) ON DELETE CASCADE"))
+                            "FOREIGN KEY (additional_publication_status_id) " +
+                            "REFERENCES additional_publication_status(id) ON DELETE CASCADE"))
     private AdditionalPublicationStatus additionalPublicationStatus;
 
     /**

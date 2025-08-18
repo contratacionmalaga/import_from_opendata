@@ -51,7 +51,6 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
 
     // Relaciones
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "feed_id",
@@ -63,10 +62,10 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
     )
     private Feed feed;
 
-    @OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "entry", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ContractFolderStatus> listContractFolderStatus = new ArrayList<>();
 
-    @OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "entry", cascade = CascadeType.MERGE, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PreliminaryMarketConsultationStatus> listPreliminaryMarketConsultationStatus = new ArrayList<>();
 
     // Representaciones en texto

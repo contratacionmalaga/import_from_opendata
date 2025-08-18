@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.common.util.Constantes;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
         name = "located_contracting_party"
@@ -39,26 +41,24 @@ public class LocatedContractingParty extends Auditable {
     //
     //
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_lcp_contractfolderstatus",
+                    name = "fk_locatedcontractingparty_contractfolderstatus",
                     foreignKeyDefinition =
                             "FOREIGN KEY (contract_folder_status_id) " +
                             "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
     private ContractFolderStatus contractFolderStatus;
 
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "preliminary_market_consultation_status_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_lcp_preliminarymarketconsultationstatus",
+                    name = "fk_locatedcontractingparty_preliminarymarketconsultationstatus",
                     foreignKeyDefinition =
                             "FOREIGN KEY (preliminary_market_consultation_status_id) " +
                             "REFERENCES preliminary_market_consultation_status(id) ON DELETE CASCADE"))
@@ -67,7 +67,7 @@ public class LocatedContractingParty extends Auditable {
     //
     //
     // Datos de la entidad que licita
-    @OneToOne(mappedBy = "locatedContractingParty", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "locatedContractingParty", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Party party;
 
     @Override

@@ -9,23 +9,36 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description:
- * Author: juan
- * Date: 20/03/2025
- * Team:
+ * Entidad que representa un <b>Contacto</b> asociado a una Parte o
+ * a una Parte Adjudicataria dentro del sistema PLACSP.
+ * Contiene la información de comunicación básica: nombre,
+ * teléfono, fax y correo electrónico.
+ * Se almacena en la tabla <b>contact</b>.
+ *
+ * @author Juan
+ * @since 20/03/2025
  */
-
 @Setter
 @Getter
 @Entity
-@Table(
-        name = "country"
-)
+@Table(name = "contact")
 public class Contact extends Auditable {
 
-    //
+    /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public Contact() {
+        // Constructor vacío requerido por JPA
+    }
+
+    // =========================================================================
     // PROPIEDADES DE LA ENTIDAD
-    //
+    // =========================================================================
+
     @Id
     @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
@@ -43,42 +56,50 @@ public class Contact extends Auditable {
     @Column(name = "electronic_mail", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
     private String electronicMail;
 
-    //
-    // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-    //
+    // =========================================================================
+    // RELACIONES CON ENTIDADES PADRES
+    // =========================================================================
+
+    /**
+     * Relación con la Parte genérica que posee este contacto.
+     */
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "party_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_party_contact",
+                    name = "fk_contact_party",
                     foreignKeyDefinition =
                             "FOREIGN KEY (party_id) " +
-                            "REFERENCES party(id) ON DELETE CASCADE"))
+                                    "REFERENCES party(id) ON DELETE CASCADE"))
     private Party party;
 
+    /**
+     * Relación con la Parte adjudicataria (winning_party) que posee este contacto.
+     */
     @OneToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "winning_party_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_winningparty_contact",
+                    name = "fk_contact_winningparty",
                     foreignKeyDefinition =
                             "FOREIGN KEY (winning_party_id) " +
-                            "REFERENCES winning_party(id) ON DELETE CASCADE"))
+                                    "REFERENCES winning_party(id) ON DELETE CASCADE"))
     private WinningParty winningParty;
+
+    // =========================================================================
+    // MÉTODOS AUXILIARES
+    // =========================================================================
 
     @Override
     public String toString() {
-
         return "Contact: " +
                 "[name='" + name + "', " +
-                "[telephone='" + telephone + "', " +
-                "[telefax='" + telefax + "', " +
-                "[electronicMail='" + electronicMail + "']";
+                "telephone='" + telephone + "', " +
+                "telefax='" + telefax + "', " +
+                "electronicMail='" + electronicMail + "']";
     }
 }

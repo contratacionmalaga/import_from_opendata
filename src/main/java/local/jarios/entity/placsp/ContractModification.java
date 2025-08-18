@@ -10,93 +10,155 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * Description: Importaciones de Ficheros Excel desde Internet
- * Author: Juan Antonio
- * Date: 04/06/2024
- * Team: Juan Antonio
+ * Entidad que representa una modificación contractual dentro del ciclo de vida
+ * de un contrato público.
+ * <p>
+ * Una modificación de contrato puede afectar tanto a las condiciones económicas
+ * como a las condiciones de duración, así como contener información adicional
+ * sobre el contrato original y sus lotes.
+ * </p>
+ *
+ * <p>
+ * Cada registro se corresponde con un evento de modificación en la tabla
+ * <b>contract_modification</b>.
+ * </p>
+ *
+ * <p>
+ * Hereda de {@link Auditable}, por lo que incluye los metadatos de auditoría
+ * (fecha de creación, última modificación, usuario, etc.).
+ * </p>
+ *
+ * @author Juan
+ * @version 1.0
+ * @since 04/06/2024
  */
-
 @Setter
 @Getter
 @Entity
-@Table(
-        name = "contract_modification"
-)
-
-// 4.38 Modificaciones del contrato
+@Table(name = "contract_modification")
 public class ContractModification extends Auditable {
 
-    //
-    //
-    //
+    /**
+     * Constructor por defecto.
+     * <p>
+     * Requerido por JPA para la correcta creación de proxies
+     * y por Lombok para la inicialización básica.
+     * </p>
+     */
+    public ContractModification() {
+        // Constructor vacío requerido por JPA
+    }
+
+    /**
+     * Identificador único de la modificación contractual en formato UUID.
+     * Se genera automáticamente al persistir la entidad.
+     */
     @Id
     @GeneratedValue(generator = "UUID")
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    // 4.38.1 Número de contrato
-    // Número de contrato sobre el que se realiza la modificación.
+    /**
+     * Identificador del contrato al que aplica la modificación.
+     * <p>
+     * Campo obligatorio, limitado a
+     * {@link Constantes#TAMANO_MAXIMO_CAMPO_50} caracteres.
+     * </p>
+     */
     @Column(name = "contract_id", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String contractId;
 
-    // 4.38.2 Número de la modificación
-    // Un mismo contrato podrá ser objeto de varias modificaciones, por lo que se indicará un número de modificación
-    // para cada una de las modificaciones que se vayan produciendo para el mismo contrato
+    /**
+     * Identificador de la modificación del contrato.
+     * <p>
+     * Un mismo contrato puede tener múltiples modificaciones,
+     * por lo que este campo permite diferenciarlas.
+     * </p>
+     */
     @Column(name = "id_contract_modification", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String idContractModification;
 
-    // Fecha de la formalización del contrato
+    /**
+     * Fecha en la que se formalizó la modificación del contrato.
+     */
     @Column(name = "issue_date")
     private LocalDate issueDate;
 
-    // Notas asociadas a la formalización del contrato
+    /**
+     * Notas o comentarios adicionales asociados a la modificación contractual.
+     * <p>
+     * Se almacena como texto largo ({@code TEXT} en la base de datos).
+     * </p>
+     */
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;
 
-    // Identificador del lote en caso de ser una licitación por lotes
+    /**
+     * Identificador del lote afectado por la modificación contractual,
+     * en caso de que la licitación se realice por lotes.
+     */
     @Column(name = "contract_modification_lot_id", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
     private String contractModificationLotId;
 
-    //
-    // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-    //
-
+    /**
+     * Estado del expediente de contratación al que está vinculada
+     * la modificación.
+     * <p>
+     * Relación muchos-a-uno con {@link ContractFolderStatus}.
+     * Incluye eliminación en cascada para mantener integridad.
+     * </p>
+     */
     @ManyToOne(
-            cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     @JoinColumn(
             name = "contract_folder_status_id",
             nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
-                    name = "fk_documentreference_contractfolderstatus",
+                    name = "fk_contractmodification_contractfolderstatus",
                     foreignKeyDefinition =
                             "FOREIGN KEY (contract_folder_status_id) " +
                             "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
     private ContractFolderStatus contractFolderStatus;
 
-    //
-    // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-    //
-
-    // 4.38.3 Importe sin impuestos de la modificación
-    // Importe positivo o negativo dependiendo de si la modificación da como resultado un incremento
-    //     o un decremento del importe total del contrato
-    @OneToOne(mappedBy = "contractModificationLegalMonetaryTotal", cascade = CascadeType.ALL, orphanRemoval = true)
+    /**
+     * Importe sin impuestos de la modificación.
+     * <p>
+     * Puede ser positivo (incremento) o negativo (decremento).
+     * Relación uno-a-uno con {@link LegalMonetaryTotal}.
+     * </p>
+     */
+    @OneToOne(mappedBy = "contractModificationLegalMonetaryTotal", cascade = CascadeType.MERGE, orphanRemoval = true)
     private LegalMonetaryTotal contractModificationLegalMonetaryTotal;
 
-    // 4.38.4 Importe sin impuestos del contrato tras la modificación
-    // Importe sin impuestos del contrato tras la modificación
-    // Suma del importe inicial del contrato más el importe de sus modificaciones
-    @OneToOne(mappedBy = "contractModificationFinalLegalMonetaryTotal", cascade = CascadeType.ALL, orphanRemoval = true)
+    /**
+     * Importe sin impuestos del contrato tras la modificación.
+     * <p>
+     * Se calcula como el importe inicial más todas las modificaciones.
+     * Relación uno-a-uno con {@link LegalMonetaryTotal}.
+     * </p>
+     */
+    @OneToOne(mappedBy = "contractModificationFinalLegalMonetaryTotal", cascade = CascadeType.MERGE, orphanRemoval = true)
     private LegalMonetaryTotal contractModificationFinalLegalMonetaryTotal;
 
-    @OneToOne(mappedBy = "contractModification", cascade = CascadeType.ALL, orphanRemoval = true)
+    /**
+     * Duración final del contrato tras la modificación,
+     * expresada como una medida temporal.
+     * Relación uno-a-uno con {@link Measure}.
+     */
+    @OneToOne(mappedBy = "contractModification", cascade = CascadeType.MERGE, orphanRemoval = true)
     private Measure finalDurationMeasure;
 
+    /**
+     * Devuelve una representación en cadena de la modificación contractual,
+     * mostrando los valores principales de sus atributos.
+     *
+     * @return cadena con los valores de {@code contractId},
+     * {@code issueDate}, {@code note}, {@code contractModificationLotId}
+     * y {@code idContractModification}.
+     */
     @Override
     public String toString() {
-
         return "ContractModification: " +
                 "[contractId='" + contractId + "', " +
                 "issueDate='" + issueDate + "', " +
