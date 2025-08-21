@@ -16,26 +16,27 @@ import java.util.Optional;
 @Slf4j
 public final class MapperTechnicalDocumentReference {
 
-    private MapperTechnicalDocumentReference() { }
+  private MapperTechnicalDocumentReference() {
+  }
 
-    public static TechnicalDocumentReference getTechnicalDocumentReferenceFromDocumentReferenceType (
-            ContractFolderStatus contractFolderStatus,
-            DocumentReferenceType documentReferenceType) {
+  public static TechnicalDocumentReference getTechnicalDocumentReferenceFromDocumentReferenceType(
+      ContractFolderStatus contractFolderStatus,
+      DocumentReferenceType documentReferenceType) {
 
-        //
-        TechnicalDocumentReference technicalDocumentReference = new TechnicalDocumentReference();
-        technicalDocumentReference.setContractFolderStatus(contractFolderStatus);
+    //
+    TechnicalDocumentReference technicalDocumentReference = new TechnicalDocumentReference();
+    technicalDocumentReference.setContractFolderStatus(contractFolderStatus);
 
-        Optional.ofNullable(documentReferenceType)
-                .ifPresent(docRefType -> technicalDocumentReference.setDocumentReference(
-                        MapperDocumentReference.getDocumentReferenceFromType(
-                                null,
-                                null,
-                                null,
-                                technicalDocumentReference,
-                                docRefType)));
+    Optional.ofNullable(documentReferenceType)
+        .ifPresent(docRefType -> technicalDocumentReference.setDocumentReference(
+            MapperDocumentReference.getDocumentReferenceFromType(
+                null,
+                null,
+                null,
+                technicalDocumentReference,
+                docRefType)));
 
-        //
-        return technicalDocumentReference;
-    }
+    //
+    return technicalDocumentReference;
+  }
 }

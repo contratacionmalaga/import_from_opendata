@@ -7,15 +7,15 @@ package local.jarios.enums;
  * Team: Juan Antonio Ríos Peláez
  */
 public enum TipoSindicacion {
-    MAY,
-    MEN,
-    AGR,
-    CPM,
-    EMP,
-    ERROR,
-    PRUEBA;
+  MAY,
+  MEN,
+  AGR,
+  CPM,
+  EMP,
+  ERROR,
+  PRUEBA;
 
-    TipoSindicacion() {
+  TipoSindicacion() {
 
-    }
+  }
 }

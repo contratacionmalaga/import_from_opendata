@@ -7,10 +7,10 @@ package local.jarios.enums;
  * Team: Juan Antonio Ríos Peláez
  */
 public enum TipoFinalEjecucion {
-    ERROR,
-    CORRECTO;
+  ERROR,
+  CORRECTO;
 
-    TipoFinalEjecucion() {
+  TipoFinalEjecucion() {
 
-    }
+  }
 }

@@ -22,50 +22,51 @@ import java.util.Optional;
 @Slf4j
 public final class MapperEvaluationCriteria {
 
-    private MapperEvaluationCriteria() { }
+  private MapperEvaluationCriteria() {
+  }
 
-    public static List<EvaluationCriteria> getListEvaluationCriteria (
-            TendererQualificationRequest tendererQualificationRequest,
-            List<EvaluationCriteriaType> listEvaluationCriteriaType,
-            TipoSolvencia tipoSolvencia) {
+  public static List<EvaluationCriteria> getListEvaluationCriteria(
+      TendererQualificationRequest tendererQualificationRequest,
+      List<EvaluationCriteriaType> listEvaluationCriteriaType,
+      TipoSolvencia tipoSolvencia) {
 
-        //
-        var listEvaluationCriteria = new ArrayList<EvaluationCriteria>();
+    //
+    var listEvaluationCriteria = new ArrayList<EvaluationCriteria>();
 
-        for (var evaluationCriteriaType : listEvaluationCriteriaType) {
-            listEvaluationCriteria.add(
-                    getEvaluationCriteria(tendererQualificationRequest, evaluationCriteriaType, tipoSolvencia));
-        }
-
-        return listEvaluationCriteria;
+    for (var evaluationCriteriaType : listEvaluationCriteriaType) {
+      listEvaluationCriteria.add(
+          getEvaluationCriteria(tendererQualificationRequest, evaluationCriteriaType, tipoSolvencia));
     }
 
-    private static EvaluationCriteria getEvaluationCriteria (
-            TendererQualificationRequest tendererQualificationRequest,
-            EvaluationCriteriaType evaluationCriteriaType,
-            TipoSolvencia tipoSolvencia) {
+    return listEvaluationCriteria;
+  }
 
-        //
-        var evaluationCriteria = new EvaluationCriteria();
+  private static EvaluationCriteria getEvaluationCriteria(
+      TendererQualificationRequest tendererQualificationRequest,
+      EvaluationCriteriaType evaluationCriteriaType,
+      TipoSolvencia tipoSolvencia) {
 
-        evaluationCriteria.setTendererQualificationRequest(tendererQualificationRequest);
-        evaluationCriteria.setTipoSolvencia(tipoSolvencia);
+    //
+    var evaluationCriteria = new EvaluationCriteria();
 
-        Optional.ofNullable(evaluationCriteriaType.getEvaluationCriteriaTypeCode())
-                .map(EvaluationCriteriaTypeCodeType::getValue)
-                .ifPresent(evaluationCriteria::setEvaluationCriteriaTypeCode);
+    evaluationCriteria.setTendererQualificationRequest(tendererQualificationRequest);
+    evaluationCriteria.setTipoSolvencia(tipoSolvencia);
 
-        Optional.ofNullable(evaluationCriteriaType.getThresholdQuantity())
-                .map(quantity -> quantity.getValue().doubleValue())
-                .ifPresent(evaluationCriteria::setThresholdQuantity);
+    Optional.ofNullable(evaluationCriteriaType.getEvaluationCriteriaTypeCode())
+        .map(EvaluationCriteriaTypeCodeType::getValue)
+        .ifPresent(evaluationCriteria::setEvaluationCriteriaTypeCode);
 
-        evaluationCriteria.setDescription(
-                StringHelper.eliminarCaracteres(
-                        MapperStringFromList.getStringFromListDescriptionType(evaluationCriteriaType.getDescription())
-                )
-        );
+    Optional.ofNullable(evaluationCriteriaType.getThresholdQuantity())
+        .map(quantity -> quantity.getValue().doubleValue())
+        .ifPresent(evaluationCriteria::setThresholdQuantity);
 
-        //
-        return evaluationCriteria;
-    }
+    evaluationCriteria.setDescription(
+        StringHelper.eliminarCaracteres(
+            MapperStringFromList.getStringFromListDescriptionType(evaluationCriteriaType.getDescription())
+        )
+    );
+
+    //
+    return evaluationCriteria;
+  }
 }

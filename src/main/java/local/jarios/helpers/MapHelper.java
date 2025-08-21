@@ -1,8 +1,8 @@
 package local.jarios.helpers;
 
-import local.jarios.interfaces.HasIdEntry;
-import local.jarios.models.FiltroOrganoContratacion;
 import local.jarios.common.util.Constantes;
+import local.jarios.entity.auxiliares.OrganoContratacion;
+import local.jarios.interfaces.HasIdEntry;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
@@ -17,91 +17,93 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MapHelper {
 
-    private MapHelper() { }
+  private MapHelper() {
+  }
 
-    /**
-     * Validador de maps
-     * @param map mapa a validar
-     * @return booleano con la respuesta
-     * @param <K> Tipo asociado al Key del mapa
-     * @param <V> Tipo asociado al Value del mapa
-     */
-    public static <K,V> boolean isMapInvalid(Map<K,V> map ) {
+  /**
+   * Validador de maps
+   *
+   * @param map mapa a validar
+   * @param <K> Tipo asociado al Key del mapa
+   * @param <V> Tipo asociado al Value del mapa
+   * @return booleano con la respuesta
+   */
+  public static <K, V> boolean isMapInvalid(Map<K, V> map) {
 
-        return (map == null);
+    return (map == null);
+  }
+
+  public static <K, V> String getStringFromMap(Map<K, V> map) {
+
+    //
+    var concatenatedString = new StringBuilder();
+
+    //
+    String registro;
+
+    // Iterar sobre las entradas del mapa
+    for (Map.Entry<K, V> entry : map.entrySet()) {
+
+      //
+      registro = entry.getKey().toString() + "; " + entry.getValue().toString() + Constantes.CR;
+
+      // Concatenar el valor de cada entrada
+      concatenatedString.append(registro);
     }
 
-    public static <K, V> String getStringFromMap(Map<K,V> map ) {
+    //
+    return concatenatedString.toString();
+  }
 
-        //
-        var concatenatedString = new StringBuilder();
+  public static Map<String, String> getMapFromList(
+      List<OrganoContratacion> listFiltroOrganoContratacion) {
 
-        //
-        String registro;
+    //
+    if (listFiltroOrganoContratacion == null || listFiltroOrganoContratacion.isEmpty()) {
 
-        // Iterar sobre las entradas del mapa
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-
-            //
-            registro = entry.getKey().toString() + "; " + entry.getValue().toString() + Constantes.CR;
-
-            // Concatenar el valor de cada entrada
-            concatenatedString.append(registro);
-        }
-
-        //
-        return concatenatedString.toString();
+      // Retorna un mapa vacío si la lista es nula o vacía
+      return Collections.emptyMap();
     }
 
-    public static Map<String, String> getMapFromList (
-            List<FiltroOrganoContratacion> listFiltroOrganoContratacion) {
+    // Devuelvo el mapa
+    return listFiltroOrganoContratacion.stream().collect(
+        Collectors.toMap(
+            OrganoContratacion::getId_plataforma,
+            OrganoContratacion::getNombre_oc));
+  }
 
-        //
-        if (listFiltroOrganoContratacion == null || listFiltroOrganoContratacion.isEmpty()) {
+  public static <K, V> void printMap(Map<K, V> map) {
 
-            // Retorna un mapa vacío si la lista es nula o vacía
-            return Collections.emptyMap();
-        }
+    // Usamos forEach para recorrer el mapa y llamar a printKeyValue
+    map.forEach(MapHelper::printKeyValue);
+  }
 
-        // Devuelvo el mapa
-        return listFiltroOrganoContratacion.stream().collect(
-                Collectors.toMap(
-                        FiltroOrganoContratacion::getIdPlataforma,
-                        FiltroOrganoContratacion::getNombreOrganoContratacion));
+  // Método auxiliar para imprimir clave y valor
+  public static <K, V> void printKeyValue(K key, V value) {
+
+    log.info("[printKeyValue] - {} | {}", key, value.toString());
+  }
+
+
+  public static <K, V extends HasIdEntry<V>> int analisisMap(Map<K, V> map) {
+
+    //
+    if (isMapInvalid(map)) {
+      log.info("[analisisMap] - Map no válido.");
     }
 
-    public static <K, V> void printMap(Map<K, V> map) {
+    //
+    AtomicInteger nErrores = new AtomicInteger();
 
-        // Usamos forEach para recorrer el mapa y llamar a printKeyValue
-        map.forEach(MapHelper::printKeyValue);
-    }
+    //
+    map.forEach((key, value) -> {
+      if (!key.equals(value.getIdEntry())) {
+        log.info("[analisisMap] - ERROR!!! Key: '{}' | Value: {}", key, value.getIdEntry());
+        nErrores.getAndIncrement();
+      }
+    });
 
-    // Método auxiliar para imprimir clave y valor
-    public static <K, V> void printKeyValue(K key, V value) {
-
-        log.info("[printKeyValue] - {} | {}", key, value.toString());
-    }
-
-
-    public static <K, V extends HasIdEntry<V>> int analisisMap (Map<K, V> map) {
-
-        //
-        if (isMapInvalid(map)) {
-            log.info("[analisisMap] - Map no válido.");
-        }
-
-        //
-        AtomicInteger nErrores = new AtomicInteger();
-
-        //
-        map.forEach((key,value) -> {
-            if (!key.equals(value.getIdEntry())) {
-                log.info("[analisisMap] - ERROR!!! Key: '{}' | Value: {}", key, value.getIdEntry());
-                nErrores.getAndIncrement();
-            }
-        });
-
-        //
-        return nErrores.get();
-    }
+    //
+    return nErrores.get();
+  }
 }

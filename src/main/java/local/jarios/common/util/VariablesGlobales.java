@@ -1,8 +1,9 @@
 package local.jarios.common.util;
 
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Historico;
+import local.jarios.enums.LugarImportacion;
+import local.jarios.enums.TipoSindicacion;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Clase final que contiene variables globales utilizadas en todo el proyecto.
@@ -29,72 +29,95 @@ import java.util.Set;
  */
 public final class VariablesGlobales {
 
-    /**
-     * Mapa que almacena los identificadores de plataforma y los órganos de contratación
-     * que se aplican mediante el filtro SQL.
-     */
-    @Getter
-    @Setter
-    private static Map<String, String> mapFiltroSql = new HashMap<>();
+  /**
+   * Mapa que almacena los identificadores de plataforma y los órganos de contratación
+   * que se aplican mediante el filtro SQL.
+   */
+  @Getter
+  @Setter
+  private static Map<String, String> mapFiltroSql = new HashMap<>();
 
-    /**
-     * Mapa que contiene los objetos Entry indexados por su identificador durante la ejecución.
-     */
-    @Getter
-    @Setter
-    private static Map<String, Entry> mapEntriesFromAtoms = new HashMap<>();
+  /**
+   * Mapa que contiene los objetos Entry indexados por su identificador durante la ejecución.
+   */
+  @Getter
+  @Setter
+  private static Map<String, Entry> mapEntriesFromAtoms = new HashMap<>();
 
-    /**
-     * Conjunto de objetos Feed que se procesan en una ejecución.
-     */
-    @Getter
-    @Setter
-    private static Set<Feed> setFeeds = new HashSet<>();
+  /**
+   * Mapa que contiene los objetos Entry indexados por su identificador durante la ejecución.
+   */
+  @Getter
+  @Setter
+  private static Map<String, Entry> mapEntriesFromBaseDatos = new HashMap<>();
 
-    /**
-     * Lista que almacena las acciones (historias) realizadas sobre cada Entry analizada.
-     */
-    @Getter
-    @Setter
-    private static List<Historico> listHistoricos = new ArrayList<>();
+  /**
+   * Lista que almacena las acciones (historias) realizadas sobre cada Entry analizada.
+   */
+  @Getter
+  @Setter
+  private static List<Historico> listHistoricos = new ArrayList<>();
 
-    /**
-     * Fecha y hora inicial usada como filtro para procesar entradas.
-     */
-    @Getter
-    @Setter
-    private static LocalDateTime filtroFechaInicial;
+  /**
+   * NewestEntry asociado al tipo de sindicación que se está realizando
+   */
+  @Getter
+  @Setter
+  private static Entry newestEntry;
 
-    /**
-     * Fecha y hora final usada como filtro para procesar entradas.
-     */
-    @Getter
-    @Setter
-    private static LocalDateTime filtroFechaFinal;
+  /**
+   * Lugar de Importación para la ejecución actual
+   */
+  @Getter
+  @Setter
+  private static LugarImportacion lugarImportacion;
 
-    /**
-     * Filtro basado en objeto, utilizado durante el procesamiento.
-     */
-    @Getter
-    @Setter
-    private static String filtroObjeto;
+  /**
+   * Tipo de Sindicación para la ejecución actual
+   */
+  @Getter
+  @Setter
+  private static TipoSindicacion tipoSindicacion;
 
-    /**
-     * Conjunto de filtros NUTS aplicados durante la ejecución.
-     */
-    @Getter
-    @Setter
-    private static HashSet<String> filtroNuts;
 
-    /**
-     * Cadena SQL utilizada como filtro durante la ejecución.
-     */
-    @Getter
-    @Setter
-    private static String filtroSql;
+  /**
+   * Fecha y hora inicial usada como filtro para procesar entradas.
+   */
+  @Getter
+  @Setter
+  private static LocalDateTime filtroFechaInicial;
 
-    /**
-     * Constructor privado para evitar instanciación.
-     */
-    private VariablesGlobales() { }
+  /**
+   * Fecha y hora final usada como filtro para procesar entradas.
+   */
+  @Getter
+  @Setter
+  private static LocalDateTime filtroFechaFinal;
+
+  /**
+   * Filtro basado en objeto, utilizado durante el procesamiento.
+   */
+  @Getter
+  @Setter
+  private static String filtroObjeto;
+
+  /**
+   * Conjunto de filtros NUTS aplicados durante la ejecución.
+   */
+  @Getter
+  @Setter
+  private static HashSet<String> filtroNuts;
+
+  /**
+   * Cadena SQL utilizada como filtro durante la ejecución.
+   */
+  @Getter
+  @Setter
+  private static String filtroSql;
+
+  /**
+   * Constructor privado para evitar instanciación.
+   */
+  private VariablesGlobales() {
+  }
 }

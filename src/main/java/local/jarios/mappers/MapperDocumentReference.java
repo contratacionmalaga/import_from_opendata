@@ -1,7 +1,11 @@
 package local.jarios.mappers;
 
 import local.jarios.common.util.Constantes;
-import local.jarios.entity.placsp.*;
+import local.jarios.entity.placsp.AdditionalDocumentReference;
+import local.jarios.entity.placsp.DocumentReference;
+import local.jarios.entity.placsp.GeneralDocumentDocumentReference;
+import local.jarios.entity.placsp.LegalDocumentReference;
+import local.jarios.entity.placsp.TechnicalDocumentReference;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.DocumentReferenceType;
 import org.dgpe.codice.common.cbclib.DocumentTypeCodeType;
@@ -25,46 +29,46 @@ import java.util.Optional;
 @Slf4j
 public final class MapperDocumentReference {
 
-    private MapperDocumentReference() {
-        // Constructor privado para evitar instanciación
-    }
+  private MapperDocumentReference() {
+    // Constructor privado para evitar instanciación
+  }
 
-    /**
-     * Convierte un {@link DocumentReferenceType} en un objeto {@link DocumentReference}
-     * y lo vincula con sus entidades asociadas si existen.
-     *
-     * @param additionalDocumentReference   Referencia documental adicional asociada.
-     * @param generalDocumentDocumentReference Referencia documental general asociada.
-     * @param legalDocumentReference         Referencia documental legal asociada.
-     * @param technicalDocumentReference     Referencia documental técnica asociada.
-     * @param documentReferenceType          Objeto Codice que contiene los datos de referencia documental.
-     * @return Entidad {@link DocumentReference} construida a partir de la información proporcionada.
-     */
-    public static DocumentReference getDocumentReferenceFromType(
-            AdditionalDocumentReference additionalDocumentReference,
-            GeneralDocumentDocumentReference generalDocumentDocumentReference,
-            LegalDocumentReference legalDocumentReference,
-            TechnicalDocumentReference technicalDocumentReference,
-            DocumentReferenceType documentReferenceType) {
+  /**
+   * Convierte un {@link DocumentReferenceType} en un objeto {@link DocumentReference}
+   * y lo vincula con sus entidades asociadas si existen.
+   *
+   * @param additionalDocumentReference      Referencia documental adicional asociada.
+   * @param generalDocumentDocumentReference Referencia documental general asociada.
+   * @param legalDocumentReference           Referencia documental legal asociada.
+   * @param technicalDocumentReference       Referencia documental técnica asociada.
+   * @param documentReferenceType            Objeto Codice que contiene los datos de referencia documental.
+   * @return Entidad {@link DocumentReference} construida a partir de la información proporcionada.
+   */
+  public static DocumentReference getDocumentReferenceFromType(
+      AdditionalDocumentReference additionalDocumentReference,
+      GeneralDocumentDocumentReference generalDocumentDocumentReference,
+      LegalDocumentReference legalDocumentReference,
+      TechnicalDocumentReference technicalDocumentReference,
+      DocumentReferenceType documentReferenceType) {
 
-        DocumentReference documentReference = new DocumentReference();
+    DocumentReference documentReference = new DocumentReference();
 
-        documentReference.setAdditionalDocumentReference(additionalDocumentReference);
-        documentReference.setGeneralDocumentDocumentReference(generalDocumentDocumentReference);
-        documentReference.setLegalDocumentReference(legalDocumentReference);
-        documentReference.setTechnicalDocumentReference(technicalDocumentReference);
-        documentReference.setIdDocumentReference(documentReferenceType.getID().getValue());
+    documentReference.setAdditionalDocumentReference(additionalDocumentReference);
+    documentReference.setGeneralDocumentDocumentReference(generalDocumentDocumentReference);
+    documentReference.setLegalDocumentReference(legalDocumentReference);
+    documentReference.setTechnicalDocumentReference(technicalDocumentReference);
+    documentReference.setIdDocumentReference(documentReferenceType.getID().getValue());
 
-        String docTypeCode = Optional.ofNullable(documentReferenceType.getDocumentTypeCode())
-                .map(DocumentTypeCodeType::getValue)
-                .orElse(Constantes.CADENA_VACIA);
-        documentReference.setDocumentTypeCode(docTypeCode);
+    String docTypeCode = Optional.ofNullable(documentReferenceType.getDocumentTypeCode())
+        .map(DocumentTypeCodeType::getValue)
+        .orElse(Constantes.CADENA_VACIA);
+    documentReference.setDocumentTypeCode(docTypeCode);
 
-        Optional.ofNullable(documentReferenceType.getAttachment())
-                .ifPresent(attachmentType -> documentReference.setAttachment(
-                        MapperAttachment.getAttachmentFromType(
-                                documentReference, null, null, attachmentType)));
+    Optional.ofNullable(documentReferenceType.getAttachment())
+        .ifPresent(attachmentType -> documentReference.setAttachment(
+            MapperAttachment.getAttachmentFromType(
+                documentReference, null, null, attachmentType)));
 
-        return documentReference;
-    }
+    return documentReference;
+  }
 }

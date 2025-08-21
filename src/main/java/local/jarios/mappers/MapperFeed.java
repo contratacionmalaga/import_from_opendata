@@ -1,12 +1,10 @@
 package local.jarios.mappers;
 
-import local.jarios.entity.Log;
+import local.jarios.common.util.Constantes;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
-import local.jarios.enums.TipoSindicacion;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.mappers.auxiliares.LinkInfo;
-import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.w3._2005.atom.FeedType;
 
@@ -22,34 +20,34 @@ import java.util.Optional;
 @Slf4j
 public final class MapperFeed {
 
-    private MapperFeed() { }
+  private MapperFeed() {
+  }
 
-    public static Feed getFeed(Log miLog, FeedType feedType, TipoSindicacion tipoSindicacion) {
+  public static Feed getFeed(FeedType feedType) {
 
-        var feed = new Feed();
-        feed.setMiLog(miLog);
+    var feed = new Feed();
 
-        Optional.ofNullable(feedType.getUpdated())
-                .map(xml -> xml.getValue().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
-                .ifPresent(feed::setUpdated);
+    Optional.ofNullable(feedType.getUpdated())
+        .map(xml -> xml.getValue().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
+        .ifPresent(feed::setUpdated);
 
-        var linkInfo = LinkInfo.getLinkInfoFromFeedType(feedType);
+    var linkInfo = LinkInfo.getLinkInfoFromFeedType(feedType);
 
-        //
-        feed.setLinkNext(limitarLink(linkInfo.getLinkNext()));
-        feed.setLinkFirst(limitarLink(linkInfo.getLinkFirst()));
-        feed.setLinkPrev(limitarLink(linkInfo.getLinkPrev()));
-        feed.setLinkSelf(limitarLink(linkInfo.getLinkSelf()));
+    //
+    feed.setLinkNext(limitarLink(linkInfo.getLinkNext()));
+    feed.setLinkFirst(limitarLink(linkInfo.getLinkFirst()));
+    feed.setLinkPrev(limitarLink(linkInfo.getLinkPrev()));
+    feed.setLinkSelf(limitarLink(linkInfo.getLinkSelf()));
 
-        //
-        List<Entry> listEntries = MapperEntry.getListEntryFromEntryType(feed, feedType, tipoSindicacion);
-        feed.setListEntry(listEntries);
+    //
+    List<Entry> listEntries = MapperEntry.getListEntryFromEntryType(feed, feedType);
+    feed.setListEntry(listEntries);
 
-        return feed;
-    }
+    return feed;
+  }
 
-    private static String limitarLink(String link) {
+  private static String limitarLink(String link) {
 
-        return ComunHelper.limitarRegistro(link, Constantes.TAMANO_MAXIMO_CAMPO_500);
-    }
+    return ComunHelper.limitarRegistro(link, Constantes.TAMANO_MAXIMO_CAMPO_500);
+  }
 }

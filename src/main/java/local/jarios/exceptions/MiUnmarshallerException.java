@@ -10,13 +10,13 @@ import javax.xml.bind.JAXBException;
  */
 public class MiUnmarshallerException extends Exception {
 
-    public MiUnmarshallerException(String ex) {
+  public MiUnmarshallerException(String ex) {
 
-        super(ex);
-    }
+    super(ex);
+  }
 
-    public MiUnmarshallerException(JAXBException ex) {
+  public MiUnmarshallerException(JAXBException ex) {
 
-        super(ex);
-    }
+    super(ex);
+  }
 }

@@ -20,31 +20,31 @@ import org.w3._2005.atom.FeedType;
 @Slf4j
 public final class LinkInfo {
 
-    private String linkFirst;
-    private String linkPrev;
-    private String linkSelf;
-    private String linkNext;
+  private String linkFirst;
+  private String linkPrev;
+  private String linkSelf;
+  private String linkNext;
 
-    public static LinkInfo getLinkInfoFromFeedType(FeedType feedType) {
+  public static LinkInfo getLinkInfoFromFeedType(FeedType feedType) {
 
-        //
-        LinkInfo linkInfo = new LinkInfo();
+    //
+    LinkInfo linkInfo = new LinkInfo();
 
-        feedType.getLink().stream()
-                .filter(linkType -> linkType.getRel() != null)
-                .forEach(linkType -> {
-                    switch (linkType.getRel()) {
-                        case Constantes.LINK_FIRST -> linkInfo.setLinkFirst(linkType.getHref());
-                        case Constantes.LINK_PREV -> linkInfo.setLinkPrev(linkType.getHref());
-                        case Constantes.LINK_SELF -> linkInfo.setLinkSelf(linkType.getHref());
-                        case Constantes.LINK_NEXT -> linkInfo.setLinkNext(linkType.getHref());
-                        default -> log.error(
-                                Mensajes.MENSAJE_VALOR_SWITCH_INCORRECTO,
-                                "linkType.getRel()",
-                                linkType.getRel());
-                    }
-                });
+    feedType.getLink().stream()
+        .filter(linkType -> linkType.getRel() != null)
+        .forEach(linkType -> {
+          switch (linkType.getRel()) {
+            case Constantes.LINK_FIRST -> linkInfo.setLinkFirst(linkType.getHref());
+            case Constantes.LINK_PREV -> linkInfo.setLinkPrev(linkType.getHref());
+            case Constantes.LINK_SELF -> linkInfo.setLinkSelf(linkType.getHref());
+            case Constantes.LINK_NEXT -> linkInfo.setLinkNext(linkType.getHref());
+            default -> log.error(
+                Mensajes.MENSAJE_VALOR_SWITCH_INCORRECTO,
+                "linkType.getRel()",
+                linkType.getRel());
+          }
+        });
 
-        return linkInfo;
-    }
+    return linkInfo;
+  }
 }

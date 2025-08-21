@@ -1,18 +1,14 @@
 package local.jarios;
 
 import local.jarios.common.util.VariablesGlobales;
-import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.auxiliares.Historico;
-import local.jarios.enums.EntryOpcion;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.exceptions.MiServiceException;
 import local.jarios.helpers.FeedHelper;
+import local.jarios.helpers.StringHelper;
 import local.jarios.helpers.TipoSindicacionHelper;
-import local.jarios.services.ServicePrincipal;
-import local.jarios.services.ServicePrincipalImpl;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,102 +27,115 @@ import java.util.Map;
 @Slf4j
 public class OpenDataInternet extends AbstractOpenData {
 
-    /** Mensaje insertar */
-    private final String MSG_INSERTAR = "No figura en la base de datos.";
 
-    /** Mensaje actualizar */
-    private final String MSG_ACTUALIZAR = "Figura en la base de datos con fecha anterior.";
+  /**
+   * Mapa que contiene los {@link Entry} que deben ser insertados o actualizados en la base de datos.
+   * La clave es el campo idEntry (no UUID).
+   */
+  @Getter
+  private final Map<String, Entry> mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos = new HashMap<>();
 
-    /**
-     * Mapa que contiene los {@link Entry} que deben ser insertados o actualizados en la base de datos.
-     * La clave es el campo idEntry (no UUID).
-     */
-    @Getter
-    private final Map<String, Entry> resultado = new HashMap<>();
+  /**
+   * Método main para ejecutar el procesamiento directamente desde consola o entorno standalone.
+   */
+  public static void main(String[] args) {
+    new OpenDataInternet().procesar();
+  }
 
-    /**
-     * Obtiene el tipo de sindicación remota (INTERNET).
-     *
-     * @return tipo de sindicación
-     */
-    @Override
-    protected TipoSindicacion getTipoSindicacion() {
-        return new TipoSindicacionHelper().getTipoSindicacionRemota();
-    }
+  /**
+   * Obtiene el tipo de sindicación remota (INTERNET).
+   *
+   * @return tipo de sindicación
+   */
+  @Override
+  protected TipoSindicacion getTipoSindicacion() {
+    return new TipoSindicacionHelper().getTipoSindicacionRemota();
+  }
 
-    /**
-     * Devuelve el lugar de importación como {@link LugarImportacion#INTERNET}.
-     */
-    @Override
-    protected LugarImportacion getLugarImportacion() {
-        return LugarImportacion.INTERNET;
-    }
+  /**
+   * Devuelve el lugar de importación como {@link LugarImportacion#INTERNET}.
+   */
+  @Override
+  protected LugarImportacion getLugarImportacion() {
+    return LugarImportacion.INTERNET;
+  }
 
-    /**
-     * Procesa los feeds obtenidos desde internet y los compara con la base de datos para
-     * determinar qué entradas se deben insertar o actualizar.
-     *
-     * @throws MiServiceException si hay errores al consultar datos de base de datos
-     * @throws MiParseException   si hay errores al parsear feeds remotos
-     */
-    @Override
-    protected void parsearAtomsFeeds(Log miLog, TipoSindicacion tipoSindicacion, Entry newestEntry)
-            throws MiServiceException, MiParseException {
+  /**
+   * Procesa los feeds obtenidos desde internet.
+   * 1. Almacena la información en VariablesGlobales.mapEntriesFromAtom (Map#String,Entry#)
+   * 2.
+   *
+   * @throws MiServiceException si hay errores al consultar datos de base de datos
+   * @throws MiParseException   si hay errores al parsear feeds remotos
+   */
+  @Override
+  protected void parsearAtomsFeeds() throws MiServiceException, MiParseException {
 
-        // Parsear feeds remotos y cargar resultado en VariablesGlobales
-        FeedHelper.parsearFeedsDesdeInternet(miLog, tipoSindicacion, newestEntry);
+    // Parsear feeds remotos y cargar resultado en VariablesGlobales
+    FeedHelper.parsearFeedsDesdeInternet();
 
-        // Recupero el Map con los Entries importados desde Atoms
-        Map<String, Entry> mapEntryFromAtoms = VariablesGlobales.getMapEntriesFromAtoms();
-        log.info("[parsearAtomsFeeds] - Total entries obtenidos desde INTERNET: {}", mapEntryFromAtoms.size());
-        mapEntryFromAtoms.values().forEach(e -> log.info("[INTERNET] {}", e.toStringResumido()));
+    // Recupero el Map con los Entries (que cumplen los filtros) obtenido desde ATOMS de INTERNET
+    Map<String, Entry> mapEntriesFromAtoms = VariablesGlobales.getMapEntriesFromAtoms();
+    log.info("[parsearAtomsFeeds] - Entries que cumplen filtros obtenidos desde Atoms de  INTERNET: {}.",
+        mapEntriesFromAtoms.size());
+    // mapEntriesFromAtoms.values().forEach(e -> log.info("[INTERNET] {}", e.toStringResumido()));
 
-        // Obtengo el Map con los Entries actuales en Base de Datos
-        ServicePrincipal servicePrincipal = new ServicePrincipalImpl();
-        Map<String, Entry> mapEntryFromBD = servicePrincipal.getMapEntries(tipoSindicacion);
-        log.info("[parsearAtomsFeeds] - Total entries en base de datos: {}", mapEntryFromBD.size());
-        mapEntryFromBD.values().forEach(e -> log.info("[BASE_DATOS] {}", e.toStringResumido()));
+    // Obtengo el Map con los Entries actuales en Base de Datos
+    Map<String, Entry> mapEntriesFromBaseDatos = VariablesGlobales.getMapEntriesFromBaseDatos();
+    String nEntriesEnBaseDatos = StringHelper.getNumeroConFormato(mapEntriesFromBaseDatos.size());
+    log.info("[parsearAtomsFeeds] - Total entries en base de datos: {}.", nEntriesEnBaseDatos);
+    // mapEntriesFromBaseDatos.values().forEach(e -> log.info("[parsearAtomsFeeds] {}", e.toStringResumido()));
 
-        // Comparo ambos Mapas y me quedo con otro Map que tenga aquellos que son mayores que los existentes en
-        //      Base de datos o lo que no existan en Base de Datsos
-        mapEntryFromAtoms.forEach((idEntry, entryInternet) -> {
-            Entry entryBD = mapEntryFromBD.get(idEntry);
-            log.info("[COMPARACIÓN] Entry desde internet: {}", entryInternet.toStringResumido());
+    // Comparo ambos Mapas (MapEntriesFromAtoms y MapEntriesFromBaseDatos) generando un nuevo Mapa (MapResultado)
+    //      que contine  aquellos que son mayores que los existentes en Base de datos o lo que no existan en esta
+    mapEntriesFromAtoms.forEach((idEntry, entryFromAtom) -> {
 
-            if (entryBD == null) {
-                // No existe en BD → insertar
-                resultado.put(idEntry, entryInternet);
-                log.info("[NUEVO] No figura en la BD → insertar.");
-                VariablesGlobales.getListHistoricos()
-                        .add(new Historico(entryInternet, EntryOpcion.INSERTAR, MSG_INSERTAR));
-            } else {
-                // Existe → comparar fechas
-                LocalDateTime updatedInternet = entryInternet.getUpdated();
-                LocalDateTime updatedBD = entryBD.getUpdated();
+      // Consulto si el Entry en Memoria figura en la Base de Datos
+      Entry entryEnBaseDatos = mapEntriesFromBaseDatos.get(idEntry);
 
-                if (updatedBD == null || (updatedInternet != null && updatedInternet.isAfter(updatedBD))) {
-                    // Actualización necesaria
-                    entryInternet.setId(entryBD.getId()); // conservar UUID
-                    resultado.put(idEntry, entryInternet);
-                    log.info("[ACTUALIZAR] Existe en BD pero es más antiguo → actualizar.");
-                    VariablesGlobales.getListHistoricos()
-                            .add(new Historico(entryInternet, EntryOpcion.ACTUALIZAR, MSG_ACTUALIZAR));
-                } else {
-                    log.info("[SIN CAMBIOS] La versión en BD es más reciente o igual.");
-                }
-            }
-        });
+      if (entryEnBaseDatos == null) {
+        // No existe en BD → insertar
 
-        // 6. Log final
-        log.info("[FINAL] Nº total de registros a enviar a la BD: {}", resultado.size());
-        resultado.forEach((id, entry) ->
-                log.info("[A_GRABAR] {}", entry.toStringResumido()));
-    }
+        // Inserto el Entry en el Map Resultante
+        mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos.put(idEntry, entryFromAtom);
+        log.info("[parsearAtomsFeeds] - {} -> INSERTAR.", entryFromAtom.toStringResumido());
 
-    /**
-     * Método main para ejecutar el procesamiento directamente desde consola o entorno standalone.
-     */
-    public static void main(String[] args) {
-        new OpenDataInternet().procesar();
-    }
+      } else {
+
+        // Existe → comparar fechas
+        LocalDateTime updatedEntryEnMemoria = entryFromAtom.getUpdated();
+        LocalDateTime updatedEntryEnBaseDatos = entryEnBaseDatos.getUpdated();
+
+        if (updatedEntryEnBaseDatos == null ||
+            (updatedEntryEnMemoria != null && updatedEntryEnMemoria.isAfter(updatedEntryEnBaseDatos))) {
+          // Actualización necesaria
+
+          // Conservo el UUID puesto que tengo que realizar un MERGE
+          entryFromAtom.setId(entryEnBaseDatos.getId());
+
+          // Inserto el Entry en el Map Resultante
+          mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos.put(idEntry, entryFromAtom);
+          log.info("[parsearAtomsFeeds] - {} -> ACTUALIZAR.", entryFromAtom.toStringResumido());
+
+          /**
+           * TRABAJAR CON EL HISTÓRICO PARA ESTABLECER EL VALOR SOBRE LA PRIMERA APARICIÓN DEL OBJETO
+           */
+
+        } else {
+
+          log.info("[parsearAtomsFeeds] - {} -> REGISTRAR", entryFromAtom.toStringResumido());
+
+          /**
+           * TRABAJAR CON EL HISTÓRICO PARA ESTABLECER EL VALOR SOBRE LA PRIMERA APARICIÓN DEL OBJETO
+           */
+
+        }
+      }
+    });
+
+    //
+    String valor = StringHelper
+        .getNumeroConFormato(mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos.size());
+    log.info("[parsearAtomsFeeds] Nº total de registros a enviar a la Base de Datos: {}", valor);
+  }
 }

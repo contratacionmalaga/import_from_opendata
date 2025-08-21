@@ -8,8 +8,8 @@ package local.jarios.exceptions;
  */
 public class MiParseException extends RuntimeException {
 
-    public MiParseException(Throwable cause) {
+  public MiParseException(Throwable cause) {
 
-        super(cause);
-    }
+    super(cause);
+  }
 }

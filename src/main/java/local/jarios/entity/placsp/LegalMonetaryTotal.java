@@ -1,6 +1,14 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,72 +33,72 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "legal_monetary_total"
+    name = "legal_monetary_total"
 )
 public class LegalMonetaryTotal extends Auditable {
 
-    //
-    //
-    //
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  //
+  //
+  //
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    @Column(name = "payable_amount")
-    private Double payableAmount;
+  @Column(name = "payable_amount")
+  private Double payableAmount;
 
-    @Column(name = "tax_exclusive_amount")
-    private Double taxExclusiveAmount;
+  @Column(name = "tax_exclusive_amount")
+  private Double taxExclusiveAmount;
 
-    @Column(name = "tax_inclusive_amount")
-    private Double taxInclusiveAmount;
+  @Column(name = "tax_inclusive_amount")
+  private Double taxInclusiveAmount;
 
-    //
-    // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-    //
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "awarded_tendered_project_id",
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_legalmonetarytotal_awardedtenderedproject",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (awarded_tendered_project_id) " +
-                            "REFERENCES tendered_project(id) ON DELETE CASCADE"))
-    private TenderedProject awardedTenderedProject;
+  //
+  // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
+  //
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "awarded_tendered_project_id",
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_legalmonetarytotal_awardedtenderedproject",
+          foreignKeyDefinition =
+              "FOREIGN KEY (awarded_tendered_project_id) " +
+                  "REFERENCES tendered_project(id) ON DELETE CASCADE"))
+  private TenderedProject awardedTenderedProject;
 
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "contract_modification_legal_monetary_total_id",
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_legalmonetarytotal_contractmodificationlegalmonetarytotal",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (contract_modification_legal_monetary_total_id) " +
-                            "REFERENCES contract_modification(id) ON DELETE CASCADE"))
-    private ContractModification contractModificationLegalMonetaryTotal;
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "contract_modification_legal_monetary_total_id",
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_legalmonetarytotal_contractmodificationlegalmonetarytotal",
+          foreignKeyDefinition =
+              "FOREIGN KEY (contract_modification_legal_monetary_total_id) " +
+                  "REFERENCES contract_modification(id) ON DELETE CASCADE"))
+  private ContractModification contractModificationLegalMonetaryTotal;
 
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "contract_modification_final_legal_monetary_total_id",
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_legalmonetarytotal_contractmodificationfinallegalmonetarytotal",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (contract_modification_final_legal_monetary_total_id) " +
-                            "REFERENCES contract_modification(id) ON DELETE CASCADE"))
-    private ContractModification contractModificationFinalLegalMonetaryTotal;
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "contract_modification_final_legal_monetary_total_id",
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_legalmonetarytotal_contractmodificationfinallmt",
+          foreignKeyDefinition =
+              "FOREIGN KEY (contract_modification_final_legal_monetary_total_id) " +
+                  "REFERENCES contract_modification(id) ON DELETE CASCADE"))
+  private ContractModification contractModificationFinalLegalMonetaryTotal;
 
-    @Override
-    public String toString() {
+  @Override
+  public String toString() {
 
-        return "LegalMonetaryTotal: " +
-                "[payableAmount='" + payableAmount + "', " +
-                "taxExclusiveAmount='" + taxExclusiveAmount + "', " +
-                "taxInclusiveAmount='" + taxInclusiveAmount + "']";
-    }
+    return "LegalMonetaryTotal: " +
+        "[payableAmount='" + payableAmount + "', " +
+        "taxExclusiveAmount='" + taxExclusiveAmount + "', " +
+        "taxInclusiveAmount='" + taxInclusiveAmount + "']";
+  }
 }

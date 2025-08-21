@@ -1,8 +1,18 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
-import local.jarios.entity.auxiliares.Auditable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
+import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,56 +30,56 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "procurement_project_lot"
+    name = "procurement_project_lot"
 )
 
 // 4.11 Lotes
 public class ProcurementProjectLot extends Auditable {
 
-    //
-    // PROPIEDADES DEL MODELO
-    //
+  //
+  // PROPIEDADES DEL MODELO
+  //
 
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    // 4.11.1 Número de lote
-    @Column(name = "id_lote", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
-    private String idLote;
+  // 4.11.1 Número de lote
+  @Column(name = "id_lote", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String idLote;
 
-    //
-    // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-    //
+  //
+  // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
+  //
 
-    @ManyToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "contract_folder_status_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_procurementprojectlot_contractfolderstatus",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (contract_folder_status_id) " +
-                            "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
-    private ContractFolderStatus contractFolderStatus;
+  @ManyToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "contract_folder_status_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_procurementprojectlot_contractfolderstatus",
+          foreignKeyDefinition =
+              "FOREIGN KEY (contract_folder_status_id) " +
+                  "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
+  private ContractFolderStatus contractFolderStatus;
 
-    //
-    // RELACIONES CON ENTIDADES HIJAS DEPENDIENTE DE ESTA
-    //
+  //
+  // RELACIONES CON ENTIDADES HIJAS DEPENDIENTE DE ESTA
+  //
 
-    @OneToOne(mappedBy = "procurementProjectLot", cascade = CascadeType.MERGE, orphanRemoval = true)
-    private ProcurementProject procurementProject;
+  @OneToOne(mappedBy = "procurementProjectLot", cascade = CascadeType.ALL, orphanRemoval = true)
+  private ProcurementProject procurementProject;
 
-    @OneToOne(mappedBy = "procurementProjectLot", cascade = CascadeType.MERGE, orphanRemoval = true)
-    private TenderingTerms tenderingTerms;
+  @OneToOne(mappedBy = "procurementProjectLot", cascade = CascadeType.ALL, orphanRemoval = true)
+  private TenderingTerms tenderingTerms;
 
-    @Override
-    public String toString() {
+  @Override
+  public String toString() {
 
-        return "ProcurementProjectLot: " +
-                "[idLote='" + idLote + "']";
-    }
+    return "ProcurementProjectLot: " +
+        "[idLote='" + idLote + "']";
+  }
 }

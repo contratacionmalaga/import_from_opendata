@@ -1,8 +1,6 @@
 package local.jarios.database;
 
 import jakarta.persistence.Entity;
-import local.jarios.common.util.Constantes;
-import local.jarios.common.util.Mensajes;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.Configuration;
 import org.reflections.Reflections;
@@ -21,27 +19,27 @@ import java.util.Collection;
 @Slf4j
 public class EntityScanner {
 
-    /**
-     * Constructor sin argumentos.
-     */
-    public EntityScanner() {
-        // Constructor vacío
+  /**
+   * Constructor sin argumentos.
+   */
+  public EntityScanner() {
+    // Constructor vacío
+  }
+
+  public void scanAndAddEntities(Configuration configuration, String packageName) {
+
+    // Usamos Reflections para escanear el paquete indicado
+    var reflections = new Reflections(packageName);
+    log.debug("[scanAndAddEntities] - Objeto Relections creado correctamente para el paquete: {}", packageName);
+
+    // Obtenemos todas las clases anotadas con @Entity
+    Collection<Class<?>> entities = reflections.getTypesAnnotatedWith(Entity.class);
+    log.debug("[scanAndAddEntities] - Colección con todas las clases anotadas con @entity: {}", entities.size());
+
+    // Añadimos cada entidad a la configuración de Hibernate
+    for (Class<?> entityClass : entities) {
+      configuration.addAnnotatedClass(entityClass);
+      log.debug("[scanAndAddEntities] - {}", entityClass.getName());
     }
-
-    public void scanAndAddEntities(Configuration configuration, String packageName) {
-
-        // Usamos Reflections para escanear el paquete indicado
-        var reflections = new Reflections(packageName);
-        log.debug("[scanAndAddEntities] - Objeto Relections creado correctamente para el paquete: {}", packageName);
-
-        // Obtenemos todas las clases anotadas con @Entity
-        Collection<Class<?>> entities = reflections.getTypesAnnotatedWith(Entity.class);
-        log.debug("[scanAndAddEntities] - Colección con todas las clases anotadas con @entity: {}", entities.size());
-
-        // Añadimos cada entidad a la configuración de Hibernate
-        for (Class<?> entityClass : entities) {
-            configuration.addAnnotatedClass(entityClass);
-            log.debug("[scanAndAddEntities] - {}", entityClass.getName());
-        }
-    }
+  }
 }

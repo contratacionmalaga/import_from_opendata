@@ -42,61 +42,64 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class JsonHelper {
 
-    /** Instancia singleton de {@link ObjectMapper} configurada para toda la clase. */
-    private static final ObjectMapper mapper = new ObjectMapper();
+  /**
+   * Instancia singleton de {@link ObjectMapper} configurada para toda la clase.
+   */
+  private static final ObjectMapper mapper = new ObjectMapper();
 
-    /**
-     * Constructor privado para evitar instanciación de la clase de utilidad.
-     */
-    private JsonHelper() { }
+  // Bloque estático de configuración inicial
+  static {
+    // Registro del módulo para soporte de clases de fecha y hora de Java 8
+    mapper.registerModule(new JavaTimeModule());
+    // Evita la serialización de fechas como números (timestamps)
+    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+  }
 
-    // Bloque estático de configuración inicial
-    static {
-        // Registro del módulo para soporte de clases de fecha y hora de Java 8
-        mapper.registerModule(new JavaTimeModule());
-        // Evita la serialización de fechas como números (timestamps)
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+  /**
+   * Constructor privado para evitar instanciación de la clase de utilidad.
+   */
+  private JsonHelper() {
+  }
+
+  /**
+   * Serializa una entidad a JSON utilizando Jackson.
+   *
+   * <p>Si la entidad es {@code null}, devuelve la constante
+   * {@link Constantes#JSON_VACIO}. En caso de error durante la serialización,
+   * el error se registra en el log y también se devuelve un JSON vacío.</p>
+   *
+   * @param <T>     tipo de la entidad a serializar
+   * @param entidad instancia de la entidad que debe ser serializada
+   * @return Cadena JSON resultante o {@link Constantes#JSON_VACIO} en caso de error o {@code null}.
+   */
+  public static <T> String serializeEntitytoJson(T entidad) {
+    if (entidad == null) {
+      return Constantes.JSON_VACIO;
     }
 
-    /**
-     * Serializa una entidad a JSON utilizando Jackson.
-     *
-     * <p>Si la entidad es {@code null}, devuelve la constante
-     * {@link Constantes#JSON_VACIO}. En caso de error durante la serialización,
-     * el error se registra en el log y también se devuelve un JSON vacío.</p>
-     *
-     * @param <T> tipo de la entidad a serializar
-     * @param entidad instancia de la entidad que debe ser serializada
-     * @return Cadena JSON resultante o {@link Constantes#JSON_VACIO} en caso de error o {@code null}.
-     */
-    public static <T> String serializeEntitytoJson(T entidad) {
-        if (entidad == null) {
-            return Constantes.JSON_VACIO;
-        }
-
-        try {
-            return mapper.writeValueAsString(entidad);
-        } catch (JsonProcessingException ex) {
-            log.error("Error serializando el mapa a JSON", ex);
-            return Constantes.JSON_VACIO;
-        }
+    try {
+      return mapper.writeValueAsString(entidad);
+    } catch (JsonProcessingException ex) {
+      log.error("Error serializando el mapa a JSON", ex);
+      return Constantes.JSON_VACIO;
     }
+  }
 
-    /**
-     * Serializa un objeto genérico a una cadena JSON con formato legible (<i>pretty printing</i>).
-     *
-     * <p>Utiliza el {@link ObjectMapper} configurado en esta clase con soporte para
-     * {@link JavaTimeModule} y formato de fecha legible.</p>
-     *
-     * @param obj Objeto a serializar.
-     * @return Cadena JSON con formato legible.
-     * @throws RuntimeException si ocurre un error durante la serialización.
-     */
-    public static String toJsonPretty(Object obj) {
-        try {
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException("Error serializando a JSON", e);
-        }
+  /**
+   * Serializa un objeto genérico a una cadena JSON con formato legible (<i>pretty printing</i>).
+   *
+   * <p>Utiliza el {@link ObjectMapper} configurado en esta clase con soporte para
+   * {@link JavaTimeModule} y formato de fecha legible.</p>
+   *
+   * @param obj Objeto a serializar.
+   * @return Cadena JSON con formato legible.
+   * @throws RuntimeException si ocurre un error durante la serialización.
+   */
+  public static String toJsonPretty(Object obj) {
+    try {
+      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+    } catch (Exception e) {
+      throw new RuntimeException("Error serializando a JSON", e);
     }
+  }
 }

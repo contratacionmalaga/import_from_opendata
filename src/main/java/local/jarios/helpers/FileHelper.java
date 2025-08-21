@@ -11,38 +11,39 @@ import java.io.File;
 @Slf4j
 public final class FileHelper {
 
-    private FileHelper() { }
+  private FileHelper() {
+  }
 
-    /**
-     * Analiza si un String que se pasa es un File válido (EXISTE, SE PUEDA LEER, .entity..)
-     *
-     * @param strPathFichero Fichero con la ruta absoluta
-     * @return Devuelve un valor indicando si el fichero es valido y en caso contrario indica el motivo
-     */
-    public static boolean esFileValido(String strPathFichero) {
+  /**
+   * Analiza si un String que se pasa es un File válido (EXISTE, SE PUEDA LEER, .entity..)
+   *
+   * @param strPathFichero Fichero con la ruta absoluta
+   * @return Devuelve un valor indicando si el fichero es valido y en caso contrario indica el motivo
+   */
+  public static boolean esFileValido(String strPathFichero) {
 
 
-        //
-        File filePathFichero = new File(strPathFichero);
+    //
+    File filePathFichero = new File(strPathFichero);
 
-        // Verificación de existencia del archivo
-        if (!filePathFichero.exists()) {
-            log.debug(Mensajes.FILE_NOT_EXIST, strPathFichero);
-            return false;
-        }
-
-        // Verificación de si es un archivo
-        if (!filePathFichero.isFile()) {
-            log.debug(Mensajes.NOT_FILE, strPathFichero);
-            return false;
-        }
-
-        // Verificación de permisos de lectura
-        if (!filePathFichero.canRead()) {
-            log.debug(Mensajes.FILE_NOT_READ, strPathFichero);
-            return false;
-        }
-
-        return true;
+    // Verificación de existencia del archivo
+    if (!filePathFichero.exists()) {
+      log.debug(Mensajes.FILE_NOT_EXIST, strPathFichero);
+      return false;
     }
+
+    // Verificación de si es un archivo
+    if (!filePathFichero.isFile()) {
+      log.debug(Mensajes.NOT_FILE, strPathFichero);
+      return false;
+    }
+
+    // Verificación de permisos de lectura
+    if (!filePathFichero.canRead()) {
+      log.debug(Mensajes.FILE_NOT_READ, strPathFichero);
+      return false;
+    }
+
+    return true;
+  }
 }

@@ -12,17 +12,24 @@ package local.jarios.common.util;
  */
 public final class TamanoCampos {
 
-    /** Tamaño estándar para campos de 15 caracteres. */
-    public static final int TAMANO_15 = 15;
+  /**
+   * Tamaño estándar para campos de 15 caracteres.
+   */
+  public static final int TAMANO_15 = 15;
 
-    /** Tamaño estándar para campos de 100 caracteres. */
-    public static final int TAMANO_100 = 100;
+  /**
+   * Tamaño estándar para campos de 100 caracteres.
+   */
+  public static final int TAMANO_100 = 100;
 
-    /** Tamaño estándar para campos de 2500 caracteres. */
-    public static final int TAMANO_2500 = 2500;
+  /**
+   * Tamaño estándar para campos de 2500 caracteres.
+   */
+  public static final int TAMANO_2500 = 2500;
 
-    /**
-     * Constructor privado para evitar instanciación.
-     */
-    private TamanoCampos() {}
+  /**
+   * Constructor privado para evitar instanciación.
+   */
+  private TamanoCampos() {
+  }
 }

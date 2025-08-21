@@ -17,32 +17,33 @@ import java.util.Optional;
 @Slf4j
 public final class MapperEconomicOperatorShortList {
 
-    private MapperEconomicOperatorShortList() { }
+  private MapperEconomicOperatorShortList() {
+  }
 
-    public static EconomicOperatorShortList getEconomicOperatorShortList(
-            TenderingProcess tenderingProcess,
-            EconomicOperatorShortListType economicOperatorShortListType) {
+  public static EconomicOperatorShortList getEconomicOperatorShortList(
+      TenderingProcess tenderingProcess,
+      EconomicOperatorShortListType economicOperatorShortListType) {
 
-        //
-        EconomicOperatorShortList economicOperatorShortList = new EconomicOperatorShortList();
-        economicOperatorShortList.setTenderingProcess(tenderingProcess);
+    //
+    EconomicOperatorShortList economicOperatorShortList = new EconomicOperatorShortList();
+    economicOperatorShortList.setTenderingProcess(tenderingProcess);
 
-        economicOperatorShortList.setDescription(
-                MapperStringFromList.getStringFromListLimitationDescriptionType(
-                        economicOperatorShortListType.getLimitationDescription()));
+    economicOperatorShortList.setDescription(
+        MapperStringFromList.getStringFromListLimitationDescriptionType(
+            economicOperatorShortListType.getLimitationDescription()));
 
-        Optional.ofNullable(economicOperatorShortListType.getMaximumQuantity())
-                .map(q -> q.getValue().doubleValue())
-                .ifPresent(economicOperatorShortList::setMaximumQuantity);
+    Optional.ofNullable(economicOperatorShortListType.getMaximumQuantity())
+        .map(q -> q.getValue().doubleValue())
+        .ifPresent(economicOperatorShortList::setMaximumQuantity);
 
-        Optional.ofNullable(economicOperatorShortListType.getMinimumQuantity())
-                .map(q -> q.getValue().doubleValue())
-                .ifPresent(economicOperatorShortList::setMinimumQuantity);
+    Optional.ofNullable(economicOperatorShortListType.getMinimumQuantity())
+        .map(q -> q.getValue().doubleValue())
+        .ifPresent(economicOperatorShortList::setMinimumQuantity);
 
-        Optional.ofNullable(economicOperatorShortListType.getExpectedQuantity())
-                .map(q -> q.getValue().doubleValue())
-                .ifPresent(economicOperatorShortList::setExpectedQuantity);
+    Optional.ofNullable(economicOperatorShortListType.getExpectedQuantity())
+        .map(q -> q.getValue().doubleValue())
+        .ifPresent(economicOperatorShortList::setExpectedQuantity);
 
-        return economicOperatorShortList;
-    }
+    return economicOperatorShortList;
+  }
 }

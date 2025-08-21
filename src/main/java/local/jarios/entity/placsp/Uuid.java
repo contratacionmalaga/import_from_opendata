@@ -1,8 +1,16 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
-import local.jarios.entity.auxiliares.Auditable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
+import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,42 +29,42 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "uuid"
+    name = "uuid"
 )
 
 //
 public class Uuid extends Auditable {
 
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
 
-    @Column(name = "scheme_name", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
-    private String schemeName;
+  @Column(name = "scheme_name", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String schemeName;
 
-    @Column(name = "uuid", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
-    private String uuid;
+  @Column(name = "uuid", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  private String uuid;
 
-    @ManyToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "contract_folder_status_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_uuid_contractfolderstatus",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (contract_folder_status_id) " +
-                            "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
-    private ContractFolderStatus contractFolderStatus;
+  @ManyToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "contract_folder_status_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_uuid_contractfolderstatus",
+          foreignKeyDefinition =
+              "FOREIGN KEY (contract_folder_status_id) " +
+                  "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
+  private ContractFolderStatus contractFolderStatus;
 
-    @Override
-    public String toString() {
+  @Override
+  public String toString() {
 
-        return "Uuid: " +
-                "[uuid='" + uuid + "', " +
-                "schemeName='" + schemeName + "']";
-    }
+    return "Uuid: " +
+        "[uuid='" + uuid + "', " +
+        "schemeName='" + schemeName + "']";
+  }
 }

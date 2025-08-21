@@ -16,26 +16,26 @@ import java.util.Optional;
 @Slf4j
 public final class MapperAwardingTerms {
 
-    private MapperAwardingTerms() {
-    }
+  private MapperAwardingTerms() {
+  }
 
-    public static AwardingTerms getAwardingTerms(
-            TenderingTerms tenderingTerms,
-            AwardingTermsType awardingTermsType) {
+  public static AwardingTerms getAwardingTerms(
+      TenderingTerms tenderingTerms,
+      AwardingTermsType awardingTermsType) {
 
-        //
-        AwardingTerms awardingTerms = new AwardingTerms();
+    //
+    AwardingTerms awardingTerms = new AwardingTerms();
 
-        //
-        awardingTerms.setTenderingTerms(tenderingTerms);
+    //
+    awardingTerms.setTenderingTerms(tenderingTerms);
 
-        //
-        Optional.ofNullable(awardingTermsType.getAwardingCriteria())
-                .filter(list -> !list.isEmpty())
-                .map(list -> MapperAwardingCriteria.getListAwardingCriteria(awardingTerms, list))
-                .ifPresent(awardingTerms::setListAwardingCriteria);
+    //
+    Optional.ofNullable(awardingTermsType.getAwardingCriteria())
+        .filter(list -> !list.isEmpty())
+        .map(list -> MapperAwardingCriteria.getListAwardingCriteria(awardingTerms, list))
+        .ifPresent(awardingTerms::setListAwardingCriteria);
 
-        //
-        return awardingTerms;
-    }
+    //
+    return awardingTerms;
+  }
 }

@@ -46,46 +46,49 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  */
 public final class ManagerJackson {
 
-    /** Instancia de {@link ObjectMapper} configurada de forma global. */
-    private static final ObjectMapper objectMapper;
+  /**
+   * Instancia de {@link ObjectMapper} configurada de forma global.
+   */
+  private static final ObjectMapper objectMapper;
 
-    // Bloque de inicialización estático
-    static {
-        objectMapper = new ObjectMapper();
+  // Bloque de inicialización estático
+  static {
+    objectMapper = new ObjectMapper();
 
-        // Registro del módulo para manejar java.time.LocalDateTime, LocalDate, etc.
-        objectMapper.registerModule(new JavaTimeModule());
+    // Registro del módulo para manejar java.time.LocalDateTime, LocalDate, etc.
+    objectMapper.registerModule(new JavaTimeModule());
 
-        // Configuración de impresión bonita (pretty printing)
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+    // Configuración de impresión bonita (pretty printing)
+    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        // No fallar si encuentra objetos vacíos (sin propiedades)
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    // No fallar si encuentra objetos vacíos (sin propiedades)
+    objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
-        // No incluir valores nulos en el JSON
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    // No incluir valores nulos en el JSON
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+  }
+
+  /**
+   * Constructor privado para evitar instanciación de la clase de utilidad.
+   */
+  private ManagerJackson() {
+  }
+
+  /**
+   * Convierte un objeto Java a una cadena JSON con formato legible (<i>pretty print</i>).
+   *
+   * <p>Si ocurre un error durante el proceso de serialización, se lanza una
+   * {@link RuntimeException} con el detalle de la causa.</p>
+   *
+   * @param objeto Objeto Java a serializar.
+   * @return Cadena JSON con formato legible.
+   * @throws RuntimeException si ocurre un error durante la serialización.
+   */
+  public static String objectToJsonPretty(Object objeto) {
+    try {
+      return objectMapper.writeValueAsString(objeto);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("Error al serializar objeto a JSON", e);
     }
-
-    /**
-     * Constructor privado para evitar instanciación de la clase de utilidad.
-     */
-    private ManagerJackson() { }
-
-    /**
-     * Convierte un objeto Java a una cadena JSON con formato legible (<i>pretty print</i>).
-     *
-     * <p>Si ocurre un error durante el proceso de serialización, se lanza una
-     * {@link RuntimeException} con el detalle de la causa.</p>
-     *
-     * @param objeto Objeto Java a serializar.
-     * @return Cadena JSON con formato legible.
-     * @throws RuntimeException si ocurre un error durante la serialización.
-     */
-    public static String objectToJsonPretty(Object objeto) {
-        try {
-            return objectMapper.writeValueAsString(objeto);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error al serializar objeto a JSON", e);
-        }
-    }
+  }
 }

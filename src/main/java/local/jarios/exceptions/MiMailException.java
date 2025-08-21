@@ -8,8 +8,8 @@ package local.jarios.exceptions;
  */
 public class MiMailException extends Exception {
 
-    public MiMailException(Exception ex) {
+  public MiMailException(Exception ex) {
 
-        super(ex);
-    }
+    super(ex);
+  }
 }

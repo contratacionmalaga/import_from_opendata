@@ -10,8 +10,8 @@ import java.net.UnknownHostException;
  */
 public class MiUnknownHostException extends Exception {
 
-    public MiUnknownHostException(UnknownHostException ex) {
+  public MiUnknownHostException(UnknownHostException ex) {
 
-        super(ex);
-    }
+    super(ex);
+  }
 }

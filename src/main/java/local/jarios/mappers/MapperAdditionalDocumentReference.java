@@ -18,42 +18,42 @@ import java.util.List;
 @Slf4j
 public final class MapperAdditionalDocumentReference {
 
-    private MapperAdditionalDocumentReference() {
+  private MapperAdditionalDocumentReference() {
+  }
+
+  public static List<AdditionalDocumentReference> getListAdditionalDocumentReferenceFromType(
+      ContractFolderStatus contractFolderStatus,
+      List<DocumentReferenceType> listDocumentReferenceType) {
+
+    //
+    List<AdditionalDocumentReference> listAdditionalDocumentReference = new ArrayList<>();
+
+    //
+    for (DocumentReferenceType documentReferenceType : listDocumentReferenceType) {
+
+      //
+      AdditionalDocumentReference additionalDocumentReference = new AdditionalDocumentReference();
+
+      //
+      additionalDocumentReference.setContractFolderStatus(contractFolderStatus);
+
+      //
+      DocumentReference documentReference = MapperDocumentReference
+          .getDocumentReferenceFromType(
+              additionalDocumentReference,
+              null,
+              null,
+              null,
+              documentReferenceType);
+
+      //
+      additionalDocumentReference.setDocumentReference(documentReference);
+
+      //
+      listAdditionalDocumentReference.add(additionalDocumentReference);
+
     }
 
-    public static List<AdditionalDocumentReference> getListAdditionalDocumentReferenceFromType(
-            ContractFolderStatus contractFolderStatus,
-            List<DocumentReferenceType> listDocumentReferenceType) {
-
-        //
-        List<AdditionalDocumentReference> listAdditionalDocumentReference = new ArrayList<>();
-
-        //
-        for (DocumentReferenceType documentReferenceType : listDocumentReferenceType) {
-
-            //
-            AdditionalDocumentReference additionalDocumentReference = new AdditionalDocumentReference();
-
-            //
-            additionalDocumentReference.setContractFolderStatus(contractFolderStatus);
-
-            //
-            DocumentReference documentReference = MapperDocumentReference
-                            .getDocumentReferenceFromType(
-                                    additionalDocumentReference,
-                                    null,
-                                    null,
-                                    null,
-                                    documentReferenceType);
-
-            //
-            additionalDocumentReference.setDocumentReference(documentReference);
-
-            //
-            listAdditionalDocumentReference.add(additionalDocumentReference);
-
-        }
-
-        return listAdditionalDocumentReference;
-    }
+    return listAdditionalDocumentReference;
+  }
 }

@@ -15,36 +15,37 @@ import org.dgpe.codice.common.caclib.ContractExtensionType;
 @Slf4j
 public final class MapperContractExtension {
 
-    private MapperContractExtension() { }
+  private MapperContractExtension() {
+  }
 
-    public static ContractExtension getContractExtension(
-            ProcurementProject procurementProject,
-            ContractExtensionType contractExtensionType) {
+  public static ContractExtension getContractExtension(
+      ProcurementProject procurementProject,
+      ContractExtensionType contractExtensionType) {
 
-        //
-        ContractExtension contractExtension = new ContractExtension();
+    //
+    ContractExtension contractExtension = new ContractExtension();
 
-        //
-        contractExtension.setProcurementProject(procurementProject);
+    //
+    contractExtension.setProcurementProject(procurementProject);
 
-        //
-        contractExtension.setOptionsDescription(
-                MapperStringFromList.getStringFromListOptionsDescriptionType(
-                        contractExtensionType.getOptionsDescription()));
+    //
+    contractExtension.setOptionsDescription(
+        MapperStringFromList.getStringFromListOptionsDescriptionType(
+            contractExtensionType.getOptionsDescription()));
 
-        // ContractExtensionOptions
-        if (contractExtensionType.getOptionValidityPeriod() != null) {
+    // ContractExtensionOptions
+    if (contractExtensionType.getOptionValidityPeriod() != null) {
 
-            //
-            contractExtension.setOptionValidityPeriod(
-                    MapperPeriod.getPeriod(
-                            null,
-                            null,
-                            contractExtension,
-                            contractExtensionType.getOptionValidityPeriod()));
-        }
-
-        //
-        return contractExtension;
+      //
+      contractExtension.setOptionValidityPeriod(
+          MapperPeriod.getPeriod(
+              null,
+              null,
+              contractExtension,
+              contractExtensionType.getOptionValidityPeriod()));
     }
+
+    //
+    return contractExtension;
+  }
 }

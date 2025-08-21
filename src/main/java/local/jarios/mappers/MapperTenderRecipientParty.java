@@ -24,29 +24,30 @@ import org.dgpe.codice.common.caclib.PartyType;
 @Slf4j
 public final class MapperTenderRecipientParty {
 
-    private MapperTenderRecipientParty() { }
+  private MapperTenderRecipientParty() {
+  }
 
-    /**
-     * Crea una instancia de {@link TenderRecipientParty} a partir de un objeto
-     * {@link PartyType} y la asocia a un objeto {@link TenderingTerms}.
-     *
-     * @param tenderingTerms entidad padre a la que se asociará el {@link TenderRecipientParty}.
-     * @param partyType objeto fuente con datos para el mapeo.
-     * @return instancia de {@link TenderRecipientParty} con los datos mapeados.
-     */
-    public static TenderRecipientParty getTenderRecipientParty(
-            TenderingTerms tenderingTerms,
-            PartyType partyType) {
+  /**
+   * Crea una instancia de {@link TenderRecipientParty} a partir de un objeto
+   * {@link PartyType} y la asocia a un objeto {@link TenderingTerms}.
+   *
+   * @param tenderingTerms entidad padre a la que se asociará el {@link TenderRecipientParty}.
+   * @param partyType      objeto fuente con datos para el mapeo.
+   * @return instancia de {@link TenderRecipientParty} con los datos mapeados.
+   */
+  public static TenderRecipientParty getTenderRecipientParty(
+      TenderingTerms tenderingTerms,
+      PartyType partyType) {
 
-        TenderRecipientParty tenderRecipientParty = new TenderRecipientParty();
-        tenderRecipientParty.setTenderingTerms(tenderingTerms);
+    TenderRecipientParty tenderRecipientParty = new TenderRecipientParty();
+    tenderRecipientParty.setTenderingTerms(tenderingTerms);
 
-        if (partyType.getEndpointID() != null) {
-            tenderRecipientParty.setEndpointId(partyType.getEndpointID().getValue());
-        } else {
-            log.warn("El PartyType recibido no tiene EndpointID definido.");
-        }
-
-        return tenderRecipientParty;
+    if (partyType.getEndpointID() != null) {
+      tenderRecipientParty.setEndpointId(partyType.getEndpointID().getValue());
+    } else {
+      log.warn("El PartyType recibido no tiene EndpointID definido.");
     }
+
+    return tenderRecipientParty;
+  }
 }

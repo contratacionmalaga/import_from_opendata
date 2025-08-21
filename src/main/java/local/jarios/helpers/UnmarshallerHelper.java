@@ -1,7 +1,7 @@
 package local.jarios.helpers;
 
-import local.jarios.exceptions.MiUnmarshallerException;
 import local.jarios.common.util.Constantes;
+import local.jarios.exceptions.MiUnmarshallerException;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.bind.JAXBContext;
@@ -27,59 +27,59 @@ import javax.xml.bind.Unmarshaller;
 @Slf4j
 public final class UnmarshallerHelper {
 
-    /**
-     * Constructor privado para evitar instanciación.
-     * Esta clase es utilitaria y solo expone métodos estáticos.
-     */
-    private UnmarshallerHelper() {
-        /* Constructor vacío para evitar instanciación */
-    }
+  /**
+   * Constructor privado para evitar instanciación.
+   * Esta clase es utilitaria y solo expone métodos estáticos.
+   */
+  private UnmarshallerHelper() {
+    /* Constructor vacío para evitar instanciación */
+  }
 
-    /**
-     * Obtiene un {@link JAXBContext} configurado para las entidades de Feed.
-     *
-     * <p>Este método concatena todos los contextos de paquetes necesarios definidos en {@link Constantes}.
-     * Si ocurre un error durante la creación del contexto, lo captura, lo registra en logs y lo encapsula
-     * en una {@link MiUnmarshallerException}.</p>
-     *
-     * @return Un objeto {@link JAXBContext} configurado con los paquetes requeridos.
-     * @throws MiUnmarshallerException si ocurre un error al crear la instancia del contexto.
-     */
-    private static JAXBContext getJAXBContext() throws MiUnmarshallerException {
-        try {
-            var contextPath = String.join(":",
-                    Constantes.JAXB_ATOM,
-                    Constantes.JAXB_ORG_DGPE_CODICE_COMMON_CACLIB,
-                    Constantes.JAXB_ORG_DGPE_CODICE_COMMON_CBCLIB,
-                    Constantes.JAXB_EXT_PLACE_CODICE_COMMON_CACLIB,
-                    Constantes.JAXB_EXT_PLACE_CODICE_COMMON_CBCLIB,
-                    Constantes.JAXB_TOMBSTONES);
+  /**
+   * Obtiene un {@link JAXBContext} configurado para las entidades de Feed.
+   *
+   * <p>Este método concatena todos los contextos de paquetes necesarios definidos en {@link Constantes}.
+   * Si ocurre un error durante la creación del contexto, lo captura, lo registra en logs y lo encapsula
+   * en una {@link MiUnmarshallerException}.</p>
+   *
+   * @return Un objeto {@link JAXBContext} configurado con los paquetes requeridos.
+   * @throws MiUnmarshallerException si ocurre un error al crear la instancia del contexto.
+   */
+  private static JAXBContext getJAXBContext() throws MiUnmarshallerException {
+    try {
+      var contextPath = String.join(":",
+          Constantes.JAXB_ATOM,
+          Constantes.JAXB_ORG_DGPE_CODICE_COMMON_CACLIB,
+          Constantes.JAXB_ORG_DGPE_CODICE_COMMON_CBCLIB,
+          Constantes.JAXB_EXT_PLACE_CODICE_COMMON_CACLIB,
+          Constantes.JAXB_EXT_PLACE_CODICE_COMMON_CBCLIB,
+          Constantes.JAXB_TOMBSTONES);
 
-            return JAXBContext.newInstance(contextPath);
-        } catch (JAXBException ex) {
-            var mensajeError = "Error crítico al obtener una instancia de JAXBContext.";
-            log.error(mensajeError, ex);
-            throw new MiUnmarshallerException(ex);
-        }
+      return JAXBContext.newInstance(contextPath);
+    } catch (JAXBException ex) {
+      var mensajeError = "Error crítico al obtener una instancia de JAXBContext.";
+      log.error(mensajeError, ex);
+      throw new MiUnmarshallerException(ex);
     }
+  }
 
-    /**
-     * Devuelve un {@link Unmarshaller} configurado para parsear ficheros ATOM.
-     *
-     * <p>Este método reutiliza el {@link JAXBContext} creado en {@link #getJAXBContext()},
-     * asegurando eficiencia en el proceso de creación de unmarshallers.</p>
-     *
-     * @return Un objeto {@link Unmarshaller} listo para convertir ficheros ATOM en objetos Java.
-     * @throws MiUnmarshallerException si ocurre un error al instanciar el {@link Unmarshaller}.
-     */
-    public static Unmarshaller getUnmarshaller() throws MiUnmarshallerException {
-        try {
-            var context = getJAXBContext();
-            return context.createUnmarshaller();
-        } catch (JAXBException ex) {
-            var mensajeError = "Error al crear el Unmarshaller a partir de un JAXBContext.";
-            log.error(mensajeError, ex);
-            throw new MiUnmarshallerException(ex);
-        }
+  /**
+   * Devuelve un {@link Unmarshaller} configurado para parsear ficheros ATOM.
+   *
+   * <p>Este método reutiliza el {@link JAXBContext} creado en {@link #getJAXBContext()},
+   * asegurando eficiencia en el proceso de creación de unmarshallers.</p>
+   *
+   * @return Un objeto {@link Unmarshaller} listo para convertir ficheros ATOM en objetos Java.
+   * @throws MiUnmarshallerException si ocurre un error al instanciar el {@link Unmarshaller}.
+   */
+  public static Unmarshaller getUnmarshaller() throws MiUnmarshallerException {
+    try {
+      var context = getJAXBContext();
+      return context.createUnmarshaller();
+    } catch (JAXBException ex) {
+      var mensajeError = "Error al crear el Unmarshaller a partir de un JAXBContext.";
+      log.error(mensajeError, ex);
+      throw new MiUnmarshallerException(ex);
     }
+  }
 }

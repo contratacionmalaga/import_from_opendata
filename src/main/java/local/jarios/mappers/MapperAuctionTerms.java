@@ -13,37 +13,37 @@ import org.dgpe.codice.common.caclib.AuctionTermsType;
  * </p>
  *
  * @author juan
- * @since 2024-04-11
  * @version 1.0
+ * @since 2024-04-11
  */
 @Slf4j
 public final class MapperAuctionTerms {
 
-    /**
-     * Constructor privado para evitar la instanciación de esta clase utilitaria.
-     */
-    private MapperAuctionTerms() {
-    }
+  /**
+   * Constructor privado para evitar la instanciación de esta clase utilitaria.
+   */
+  private MapperAuctionTerms() {
+  }
 
-    /**
-     * Convierte un objeto {@link AuctionTermsType} y un {@link TenderingProcess} asociado
-     * en una entidad {@link AuctionTerms} del modelo local.
-     *
-     * @param tenderingProcess el proceso de licitación al que pertenece el AuctionTerms
-     * @param auctionTermsType el objeto del modelo Codice a mapear
-     * @return una instancia de {@link AuctionTerms} con los datos mapeados
-     */
-    public static AuctionTerms getAuctionTerms(
-            TenderingProcess tenderingProcess,
-            AuctionTermsType auctionTermsType) {
+  /**
+   * Convierte un objeto {@link AuctionTermsType} y un {@link TenderingProcess} asociado
+   * en una entidad {@link AuctionTerms} del modelo local.
+   *
+   * @param tenderingProcess el proceso de licitación al que pertenece el AuctionTerms
+   * @param auctionTermsType el objeto del modelo Codice a mapear
+   * @return una instancia de {@link AuctionTerms} con los datos mapeados
+   */
+  public static AuctionTerms getAuctionTerms(
+      TenderingProcess tenderingProcess,
+      AuctionTermsType auctionTermsType) {
 
-        AuctionTerms auctionTerms = new AuctionTerms();
+    AuctionTerms auctionTerms = new AuctionTerms();
 
-        auctionTerms.setTenderingProcess(tenderingProcess);
+    auctionTerms.setTenderingProcess(tenderingProcess);
 
-        auctionTerms.setAuctionConstraintIndicator(
-                auctionTermsType.getAuctionConstraintIndicator().isValue());
+    auctionTerms.setAuctionConstraintIndicator(
+        auctionTermsType.getAuctionConstraintIndicator().isValue());
 
-        return auctionTerms;
-    }
+    return auctionTerms;
+  }
 }

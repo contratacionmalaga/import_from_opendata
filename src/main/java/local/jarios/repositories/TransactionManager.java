@@ -21,57 +21,57 @@ import org.hibernate.Transaction;
 @Slf4j
 public final class TransactionManager {
 
-    /**
-     * Constructor privado para evitar instanciación de la clase utilitaria.
-     */
-    private TransactionManager() {
-        // Evita instancias
+  /**
+   * Constructor privado para evitar instanciación de la clase utilitaria.
+   */
+  private TransactionManager() {
+    // Evita instancias
+  }
+
+  /**
+   * Inicia una nueva transacción en la sesión Hibernate proporcionada.
+   *
+   * @param session Sesión Hibernate donde se iniciará la transacción.
+   * @return La transacción iniciada.
+   */
+  public static Transaction beginTransaction(Session session) {
+    Transaction transaction = session.beginTransaction();
+    log.debug("[beginTransaction] - Inicio de transacción.");
+    return transaction;
+  }
+
+  /**
+   * Realiza commit de la transacción si esta no está marcada para rollback.
+   *
+   * @param transaction Transacción a confirmar.
+   */
+  public static void commitTransaction(Transaction transaction) {
+    if (transaction != null && !transaction.getRollbackOnly() && transaction.isActive()) {
+      transaction.commit();
+      log.debug("[commitTransaction] - Commit ejecutado.");
     }
+  }
 
-    /**
-     * Inicia una nueva transacción en la sesión Hibernate proporcionada.
-     *
-     * @param session Sesión Hibernate donde se iniciará la transacción.
-     * @return La transacción iniciada.
-     */
-    public static Transaction beginTransaction(Session session) {
-        Transaction transaction = session.beginTransaction();
-        log.debug("[beginTransaction] - Inicio de transacción.");
-        return transaction;
+  /**
+   * Realiza rollback de la transacción indicada.
+   *
+   * @param transaction Transacción a revertir.
+   * @throws MiTransactionManagerException Si ocurre un error durante el rollback.
+   */
+  public static void rollbackTransaction(Transaction transaction) throws MiTransactionManagerException {
+    if (transaction != null) {
+      try {
+
+        transaction.rollback();
+        log.warn("[rollbackTransaction] - Rollback ejecutado correctamente.");
+
+      } catch (Exception ex) {
+
+        String msg = String.format("[rollbackTransaction] - Error haciendo rollback: %s", ex.getMessage());
+        log.error(msg, ex);
+        throw new MiTransactionManagerException(msg, ex);
+
+      }
     }
-
-    /**
-     * Realiza commit de la transacción si esta no está marcada para rollback.
-     *
-     * @param transaction Transacción a confirmar.
-     */
-    public static void commitTransaction(Transaction transaction) {
-        if (transaction != null && !transaction.getRollbackOnly() && transaction.isActive()) {
-            transaction.commit();
-            log.debug("[commitTransaction] - Commit ejecutado.");
-        }
-    }
-
-    /**
-     * Realiza rollback de la transacción indicada.
-     *
-     * @param transaction Transacción a revertir.
-     * @throws MiTransactionManagerException Si ocurre un error durante el rollback.
-     */
-    public static void rollbackTransaction(Transaction transaction) throws MiTransactionManagerException {
-        if (transaction != null) {
-            try {
-
-                transaction.rollback();
-                log.warn("[rollbackTransaction] - Rollback ejecutado correctamente.");
-
-            } catch (Exception ex) {
-
-                String msg = String.format("[rollbackTransaction] - Error haciendo rollback: %s", ex.getMessage());
-                log.error(msg, ex);
-                throw new MiTransactionManagerException(msg, ex);
-
-            }
-        }
-    }
+  }
 }

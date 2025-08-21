@@ -20,54 +20,55 @@ import java.util.List;
 @Slf4j
 public final class MapperGeneralDocument {
 
-    private MapperGeneralDocument() { }
+  private MapperGeneralDocument() {
+  }
 
-    public static List<GeneralDocument> getListGeneralDocumentFromType(
-            ContractFolderStatus contractFolderStatus,
-            PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
-            List<GeneralDocumentType> listGeneralDocumentType) {
+  public static List<GeneralDocument> getListGeneralDocumentFromType(
+      ContractFolderStatus contractFolderStatus,
+      PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
+      List<GeneralDocumentType> listGeneralDocumentType) {
 
-        //
-        List<GeneralDocument> listGeneralDocument = new ArrayList<>();
+    //
+    List<GeneralDocument> listGeneralDocument = new ArrayList<>();
 
-        for (GeneralDocumentType generalDocumentType : listGeneralDocumentType) {
+    for (GeneralDocumentType generalDocumentType : listGeneralDocumentType) {
 
-            //
-            GeneralDocument generalDocument = new GeneralDocument();
-            generalDocument.setContractFolderStatus(contractFolderStatus);
-            generalDocument.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
+      //
+      GeneralDocument generalDocument = new GeneralDocument();
+      generalDocument.setContractFolderStatus(contractFolderStatus);
+      generalDocument.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
 
-            //
-            GeneralDocumentDocumentReference documentReference =
-                    getGeneralDocumentDocumentFromType(
-                            generalDocument,
-                            generalDocumentType.getGeneralDocumentDocumentReference());
+      //
+      GeneralDocumentDocumentReference documentReference =
+          getGeneralDocumentDocumentFromType(
+              generalDocument,
+              generalDocumentType.getGeneralDocumentDocumentReference());
 
-            generalDocument.setGeneralDocumentDocumentReference(documentReference);
-            listGeneralDocument.add(generalDocument);
-        }
-
-        return listGeneralDocument;
+      generalDocument.setGeneralDocumentDocumentReference(documentReference);
+      listGeneralDocument.add(generalDocument);
     }
 
-    private static GeneralDocumentDocumentReference getGeneralDocumentDocumentFromType (
-            GeneralDocument generalDocument,
-            DocumentReferenceType documentReferenceType) {
+    return listGeneralDocument;
+  }
 
-        //
-        GeneralDocumentDocumentReference generalDocumentDocumentReference = new GeneralDocumentDocumentReference();
-        generalDocumentDocumentReference.setGeneralDocument(generalDocument);
+  private static GeneralDocumentDocumentReference getGeneralDocumentDocumentFromType(
+      GeneralDocument generalDocument,
+      DocumentReferenceType documentReferenceType) {
 
-        //
-        generalDocumentDocumentReference.setDocumentReference(
-                MapperDocumentReference.getDocumentReferenceFromType(
-                        null,
-                        generalDocumentDocumentReference,
-                        null,
-                        null,
-                        documentReferenceType));
+    //
+    GeneralDocumentDocumentReference generalDocumentDocumentReference = new GeneralDocumentDocumentReference();
+    generalDocumentDocumentReference.setGeneralDocument(generalDocument);
 
-        //
-        return generalDocumentDocumentReference;
-    }
+    //
+    generalDocumentDocumentReference.setDocumentReference(
+        MapperDocumentReference.getDocumentReferenceFromType(
+            null,
+            generalDocumentDocumentReference,
+            null,
+            null,
+            documentReferenceType));
+
+    //
+    return generalDocumentDocumentReference;
+  }
 }

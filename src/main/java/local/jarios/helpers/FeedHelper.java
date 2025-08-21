@@ -1,11 +1,10 @@
 package local.jarios.helpers;
 
-import local.jarios.common.util.*;
-import local.jarios.entity.Log;
+import local.jarios.common.util.VariablesGlobales;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
-import local.jarios.enums.TipoSindicacion;
-import local.jarios.exceptions.*;
+import local.jarios.exceptions.MiParseException;
+import local.jarios.exceptions.MiUnmarshallerException;
 import local.jarios.interfaces.FeedSource;
 import local.jarios.mappers.MapperFeed;
 import local.jarios.parsers.LocalFeedSource;
@@ -16,7 +15,7 @@ import org.w3._2005.atom.FeedType;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.*;
+import java.io.BufferedReader;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,117 +25,120 @@ import java.util.List;
 @Slf4j
 public final class FeedHelper {
 
-    /** Constructor privado */
-    private FeedHelper() {
-        //
-    }
+  /**
+   * Constructor privado
+   */
+  private FeedHelper() {
+    //
+  }
 
-    // ==========================
-    // MÉTODOS PÚBLICOS
-    // ==========================
+  // ==========================
+  // MÉTODOS PÚBLICOS
+  // ==========================
 
-    public static void parsearFeedsDesdeLocal(Log miLog, TipoSindicacion tipoSindicacion)
-            throws MiParseException {
+  public static void parsearFeedsDesdeLocal() throws MiParseException {
 
-        //
-        parsearFeeds(miLog, tipoSindicacion, new LocalFeedSource(), null);
-    }
+    //
+    parsearFeeds(new LocalFeedSource());
+  }
 
-    public static void parsearFeedsDesdeInternet(Log miLog, TipoSindicacion tipoSindicacion, Entry newestEntry)
-            throws MiParseException {
+  public static void parsearFeedsDesdeInternet()
+      throws MiParseException {
 
-        //
-        parsearFeeds(miLog, tipoSindicacion, new RemoteFeedSource(), newestEntry);
-    }
+    //
+    parsearFeeds(new RemoteFeedSource());
+  }
 
-    /**
-     * Obtiene la lista de feeds parseados desde local o remoto.
-     */
-    private static void parsearFeeds(Log miLog, TipoSindicacion tipoSincidacion, FeedSource source, Entry newestEntry)
-            throws MiParseException {
+  /**
+   * Obtiene la lista de feeds parseados desde local o remoto.
+   */
+  private static void parsearFeeds(FeedSource source)
+      throws MiParseException {
 
-        // Definición de variables locales
-        boolean superadoNewestEntry = false;
+    // Definición de variables locales
+    boolean superadoNewestEntry = false;
 
-        try {
-            var unmarshaller = getValidUnmarshaller();
-            log.info("[parsearFeeds] - Obtención de objeto Unmarshaller correctamente.");
-            String nextLink = source.getInitialLink();
+    try {
 
-            // Salimos si nextLink no es válido desde el inicio
-            if (!source.isNextLinkValid(nextLink)) {
-                log.warn("[parsearFeeds] - El NextLink inicial no es válido, se aborta el bucle: {}", nextLink);
-            }
+      var unmarshaller = getValidUnmarshaller();
+      log.debug("[parsearFeeds] - Obtención de objeto Unmarshaller correctamente.");
+      String nextLink = source.getInitialLink();
 
-            while (source.isNextLinkValid(nextLink) && (!superadoNewestEntry)) {
+      // Salimos si nextLink no es válido desde el inicio
+      if (!source.isNextLinkValid(nextLink)) {
+        log.warn("[parsearFeeds] - El NextLink inicial no es válido, se aborta el bucle: {}", nextLink);
+      }
 
-                try (var reader = source.openBufferedReader(nextLink)) {
+      while (source.isNextLinkValid(nextLink) && (!superadoNewestEntry)) {
 
-                    // Obtengo el FeedType desde el fichero Atom
-                    var feedType = getFeedType(unmarshaller, reader);
-                    log.info("[parsearFeeds] - Obtenido el objeto FeedType desde el fichero Atom correctamente.");
+        try (var reader = source.openBufferedReader(nextLink)) {
 
-                    // Mapeo el fichero FeedType al objeto Feed
-                    var feed = MapperFeed.getFeed(miLog, feedType, tipoSincidacion);
-                    log.info("[parsearFeeds] - Procesado del feed correctamente.");
+          log.info("[parsearFeeds] - **** Parseando el feed '{}' ****", nextLink);
 
-                    List<Entry> listEntry = feed.getListEntry();
-                    log.info("[parsearFeeds] - Nº de objetos Entry en en Feed: {}", listEntry.size());
+          // Obtengo el FeedType desde el fichero Atom
+          var feedType = getFeedType(unmarshaller, reader);
+          log.debug("[parsearFeeds] - Obtenido el objeto FeedType desde el fichero Atom correctamente.");
 
-                    // Proceso los Entrys del objeto Feed devolviendo TRUE | FALSE según se haya superado el valor
-                    //      de updated asocaido al newestEntry
-                    superadoNewestEntry = EntryHelper.procesarListaEntry(listEntry, newestEntry, tipoSincidacion);
-                    if (!superadoNewestEntry) {
-                        nextLink = source.getNextLink(feed);
-                        log.info(
-                                "[parsearFeeds] - Loop - nextLink = {}. ¿Es válido? {}",
-                                nextLink, source.isNextLinkValid(nextLink));
-                    }
-                }
-            }
+          // Mapeo el fichero FeedType al objeto Feed
+          var feed = MapperFeed.getFeed(feedType);
+          log.debug("[parsearFeeds] - Procesado del feed correctamente.");
 
-        } catch (Exception e) {
-            throw new MiParseException(e);
+          List<Entry> listEntry = feed.getListEntry();
+          log.info("[parsearFeeds] - Nº de objetos Entry en en Feed: {}.", listEntry.size());
+
+          // Proceso los Entrys del objeto Feed devolviendo TRUE | FALSE según se haya superado el valor
+          //      de updated asocaido al newestEntry
+          superadoNewestEntry = EntryHelper.procesarListaEntry(listEntry);
+
+          //
+          if (!superadoNewestEntry) {
+            nextLink = source.getNextLink(feed);
+          }
         }
+      }
+
+    } catch (Exception e) {
+      throw new MiParseException(e);
     }
+  }
 
-    // ==========================
-    // MÉTODOS PRIVADOS
-    // ==========================
+  // ==========================
+  // MÉTODOS PRIVADOS
+  // ==========================
 
-    @SuppressWarnings("unchecked")
-    private static FeedType getFeedType(Unmarshaller unmarshaller, BufferedReader reader) throws JAXBException {
-        FeedType feedType = ((JAXBElement<FeedType>) unmarshaller.unmarshal(reader)).getValue();
-        log.debug("[getFeedType] - Updated FeedType: {}", feedType.getUpdated().getValue().toGregorianCalendar().toString());
-        return feedType;
+  @SuppressWarnings("unchecked")
+  private static FeedType getFeedType(Unmarshaller unmarshaller, BufferedReader reader) throws JAXBException {
+    FeedType feedType = ((JAXBElement<FeedType>) unmarshaller.unmarshal(reader)).getValue();
+    log.debug("[getFeedType] - Updated FeedType: {}", feedType.getUpdated().getValue().toGregorianCalendar().toString());
+    return feedType;
+  }
+
+  private static Unmarshaller getValidUnmarshaller() throws MiUnmarshallerException {
+    var unmarshaller = UnmarshallerHelper.getUnmarshaller();
+    if (unmarshaller == null) {
+      throw new MiUnmarshallerException("Unmarshaller nulo. No se puede continuar.");
     }
+    return unmarshaller;
+  }
 
-    private static Unmarshaller getValidUnmarshaller() throws MiUnmarshallerException {
-        var unmarshaller = UnmarshallerHelper.getUnmarshaller();
-        if (unmarshaller == null) {
-            throw new MiUnmarshallerException("Unmarshaller nulo. No se puede continuar.");
-        }
-        return unmarshaller;
-    }
+  private static boolean isFechaValida(LocalDateTime updatedFeed, Feed newestFeed) {
+    if (updatedFeed == null) return false;
 
-    private static boolean isFechaValida(LocalDateTime updatedFeed, Feed newestFeed) {
-        if (updatedFeed == null) return false;
+    boolean despuesDeNewest = updatedFeed.isAfter(newestFeed.getUpdated());
+    log.debug("[isFechaValida] - UpdatedFeed.isAfter(NewestFeed): {}", despuesDeNewest);
+    boolean dentroDelRango = estaDentroDelRango(updatedFeed);
+    log.debug("[isFechaValida] - estaDentroDelRango(updatedFeed): {}", dentroDelRango);
+    return despuesDeNewest && dentroDelRango;
+  }
 
-        boolean despuesDeNewest = updatedFeed.isAfter(newestFeed.getUpdated());
-        log.debug("[isFechaValida] - UpdatedFeed.isAfter(NewestFeed): {}", despuesDeNewest);
-        boolean dentroDelRango = estaDentroDelRango(updatedFeed);
-        log.debug("[isFechaValida] - estaDentroDelRango(updatedFeed): {}", dentroDelRango);
-        return despuesDeNewest && dentroDelRango;
-    }
+  private static boolean estaDentroDelRango(LocalDateTime fecha) {
+    log.debug("[estaDentroDelRango] - FechaInicial: {}", VariablesGlobales.getFiltroFechaInicial());
+    log.debug("[estaDentroDelRango] - FechaInicial: {}", VariablesGlobales.getFiltroFechaInicial());
+    log.debug("[estaDentroDelRango] - Fecha: {}", fecha);
 
-    private static boolean estaDentroDelRango(LocalDateTime fecha) {
-        log.debug("[estaDentroDelRango] - FechaInicial: {}", VariablesGlobales.getFiltroFechaInicial());
-        log.debug("[estaDentroDelRango] - FechaInicial: {}", VariablesGlobales.getFiltroFechaInicial());
-        log.debug("[estaDentroDelRango] - Fecha: {}", fecha);
-
-        boolean enRango = fecha.isBefore(VariablesGlobales.getFiltroFechaInicial()) &&
-                fecha.isAfter(VariablesGlobales.getFiltroFechaFinal());
-        log.debug("[estaDentroDelRango] - estaDentroDelRango(Fecha): {}", enRango);
-        return enRango;
-    }
+    boolean enRango = fecha.isBefore(VariablesGlobales.getFiltroFechaInicial()) &&
+        fecha.isAfter(VariablesGlobales.getFiltroFechaFinal());
+    log.debug("[estaDentroDelRango] - estaDentroDelRango(Fecha): {}", enRango);
+    return enRango;
+  }
 }

@@ -18,30 +18,31 @@ import java.util.Optional;
 @Slf4j
 public final class MapperCommodityClassification {
 
-    private MapperCommodityClassification() { }
+  private MapperCommodityClassification() {
+  }
 
-    public static List<CommodityClassification> getListCommodityClassification(
-            ProcurementProject procurementProject,
-            List<CommodityClassificationType> listCommodityClassificationType) {
+  public static List<CommodityClassification> getListCommodityClassification(
+      ProcurementProject procurementProject,
+      List<CommodityClassificationType> listCommodityClassificationType) {
 
-        //
-        return listCommodityClassificationType.stream()
-                .map(type -> getCommodityClassificationFromType(procurementProject, type))
-                .toList();
-    }
+    //
+    return listCommodityClassificationType.stream()
+        .map(type -> getCommodityClassificationFromType(procurementProject, type))
+        .toList();
+  }
 
-    public static CommodityClassification getCommodityClassificationFromType(
-            ProcurementProject procurementProject,
-            CommodityClassificationType commodityClassificationType) {
+  public static CommodityClassification getCommodityClassificationFromType(
+      ProcurementProject procurementProject,
+      CommodityClassificationType commodityClassificationType) {
 
-        //
-        CommodityClassification commodityClassification = new CommodityClassification();
-        commodityClassification.setProcurementProject(procurementProject);
+    //
+    CommodityClassification commodityClassification = new CommodityClassification();
+    commodityClassification.setProcurementProject(procurementProject);
 
-        Optional.ofNullable(commodityClassificationType.getItemClassificationCode())
-                .map(ItemClassificationCodeType::getValue)
-                .ifPresent(commodityClassification::setItemClassificationCode);
+    Optional.ofNullable(commodityClassificationType.getItemClassificationCode())
+        .map(ItemClassificationCodeType::getValue)
+        .ifPresent(commodityClassification::setItemClassificationCode);
 
-        return commodityClassification;
-    }
+    return commodityClassification;
+  }
 }

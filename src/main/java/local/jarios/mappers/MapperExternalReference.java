@@ -20,32 +20,33 @@ import java.util.Optional;
 @Slf4j
 public final class MapperExternalReference {
 
-    private MapperExternalReference() { }
+  private MapperExternalReference() {
+  }
 
-    public static ExternalReference getExternalReference (
-            Attachment attachment,
-            ExternalReferenceType externalReferenceType) {
+  public static ExternalReference getExternalReference(
+      Attachment attachment,
+      ExternalReferenceType externalReferenceType) {
 
-        //
-        var externalReference = new ExternalReference();
-        externalReference.setAttachment(attachment);
+    //
+    var externalReference = new ExternalReference();
+    externalReference.setAttachment(attachment);
 
-        String documentHash = Optional.ofNullable(externalReferenceType.getDocumentHash())
-                                      .map(DocumentHashType::getValue)
-                                      .orElse(Constantes.CADENA_VACIA);
-        externalReference.setDocumentHash(documentHash);
+    String documentHash = Optional.ofNullable(externalReferenceType.getDocumentHash())
+        .map(DocumentHashType::getValue)
+        .orElse(Constantes.CADENA_VACIA);
+    externalReference.setDocumentHash(documentHash);
 
-        String uri = Optional.ofNullable(externalReferenceType.getURI())
-                             .map(URIType::getValue)
-                             .orElse(Constantes.CADENA_VACIA);
-        externalReference.setUri(uri);
+    String uri = Optional.ofNullable(externalReferenceType.getURI())
+        .map(URIType::getValue)
+        .orElse(Constantes.CADENA_VACIA);
+    externalReference.setUri(uri);
 
-        String filename = Optional.ofNullable(externalReferenceType.getFileName())
-                                  .map(FileNameType::getValue)
-                                  .orElse(Constantes.CADENA_VACIA);
-        externalReference.setFilename(filename);
+    String filename = Optional.ofNullable(externalReferenceType.getFileName())
+        .map(FileNameType::getValue)
+        .orElse(Constantes.CADENA_VACIA);
+    externalReference.setFilename(filename);
 
-        //
-        return externalReference;
-    }
+    //
+    return externalReference;
+  }
 }

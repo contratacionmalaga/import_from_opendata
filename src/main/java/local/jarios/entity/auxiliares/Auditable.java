@@ -21,15 +21,15 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public class Auditable {
 
-    //Getters y Setters
-    @JsonIgnore
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+  //Getters y Setters
+  @JsonIgnore
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
+  @PrePersist
+  protected void onCreate() {
 
-        //
-        createdAt = LocalDateTimeHelper.getLocalDateTimeNow();
-    }
+    //
+    createdAt = LocalDateTimeHelper.getLocalDateTimeNow();
+  }
 }

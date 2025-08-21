@@ -15,13 +15,13 @@ package local.jarios.exceptions;
  */
 public class MiIoException extends RuntimeException {
 
-    /**
-     * Crea una nueva instancia de {@code MiIoException} con un mensaje descriptivo y la causa original.
-     *
-     * @param message Mensaje que describe el error ocurrido.
-     * @param cause   Causa original del error, típicamente una excepción de I/O.
-     */
-    public MiIoException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Crea una nueva instancia de {@code MiIoException} con un mensaje descriptivo y la causa original.
+   *
+   * @param message Mensaje que describe el error ocurrido.
+   * @param cause   Causa original del error, típicamente una excepción de I/O.
+   */
+  public MiIoException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

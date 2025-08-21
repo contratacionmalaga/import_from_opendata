@@ -1,8 +1,16 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
-import local.jarios.entity.auxiliares.Auditable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
+import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,52 +27,50 @@ import java.util.UUID;
 @Getter
 @Entity
 @Table(
-        name = "commodity_classification"
+    name = "commodity_classification"
 )
 public class CommodityClassification extends Auditable {
 
-    /**
-     * Constructor por defecto.
-     * <p>
-     * Requerido por JPA para la correcta creación de proxies
-     * y por Lombok para la inicialización básica.
-     * </p>
-     */
-    public CommodityClassification() {
-        // Constructor vacío requerido por JPA
-    }
+  //
+  // PROPIEDADES DEL MODELO
+  //
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
+  @Column(name = "item_classification_code", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String itemClassificationCode;
+  //
+  // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
+  //
+  @ManyToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "procurement_project_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_commodityclassification_procurementproject",
+          foreignKeyDefinition =
+              "FOREIGN KEY (procurement_project_id) " +
+                  "REFERENCES procurement_project(id) ON DELETE CASCADE"))
+  private ProcurementProject procurementProject;
 
-    //
-    // PROPIEDADES DEL MODELO
-    //
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  /**
+   * Constructor por defecto.
+   * <p>
+   * Requerido por JPA para la correcta creación de proxies
+   * y por Lombok para la inicialización básica.
+   * </p>
+   */
+  public CommodityClassification() {
+    // Constructor vacío requerido por JPA
+  }
 
-    @Column(name = "item_classification_code", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
-    private String itemClassificationCode;
+  @Override
+  public String toString() {
 
-    //
-    // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-    //
-    @ManyToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "procurement_project_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_commodityclassification_procurementproject",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (procurement_project_id) " +
-                            "REFERENCES procurement_project(id) ON DELETE CASCADE"))
-    private ProcurementProject procurementProject;
-
-    @Override
-    public String toString() {
-
-        return "CommodityClassification: " +
-                "[itemClassificationCode='" + itemClassificationCode + "']";
-    }
+    return "CommodityClassification: " +
+        "[itemClassificationCode='" + itemClassificationCode + "']";
+  }
 }

@@ -1,8 +1,18 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
-import local.jarios.entity.auxiliares.Auditable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
+import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,89 +41,83 @@ import java.util.UUID;
 @Table(name = "classification_scheme")
 public class ClassificationScheme extends Auditable {
 
-    /**
-     * Constructor por defecto.
-     * <p>
-     * Requerido por JPA para la correcta creación de proxies
-     * y por Lombok para la inicialización básica.
-     * </p>
-     */
-    public ClassificationScheme() {
-        // Constructor vacío requerido por JPA
-    }
+  /**
+   * Identificador único universal (UUID) del esquema de clasificación.
+   * <p>
+   * Clave primaria generada automáticamente.
+   * No puede ser actualizada ni ser nula.
+   * </p>
+   */
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
+  /**
+   * UUID externo del esquema, que puede usarse para referencia adicional.
+   */
+  @Column(name = "uuid", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  private String uuid;
+  /**
+   * Nombre descriptivo del esquema de clasificación.
+   */
+  @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  private String name;
+  /**
+   * Nota o comentario adicional sobre el esquema de clasificación.
+   */
+  @Column(name = "note", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  private String note;
+  /**
+   * Descripción textual detallada del esquema.
+   */
+  @Column(name = "description", columnDefinition = "TEXT")
+  private String description;
+  /**
+   * Solicitud de cualificación del licitador asociada a este esquema de clasificación.
+   * <p>
+   * Relación muchos a uno con la entidad {@link TendererQualificationRequest}.
+   * La eliminación en cascada está configurada en la clave foránea.
+   * </p>
+   */
+  @ManyToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "tenderer_qualification_request_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_classificationscheme_tendererqualificationrequest",
+          foreignKeyDefinition =
+              "FOREIGN KEY (tenderer_qualification_request_id) " +
+                  "REFERENCES tenderer_qualification_request(id) ON DELETE CASCADE"))
+  private TendererQualificationRequest tendererQualificationRequest;
+  /**
+   * Lista de categorías de clasificación que forman parte de este esquema.
+   * <p>
+   * Relación uno a muchos con la entidad {@link ClassificationCategory}.
+   * La eliminación en cascada y la remoción huérfana están habilitadas.
+   * </p>
+   */
+  @OneToMany(mappedBy = "classificationScheme", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ClassificationCategory> classificationCategory;
 
-    /**
-     * Identificador único universal (UUID) del esquema de clasificación.
-     * <p>
-     * Clave primaria generada automáticamente.
-     * No puede ser actualizada ni ser nula.
-     * </p>
-     */
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  /**
+   * Constructor por defecto.
+   * <p>
+   * Requerido por JPA para la correcta creación de proxies
+   * y por Lombok para la inicialización básica.
+   * </p>
+   */
+  public ClassificationScheme() {
+    // Constructor vacío requerido por JPA
+  }
 
-    /**
-     * UUID externo del esquema, que puede usarse para referencia adicional.
-     */
-    @Column(name = "uuid", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
-    private String uuid;
-
-    /**
-     * Nombre descriptivo del esquema de clasificación.
-     */
-    @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
-    private String name;
-
-    /**
-     * Nota o comentario adicional sobre el esquema de clasificación.
-     */
-    @Column(name = "note", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
-    private String note;
-
-    /**
-     * Descripción textual detallada del esquema.
-     */
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
-
-    /**
-     * Solicitud de cualificación del licitador asociada a este esquema de clasificación.
-     * <p>
-     * Relación muchos a uno con la entidad {@link TendererQualificationRequest}.
-     * La eliminación en cascada está configurada en la clave foránea.
-     * </p>
-     */
-    @ManyToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "tenderer_qualification_request_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_classificationscheme_tendererqualificationrequest",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (tenderer_qualification_request_id) " +
-                                    "REFERENCES tenderer_qualification_request(id) ON DELETE CASCADE"))
-    private TendererQualificationRequest tendererQualificationRequest;
-
-    /**
-     * Lista de categorías de clasificación que forman parte de este esquema.
-     * <p>
-     * Relación uno a muchos con la entidad {@link ClassificationCategory}.
-     * La eliminación en cascada y la remoción huérfana están habilitadas.
-     * </p>
-     */
-    @OneToMany(mappedBy = "classificationScheme", cascade = CascadeType.MERGE, orphanRemoval = true)
-    private List<ClassificationCategory> classificationCategory;
-
-    @Override
-    public String toString() {
-        return "ClassificationScheme: " +
-                "[uuid='" + uuid + "', " +
-                "name='" + name + "', " +
-                "note='" + note + "', " +
-                "description='" + description + "']";
-    }
+  @Override
+  public String toString() {
+    return "ClassificationScheme: " +
+        "[uuid='" + uuid + "', " +
+        "name='" + name + "', " +
+        "note='" + note + "', " +
+        "description='" + description + "']";
+  }
 }

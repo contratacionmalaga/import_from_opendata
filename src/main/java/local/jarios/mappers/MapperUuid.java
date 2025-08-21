@@ -29,28 +29,29 @@ import java.util.List;
 @Slf4j
 public final class MapperUuid {
 
-    private MapperUuid() { }
+  private MapperUuid() {
+  }
 
-    /**
-     * Convierte una lista de {@link UUIDType} en una lista de {@link Uuid},
-     * asociando cada instancia al {@link ContractFolderStatus} proporcionado.
-     *
-     * @param contractFolderStatus entidad padre a la que se asocian los UUIDs.
-     * @param listUuidType lista de objetos {@link UUIDType} a convertir.
-     * @return lista de objetos {@link Uuid} generados.
-     */
-    public static List<Uuid> getListUuidFromType(
-            ContractFolderStatus contractFolderStatus,
-            List<UUIDType> listUuidType) {
+  /**
+   * Convierte una lista de {@link UUIDType} en una lista de {@link Uuid},
+   * asociando cada instancia al {@link ContractFolderStatus} proporcionado.
+   *
+   * @param contractFolderStatus entidad padre a la que se asocian los UUIDs.
+   * @param listUuidType         lista de objetos {@link UUIDType} a convertir.
+   * @return lista de objetos {@link Uuid} generados.
+   */
+  public static List<Uuid> getListUuidFromType(
+      ContractFolderStatus contractFolderStatus,
+      List<UUIDType> listUuidType) {
 
-        return listUuidType.stream()
-                .map(uuidType -> {
-                    var uuid = new Uuid();
-                    uuid.setContractFolderStatus(contractFolderStatus);
-                    uuid.setUuid(uuidType.getValue());
-                    uuid.setSchemeName(uuidType.getSchemeName());
-                    return uuid;
-                })
-                .toList();
-    }
+    return listUuidType.stream()
+        .map(uuidType -> {
+          var uuid = new Uuid();
+          uuid.setContractFolderStatus(contractFolderStatus);
+          uuid.setUuid(uuidType.getValue());
+          uuid.setSchemeName(uuidType.getSchemeName());
+          return uuid;
+        })
+        .toList();
+  }
 }

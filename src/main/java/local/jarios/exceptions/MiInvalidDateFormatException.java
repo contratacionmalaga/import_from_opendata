@@ -8,13 +8,13 @@ package local.jarios.exceptions;
  */
 public class MiInvalidDateFormatException extends RuntimeException {
 
-    public MiInvalidDateFormatException(String message) {
+  public MiInvalidDateFormatException(String message) {
 
-        super(message);
-    }
+    super(message);
+  }
 
-    public MiInvalidDateFormatException(String message, Throwable ex) {
+  public MiInvalidDateFormatException(String message, Throwable ex) {
 
-        super(message, ex);
-    }
+    super(message, ex);
+  }
 }

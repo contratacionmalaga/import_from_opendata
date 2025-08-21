@@ -1,6 +1,15 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,44 +29,44 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "general_document_document_reference"
+    name = "general_document_document_reference"
 )
 
 public class GeneralDocumentDocumentReference extends Auditable {
 
-    //
-    //
-    //
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  //
+  //
+  //
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    //
-    //
-    //
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "general_document_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_generaldocumentdocumentreference_generaldocument",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (general_document_id) " +
-                            "REFERENCES general_document(id) ON DELETE CASCADE"))
-    private GeneralDocument generalDocument;
+  //
+  //
+  //
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "general_document_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_generaldocumentdocumentreference_generaldocument",
+          foreignKeyDefinition =
+              "FOREIGN KEY (general_document_id) " +
+                  "REFERENCES general_document(id) ON DELETE CASCADE"))
+  private GeneralDocument generalDocument;
 
-    //
-    //
-    //
-    @OneToOne(mappedBy = "generalDocumentDocumentReference", cascade = CascadeType.MERGE, orphanRemoval = true)
-    private DocumentReference documentReference;
+  //
+  //
+  //
+  @OneToOne(mappedBy = "generalDocumentDocumentReference", cascade = CascadeType.ALL, orphanRemoval = true)
+  private DocumentReference documentReference;
 
-    @Override
-    public String toString() {
+  @Override
+  public String toString() {
 
-        return "GeneralDocumentDocumentReference: []";
-    }
+    return "GeneralDocumentDocumentReference: []";
+  }
 }

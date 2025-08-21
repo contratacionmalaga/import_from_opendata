@@ -11,11 +11,11 @@ import lombok.Getter;
 @Getter
 public enum TipoConexion {
 
-    //
-    MARIADB,
-    FILTRO_SQL;
+  //
+  MARIADB,
+  FILTRO_SQL;
 
-    TipoConexion() {
+  TipoConexion() {
 
-    }
+  }
 }

@@ -1,6 +1,15 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,44 +29,44 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "technical_document_reference"
+    name = "technical_document_reference"
 )
 
 public class TechnicalDocumentReference extends Auditable {
 
-    //
-    //
-    //
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  //
+  //
+  //
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    //
-    //
-    //
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "contract_folder_status_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_technicaldocumentreference_contractfolderstatus",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (contract_folder_status_id) " +
-                            "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
-    private ContractFolderStatus contractFolderStatus;
+  //
+  //
+  //
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "contract_folder_status_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_technicaldocumentreference_contractfolderstatus",
+          foreignKeyDefinition =
+              "FOREIGN KEY (contract_folder_status_id) " +
+                  "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
+  private ContractFolderStatus contractFolderStatus;
 
-    //
-    //
-    //
-    @OneToOne(mappedBy = "technicalDocumentReference", cascade = CascadeType.MERGE, orphanRemoval = true)
-    private DocumentReference documentReference;
+  //
+  //
+  //
+  @OneToOne(mappedBy = "technicalDocumentReference", cascade = CascadeType.ALL, orphanRemoval = true)
+  private DocumentReference documentReference;
 
-    @Override
-    public String toString() {
+  @Override
+  public String toString() {
 
-        return "TechnicalDocumentReference: []";
-    }
+    return "TechnicalDocumentReference: []";
+  }
 }

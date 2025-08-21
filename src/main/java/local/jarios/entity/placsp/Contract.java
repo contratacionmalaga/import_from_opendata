@@ -1,8 +1,16 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
-import local.jarios.entity.auxiliares.Auditable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
+import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,83 +46,80 @@ import java.util.UUID;
 @Table(name = "contract")
 public class Contract extends Auditable {
 
-    /**
-     * Constructor por defecto.
-     * <p>
-     * Requerido por JPA para la correcta creación de proxies
-     * y por Lombok para la inicialización básica.
-     * </p>
-     */
-    public Contract() {
-        // Constructor vacío requerido por JPA
-    }
+  /**
+   * Identificador único de la entidad Contract.
+   * Generado automáticamente como UUID.
+   */
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    // =========================================================================
-    // PROPIEDADES DE LA ENTIDAD
-    // =========================================================================
+  // =========================================================================
+  // PROPIEDADES DE LA ENTIDAD
+  // =========================================================================
+  /**
+   * Identificador externo del contrato.
+   * <p>
+   * Longitud máxima: {@link Constantes#TAMANO_MAXIMO_CAMPO_50}.
+   * </p>
+   */
+  @Column(name = "id_contract", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String idContract;
+  /**
+   * Fecha de emisión o formalización del contrato.
+   */
+  @Column(name = "issue_date")
+  private LocalDate issueDate;
+  /**
+   * Relación uno a uno con el resultado de la licitación
+   * ({@link TenderResult}) del que deriva este contrato.
+   * <p>
+   * Eliminación en cascada: si se elimina el tender result asociado,
+   * también se elimina el contrato.
+   * </p>
+   */
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "tender_result_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_contract_tenderresult",
+          foreignKeyDefinition =
+              "FOREIGN KEY (tender_result_id) " +
+                  "REFERENCES tender_result(id) ON DELETE CASCADE"))
+  private TenderResult tenderResult;
 
-    /**
-     * Identificador único de la entidad Contract.
-     * Generado automáticamente como UUID.
-     */
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  // =========================================================================
+  // RELACIONES CON ENTIDADES PADRES
+  // =========================================================================
 
-    /**
-     * Identificador externo del contrato.
-     * <p>
-     * Longitud máxima: {@link Constantes#TAMANO_MAXIMO_CAMPO_50}.
-     * </p>
-     */
-    @Column(name = "id_contract", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
-    private String idContract;
+  /**
+   * Constructor por defecto.
+   * <p>
+   * Requerido por JPA para la correcta creación de proxies
+   * y por Lombok para la inicialización básica.
+   * </p>
+   */
+  public Contract() {
+    // Constructor vacío requerido por JPA
+  }
 
-    /**
-     * Fecha de emisión o formalización del contrato.
-     */
-    @Column(name = "issue_date")
-    private LocalDate issueDate;
+  // =========================================================================
+  // MÉTODOS AUXILIARES
+  // =========================================================================
 
-    // =========================================================================
-    // RELACIONES CON ENTIDADES PADRES
-    // =========================================================================
-
-    /**
-     * Relación uno a uno con el resultado de la licitación
-     * ({@link TenderResult}) del que deriva este contrato.
-     * <p>
-     * Eliminación en cascada: si se elimina el tender result asociado,
-     * también se elimina el contrato.
-     * </p>
-     */
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "tender_result_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_contract_tenderresult",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (tender_result_id) " +
-                                    "REFERENCES tender_result(id) ON DELETE CASCADE"))
-    private TenderResult tenderResult;
-
-    // =========================================================================
-    // MÉTODOS AUXILIARES
-    // =========================================================================
-
-    /**
-     * Representación textual simplificada de la entidad.
-     *
-     * @return cadena con el identificador del contrato y su fecha de emisión.
-     */
-    @Override
-    public String toString() {
-        return "Contract: " +
-                "[idContract='" + idContract + "', " +
-                "issueDate='" + issueDate + "']";
-    }
+  /**
+   * Representación textual simplificada de la entidad.
+   *
+   * @return cadena con el identificador del contrato y su fecha de emisión.
+   */
+  @Override
+  public String toString() {
+    return "Contract: " +
+        "[idContract='" + idContract + "', " +
+        "issueDate='" + issueDate + "']";
+  }
 }

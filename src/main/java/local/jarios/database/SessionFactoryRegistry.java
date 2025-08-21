@@ -15,47 +15,47 @@ import java.util.Map;
 @Slf4j
 public final class SessionFactoryRegistry {
 
-    private static final Map<TipoConexion, SessionFactory> registry = new EnumMap<>(TipoConexion.class);
-    private static final Object lock = new Object();
+  private static final Map<TipoConexion, SessionFactory> registry = new EnumMap<>(TipoConexion.class);
+  private static final Object lock = new Object();
 
-    private SessionFactoryRegistry() {
-        // Previene instanciación
+  private SessionFactoryRegistry() {
+    // Previene instanciación
+  }
+
+  /**
+   * Obtiene (o crea si no existe) la SessionFactory para el tipo de conexión.
+   *
+   * @param tipoConexion tipo de conexión
+   * @return instancia única de SessionFactory
+   * @throws MiSessionFactoryProvider si hay error de configuración
+   */
+  public static SessionFactory getSessionFactory(TipoConexion tipoConexion) throws MiSessionFactoryProvider {
+    synchronized (lock) {
+      if (!registry.containsKey(tipoConexion)) {
+        log.debug("[getSessionFactory] - El Map<TipoConexion, SessionFactory> no cotiene la conexión: {}", tipoConexion);
+
+        SessionFactory factory = new SessionFactoryProvider().getSessionFactory(tipoConexion);
+        log.debug("[getSessionFactory] - Se ha generado la SessionFactory correctamente.}");
+
+        registry.put(tipoConexion, factory);
+        log.debug("[getSessionFactory] - Asignada al Map<TipoConexion, SessionFactory> la conexión: {}", tipoConexion);
+      }
+      return registry.get(tipoConexion);
     }
+  }
 
-    /**
-     * Obtiene (o crea si no existe) la SessionFactory para el tipo de conexión.
-     *
-     * @param tipoConexion tipo de conexión
-     * @return instancia única de SessionFactory
-     * @throws MiSessionFactoryProvider si hay error de configuración
-     */
-    public static SessionFactory getSessionFactory(TipoConexion tipoConexion) throws MiSessionFactoryProvider {
-        synchronized (lock) {
-            if (!registry.containsKey(tipoConexion)) {
-                log.debug("[getSessionFactory] - El Map<TipoConexion, SessionFactory> no cotiene la conexión: {}", tipoConexion);
-
-                SessionFactory factory = new SessionFactoryProvider().getSessionFactory(tipoConexion);
-                log.debug("[getSessionFactory] - Se ha generado la SessionFactory correctamente.}");
-
-                registry.put(tipoConexion, factory);
-                log.debug("[getSessionFactory] - Asignada al Map<TipoConexion, SessionFactory> la conexión: {}", tipoConexion);
-            }
-            return registry.get(tipoConexion);
+  /**
+   * Cierra todas las SessionFactory abiertas.
+   */
+  public static void closeAll() {
+    synchronized (lock) {
+      registry.forEach((tipo, factory) -> {
+        if (factory != null && !factory.isClosed()) {
+          factory.close();
+          log.debug("[SessionFactoryRegistry] - Cerrada SessionFactory para tipo: {}", tipo);
         }
+      });
+      registry.clear();
     }
-
-    /**
-     * Cierra todas las SessionFactory abiertas.
-     */
-    public static void closeAll() {
-        synchronized (lock) {
-            registry.forEach((tipo, factory) -> {
-                if (factory != null && !factory.isClosed()) {
-                    factory.close();
-                    log.debug("[SessionFactoryRegistry] - Cerrada SessionFactory para tipo: {}", tipo);
-                }
-            });
-            registry.clear();
-        }
-    }
+  }
 }

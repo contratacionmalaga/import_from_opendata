@@ -4,10 +4,15 @@ import ext.place.codice.common.caclib.AdditionalPublicationDocumentReferenceType
 import ext.place.codice.common.caclib.AdditionalPublicationRequestType;
 import ext.place.codice.common.caclib.AdditionalPublicationStatusType;
 import ext.place.codice.common.caclib.NoticeInfoType;
-import local.jarios.entity.placsp.*;
+import local.jarios.common.util.Constantes;
+import local.jarios.entity.placsp.AdditionalPublicationDocumentReference;
+import local.jarios.entity.placsp.AdditionalPublicationRequest;
+import local.jarios.entity.placsp.AdditionalPublicationStatus;
+import local.jarios.entity.placsp.ContractFolderStatus;
+import local.jarios.entity.placsp.NoticeInfo;
+import local.jarios.entity.placsp.PreliminaryMarketConsultationStatus;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.helpers.GregorianCalendarHelper;
-import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.cbclib.AgencyIDType;
 import org.dgpe.codice.common.cbclib.DocumentTypeCodeType;
@@ -29,177 +34,178 @@ import java.util.Optional;
 @Slf4j
 public final class MapperNoticeInfo {
 
-    private MapperNoticeInfo() { }
+  private MapperNoticeInfo() {
+  }
 
-    public static List<NoticeInfo> getListNoticeInfoFromType(
-            ContractFolderStatus contractFolderStatus,
-            PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
-            List<NoticeInfoType> listNoticeInfoType) {
+  public static List<NoticeInfo> getListNoticeInfoFromType(
+      ContractFolderStatus contractFolderStatus,
+      PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
+      List<NoticeInfoType> listNoticeInfoType) {
 
-        List<NoticeInfo> listNoticeInfo = new ArrayList<>();
+    List<NoticeInfo> listNoticeInfo = new ArrayList<>();
 
-        for (NoticeInfoType noticeInfoType : listNoticeInfoType) {
-            listNoticeInfo.add(getNoticeInfoFromType(contractFolderStatus, preliminaryMarketConsultationStatus, noticeInfoType));
-        }
-
-        return listNoticeInfo;
+    for (NoticeInfoType noticeInfoType : listNoticeInfoType) {
+      listNoticeInfo.add(getNoticeInfoFromType(contractFolderStatus, preliminaryMarketConsultationStatus, noticeInfoType));
     }
 
-    private static NoticeInfo getNoticeInfoFromType(
-            ContractFolderStatus contractFolderStatus, PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus, NoticeInfoType noticeInfoType) {
+    return listNoticeInfo;
+  }
 
-        NoticeInfo noticeInfo = new NoticeInfo();
+  private static NoticeInfo getNoticeInfoFromType(
+      ContractFolderStatus contractFolderStatus, PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus, NoticeInfoType noticeInfoType) {
 
-        noticeInfo.setContractFolderStatus(contractFolderStatus);
-        noticeInfo.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
+    NoticeInfo noticeInfo = new NoticeInfo();
 
-        // NoticeTypeCode es obligatorio, sin Optional porque se asume que no es null
-        noticeInfo
-                .setNoticeTypeCode(ComunHelper.limitarRegistro(
-                        noticeInfoType.getNoticeTypeCode().getValue(),
-                        Constantes.TAMANO_MAXIMO_CAMPO_50));
+    noticeInfo.setContractFolderStatus(contractFolderStatus);
+    noticeInfo.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
 
-        noticeInfo
-                .setListAdditionalPublicationStatus(
-                        getListAdditionalPublicationStatusFromType(
-                                noticeInfo,
-                                Optional
-                                        .ofNullable(noticeInfoType
-                                        .getAdditionalPublicationStatus())
-                                        .orElse(Collections.emptyList())));
+    // NoticeTypeCode es obligatorio, sin Optional porque se asume que no es null
+    noticeInfo
+        .setNoticeTypeCode(ComunHelper.limitarRegistro(
+            noticeInfoType.getNoticeTypeCode().getValue(),
+            Constantes.TAMANO_MAXIMO_CAMPO_50));
 
-        return noticeInfo;
+    noticeInfo
+        .setListAdditionalPublicationStatus(
+            getListAdditionalPublicationStatusFromType(
+                noticeInfo,
+                Optional
+                    .ofNullable(noticeInfoType
+                        .getAdditionalPublicationStatus())
+                    .orElse(Collections.emptyList())));
+
+    return noticeInfo;
+  }
+
+  private static List<AdditionalPublicationStatus> getListAdditionalPublicationStatusFromType(
+      NoticeInfo noticeInfo,
+      List<AdditionalPublicationStatusType> listAdditionalPublicationStatusType) {
+
+    List<AdditionalPublicationStatus> listAdditionalPublicationStatus = new ArrayList<>();
+
+    for (AdditionalPublicationStatusType additionalPublicationStatusType : listAdditionalPublicationStatusType) {
+      listAdditionalPublicationStatus
+          .add(
+              getAdditionalPublicationStatusFromType(
+                  noticeInfo,
+                  additionalPublicationStatusType));
     }
 
-    private static List<AdditionalPublicationStatus> getListAdditionalPublicationStatusFromType(
-            NoticeInfo noticeInfo,
-            List<AdditionalPublicationStatusType> listAdditionalPublicationStatusType) {
+    return listAdditionalPublicationStatus;
+  }
 
-        List<AdditionalPublicationStatus> listAdditionalPublicationStatus = new ArrayList<>();
+  private static AdditionalPublicationStatus getAdditionalPublicationStatusFromType(
+      NoticeInfo noticeInfo,
+      AdditionalPublicationStatusType additionalPublicationStatusType) {
 
-        for (AdditionalPublicationStatusType additionalPublicationStatusType : listAdditionalPublicationStatusType) {
-            listAdditionalPublicationStatus
-                    .add(
-                            getAdditionalPublicationStatusFromType(
-                                    noticeInfo,
-                                    additionalPublicationStatusType));
-        }
+    AdditionalPublicationStatus additionalPublicationStatus = new AdditionalPublicationStatus();
 
-        return listAdditionalPublicationStatus;
+    additionalPublicationStatus.setNoticeInfo(noticeInfo);
+
+    Optional.ofNullable(additionalPublicationStatusType.getPublicationMediaName())
+        .map(NameType::getValue)
+        .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_500))
+        .ifPresent(additionalPublicationStatus::setPublicationMediaName);
+
+    additionalPublicationStatus.setAdditionalPublicationRequestList(
+        getListAdditionalPublicationRequestFromType(
+            additionalPublicationStatus,
+            Optional.ofNullable(additionalPublicationStatusType.getAdditionalPublicationRequest())
+                .orElse(Collections.emptyList())));
+
+    additionalPublicationStatus.setAdditionalPublicationDocumentReferenceList(
+        getListAdditionalPublicationDocumentReferenceFromType(
+            additionalPublicationStatus,
+            Optional.ofNullable(additionalPublicationStatusType.getAdditionalPublicationDocumentReference())
+                .orElse(Collections.emptyList())));
+
+    return additionalPublicationStatus;
+  }
+
+  private static List<AdditionalPublicationRequest> getListAdditionalPublicationRequestFromType(
+      AdditionalPublicationStatus additionalPublicationStatus,
+      List<AdditionalPublicationRequestType> listAdditionalPublicationRequestType) {
+
+    List<AdditionalPublicationRequest> listAdditionalPublicationRequest = new ArrayList<>();
+
+    for (AdditionalPublicationRequestType additionalPublicationRequestType : listAdditionalPublicationRequestType) {
+      listAdditionalPublicationRequest.add(
+          getAdditionalPublicationRequestFromType(
+              additionalPublicationStatus,
+              additionalPublicationRequestType));
     }
 
-    private static AdditionalPublicationStatus getAdditionalPublicationStatusFromType(
-            NoticeInfo noticeInfo,
-            AdditionalPublicationStatusType additionalPublicationStatusType) {
+    return listAdditionalPublicationRequest;
+  }
 
-        AdditionalPublicationStatus additionalPublicationStatus = new AdditionalPublicationStatus();
+  private static AdditionalPublicationRequest getAdditionalPublicationRequestFromType(
+      AdditionalPublicationStatus additionalPublicationStatus,
+      AdditionalPublicationRequestType additionalPublicationRequestType) {
 
-        additionalPublicationStatus.setNoticeInfo(noticeInfo);
+    AdditionalPublicationRequest additionalPublicationRequest = new AdditionalPublicationRequest();
 
-        Optional.ofNullable(additionalPublicationStatusType.getPublicationMediaName())
-                .map(NameType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_500))
-                .ifPresent(additionalPublicationStatus::setPublicationMediaName);
+    additionalPublicationRequest.setAdditionalPublicationStatus(additionalPublicationStatus);
 
-        additionalPublicationStatus.setAdditionalPublicationRequestList(
-                getListAdditionalPublicationRequestFromType(
-                        additionalPublicationStatus,
-                        Optional.ofNullable(additionalPublicationStatusType.getAdditionalPublicationRequest())
-                                .orElse(Collections.emptyList())));
+    Optional.ofNullable(additionalPublicationRequestType.getAgencyID())
+        .map(AgencyIDType::getValue)
+        .map(id -> ComunHelper.limitarRegistro(id, Constantes.TAMANO_MAXIMO_CAMPO_500))
+        .ifPresent(additionalPublicationRequest::setAgencyId);
 
-        additionalPublicationStatus.setAdditionalPublicationDocumentReferenceList(
-                getListAdditionalPublicationDocumentReferenceFromType(
-                        additionalPublicationStatus,
-                        Optional.ofNullable(additionalPublicationStatusType.getAdditionalPublicationDocumentReference())
-                                .orElse(Collections.emptyList())));
-
-        return additionalPublicationStatus;
+    if (additionalPublicationRequestType.getSendDate() != null &&
+        additionalPublicationRequestType.getSendTime() != null) {
+      additionalPublicationRequest.setSendDateTime(
+          LocalDateTime.of(
+              GregorianCalendarHelper.getDateFromXMLGregorianCalendar(
+                  additionalPublicationRequestType.getSendDate().getValue()),
+              GregorianCalendarHelper.getTimeFromXMLGregorianCalendar(
+                  additionalPublicationRequestType.getSendTime().getValue())));
     }
 
-    private static List<AdditionalPublicationRequest> getListAdditionalPublicationRequestFromType(
-            AdditionalPublicationStatus additionalPublicationStatus,
-            List<AdditionalPublicationRequestType> listAdditionalPublicationRequestType) {
+    //
+    return additionalPublicationRequest;
+  }
 
-        List<AdditionalPublicationRequest> listAdditionalPublicationRequest = new ArrayList<>();
+  private static List<AdditionalPublicationDocumentReference> getListAdditionalPublicationDocumentReferenceFromType(
+      AdditionalPublicationStatus additionalPublicationStatus,
+      List<AdditionalPublicationDocumentReferenceType> listAdditionalPublicationDocumentReferenceType) {
 
-        for (AdditionalPublicationRequestType additionalPublicationRequestType : listAdditionalPublicationRequestType) {
-            listAdditionalPublicationRequest.add(
-                    getAdditionalPublicationRequestFromType(
-                            additionalPublicationStatus,
-                            additionalPublicationRequestType));
-        }
+    List<AdditionalPublicationDocumentReference> listAdditionalPublicationDocumentReference = new ArrayList<>();
 
-        return listAdditionalPublicationRequest;
+    for (AdditionalPublicationDocumentReferenceType additionalPublicationDocumentReferenceType : listAdditionalPublicationDocumentReferenceType) {
+      listAdditionalPublicationDocumentReference.add(
+          getAdditionalPublicationDocumentReferenceFromType(
+              additionalPublicationStatus,
+              additionalPublicationDocumentReferenceType));
     }
 
-    private static AdditionalPublicationRequest getAdditionalPublicationRequestFromType(
-            AdditionalPublicationStatus additionalPublicationStatus,
-            AdditionalPublicationRequestType additionalPublicationRequestType) {
+    return listAdditionalPublicationDocumentReference;
+  }
 
-        AdditionalPublicationRequest additionalPublicationRequest = new AdditionalPublicationRequest();
+  private static AdditionalPublicationDocumentReference getAdditionalPublicationDocumentReferenceFromType(
+      AdditionalPublicationStatus additionalPublicationStatus,
+      AdditionalPublicationDocumentReferenceType additionalPublicationDocumentReferenceType) {
 
-        additionalPublicationRequest.setAdditionalPublicationStatus(additionalPublicationStatus);
+    AdditionalPublicationDocumentReference additionalPublicationDocumentReference = new AdditionalPublicationDocumentReference();
 
-        Optional.ofNullable(additionalPublicationRequestType.getAgencyID())
-                .map(AgencyIDType::getValue)
-                .map(id -> ComunHelper.limitarRegistro(id, Constantes.TAMANO_MAXIMO_CAMPO_500))
-                .ifPresent(additionalPublicationRequest::setAgencyId);
+    additionalPublicationDocumentReference.setAdditionalPublicationStatus(additionalPublicationStatus);
 
-        if (additionalPublicationRequestType.getSendDate() != null &&
-                additionalPublicationRequestType.getSendTime() != null) {
-            additionalPublicationRequest.setSendDateTime(
-                    LocalDateTime.of(
-                            GregorianCalendarHelper.getDateFromXMLGregorianCalendar(
-                                    additionalPublicationRequestType.getSendDate().getValue()),
-                            GregorianCalendarHelper.getTimeFromXMLGregorianCalendar(
-                                    additionalPublicationRequestType.getSendTime().getValue())));
-        }
+    Optional.ofNullable(additionalPublicationDocumentReferenceType.getIssueDate())
+        .map(IssueDateType::getValue)
+        .map(GregorianCalendarHelper::getDateFromXMLGregorianCalendar)
+        .ifPresent(additionalPublicationDocumentReference::setIssueDate);
 
-        //
-        return additionalPublicationRequest;
-    }
+    String docTypeCode = Optional.ofNullable(additionalPublicationDocumentReferenceType.getDocumentTypeCode())
+        .map(DocumentTypeCodeType::getValue)
+        .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
+        .orElse(Constantes.CADENA_VACIA);
+    additionalPublicationDocumentReference.setDocumentTypeCode(docTypeCode);
 
-    private static List<AdditionalPublicationDocumentReference> getListAdditionalPublicationDocumentReferenceFromType(
-            AdditionalPublicationStatus additionalPublicationStatus,
-            List<AdditionalPublicationDocumentReferenceType> listAdditionalPublicationDocumentReferenceType) {
+    Optional.ofNullable(additionalPublicationDocumentReferenceType.getAttachment())
+        .map(att -> MapperAttachment.getAttachmentFromType(
+            null, additionalPublicationDocumentReference, null, att))
+        .ifPresent(additionalPublicationDocumentReference::setAttachment);
 
-        List<AdditionalPublicationDocumentReference> listAdditionalPublicationDocumentReference = new ArrayList<>();
-
-        for (AdditionalPublicationDocumentReferenceType additionalPublicationDocumentReferenceType : listAdditionalPublicationDocumentReferenceType) {
-            listAdditionalPublicationDocumentReference.add(
-                    getAdditionalPublicationDocumentReferenceFromType(
-                            additionalPublicationStatus,
-                            additionalPublicationDocumentReferenceType));
-        }
-
-        return listAdditionalPublicationDocumentReference;
-    }
-
-    private static AdditionalPublicationDocumentReference getAdditionalPublicationDocumentReferenceFromType(
-            AdditionalPublicationStatus additionalPublicationStatus,
-            AdditionalPublicationDocumentReferenceType additionalPublicationDocumentReferenceType) {
-
-        AdditionalPublicationDocumentReference additionalPublicationDocumentReference = new AdditionalPublicationDocumentReference();
-
-        additionalPublicationDocumentReference.setAdditionalPublicationStatus(additionalPublicationStatus);
-
-        Optional.ofNullable(additionalPublicationDocumentReferenceType.getIssueDate())
-                .map(IssueDateType::getValue)
-                .map(GregorianCalendarHelper::getDateFromXMLGregorianCalendar)
-                .ifPresent(additionalPublicationDocumentReference::setIssueDate);
-
-        String docTypeCode =  Optional.ofNullable(additionalPublicationDocumentReferenceType.getDocumentTypeCode())
-                                     .map(DocumentTypeCodeType::getValue)
-                                     .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
-                                     .orElse(Constantes.CADENA_VACIA);
-        additionalPublicationDocumentReference.setDocumentTypeCode(docTypeCode);
-
-        Optional.ofNullable(additionalPublicationDocumentReferenceType.getAttachment())
-                .map(att -> MapperAttachment.getAttachmentFromType(
-                        null, additionalPublicationDocumentReference, null, att))
-                .ifPresent(additionalPublicationDocumentReference::setAttachment);
-
-        //
-        return additionalPublicationDocumentReference;
-    }
+    //
+    return additionalPublicationDocumentReference;
+  }
 }

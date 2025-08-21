@@ -2,10 +2,10 @@ package local.jarios.mappers;
 
 import ext.place.codice.common.caclib.ContractFolderStatusType;
 import ext.place.codice.common.cbclib.ContractFolderStatusCodeType;
+import local.jarios.common.util.Constantes;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.placsp.ContractFolderStatus;
 import local.jarios.helpers.ComunHelper;
-import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.cbclib.ContractFolderIDType;
 import org.w3._2005.atom.EntryType;
@@ -23,108 +23,109 @@ import java.util.Optional;
 @Slf4j
 public final class MapperContractFolderStatus {
 
-    private MapperContractFolderStatus() { }
+  private MapperContractFolderStatus() {
+  }
 
-    public static List<ContractFolderStatus> getListContractFolderStatusFromListType(
-            Entry entry, EntryType entryType) {
+  public static List<ContractFolderStatus> getListContractFolderStatusFromListType(
+      Entry entry, EntryType entryType) {
 
-        return entryType.getAny().stream()
-                .filter(JAXBElement.class::isInstance)
-                .map(JAXBElement.class::cast)
-                .filter(elem -> elem.getDeclaredType().equals(ContractFolderStatusType.class))
-                .map(elem -> {
-                    @SuppressWarnings("unchecked")
-                    JAXBElement<ContractFolderStatusType> typedElem = (JAXBElement<ContractFolderStatusType>) elem;
-                    return getContractFolderStatusFromType(entry, typedElem);
-                })
-                .toList();
-    }
+    return entryType.getAny().stream()
+        .filter(JAXBElement.class::isInstance)
+        .map(JAXBElement.class::cast)
+        .filter(elem -> elem.getDeclaredType().equals(ContractFolderStatusType.class))
+        .map(elem -> {
+          @SuppressWarnings("unchecked")
+          JAXBElement<ContractFolderStatusType> typedElem = (JAXBElement<ContractFolderStatusType>) elem;
+          return getContractFolderStatusFromType(entry, typedElem);
+        })
+        .toList();
+  }
 
-    private static ContractFolderStatus getContractFolderStatusFromType(
-            Entry entry, JAXBElement<ContractFolderStatusType> jaxbElement) {
+  private static ContractFolderStatus getContractFolderStatusFromType(
+      Entry entry, JAXBElement<ContractFolderStatusType> jaxbElement) {
 
-        //
-        ContractFolderStatusType contractFolderStatusType = jaxbElement.getValue();
-        ContractFolderStatus contractFolderStatus = new ContractFolderStatus();
+    //
+    ContractFolderStatusType contractFolderStatusType = jaxbElement.getValue();
+    ContractFolderStatus contractFolderStatus = new ContractFolderStatus();
 
-        contractFolderStatus.setEntry(entry);
+    contractFolderStatus.setEntry(entry);
 
-        Optional.ofNullable(contractFolderStatusType.getContractFolderStatusCode())
-                .map(ContractFolderStatusCodeType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
-                .ifPresent(contractFolderStatus::setContractFolderStatusCode);
+    Optional.ofNullable(contractFolderStatusType.getContractFolderStatusCode())
+        .map(ContractFolderStatusCodeType::getValue)
+        .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
+        .ifPresent(contractFolderStatus::setContractFolderStatusCode);
 
-        Optional.ofNullable(contractFolderStatusType.getContractFolderID())
-                .map(ContractFolderIDType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
-                .ifPresent(contractFolderStatus::setContractFolderId);
+    Optional.ofNullable(contractFolderStatusType.getContractFolderID())
+        .map(ContractFolderIDType::getValue)
+        .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
+        .ifPresent(contractFolderStatus::setContractFolderId);
 
-        Optional.ofNullable(contractFolderStatusType.getProcurementProject())
-                .ifPresent(pp -> contractFolderStatus.setProcurementProject(
-                        MapperProcurementProject.getProcurementProjectFromType(
-                                contractFolderStatus, null,null, pp)));
+    Optional.ofNullable(contractFolderStatusType.getProcurementProject())
+        .ifPresent(pp -> contractFolderStatus.setProcurementProject(
+            MapperProcurementProject.getProcurementProjectFromType(
+                contractFolderStatus, null, null, pp)));
 
-        Optional.ofNullable(contractFolderStatusType.getTenderingProcess())
-                .ifPresent(tp -> contractFolderStatus.setTenderingProcess(
-                        MapperTenderingProcess.getTenderingProcessFromType(
-                                contractFolderStatus, null, tp)));
+    Optional.ofNullable(contractFolderStatusType.getTenderingProcess())
+        .ifPresent(tp -> contractFolderStatus.setTenderingProcess(
+            MapperTenderingProcess.getTenderingProcessFromType(
+                contractFolderStatus, null, tp)));
 
-        // LocatedContractingParty no es nullable según el original, pero si quieres ser más seguro:
-        Optional.ofNullable(contractFolderStatusType.getLocatedContractingParty())
-                .ifPresent(lcp -> contractFolderStatus.setLocatedContractingParty(
-                        MapperLocatedContractingParty.getLocatedContractingPartyFromType(
-                                contractFolderStatus, null, lcp)));
+    // LocatedContractingParty no es nullable según el original, pero si quieres ser más seguro:
+    Optional.ofNullable(contractFolderStatusType.getLocatedContractingParty())
+        .ifPresent(lcp -> contractFolderStatus.setLocatedContractingParty(
+            MapperLocatedContractingParty.getLocatedContractingPartyFromType(
+                contractFolderStatus, null, lcp)));
 
-        Optional.ofNullable(contractFolderStatusType.getTenderingTerms())
-                .ifPresent(tt -> contractFolderStatus.setTenderingTerms(
-                        MapperTenderingTerms.getTenderingTermsFromType(
-                                contractFolderStatus, null, tt)));
+    Optional.ofNullable(contractFolderStatusType.getTenderingTerms())
+        .ifPresent(tt -> contractFolderStatus.setTenderingTerms(
+            MapperTenderingTerms.getTenderingTermsFromType(
+                contractFolderStatus, null, tt)));
 
-        Optional.ofNullable(contractFolderStatusType.getTechnicalDocumentReference())
-                .ifPresent(tdr -> contractFolderStatus.setTechnicalDocumentReference(
-                        MapperTechnicalDocumentReference.getTechnicalDocumentReferenceFromDocumentReferenceType(
-                                contractFolderStatus, tdr)));
+    Optional.ofNullable(contractFolderStatusType.getTechnicalDocumentReference())
+        .ifPresent(tdr -> contractFolderStatus.setTechnicalDocumentReference(
+            MapperTechnicalDocumentReference.getTechnicalDocumentReferenceFromDocumentReferenceType(
+                contractFolderStatus, tdr)));
 
-        Optional.ofNullable(contractFolderStatusType.getLegalDocumentReference())
-                .ifPresent(ldr -> contractFolderStatus.setLegalDocumentReference(
-                        MapperLegalDocumentReference.getLegalDocumentReferenceFromDocumentReferenceType(
-                                contractFolderStatus, ldr)));
+    Optional.ofNullable(contractFolderStatusType.getLegalDocumentReference())
+        .ifPresent(ldr -> contractFolderStatus.setLegalDocumentReference(
+            MapperLegalDocumentReference.getLegalDocumentReferenceFromDocumentReferenceType(
+                contractFolderStatus, ldr)));
 
-        contractFolderStatus.setListAdditionalDocumentReference(
-                MapperAdditionalDocumentReference.getListAdditionalDocumentReferenceFromType(
-                        contractFolderStatus,
-                        contractFolderStatusType.getAdditionalDocumentReference()));
+    contractFolderStatus.setListAdditionalDocumentReference(
+        MapperAdditionalDocumentReference.getListAdditionalDocumentReferenceFromType(
+            contractFolderStatus,
+            contractFolderStatusType.getAdditionalDocumentReference()));
 
-        contractFolderStatus.setListGeneralDocument(
-                MapperGeneralDocument.getListGeneralDocumentFromType(
-                        contractFolderStatus,
-                        null,
-                        contractFolderStatusType.getGeneralDocument()));
+    contractFolderStatus.setListGeneralDocument(
+        MapperGeneralDocument.getListGeneralDocumentFromType(
+            contractFolderStatus,
+            null,
+            contractFolderStatusType.getGeneralDocument()));
 
-        contractFolderStatus.setListContractModification(
-                MapperContractModification.getListContractModificatoinFromType(
-                        contractFolderStatus,
-                        contractFolderStatusType.getContractModification()));
+    contractFolderStatus.setListContractModification(
+        MapperContractModification.getListContractModificatoinFromType(
+            contractFolderStatus,
+            contractFolderStatusType.getContractModification()));
 
-        contractFolderStatus.setListUuid(
-                MapperUuid.getListUuidFromType(
-                        contractFolderStatus,
-                        contractFolderStatusType.getUUID()));
+    contractFolderStatus.setListUuid(
+        MapperUuid.getListUuidFromType(
+            contractFolderStatus,
+            contractFolderStatusType.getUUID()));
 
-        contractFolderStatus.setListNoticeInfo(
-                MapperNoticeInfo.getListNoticeInfoFromType(
-                        contractFolderStatus,null, contractFolderStatusType.getValidNoticeInfo()));
+    contractFolderStatus.setListNoticeInfo(
+        MapperNoticeInfo.getListNoticeInfoFromType(
+            contractFolderStatus, null, contractFolderStatusType.getValidNoticeInfo()));
 
-        contractFolderStatus.setListTenderResult(
-                MapperTenderResult.getListTenderResultFromType(
-                        contractFolderStatus,
-                        contractFolderStatusType.getTenderResult()));
+    contractFolderStatus.setListTenderResult(
+        MapperTenderResult.getListTenderResultFromType(
+            contractFolderStatus,
+            contractFolderStatusType.getTenderResult()));
 
-        contractFolderStatus.setListProcurementProjectLot(
-                MapperProcurementProjectLot.getListProcurementProjectLotFromType(
-                        contractFolderStatus,
-                        contractFolderStatusType.getProcurementProjectLot()));
+    contractFolderStatus.setListProcurementProjectLot(
+        MapperProcurementProjectLot.getListProcurementProjectLotFromType(
+            contractFolderStatus,
+            contractFolderStatusType.getProcurementProjectLot()));
 
-        return contractFolderStatus;
-    }
+    return contractFolderStatus;
+  }
 }

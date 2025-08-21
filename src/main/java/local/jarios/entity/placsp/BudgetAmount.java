@@ -1,6 +1,14 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,70 +35,66 @@ import java.util.UUID;
 @Table(name = "budget_amount")
 public class BudgetAmount extends Auditable {
 
-    /**
-     * Constructor por defecto.
-     * <p>
-     * Requerido por JPA para la correcta creación de proxies
-     * y por Lombok para la inicialización básica.
-     * </p>
-     */
-    public BudgetAmount() {
-        // Constructor vacío requerido por JPA
-    }
+  /**
+   * Identificador único universal (UUID) de la cantidad presupuestaria.
+   * <p>
+   * Clave primaria generada automáticamente.
+   * No puede ser actualizada ni ser nula.
+   * </p>
+   */
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
+  /**
+   * Importe estimado global del contrato.
+   */
+  @Column(name = "estimated_overall_contract_amount")
+  private Double estimatedOverallContractAmount;
+  /**
+   * Importe total presupuestado.
+   */
+  @Column(name = "total_amount")
+  private Double totalAmount;
+  /**
+   * Importe presupuestado excluyendo impuestos.
+   */
+  @Column(name = "tax_exclusive_amount")
+  private Double taxExclusiveAmount;
+  /**
+   * Proyecto de contratación al que está asociado este presupuesto.
+   * <p>
+   * Relación uno a uno con la entidad {@link ProcurementProject}.
+   * La eliminación en cascada está configurada en la clave foránea.
+   * </p>
+   */
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "procurement_project_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_budgetamount_procurementproject",
+          foreignKeyDefinition = "FOREIGN KEY (procurement_project_id) REFERENCES procurement_project(id) ON DELETE CASCADE"))
+  private ProcurementProject procurementProject;
 
-    /**
-     * Identificador único universal (UUID) de la cantidad presupuestaria.
-     * <p>
-     * Clave primaria generada automáticamente.
-     * No puede ser actualizada ni ser nula.
-     * </p>
-     */
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  /**
+   * Constructor por defecto.
+   * <p>
+   * Requerido por JPA para la correcta creación de proxies
+   * y por Lombok para la inicialización básica.
+   * </p>
+   */
+  public BudgetAmount() {
+    // Constructor vacío requerido por JPA
+  }
 
-    /**
-     * Importe estimado global del contrato.
-     */
-    @Column(name = "estimated_overall_contract_amount")
-    private Double estimatedOverallContractAmount;
-
-    /**
-     * Importe total presupuestado.
-     */
-    @Column(name = "total_amount")
-    private Double totalAmount;
-
-    /**
-     * Importe presupuestado excluyendo impuestos.
-     */
-    @Column(name = "tax_exclusive_amount")
-    private Double taxExclusiveAmount;
-
-    /**
-     * Proyecto de contratación al que está asociado este presupuesto.
-     * <p>
-     * Relación uno a uno con la entidad {@link ProcurementProject}.
-     * La eliminación en cascada está configurada en la clave foránea.
-     * </p>
-     */
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "procurement_project_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_budgetamount_procurementproject",
-                    foreignKeyDefinition = "FOREIGN KEY (procurement_project_id) REFERENCES procurement_project(id) ON DELETE CASCADE"))
-    private ProcurementProject procurementProject;
-
-    @Override
-    public String toString() {
-        return "BudgetAmount: " +
-                "[estimatedOverallContractAmount='" + estimatedOverallContractAmount + "', " +
-                "totalAmount='" + totalAmount + "', " +
-                "taxExclusiveAmount='" + taxExclusiveAmount + "']";
-    }
+  @Override
+  public String toString() {
+    return "BudgetAmount: " +
+        "[estimatedOverallContractAmount='" + estimatedOverallContractAmount + "', " +
+        "totalAmount='" + totalAmount + "', " +
+        "taxExclusiveAmount='" + taxExclusiveAmount + "']";
+  }
 }

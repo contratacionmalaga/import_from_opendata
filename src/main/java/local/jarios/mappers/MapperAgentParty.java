@@ -1,10 +1,10 @@
 package local.jarios.mappers;
 
+import local.jarios.common.util.Constantes;
 import local.jarios.entity.placsp.AgentParty;
 import local.jarios.entity.placsp.Party;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.mappers.auxiliares.MapperStringFromList;
-import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.PartyType;
 import org.dgpe.codice.common.cbclib.WebsiteURIType;
@@ -20,38 +20,39 @@ import java.util.Optional;
 @Slf4j
 public final class MapperAgentParty {
 
-    private MapperAgentParty() { }
+  private MapperAgentParty() {
+  }
 
-    public static AgentParty getAgentParty(
-            Party party,
-            PartyType partyType) {
+  public static AgentParty getAgentParty(
+      Party party,
+      PartyType partyType) {
 
-        //
-        AgentParty agentParty = new AgentParty();
+    //
+    AgentParty agentParty = new AgentParty();
 
-        //
-        agentParty.setParty(party);
+    //
+    agentParty.setParty(party);
 
-        // Website URI (si no es null)
-        Optional.ofNullable(partyType.getWebsiteURI())
-                .map(WebsiteURIType::getValue)
-                .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_2500))
-                .ifPresent(agentParty::setWebSiteUri);
+    // Website URI (si no es null)
+    Optional.ofNullable(partyType.getWebsiteURI())
+        .map(WebsiteURIType::getValue)
+        .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_2500))
+        .ifPresent(agentParty::setWebSiteUri);
 
-        // Party Name (siempre se procesa)
-        String partyName = MapperStringFromList.getStringFromListPartyNameType(partyType.getPartyName());
-        agentParty.setPartyName(
-                ComunHelper.limitarRegistro(partyName, Constantes.TAMANO_MAXIMO_CAMPO_500));
+    // Party Name (siempre se procesa)
+    String partyName = MapperStringFromList.getStringFromListPartyNameType(partyType.getPartyName());
+    agentParty.setPartyName(
+        ComunHelper.limitarRegistro(partyName, Constantes.TAMANO_MAXIMO_CAMPO_500));
 
-        // Party Identification
-        agentParty.setPartyIdentification(
-                MapperPartyIdentification.getPartyIdentification(
-                        null,
-                        agentParty,
-                        null,
-                        partyType.getPartyIdentification()));
+    // Party Identification
+    agentParty.setPartyIdentification(
+        MapperPartyIdentification.getPartyIdentification(
+            null,
+            agentParty,
+            null,
+            partyType.getPartyIdentification()));
 
-        //
-        return agentParty;
-    }
+    //
+    return agentParty;
+  }
 }

@@ -19,28 +19,28 @@ import java.util.Properties;
 @Slf4j
 public class HibernateConfigurer {
 
-    /**
-     * Constructor por defecto.
-     */
-    public HibernateConfigurer() { /*    */ }
+  /**
+   * Constructor por defecto.
+   */
+  public HibernateConfigurer() { /*    */ }
 
-    /**
-     * Construye una configuración de Hibernate a partir de las propiedades proporcionadas.
-     *
-     * @param hibernateProperties Propiedades para configurar Hibernate (conexión, dialecto, etc.)
-     * @return Configuration configurada con las propiedades
-     */
-    public Configuration buildConfiguration(Properties hibernateProperties) {
+  /**
+   * Construye una configuración de Hibernate a partir de las propiedades proporcionadas.
+   *
+   * @param hibernateProperties Propiedades para configurar Hibernate (conexión, dialecto, etc.)
+   * @return Configuration configurada con las propiedades
+   */
+  public Configuration buildConfiguration(Properties hibernateProperties) {
 
-        log.debug("[buildConfiguration] - hibernaterProperties: {}", hibernateProperties);
+    log.debug("[buildConfiguration] - hibernaterProperties: {}", hibernateProperties);
 
-        Configuration configuration = new Configuration();
-        log.debug("[buildConfiguration] - Objeto Configuration creado correctamente.");
+    Configuration configuration = new Configuration();
+    log.debug("[buildConfiguration] - Objeto Configuration creado correctamente.");
 
-        // Seteamos las propiedades
-        configuration.setProperties(hibernateProperties);
-        log.debug("[buildConfiguration] - Hibernate Configuration creada con {} propiedades.", hibernateProperties.size());
+    // Seteamos las propiedades
+    configuration.setProperties(hibernateProperties);
+    log.debug("[buildConfiguration] - Hibernate Configuration creada con {} propiedades.", hibernateProperties.size());
 
-        return configuration;
-    }
+    return configuration;
+  }
 }

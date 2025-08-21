@@ -7,8 +7,9 @@ package local.jarios.enums;
  * Team: Juan Antonio Ríos Peláez
  */
 public enum TipoFecha {
-    INICIAL,
-    FINAL;
+  INICIAL,
+  FINAL;
 
-    TipoFecha() { }
+  TipoFecha() {
+  }
 }

@@ -20,47 +20,48 @@ import java.util.Optional;
 @Slf4j
 public final class MapperSubcontractTerms {
 
-    private MapperSubcontractTerms() { }
+  private MapperSubcontractTerms() {
+  }
 
-    public static List<SubcontractTerms> getListSubcontractTerms(
-            TenderingTerms tenderingTerms,
-            TenderResult tenderResult,
-            List<SubcontractTermsType> subcontractTermsTypeList) {
+  public static List<SubcontractTerms> getListSubcontractTerms(
+      TenderingTerms tenderingTerms,
+      TenderResult tenderResult,
+      List<SubcontractTermsType> subcontractTermsTypeList) {
 
-        //
-        return Optional.ofNullable(subcontractTermsTypeList)
-                .map(list -> list.stream()
-                        .map(subcontractTermsType -> getSubcontractTerms(tenderingTerms, tenderResult, subcontractTermsType))
-                        .toList())
-                .orElseGet(List::of);
+    //
+    return Optional.ofNullable(subcontractTermsTypeList)
+        .map(list -> list.stream()
+            .map(subcontractTermsType -> getSubcontractTerms(tenderingTerms, tenderResult, subcontractTermsType))
+            .toList())
+        .orElseGet(List::of);
 
-    }
+  }
 
-    private static SubcontractTerms getSubcontractTerms(
-            TenderingTerms tenderingTerms,
-            TenderResult tenderResult,
-            SubcontractTermsType subcontractTermsType) {
+  private static SubcontractTerms getSubcontractTerms(
+      TenderingTerms tenderingTerms,
+      TenderResult tenderResult,
+      SubcontractTermsType subcontractTermsType) {
 
-        //
-        SubcontractTerms subcontractTerms = new SubcontractTerms();
+    //
+    SubcontractTerms subcontractTerms = new SubcontractTerms();
 
-        //
-        subcontractTerms.setTenderingTerms(tenderingTerms);
-        subcontractTerms.setTenderResult(tenderResult);
+    //
+    subcontractTerms.setTenderingTerms(tenderingTerms);
+    subcontractTerms.setTenderResult(tenderResult);
 
-        //
-        subcontractTerms.setDescription(
-                MapperStringFromList.getStringFromListDescriptionType(
-                        subcontractTermsType.getDescription()));
+    //
+    subcontractTerms.setDescription(
+        MapperStringFromList.getStringFromListDescriptionType(
+            subcontractTermsType.getDescription()));
 
-        //
-        Optional.ofNullable(subcontractTermsType.getRate())
-                .map(RateType::getValue)
-                .map(Number::doubleValue)
-                .ifPresent(subcontractTerms::setRate);
+    //
+    Optional.ofNullable(subcontractTermsType.getRate())
+        .map(RateType::getValue)
+        .map(Number::doubleValue)
+        .ifPresent(subcontractTerms::setRate);
 
-        //
-        return subcontractTerms;
+    //
+    return subcontractTerms;
 
-    }
+  }
 }

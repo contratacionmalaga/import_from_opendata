@@ -7,6 +7,7 @@ import local.jarios.mappers.auxiliares.MapperStringFromList;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.ProcessJustificationType;
 import org.dgpe.codice.common.cbclib.ReasonCodeType;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,36 +20,37 @@ import java.util.Optional;
 @Slf4j
 public final class MapperProcessJustification {
 
-    private MapperProcessJustification() { }
+  private MapperProcessJustification() {
+  }
 
-    public static List<ProcessJustification> getListProcessJustificationFromType(
-            TenderingProcess tenderingProcess,
-            List<ProcessJustificationType> listProcessJustificationType) {
+  public static List<ProcessJustification> getListProcessJustificationFromType(
+      TenderingProcess tenderingProcess,
+      List<ProcessJustificationType> listProcessJustificationType) {
 
-        return Optional.ofNullable(listProcessJustificationType)
-                .orElseGet(List::of) // evitar NPE si la lista es null
-                .stream()
-                .map(processJustificationType -> getProcessJustification(tenderingProcess, processJustificationType))
-                .toList();
-    }
+    return Optional.ofNullable(listProcessJustificationType)
+        .orElseGet(List::of) // evitar NPE si la lista es null
+        .stream()
+        .map(processJustificationType -> getProcessJustification(tenderingProcess, processJustificationType))
+        .toList();
+  }
 
-    private static ProcessJustification getProcessJustification(
-            TenderingProcess tenderingProcess,
-            ProcessJustificationType processJustificationType) {
+  private static ProcessJustification getProcessJustification(
+      TenderingProcess tenderingProcess,
+      ProcessJustificationType processJustificationType) {
 
-        ProcessJustification processJustification = new ProcessJustification();
+    ProcessJustification processJustification = new ProcessJustification();
 
-        processJustification.setTenderingProcess(tenderingProcess);
+    processJustification.setTenderingProcess(tenderingProcess);
 
-        Optional.ofNullable(processJustificationType.getReasonCode())
-                .map(ReasonCodeType::getValue)
-                .ifPresent(processJustification::setReasonCode);
+    Optional.ofNullable(processJustificationType.getReasonCode())
+        .map(ReasonCodeType::getValue)
+        .ifPresent(processJustification::setReasonCode);
 
-        processJustification.setDescription(
-                StringHelper.eliminarCaracteres(
-                        MapperStringFromList.getStringFromListDescriptionType(
-                                processJustificationType.getDescription())));
+    processJustification.setDescription(
+        StringHelper.eliminarCaracteres(
+            MapperStringFromList.getStringFromListDescriptionType(
+                processJustificationType.getDescription())));
 
-        return processJustification;
-    }
+    return processJustification;
+  }
 }

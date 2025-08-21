@@ -16,33 +16,34 @@ import java.util.Optional;
 @Slf4j
 public final class MapperBudgetAmount {
 
-    private MapperBudgetAmount() { }
+  private MapperBudgetAmount() {
+  }
 
-    public static BudgetAmount getBudgetAmount(
-            ProcurementProject procurementProject,
-            BudgetAmountType budgetAmountType) {
+  public static BudgetAmount getBudgetAmount(
+      ProcurementProject procurementProject,
+      BudgetAmountType budgetAmountType) {
 
-        //
-        if (budgetAmountType == null) {
-            return null;
-        }
-
-        //
-        BudgetAmount budgetAmount = new BudgetAmount();
-        budgetAmount.setProcurementProject(procurementProject);
-
-        Optional.ofNullable(budgetAmountType.getEstimatedOverallContractAmount())
-                .map(amount -> amount.getValue().doubleValue())
-                .ifPresent(budgetAmount::setEstimatedOverallContractAmount);
-
-        Optional.ofNullable(budgetAmountType.getTotalAmount())
-                .map(amount -> amount.getValue().doubleValue())
-                .ifPresent(budgetAmount::setTotalAmount);
-
-        Optional.ofNullable(budgetAmountType.getTaxExclusiveAmount())
-                .map(amount -> amount.getValue().doubleValue())
-                .ifPresent(budgetAmount::setTaxExclusiveAmount);
-
-        return budgetAmount;
+    //
+    if (budgetAmountType == null) {
+      return null;
     }
+
+    //
+    BudgetAmount budgetAmount = new BudgetAmount();
+    budgetAmount.setProcurementProject(procurementProject);
+
+    Optional.ofNullable(budgetAmountType.getEstimatedOverallContractAmount())
+        .map(amount -> amount.getValue().doubleValue())
+        .ifPresent(budgetAmount::setEstimatedOverallContractAmount);
+
+    Optional.ofNullable(budgetAmountType.getTotalAmount())
+        .map(amount -> amount.getValue().doubleValue())
+        .ifPresent(budgetAmount::setTotalAmount);
+
+    Optional.ofNullable(budgetAmountType.getTaxExclusiveAmount())
+        .map(amount -> amount.getValue().doubleValue())
+        .ifPresent(budgetAmount::setTaxExclusiveAmount);
+
+    return budgetAmount;
+  }
 }

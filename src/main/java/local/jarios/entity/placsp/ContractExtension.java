@@ -1,6 +1,15 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,89 +42,86 @@ import java.util.UUID;
 @Table(name = "contract_extension")
 public class ContractExtension extends Auditable {
 
-    /**
-     * Constructor por defecto.
-     * <p>
-     * Requerido por JPA para la correcta creación de proxies
-     * y por Lombok para la inicialización básica.
-     * </p>
-     */
-    public ContractExtension() {
-        // Constructor vacío requerido por JPA
-    }
+  /**
+   * Identificador único del registro de extensión contractual.
+   * Generado automáticamente como UUID.
+   */
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    // =========================================================================
-    // PROPIEDADES DE LA ENTIDAD
-    // =========================================================================
+  // =========================================================================
+  // PROPIEDADES DE LA ENTIDAD
+  // =========================================================================
+  /**
+   * Texto descriptivo de las opciones que pueden ejercerse
+   * tras la adjudicación del contrato.
+   * <p>
+   * Se almacena como campo de tipo {@code TEXT}.
+   * </p>
+   */
+  @Column(name = "options_description", columnDefinition = "TEXT")
+  private String optionsDescription;
+  /**
+   * Proyecto de contratación al que pertenece esta extensión.
+   * Relación uno-a-uno con {@link ProcurementProject}.
+   * <p>
+   * Si se elimina el {@link ProcurementProject}, la extensión también se elimina
+   * debido a la política {@code ON DELETE CASCADE}.
+   * </p>
+   */
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "procurement_project_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_contractextension_procurementproject",
+          foreignKeyDefinition =
+              "FOREIGN KEY (procurement_project_id) " +
+                  "REFERENCES procurement_project(id) ON DELETE CASCADE"))
+  private ProcurementProject procurementProject;
 
-    /**
-     * Identificador único del registro de extensión contractual.
-     * Generado automáticamente como UUID.
-     */
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  // =========================================================================
+  // RELACIONES CON ENTIDADES PADRES
+  // =========================================================================
+  /**
+   * Periodo de validez en el que el órgano de contratación
+   * puede ejercitar el derecho a prórroga u opción contractual.
+   * Relación uno-a-uno con {@link Period}.
+   */
+  @OneToOne(mappedBy = "contractExtension", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Period optionValidityPeriod;
 
-    /**
-     * Texto descriptivo de las opciones que pueden ejercerse
-     * tras la adjudicación del contrato.
-     * <p>
-     * Se almacena como campo de tipo {@code TEXT}.
-     * </p>
-     */
-    @Column(name = "options_description", columnDefinition = "TEXT")
-    private String optionsDescription;
+  // =========================================================================
+  // RELACIONES CON ENTIDADES HIJAS
+  // =========================================================================
 
-    // =========================================================================
-    // RELACIONES CON ENTIDADES PADRES
-    // =========================================================================
+  /**
+   * Constructor por defecto.
+   * <p>
+   * Requerido por JPA para la correcta creación de proxies
+   * y por Lombok para la inicialización básica.
+   * </p>
+   */
+  public ContractExtension() {
+    // Constructor vacío requerido por JPA
+  }
 
-    /**
-     * Proyecto de contratación al que pertenece esta extensión.
-     * Relación uno-a-uno con {@link ProcurementProject}.
-     * <p>
-     * Si se elimina el {@link ProcurementProject}, la extensión también se elimina
-     * debido a la política {@code ON DELETE CASCADE}.
-     * </p>
-     */
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "procurement_project_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_contractextension_procurementproject",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (procurement_project_id) " +
-                                    "REFERENCES procurement_project(id) ON DELETE CASCADE"))
-    private ProcurementProject procurementProject;
+  // =========================================================================
+  // MÉTODOS AUXILIARES
+  // =========================================================================
 
-    // =========================================================================
-    // RELACIONES CON ENTIDADES HIJAS
-    // =========================================================================
-
-    /**
-     * Periodo de validez en el que el órgano de contratación
-     * puede ejercitar el derecho a prórroga u opción contractual.
-     * Relación uno-a-uno con {@link Period}.
-     */
-    @OneToOne(mappedBy = "contractExtension", cascade = CascadeType.MERGE, orphanRemoval = true)
-    private Period optionValidityPeriod;
-
-    // =========================================================================
-    // MÉTODOS AUXILIARES
-    // =========================================================================
-
-    /**
-     * Representación textual simplificada de la entidad.
-     *
-     * @return cadena con el campo {@code optionsDescription}.
-     */
-    @Override
-    public String toString() {
-        return "ContractExtension: " +
-                "[optionsDescription='" + optionsDescription + "']";
-    }
+  /**
+   * Representación textual simplificada de la entidad.
+   *
+   * @return cadena con el campo {@code optionsDescription}.
+   */
+  @Override
+  public String toString() {
+    return "ContractExtension: " +
+        "[optionsDescription='" + optionsDescription + "']";
+  }
 }

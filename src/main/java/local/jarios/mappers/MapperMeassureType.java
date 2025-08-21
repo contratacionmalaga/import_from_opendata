@@ -17,24 +17,25 @@ import java.util.Optional;
 @Slf4j
 public final class MapperMeassureType {
 
-    private MapperMeassureType() { }
+  private MapperMeassureType() {
+  }
 
-    public static Measure getMeasure(
-            Period period,
-            ContractModification contractModification,
-            MeasureType measureType) {
+  public static Measure getMeasure(
+      Period period,
+      ContractModification contractModification,
+      MeasureType measureType) {
 
-        if (measureType == null) {
-            return null;
-        }
-
-        Measure measure = new Measure();
-        measure.setPeriod(period);
-        measure.setContractModification(contractModification);
-
-        Optional.ofNullable(measureType.getUnitCode()).ifPresent(measure::setUnitCode);
-        Optional.ofNullable(measureType.getValue()).ifPresent(measure::setValue);
-
-        return measure;
+    if (measureType == null) {
+      return null;
     }
+
+    Measure measure = new Measure();
+    measure.setPeriod(period);
+    measure.setContractModification(contractModification);
+
+    Optional.ofNullable(measureType.getUnitCode()).ifPresent(measure::setUnitCode);
+    Optional.ofNullable(measureType.getValue()).ifPresent(measure::setValue);
+
+    return measure;
+  }
 }

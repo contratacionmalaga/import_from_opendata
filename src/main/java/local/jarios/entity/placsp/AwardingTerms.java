@@ -1,6 +1,16 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,60 +40,58 @@ import java.util.UUID;
 @Table(name = "awarding_terms")
 public class AwardingTerms extends Auditable {
 
-    /**
-     * Constructor por defecto.
-     * <p>
-     * Requerido por JPA para la correcta creación de proxies
-     * y por Lombok para la inicialización básica.
-     * </p>
-     */
-    public AwardingTerms() {
-        // Constructor vacío requerido por JPA
-    }
+  /**
+   * Identificador único universal (UUID) de los términos de adjudicación.
+   * <p>
+   * Clave primaria generada automáticamente.
+   * No puede ser actualizada ni ser nula.
+   * </p>
+   */
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
+  /**
+   * Referencia a los términos de licitación asociados a estos términos de adjudicación.
+   * <p>
+   * Relación uno a uno con la entidad {@link TenderingTerms}.
+   * La eliminación en cascada está definida en la clave foránea.
+   * </p>
+   */
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "tendering_terms_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_awardingterms_tenderingterms",
+          foreignKeyDefinition = "FOREIGN KEY (tendering_terms_id) REFERENCES tendering_terms(id) ON DELETE CASCADE"))
+  private TenderingTerms tenderingTerms;
+  /**
+   * Lista de criterios de adjudicación asociados a estos términos.
+   * <p>
+   * Relación uno a muchos con la entidad {@link AwardingCriteria}.
+   * Los elementos de la lista se eliminan en cascada y son removidos si no están asociados.
+   * </p>
+   */
+  @OneToMany(mappedBy = "awardingTerms", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<AwardingCriteria> listAwardingCriteria = new ArrayList<>();
 
-    /**
-     * Identificador único universal (UUID) de los términos de adjudicación.
-     * <p>
-     * Clave primaria generada automáticamente.
-     * No puede ser actualizada ni ser nula.
-     * </p>
-     */
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  /**
+   * Constructor por defecto.
+   * <p>
+   * Requerido por JPA para la correcta creación de proxies
+   * y por Lombok para la inicialización básica.
+   * </p>
+   */
+  public AwardingTerms() {
+    // Constructor vacío requerido por JPA
+  }
 
-    /**
-     * Referencia a los términos de licitación asociados a estos términos de adjudicación.
-     * <p>
-     * Relación uno a uno con la entidad {@link TenderingTerms}.
-     * La eliminación en cascada está definida en la clave foránea.
-     * </p>
-     */
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "tendering_terms_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_awardingterms_tenderingterms",
-                    foreignKeyDefinition = "FOREIGN KEY (tendering_terms_id) REFERENCES tendering_terms(id) ON DELETE CASCADE"))
-    private TenderingTerms tenderingTerms;
+  @Override
+  public String toString() {
 
-    /**
-     * Lista de criterios de adjudicación asociados a estos términos.
-     * <p>
-     * Relación uno a muchos con la entidad {@link AwardingCriteria}.
-     * Los elementos de la lista se eliminan en cascada y son removidos si no están asociados.
-     * </p>
-     */
-    @OneToMany(mappedBy = "awardingTerms", cascade = CascadeType.MERGE, orphanRemoval = true)
-    private List<AwardingCriteria> listAwardingCriteria = new ArrayList<>();
-
-    @Override
-    public String toString() {
-
-        return "AwardingTerms: []";
-    }
+    return "AwardingTerms: []";
+  }
 }

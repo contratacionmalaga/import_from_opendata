@@ -2,5 +2,5 @@
 target/
 .idea/
 logs/
-config/
+properties/
 settings.xml

@@ -1,9 +1,9 @@
 package local.jarios.mappers;
 
+import local.jarios.common.util.Constantes;
 import local.jarios.entity.placsp.ContractFolderStatus;
 import local.jarios.entity.placsp.ProcurementProjectLot;
 import local.jarios.helpers.ComunHelper;
-import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.ProcurementProjectLotType;
 
@@ -19,43 +19,44 @@ import java.util.Optional;
 @Slf4j
 public final class MapperProcurementProjectLot {
 
-    private MapperProcurementProjectLot() { }
+  private MapperProcurementProjectLot() {
+  }
 
-    public static List<ProcurementProjectLot> getListProcurementProjectLotFromType(
-            ContractFolderStatus contractFolderStatus,
-            List<ProcurementProjectLotType> listProcurementProjectLotType) {
+  public static List<ProcurementProjectLot> getListProcurementProjectLotFromType(
+      ContractFolderStatus contractFolderStatus,
+      List<ProcurementProjectLotType> listProcurementProjectLotType) {
 
-        //
-        return Optional.ofNullable(listProcurementProjectLotType)
-                .map(list -> list.stream()
-                        .map(procurementProjectLotType -> getProcurementProjectLotFromType(contractFolderStatus, procurementProjectLotType))
-                        .toList())
-                .orElseGet(List::of);
-    }
+    //
+    return Optional.ofNullable(listProcurementProjectLotType)
+        .map(list -> list.stream()
+            .map(procurementProjectLotType -> getProcurementProjectLotFromType(contractFolderStatus, procurementProjectLotType))
+            .toList())
+        .orElseGet(List::of);
+  }
 
-    private static ProcurementProjectLot getProcurementProjectLotFromType(
-            ContractFolderStatus contractFolderStatus,
-            ProcurementProjectLotType procurementProjectLotType) {
+  private static ProcurementProjectLot getProcurementProjectLotFromType(
+      ContractFolderStatus contractFolderStatus,
+      ProcurementProjectLotType procurementProjectLotType) {
 
-        //
-        ProcurementProjectLot procurementProjectLot = new ProcurementProjectLot();
-        procurementProjectLot.setContractFolderStatus(contractFolderStatus);
+    //
+    ProcurementProjectLot procurementProjectLot = new ProcurementProjectLot();
+    procurementProjectLot.setContractFolderStatus(contractFolderStatus);
 
-        Optional.ofNullable(procurementProjectLotType.getID()).ifPresent(id ->
-                procurementProjectLot.setIdLote(
-                        ComunHelper.limitarRegistro(id.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
-        );
+    Optional.ofNullable(procurementProjectLotType.getID()).ifPresent(id ->
+        procurementProjectLot.setIdLote(
+            ComunHelper.limitarRegistro(id.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
+    );
 
-        procurementProjectLot.setProcurementProject(
-                MapperProcurementProject.getProcurementProjectFromType(
-                        null,null, procurementProjectLot, procurementProjectLotType.getProcurementProject()));
+    procurementProjectLot.setProcurementProject(
+        MapperProcurementProject.getProcurementProjectFromType(
+            null, null, procurementProjectLot, procurementProjectLotType.getProcurementProject()));
 
-        Optional.ofNullable(procurementProjectLotType.getTenderingTerms()).ifPresent(tenderingTerms ->
-                procurementProjectLot.setTenderingTerms(
-                        MapperTenderingTerms.getTenderingTermsFromType(
-                                null, procurementProjectLot, tenderingTerms))
-        );
+    Optional.ofNullable(procurementProjectLotType.getTenderingTerms()).ifPresent(tenderingTerms ->
+        procurementProjectLot.setTenderingTerms(
+            MapperTenderingTerms.getTenderingTermsFromType(
+                null, procurementProjectLot, tenderingTerms))
+    );
 
-        return procurementProjectLot;
-    }
+    return procurementProjectLot;
+  }
 }

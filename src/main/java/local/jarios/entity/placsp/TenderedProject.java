@@ -1,8 +1,17 @@
 package local.jarios.entity.placsp;
 
-import jakarta.persistence.*;
-import local.jarios.entity.auxiliares.Auditable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
+import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,48 +36,48 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "tendered_project"
+    name = "tendered_project"
 )
 public class TenderedProject extends Auditable {
 
-    //
-    //
-    //
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
+  //
+  //
+  //
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    //  Indica el resultado de cada uno de los lotes en un expediente
-    @Column(name = "procurement_project_lot_id", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
-    private String procurementProjectLotId;
+  //  Indica el resultado de cada uno de los lotes en un expediente
+  @Column(name = "procurement_project_lot_id", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String procurementProjectLotId;
 
-    //
-    //
-    //
-    @OneToOne(
-            fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "tender_result_id",
-            nullable = false,
-            referencedColumnName = "id",
-            foreignKey = @ForeignKey(
-                    name = "fk_tenderedproject_tenderresult",
-                    foreignKeyDefinition =
-                            "FOREIGN KEY (tender_result_id) " +
-                            "REFERENCES tender_result(id) ON DELETE CASCADE"))
-    private TenderResult tenderResult;
+  //
+  //
+  //
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "tender_result_id",
+      nullable = false,
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_tenderedproject_tenderresult",
+          foreignKeyDefinition =
+              "FOREIGN KEY (tender_result_id) " +
+                  "REFERENCES tender_result(id) ON DELETE CASCADE"))
+  private TenderResult tenderResult;
 
-    //
-    //
-    //
-    @OneToOne(mappedBy = "awardedTenderedProject", cascade = CascadeType.MERGE, orphanRemoval = true)
-    private LegalMonetaryTotal legalMonetaryTotal;
+  //
+  //
+  //
+  @OneToOne(mappedBy = "awardedTenderedProject", cascade = CascadeType.ALL, orphanRemoval = true)
+  private LegalMonetaryTotal legalMonetaryTotal;
 
-    @Override
-    public String toString() {
+  @Override
+  public String toString() {
 
-        return "TenderedProject: " +
-                "[procurementProjectLotId='" + procurementProjectLotId + "']";
-    }
+    return "TenderedProject: " +
+        "[procurementProjectLotId='" + procurementProjectLotId + "']";
+  }
 }
