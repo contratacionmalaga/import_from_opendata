@@ -45,14 +45,17 @@ public final class MapperNoticeInfo {
     List<NoticeInfo> listNoticeInfo = new ArrayList<>();
 
     for (NoticeInfoType noticeInfoType : listNoticeInfoType) {
-      listNoticeInfo.add(getNoticeInfoFromType(contractFolderStatus, preliminaryMarketConsultationStatus, noticeInfoType));
+      listNoticeInfo.add(getNoticeInfoFromType(
+          contractFolderStatus, preliminaryMarketConsultationStatus, noticeInfoType));
     }
 
     return listNoticeInfo;
   }
 
   private static NoticeInfo getNoticeInfoFromType(
-      ContractFolderStatus contractFolderStatus, PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus, NoticeInfoType noticeInfoType) {
+      ContractFolderStatus contractFolderStatus,
+      PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus,
+      NoticeInfoType noticeInfoType) {
 
     NoticeInfo noticeInfo = new NoticeInfo();
 
@@ -83,7 +86,8 @@ public final class MapperNoticeInfo {
 
     List<AdditionalPublicationStatus> listAdditionalPublicationStatus = new ArrayList<>();
 
-    for (AdditionalPublicationStatusType additionalPublicationStatusType : listAdditionalPublicationStatusType) {
+    for (AdditionalPublicationStatusType additionalPublicationStatusType :
+        listAdditionalPublicationStatusType) {
       listAdditionalPublicationStatus
           .add(
               getAdditionalPublicationStatusFromType(
@@ -116,7 +120,9 @@ public final class MapperNoticeInfo {
     additionalPublicationStatus.setAdditionalPublicationDocumentReferenceList(
         getListAdditionalPublicationDocumentReferenceFromType(
             additionalPublicationStatus,
-            Optional.ofNullable(additionalPublicationStatusType.getAdditionalPublicationDocumentReference())
+            Optional
+                .ofNullable(additionalPublicationStatusType
+                    .getAdditionalPublicationDocumentReference())
                 .orElse(Collections.emptyList())));
 
     return additionalPublicationStatus;
@@ -128,7 +134,8 @@ public final class MapperNoticeInfo {
 
     List<AdditionalPublicationRequest> listAdditionalPublicationRequest = new ArrayList<>();
 
-    for (AdditionalPublicationRequestType additionalPublicationRequestType : listAdditionalPublicationRequestType) {
+    for (AdditionalPublicationRequestType additionalPublicationRequestType :
+        listAdditionalPublicationRequestType) {
       listAdditionalPublicationRequest.add(
           getAdditionalPublicationRequestFromType(
               additionalPublicationStatus,
@@ -165,13 +172,17 @@ public final class MapperNoticeInfo {
     return additionalPublicationRequest;
   }
 
-  private static List<AdditionalPublicationDocumentReference> getListAdditionalPublicationDocumentReferenceFromType(
+  private static List<AdditionalPublicationDocumentReference>
+  getListAdditionalPublicationDocumentReferenceFromType(
       AdditionalPublicationStatus additionalPublicationStatus,
-      List<AdditionalPublicationDocumentReferenceType> listAdditionalPublicationDocumentReferenceType) {
+      List<AdditionalPublicationDocumentReferenceType>
+          listAdditionalPublicationDocumentReferenceType) {
 
-    List<AdditionalPublicationDocumentReference> listAdditionalPublicationDocumentReference = new ArrayList<>();
+    List<AdditionalPublicationDocumentReference> listAdditionalPublicationDocumentReference =
+        new ArrayList<>();
 
-    for (AdditionalPublicationDocumentReferenceType additionalPublicationDocumentReferenceType : listAdditionalPublicationDocumentReferenceType) {
+    for (AdditionalPublicationDocumentReferenceType additionalPublicationDocumentReferenceType
+        : listAdditionalPublicationDocumentReferenceType) {
       listAdditionalPublicationDocumentReference.add(
           getAdditionalPublicationDocumentReferenceFromType(
               additionalPublicationStatus,
@@ -181,28 +192,36 @@ public final class MapperNoticeInfo {
     return listAdditionalPublicationDocumentReference;
   }
 
-  private static AdditionalPublicationDocumentReference getAdditionalPublicationDocumentReferenceFromType(
+  private static AdditionalPublicationDocumentReference
+  getAdditionalPublicationDocumentReferenceFromType(
       AdditionalPublicationStatus additionalPublicationStatus,
       AdditionalPublicationDocumentReferenceType additionalPublicationDocumentReferenceType) {
 
-    AdditionalPublicationDocumentReference additionalPublicationDocumentReference = new AdditionalPublicationDocumentReference();
+    AdditionalPublicationDocumentReference additionalPublicationDocumentReference =
+        new AdditionalPublicationDocumentReference();
 
-    additionalPublicationDocumentReference.setAdditionalPublicationStatus(additionalPublicationStatus);
+    additionalPublicationDocumentReference
+        .setAdditionalPublicationStatus(additionalPublicationStatus);
 
     Optional.ofNullable(additionalPublicationDocumentReferenceType.getIssueDate())
         .map(IssueDateType::getValue)
         .map(GregorianCalendarHelper::getDateFromXMLGregorianCalendar)
         .ifPresent(additionalPublicationDocumentReference::setIssueDate);
 
-    String docTypeCode = Optional.ofNullable(additionalPublicationDocumentReferenceType.getDocumentTypeCode())
+    String docTypeCode = Optional
+        .ofNullable(additionalPublicationDocumentReferenceType.getDocumentTypeCode())
         .map(DocumentTypeCodeType::getValue)
         .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
         .orElse(Constantes.CADENA_VACIA);
     additionalPublicationDocumentReference.setDocumentTypeCode(docTypeCode);
 
     Optional.ofNullable(additionalPublicationDocumentReferenceType.getAttachment())
-        .map(att -> MapperAttachment.getAttachmentFromType(
-            null, additionalPublicationDocumentReference, null, att))
+        .map(att -> MapperAttachment
+            .getAttachmentFromType(
+            null,
+                additionalPublicationDocumentReference,
+                null,
+                att))
         .ifPresent(additionalPublicationDocumentReference::setAttachment);
 
     //

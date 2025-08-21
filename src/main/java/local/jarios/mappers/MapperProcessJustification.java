@@ -30,7 +30,8 @@ public final class MapperProcessJustification {
     return Optional.ofNullable(listProcessJustificationType)
         .orElseGet(List::of) // evitar NPE si la lista es null
         .stream()
-        .map(processJustificationType -> getProcessJustification(tenderingProcess, processJustificationType))
+        .map(processJustificationType ->
+            getProcessJustification(tenderingProcess, processJustificationType))
         .toList();
   }
 

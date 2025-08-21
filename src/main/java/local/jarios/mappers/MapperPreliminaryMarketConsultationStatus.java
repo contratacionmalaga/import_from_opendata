@@ -33,16 +33,19 @@ public final class MapperPreliminaryMarketConsultationStatus {
   private MapperPreliminaryMarketConsultationStatus() {
   }
 
-  public static List<PreliminaryMarketConsultationStatus> getListPreliminaryMarketConsultationStatusFromListType(
+  public static List<PreliminaryMarketConsultationStatus>
+  getListPreliminaryMarketConsultationStatusFromListType(
       Entry entry, EntryType entryType) {
 
     return entryType.getAny().stream()
         .filter(JAXBElement.class::isInstance)
         .map(JAXBElement.class::cast)
-        .filter(elem -> elem.getDeclaredType().equals(PreliminaryMarketConsultationStatusType.class))
+        .filter(elem ->
+            elem.getDeclaredType().equals(PreliminaryMarketConsultationStatusType.class))
         .map(elem -> {
           @SuppressWarnings("unchecked")
-          JAXBElement<PreliminaryMarketConsultationStatusType> typedElem = (JAXBElement<PreliminaryMarketConsultationStatusType>) elem;
+          JAXBElement<PreliminaryMarketConsultationStatusType> typedElem =
+              (JAXBElement<PreliminaryMarketConsultationStatusType>) elem;
           return getContractFolderStatusFromType(entry, typedElem);
         })
         .toList();
@@ -52,17 +55,22 @@ public final class MapperPreliminaryMarketConsultationStatus {
       Entry entry, JAXBElement<PreliminaryMarketConsultationStatusType> jaxbElement) {
 
     //
-    PreliminaryMarketConsultationStatusType preliminaryMarketConsultationStatusType = jaxbElement.getValue();
-    PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus = new PreliminaryMarketConsultationStatus();
+    PreliminaryMarketConsultationStatusType preliminaryMarketConsultationStatusType =
+        jaxbElement.getValue();
+    PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus =
+        new PreliminaryMarketConsultationStatus();
 
     preliminaryMarketConsultationStatus.setEntry(entry);
 
-    Optional.ofNullable(preliminaryMarketConsultationStatusType.getPreliminaryMarketConsultationStatusCode())
+    Optional
+        .ofNullable(preliminaryMarketConsultationStatusType
+            .getPreliminaryMarketConsultationStatusCode())
         .map(PreliminaryMarketConsultationStatusCodeType::getValue)
         .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
         .ifPresent(preliminaryMarketConsultationStatus::setPreliminaryMarketConsultationStatusCode);
 
-    Optional.ofNullable(preliminaryMarketConsultationStatusType.getPreliminaryMarketConsultationID())
+    Optional.ofNullable(preliminaryMarketConsultationStatusType
+            .getPreliminaryMarketConsultationID())
         .map(PreliminaryMarketConsultationIDType::getValue)
         .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
         .ifPresent(preliminaryMarketConsultationStatus::setPreliminaryMarketConsultationID);
@@ -90,31 +98,36 @@ public final class MapperPreliminaryMarketConsultationStatus {
 
     Optional.ofNullable(preliminaryMarketConsultationStatusType.getPlannedDate())
         .map(PlannedDateType::getValue)
-        .map(xmlDate -> xmlDate.toGregorianCalendar().toZonedDateTime().toLocalDate())
+        .map(xmlDate ->
+            xmlDate.toGregorianCalendar().toZonedDateTime().toLocalDate())
         .ifPresent(preliminaryMarketConsultationStatus::setPlannedDate);
 
     Optional.ofNullable(preliminaryMarketConsultationStatusType.getLimitDate())
         .map(LimitDateType::getValue)
-        .map(xmlDate -> xmlDate.toGregorianCalendar().toZonedDateTime().toLocalDate())
+        .map(xmlDate ->
+            xmlDate.toGregorianCalendar().toZonedDateTime().toLocalDate())
         .ifPresent(preliminaryMarketConsultationStatus::setLimitDate);
 
     Optional.ofNullable(preliminaryMarketConsultationStatusType.getProcurementProject())
-        .ifPresent(pp -> preliminaryMarketConsultationStatus.setProcurementProject(
-            MapperProcurementProject.getProcurementProjectFromType(
-                null,
-                preliminaryMarketConsultationStatus,
-                null,
-                pp)));
+        .ifPresent(pp ->
+            preliminaryMarketConsultationStatus.setProcurementProject(
+              MapperProcurementProject.getProcurementProjectFromType(
+                  null,
+                  preliminaryMarketConsultationStatus,
+                  null,
+                  pp)));
 
     Optional.ofNullable(preliminaryMarketConsultationStatusType.getTenderingProcess())
-        .ifPresent(tp -> preliminaryMarketConsultationStatus.setTenderingProcess(
+        .ifPresent(tp ->
+            preliminaryMarketConsultationStatus.setTenderingProcess(
             MapperTenderingProcess.getTenderingProcessFromType(
                 null,
                 preliminaryMarketConsultationStatus,
                 tp)));
 
     Optional.ofNullable(preliminaryMarketConsultationStatusType.getAttachment())
-        .ifPresent(attachment -> preliminaryMarketConsultationStatus.setAttachment(
+        .ifPresent(attachment ->
+            preliminaryMarketConsultationStatus.setAttachment(
             MapperAttachment.getAttachmentFromType(
                 null,
                 null,
