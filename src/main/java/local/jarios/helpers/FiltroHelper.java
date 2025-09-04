@@ -26,7 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Interfaz para acciones sobre los posibles filtros que se pueden realizar durante el proceso de importación
+ * Interfaz para acciones sobre los posibles filtros que se pueden realizar durante el proceso de
+ * importación
  */
 @Slf4j
 public final class FiltroHelper {
@@ -52,7 +53,8 @@ public final class FiltroHelper {
 
     // Creo el objeto Servicio
     ServiceFiltro serviceFiltro = new ServiceFiltroImpl();
-    log.debug("[getMapFiltroSql] - Creado el objeto Service asociado a: {}", TipoConexion.FILTRO_SQL);
+    log.debug("[getMapFiltroSql] - Creado el objeto Service asociado a: {}",
+              TipoConexion.FILTRO_SQL);
 
     // Llamar al método para la obtención de la lista con el filtro
     List<OrganoContratacion> listFiltroOCs = serviceFiltro.getListFiltroOcsFromFiltroSql(sql);
@@ -63,12 +65,12 @@ public final class FiltroHelper {
   }
 
   /**
-   * Función que devuelve si un Entry pertenece al filtro que se encuentra en VariablesGlobales.getMapFiltro()
+   * Función que devuelve si un Entry pertenece al filtro que se encuentra en
+   * VariablesGlobales.getMapFiltro()
    *
-   * @param entry Entry que vamos a comprobar si pertenece al filtro, para lo cual es necesario que disponga de
-   *              idPlataforma. En caso de no tener idPlataforma
-   * @return Valor devuelto:
-   * TRUE --> No aplica filtro || Tiene idPlataforma y pertenece al filtro
+   * @param entry Entry que vamos a comprobar si pertenece al filtro, para lo cual es necesario que
+   *              disponga de idPlataforma. En caso de no tener idPlataforma
+   * @return Valor devuelto: TRUE --> No aplica filtro || Tiene idPlataforma y pertenece al filtro
    * FALSE -> En cualquier otra situación
    */
   public static boolean hasEntryInFiltroSql(Entry entry) {
@@ -108,12 +110,12 @@ public final class FiltroHelper {
   }
 
   /**
-   * Función que devuelve si un Entry pertenece al filtro que se encuentra en VariablesGlobales.getMapFiltro()
+   * Función que devuelve si un Entry pertenece al filtro que se encuentra en
+   * VariablesGlobales.getMapFiltro()
    *
-   * @param entry Entry que vamos a comprobar si pertenece al filtro, para lo cual es necesario que disponga de
-   *              idPlataforma. En caso de no tener idPlataforma
-   * @return Valor devuelto:
-   * TRUE --> No aplica filtro || Tiene idPlataforma y pertenece al filtro
+   * @param entry Entry que vamos a comprobar si pertenece al filtro, para lo cual es necesario que
+   *              disponga de idPlataforma. En caso de no tener idPlataforma
+   * @return Valor devuelto: TRUE --> No aplica filtro || Tiene idPlataforma y pertenece al filtro
    * FALSE -> En cualquier otra situación
    */
   public static boolean hasEntryContainsNuts(Entry entry) {
@@ -276,23 +278,27 @@ public final class FiltroHelper {
     // Si ambas fechas no están en blanco
     if (!filtroFechaInicialStr.isBlank() && !filtroFechaFinalStr.isBlank()) {
 
-      LocalDate fechaInicial = LocalDate.parse(filtroFechaInicialStr, DateTimeFormatter.ISO_LOCAL_DATE);
+      LocalDate fechaInicial = LocalDate.parse(filtroFechaInicialStr,
+                                               DateTimeFormatter.ISO_LOCAL_DATE);
       LocalDate fechaFinal = LocalDate.parse(filtroFechaFinalStr, DateTimeFormatter.ISO_LOCAL_DATE);
 
       VariablesGlobales.setFiltroFechaInicial(fechaInicial.atStartOfDay());
       VariablesGlobales.setFiltroFechaFinal(fechaFinal.atTime(23, 59, 59));
 
       log.debug("[loadFilterFechas] - Filtro de fechas aplicado. FechaInicial: {}, FechaFinal: {}",
-          VariablesGlobales.getFiltroFechaInicial(), VariablesGlobales.getFiltroFechaFinal());
+                VariablesGlobales.getFiltroFechaInicial(), VariablesGlobales.getFiltroFechaFinal());
 
     } else {
       // Si alguna está vacía, asigno los valores por defecto
-      log.debug("[loadFilterFechas] - Alguna de las fechas es Blank. Se aplican valores por defecto.");
+      log.debug(
+          "[loadFilterFechas] - Alguna de las fechas es Blank. Se aplican valores por defecto.");
 
-      VariablesGlobales.setFiltroFechaFinal(LocalDate.parse(Constantes.FECHA_FINAL_LECTURA, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
+      VariablesGlobales.setFiltroFechaFinal(LocalDate.parse(Constantes.FECHA_FINAL_LECTURA,
+                                                            DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay());
       VariablesGlobales.setFiltroFechaInicial(LocalDate.now().atTime(23, 59, 59));
 
-      log.debug("[loadFilterFechas] - Fechas por defecto aplicadas. FechaInicial: {}, FechaFinal: {}",
+      log.debug(
+          "[loadFilterFechas] - Fechas por defecto aplicadas. FechaInicial: {}, FechaFinal: {}",
           VariablesGlobales.getFiltroFechaInicial(), VariablesGlobales.getFiltroFechaFinal());
     }
   }
@@ -306,7 +312,8 @@ public final class FiltroHelper {
 
     if (filter != null && !filter.trim().isEmpty()) {
       String[] nutsArray = filter.split(",");
-      log.debug("[loadFilterNuts] Array de String tras realizar split de filter (,): {}", (Object) nutsArray);
+      log.debug("[loadFilterNuts] Array de String tras realizar split de filter (,): {}",
+                (Object) nutsArray);
 
       // Validar cada código NUTS
       for (String nutsCode : nutsArray) {
@@ -328,7 +335,8 @@ public final class FiltroHelper {
 
     // Almacenamos el conjunto de códigos NUTS en VariablesGlobales
     VariablesGlobales.setFiltroNuts(nutsSet);
-    log.debug("[loadFilterNuts] - Establecido el filtro - VariablesGlobales.setFiltroNuts({})", nutsSet);
+    log.debug("[loadFilterNuts] - Establecido el filtro - VariablesGlobales.setFiltroNuts({})",
+              nutsSet);
 
   }
 

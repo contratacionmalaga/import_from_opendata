@@ -11,6 +11,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -28,6 +29,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "auction_terms")
 public class AuctionTerms extends Auditable {
@@ -41,13 +43,15 @@ public class AuctionTerms extends Auditable {
   private UUID id;
   /**
    * Indicador de subasta electrónica.
-   * <p>Determina si se usará una subasta electrónica como parte del proceso de adjudicación del contrato.</p>
+   * <p>Determina si se usará una subasta electrónica como parte del proceso de adjudicación del
+   * contrato.</p>
    */
   @Column(name = "auction_constraint_indicator")
   private Boolean auctionConstraintIndicator;
   /**
    * Relación uno a uno con el proceso de licitación asociado.
-   * <p>Si se elimina el proceso, también se elimina esta entidad gracias a {@code ON DELETE CASCADE}.</p>
+   * <p>Si se elimina el proceso, también se elimina esta entidad gracias a
+   * {@code ON DELETE CASCADE}.</p>
    */
   @OneToOne(
       fetch = FetchType.LAZY)
@@ -60,17 +64,6 @@ public class AuctionTerms extends Auditable {
           foreignKeyDefinition = "FOREIGN KEY (tenderin_gprocess_id) REFERENCES tendering_process(id) ON DELETE CASCADE")
   )
   private TenderingProcess tenderingProcess;
-
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public AuctionTerms() {
-    // Constructor vacío requerido por JPA
-  }
 
   @Override
   public String toString() {

@@ -12,10 +12,7 @@ import org.dgpe.codice.common.cbclib.URIType;
 import java.util.Optional;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperExternalReference {

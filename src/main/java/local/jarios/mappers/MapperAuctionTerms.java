@@ -6,15 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.AuctionTermsType;
 
 /**
- * Mapper para convertir objetos de tipo {@link AuctionTermsType} del modelo Codice
- * a la entidad {@link AuctionTerms} del modelo local.
+ * Mapper para convertir objetos de tipo {@link AuctionTermsType} del modelo Codice a la entidad
+ * {@link AuctionTerms} del modelo local.
  * <p>
  * Esta clase proporciona métodos estáticos para realizar la conversión.
  * </p>
  *
- * @author juan
- * @version 1.0
- * @since 2024-04-11
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperAuctionTerms {
@@ -26,8 +26,8 @@ public final class MapperAuctionTerms {
   }
 
   /**
-   * Convierte un objeto {@link AuctionTermsType} y un {@link TenderingProcess} asociado
-   * en una entidad {@link AuctionTerms} del modelo local.
+   * Convierte un objeto {@link AuctionTermsType} y un {@link TenderingProcess} asociado en una
+   * entidad {@link AuctionTerms} del modelo local.
    *
    * @param tenderingProcess el proceso de licitación al que pertenece el AuctionTerms
    * @param auctionTermsType el objeto del modelo Codice a mapear

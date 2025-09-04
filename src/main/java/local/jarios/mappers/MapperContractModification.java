@@ -19,10 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio.
  */
 @Slf4j
 public final class MapperContractModification {
@@ -73,36 +70,36 @@ public final class MapperContractModification {
 
     Optional.ofNullable(contractModificationType.getContractModificationLegalMonetaryTotal())
         .ifPresent(total ->
-            contractModification.setContractModificationLegalMonetaryTotal(
-                MapperLegalMonetaryTotal
-                    .getLegalMonetaryTotalFromType(
-                        null,
-                        contractModification,
-                        null,
-                        total)
-            )
+                       contractModification.setContractModificationLegalMonetaryTotal(
+                           MapperLegalMonetaryTotal
+                               .getLegalMonetaryTotalFromType(
+                                   null,
+                                   contractModification,
+                                   null,
+                                   total)
+                       )
         );
 
     Optional.ofNullable(contractModificationType.getFinalLegalMonetaryTotal())
         .ifPresent(total ->
-            contractModification.setContractModificationFinalLegalMonetaryTotal(
-                MapperLegalMonetaryTotal
-                    .getLegalMonetaryTotalFromType(
-                        null,
-                        null,
-                        contractModification,
-                        total)
-            )
+                       contractModification.setContractModificationFinalLegalMonetaryTotal(
+                           MapperLegalMonetaryTotal
+                               .getLegalMonetaryTotalFromType(
+                                   null,
+                                   null,
+                                   contractModification,
+                                   total)
+                       )
         );
 
     Optional.ofNullable(contractModificationType.getFinalDurationMeasure())
         .ifPresent(finalDurationMeasure ->
-            contractModification
-                .setFinalDurationMeasure(
-                    getMeasureFromFinalDurantionMeasure(
-                        contractModificationType.getFinalDurationMeasure(),
-                        contractModification)
-                )
+                       contractModification
+                           .setContractModificationFinalDurationMeasure(
+                               getMeasureFromFinalDurantionMeasure(
+                                   contractModificationType.getFinalDurationMeasure(),
+                                   contractModification)
+                           )
         );
 
     return contractModification;
@@ -114,7 +111,7 @@ public final class MapperContractModification {
     Measure measure = new Measure();
 
     measure.setPeriod(null);
-    measure.setContractModification(contractModification);
+    measure.setContractModificationFinalDurationMeasure(contractModification);
 
     Optional.ofNullable(finalDurationMeasureType.getValue())
         .ifPresent(measure::setValue);

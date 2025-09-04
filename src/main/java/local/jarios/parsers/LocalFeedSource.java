@@ -22,7 +22,8 @@ import java.nio.file.Paths;
  * Implementación local de {@link FeedSource} que obtiene los feeds desde archivos en disco.
  * <p>
  * Utiliza un servicio centralizado de propiedades para resolver rutas y nombres de archivo,
- * asegurando que las rutas no permitan accesos no autorizados fuera del directorio base configurado.
+ * asegurando que las rutas no permitan accesos no autorizados fuera del directorio base
+ * configurado.
  * </p>
  *
  * <p>Esta clase realiza validaciones para evitar ataques de path traversal y abre archivos usando
@@ -47,12 +48,13 @@ public class LocalFeedSource implements FeedSource {
   }
 
   /**
-   * Obtiene la ruta completa al archivo inicial de feed, resolviendo la ruta base configurada
-   * y el nombre de archivo definido en las propiedades de la aplicación.
+   * Obtiene la ruta completa al archivo inicial de feed, resolviendo la ruta base configurada y el
+   * nombre de archivo definido en las propiedades de la aplicación.
    *
    * @return La ruta absoluta y normalizada al archivo inicial como String.
-   * @throws PropertiesManagerException si ocurre algún error al obtener las propiedades o si la ruta resuelta
-   *                                    no está dentro del directorio base permitido (por seguridad).
+   * @throws PropertiesManagerException si ocurre algún error al obtener las propiedades o si la
+   *                                    ruta resuelta no está dentro del directorio base permitido
+   *                                    (por seguridad).
    */
   @Override
   public String getInitialLink() throws PropertiesManagerException {
@@ -69,7 +71,8 @@ public class LocalFeedSource implements FeedSource {
   }
 
   /**
-   * Comprueba si un enlace (ruta de archivo) es válido, delegando la verificación al helper {@link FileHelper}.
+   * Comprueba si un enlace (ruta de archivo) es válido, delegando la verificación al helper
+   * {@link FileHelper}.
    *
    * @param link Ruta o enlace a validar.
    * @return {@code true} si el archivo existe y es válido; {@code false} en caso contrario.
@@ -80,13 +83,13 @@ public class LocalFeedSource implements FeedSource {
   }
 
   /**
-   * Obtiene la ruta completa al siguiente archivo de feed, partiendo de la ruta base configurada
-   * y del valor de enlace siguiente proporcionado por el objeto {@link Feed}.
+   * Obtiene la ruta completa al siguiente archivo de feed, partiendo de la ruta base configurada y
+   * del valor de enlace siguiente proporcionado por el objeto {@link Feed}.
    *
    * @param feed Objeto {@link Feed} que contiene la referencia al siguiente archivo de feed.
    * @return La ruta absoluta y normalizada al archivo siguiente como String.
-   * @throws IOException si ocurre algún error al resolver la ruta o si la ruta no está dentro
-   *                     del directorio base permitido (por seguridad).
+   * @throws IOException si ocurre algún error al resolver la ruta o si la ruta no está dentro del
+   *                     directorio base permitido (por seguridad).
    */
   @Override
   public String getNextLink(Feed feed) throws IOException {
@@ -111,15 +114,17 @@ public class LocalFeedSource implements FeedSource {
   @Override
   public BufferedReader openBufferedReader(String path) throws IOException {
     log.debug("[openBufferedReader] Abriendo archivo: {}", path);
-    return new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8));
+    return new BufferedReader(
+        new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8));
   }
 
   /**
-   * Obtiene la ruta base local definida en el archivo de propiedades, normalizada y convertida
-   * a una ruta absoluta para evitar problemas de rutas relativas o acceso no autorizado.
+   * Obtiene la ruta base local definida en el archivo de propiedades, normalizada y convertida a
+   * una ruta absoluta para evitar problemas de rutas relativas o acceso no autorizado.
    *
    * @return La ruta base local como objeto {@link Path}.
-   * @throws PropertiesManagerException Si no se puede obtener o procesar la propiedad de ruta base.
+   * @throws PropertiesManagerException Si no se puede obtener o procesar la propiedad de ruta
+   *                                    base.
    */
   private Path getPathBaseLocal() throws PropertiesManagerException {
     String basePath = propertyManager.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_PATH);

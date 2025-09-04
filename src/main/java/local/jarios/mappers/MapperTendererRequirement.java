@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice.
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperTendererRequirement {
@@ -32,7 +32,8 @@ public final class MapperTendererRequirement {
     return Optional.ofNullable(listTendererRequirementType)
         .orElseGet(List::of)
         .stream()
-        .map(tendererRequirementType -> getTendererRequirement(tendererQualificationRequest, tendererRequirementType))
+        .map(tendererRequirementType -> getTendererRequirement(tendererQualificationRequest,
+                                                               tendererRequirementType))
         .toList();
   }
 

@@ -19,9 +19,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description: Importaciones de Ficheros Excel desde Internet
- * Author: Juan Antonio
- * Date: 04/06/2024
+ * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
  * Team: Juan Antonio
  */
 
@@ -43,9 +41,9 @@ public class GeneralDocument extends Auditable {
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
-  //
-  //
-  //
+  // =========================================================================
+  // CLASES PADRES
+  // =========================================================================
   @ManyToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -70,12 +68,20 @@ public class GeneralDocument extends Auditable {
                   "REFERENCES preliminary_market_consultation_status(id) ON DELETE CASCADE"))
   private PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus;
 
-  //
-  //
-  //
+  // =========================================================================
+  // CLASES HIJAS
+  // =========================================================================
   @OneToOne(mappedBy = "generalDocument", cascade = CascadeType.ALL, orphanRemoval = true)
   private GeneralDocumentDocumentReference generalDocumentDocumentReference;
 
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
+  /**
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
+   *
+   * @return cadena con el nombre de la clase.
+   */
   @Override
   public String toString() {
 

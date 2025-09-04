@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperFinancialGuarantee {
@@ -29,7 +26,8 @@ public final class MapperFinancialGuarantee {
     //
     return Optional.ofNullable(listFinancialGuaranteeType)
         .map(list -> list.stream()
-            .map(financialGuaranteeType -> getFinancialGuarantee(tenderingTerms, financialGuaranteeType))
+            .map(financialGuaranteeType -> getFinancialGuarantee(tenderingTerms,
+                                                                 financialGuaranteeType))
             .toList())
         .orElse(Collections.emptyList());
   }

@@ -19,9 +19,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description: Importaciones de Ficheros Excel desde Internet
- * Author: Juan Antonio
- * Date: 04/06/2024
+ * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
  * Team: Juan Antonio
  */
 
@@ -46,9 +44,9 @@ public class LocatedContractingParty extends Auditable {
   @Column(name = "buyer_profile_uri_id", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String buyerProfileUriId;
 
-  //
-  //
-  //
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   @OneToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -73,15 +71,23 @@ public class LocatedContractingParty extends Auditable {
                   "REFERENCES preliminary_market_consultation_status(id) ON DELETE CASCADE"))
   private PreliminaryMarketConsultationStatus preliminaryMarketConsultationStatus;
 
-  //
-  //
-  // Datos de la entidad que licita
+  // =========================================================================
+  // RELACIONES HIJAS
+  // =========================================================================
   @OneToOne(mappedBy = "locatedContractingParty", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "party_id", nullable = false)
   private Party party;
 
+  // =========================================================================
+  // MÉTODOS AUXILIARES
+  // =========================================================================
+  /**
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
+   *
+   * @return cadena con los valores de {@code contractingPartyTypeCode}, {@code buyerProfileUriId}.
+   */
   @Override
   public String toString() {
-
     return "LocatedContractingParty: " +
         "[contractingPartyTypeCode='" + contractingPartyTypeCode + "', " +
         "buyerProfileUriId='" + buyerProfileUriId + "']";

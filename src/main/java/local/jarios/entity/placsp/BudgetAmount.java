@@ -11,6 +11,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -18,8 +19,8 @@ import java.util.UUID;
 /**
  * Representa las cantidades presupuestarias asociadas a un proyecto de contratación.
  * <p>
- * Esta entidad almacena diferentes importes relacionados con el presupuesto, incluyendo
- * el importe estimado global del contrato, el importe total y el importe excluyendo impuestos.
+ * Esta entidad almacena diferentes importes relacionados con el presupuesto, incluyendo el importe
+ * estimado global del contrato, el importe total y el importe excluyendo impuestos.
  * </p>
  *
  * <p>Está vinculada a un proyecto de contratación específico mediante una relación uno a uno
@@ -31,6 +32,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "budget_amount")
 public class BudgetAmount extends Auditable {
@@ -38,8 +40,7 @@ public class BudgetAmount extends Auditable {
   /**
    * Identificador único universal (UUID) de la cantidad presupuestaria.
    * <p>
-   * Clave primaria generada automáticamente.
-   * No puede ser actualizada ni ser nula.
+   * Clave primaria generada automáticamente. No puede ser actualizada ni ser nula.
    * </p>
    */
   @Id
@@ -64,8 +65,8 @@ public class BudgetAmount extends Auditable {
   /**
    * Proyecto de contratación al que está asociado este presupuesto.
    * <p>
-   * Relación uno a uno con la entidad {@link ProcurementProject}.
-   * La eliminación en cascada está configurada en la clave foránea.
+   * Relación uno a uno con la entidad {@link ProcurementProject}. La eliminación en cascada está
+   * configurada en la clave foránea.
    * </p>
    */
   @OneToOne(
@@ -78,17 +79,6 @@ public class BudgetAmount extends Auditable {
           name = "fk_budgetamount_procurementproject",
           foreignKeyDefinition = "FOREIGN KEY (procurement_project_id) REFERENCES procurement_project(id) ON DELETE CASCADE"))
   private ProcurementProject procurementProject;
-
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public BudgetAmount() {
-    // Constructor vacío requerido por JPA
-  }
 
   @Override
   public String toString() {

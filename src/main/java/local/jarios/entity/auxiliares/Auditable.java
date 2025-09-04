@@ -11,10 +11,8 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 /**
- * Description: Clase que añade elementos de Auditorías a las clases que la extienden
- * Author: juan
- * Date: 04/06/2024
- * Team: Juan Antonio
+ * Description: Clase que añade elementos de Auditorías a las clases que la extienden Author: juan
+ * Date: 04/06/2024 Team: Juan Antonio
  */
 @Setter
 @Getter

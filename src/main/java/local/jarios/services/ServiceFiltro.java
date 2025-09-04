@@ -6,8 +6,8 @@ import local.jarios.exceptions.MiServiceException;
 import java.util.List;
 
 /**
- * Interfaz que define los métodos principales para la persistencia y recuperación
- * de información relacionada con la importación de datos abiertos.
+ * Interfaz que define los métodos principales para la persistencia y recuperación de información
+ * relacionada con la importación de datos abiertos.
  */
 public interface ServiceFiltro {
 

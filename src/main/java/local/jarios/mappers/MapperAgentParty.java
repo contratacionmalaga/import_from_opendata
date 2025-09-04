@@ -12,10 +12,10 @@ import org.dgpe.codice.common.cbclib.WebsiteURIType;
 import java.util.Optional;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Mapeador de AgentParty.
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperAgentParty {
@@ -40,7 +40,8 @@ public final class MapperAgentParty {
         .ifPresent(agentParty::setWebSiteUri);
 
     // Party Name (siempre se procesa)
-    String partyName = MapperStringFromList.getStringFromListPartyNameType(partyType.getPartyName());
+    String partyName = MapperStringFromList.getStringFromListPartyNameType(
+        partyType.getPartyName());
     agentParty.setPartyName(
         ComunHelper.limitarRegistro(partyName, Constantes.TAMANO_MAXIMO_CAMPO_500));
 

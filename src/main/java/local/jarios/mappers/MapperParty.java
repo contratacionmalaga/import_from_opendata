@@ -12,10 +12,7 @@ import org.dgpe.codice.common.cbclib.WebsiteURIType;
 import java.util.Optional;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio.
  */
 @Slf4j
 public final class MapperParty {
@@ -37,9 +34,7 @@ public final class MapperParty {
         .ifPresent(party::setWebSiteUri);
 
     party.setPartyName(
-        ComunHelper.limitarRegistro(
-            MapperStringFromList.getStringFromListPartyNameType(partyType.getPartyName()),
-            Constantes.TAMANO_MAXIMO_CAMPO_500));
+        MapperStringFromList.getStringFromListPartyNameType(partyType.getPartyName()));
 
     Optional.ofNullable(partyType.getPostalAddress())
         .ifPresent(addr -> party.setPostalAddress(

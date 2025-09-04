@@ -9,12 +9,12 @@ import org.dgpe.codice.common.caclib.LegalMonetaryTotalType;
 import java.util.Optional;
 
 /**
- * Mapper encargado de transformar objetos {@link LegalMonetaryTotalType} del modelo Codice
- * en la entidad interna {@link LegalMonetaryTotal} utilizada en el proyecto.
+ * Mapper encargado de transformar objetos {@link LegalMonetaryTotalType} del modelo Codice en la
+ * entidad interna {@link LegalMonetaryTotal} utilizada en el proyecto.
  * <p>
- * Esta clase permite asociar un total monetario legal con sus entidades relacionadas
- * como proyectos licitados y modificaciones de contrato, además de mapear
- * las cantidades monetarias relevantes (pagable, sin impuestos, con impuestos).
+ * Esta clase permite asociar un total monetario legal con sus entidades relacionadas como proyectos
+ * licitados y modificaciones de contrato, además de mapear las cantidades monetarias relevantes
+ * (pagable, sin impuestos, con impuestos).
  * </p>
  *
  * <p><b>Autor:</b> Juan Antonio</p>
@@ -29,8 +29,8 @@ public final class MapperLegalMonetaryTotal {
   }
 
   /**
-   * Construye una entidad {@link LegalMonetaryTotal} a partir del objeto {@link LegalMonetaryTotalType}
-   * recibido y las entidades relacionadas indicadas.
+   * Construye una entidad {@link LegalMonetaryTotal} a partir del objeto
+   * {@link LegalMonetaryTotalType} recibido y las entidades relacionadas indicadas.
    *
    * @param tenderedProject        Proyecto licitado asociado al total monetario.
    * @param contractModificacion   Modificación de contrato relacionada (primera).

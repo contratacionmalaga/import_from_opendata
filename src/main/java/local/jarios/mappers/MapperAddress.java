@@ -15,17 +15,19 @@ import org.dgpe.codice.common.cbclib.PostalZoneType;
 import java.util.Optional;
 
 /**
- * Mapper para transformar objetos {@link AddressType} del modelo Codice
- * a entidades internas {@link Address}.
+ * Mapper para transformar objetos {@link AddressType} del modelo Codice a entidades internas
+ * {@link Address}.
  *
  * <p>Permite construir una instancia de {@link Address} a partir
- * de los objetos {@link Party}, {@link Location}, {@link WinningParty}
- * y el tipo {@link AddressType} proporcionado.</p>
+ * de los objetos {@link Party}, {@link Location}, {@link WinningParty} y el tipo
+ * {@link AddressType} proporcionado.</p>
  *
  * <p>Realiza sanitización y limitación de tamaño de campos para evitar
  * errores por datos demasiado extensos.</p>
  *
- * @author juan
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperAddress {
@@ -65,7 +67,8 @@ public final class MapperAddress {
         .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
         .ifPresent(address::setPostalZone);
 
-    String addressLine = MapperStringFromList.getStringFromListAddressLineType(addressType.getAddressLine());
+    String addressLine = MapperStringFromList.getStringFromListAddressLineType(
+        addressType.getAddressLine());
     address.setAddressLine(
         ComunHelper.limitarRegistro(addressLine, Constantes.TAMANO_MAXIMO_CAMPO_2500));
 

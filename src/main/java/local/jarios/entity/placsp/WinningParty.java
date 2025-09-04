@@ -19,10 +19,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Setter
 @Getter

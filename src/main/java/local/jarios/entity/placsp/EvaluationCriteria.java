@@ -15,18 +15,18 @@ import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import local.jarios.enums.TipoSolvencia;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 /**
- * Entidad que representa los criterios de evaluación técnica aplicados a un
- * operador económico para determinar su solvencia y capacidad de participar
- * en un contrato o licitación.
+ * Entidad que representa los criterios de evaluación técnica aplicados a un operador económico para
+ * determinar su solvencia y capacidad de participar en un contrato o licitación.
  * <p>
- * Estos criterios permiten definir requisitos técnicos mínimos, umbrales
- * de participación y el tipo de solvencia esperada. También pueden asociarse
- * a nivel de lote dentro de un proceso de contratación pública.
+ * Estos criterios permiten definir requisitos técnicos mínimos, umbrales de participación y el tipo
+ * de solvencia esperada. También pueden asociarse a nivel de lote dentro de un proceso de
+ * contratación pública.
  * </p>
  *
  * <p>
@@ -35,8 +35,8 @@ import java.util.UUID;
  * </p>
  *
  * <p>
- * Hereda de {@link Auditable}, por lo que incluye metadatos de auditoría
- * (fecha de creación, última modificación, usuario, etc.).
+ * Hereda de {@link Auditable}, por lo que incluye metadatos de auditoría (fecha de creación, última
+ * modificación, usuario, etc.).
  * </p>
  *
  * @author Juan
@@ -45,13 +45,14 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "evaluation_criteria")
 public class EvaluationCriteria extends Auditable {
 
   /**
-   * Identificador único del criterio de evaluación en formato UUID.
-   * Se genera automáticamente al persistir la entidad.
+   * Identificador único del criterio de evaluación en formato UUID. Se genera automáticamente al
+   * persistir la entidad.
    */
   @Id
   @GeneratedValue(generator = "UUID")
@@ -74,24 +75,23 @@ public class EvaluationCriteria extends Auditable {
   @Column(name = "description", columnDefinition = "TEXT")
   private String description;
   /**
-   * Cantidad umbral que debe cumplir el operador económico
-   * para superar este criterio de evaluación.
+   * Cantidad umbral que debe cumplir el operador económico para superar este criterio de
+   * evaluación.
    */
   @Column(name = "threshold_quantity")
   private Double thresholdQuantity;
   /**
-   * Tipo de solvencia evaluada, expresada como un valor
-   * del enumerado {@link TipoSolvencia}.
+   * Tipo de solvencia evaluada, expresada como un valor del enumerado {@link TipoSolvencia}.
    */
   @Enumerated(EnumType.STRING)
   @Column(name = "tipo_solvencia")
   private TipoSolvencia tipoSolvencia;
   /**
-   * Relación con la solicitud de calificación del licitador
-   * ({@link TendererQualificationRequest}) a la que pertenece este criterio.
+   * Relación con la solicitud de calificación del licitador ({@link TendererQualificationRequest})
+   * a la que pertenece este criterio.
    * <p>
-   * La relación está configurada con eliminación en cascada
-   * para mantener la integridad referencial.
+   * La relación está configurada con eliminación en cascada para mantener la integridad
+   * referencial.
    * </p>
    */
   @ManyToOne(
@@ -108,22 +108,11 @@ public class EvaluationCriteria extends Auditable {
   private TendererQualificationRequest tendererQualificationRequest;
 
   /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public EvaluationCriteria() {
-    // Constructor vacío requerido por JPA
-  }
-
-  /**
-   * Devuelve una representación en cadena del criterio de evaluación,
-   * mostrando los valores principales de sus atributos.
+   * Devuelve una representación en cadena del criterio de evaluación, mostrando los valores
+   * principales de sus atributos.
    *
-   * @return cadena con los valores de {@code evaluationCriteriaTypeCode},
-   * {@code description}, {@code thresholdQuantity} y {@code tipoSolvencia}.
+   * @return cadena con los valores de {@code evaluationCriteriaTypeCode}, {@code description},
+   * {@code thresholdQuantity} y {@code tipoSolvencia}.
    */
   @Override
   public String toString() {

@@ -13,8 +13,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Ayuda en la obtención del tipo de sindicación (local o remota) a partir de propiedades.
- * Clase utilitaria de solo métodos estáticos y constructor privado.
+ * Ayuda en la obtención del tipo de sindicación (local o remota) a partir de propiedades. Clase
+ * utilitaria de solo métodos estáticos y constructor privado.
  *
  * @author Juan
  */
@@ -90,8 +90,8 @@ public final class TipoSindicacionHelper {
   }
 
   /**
-   * Determina el tipo de sindicación remota leyendo la propiedad APP_URL y extrayendo el
-   * nombre del fichero en la URL.
+   * Determina el tipo de sindicación remota leyendo la propiedad APP_URL y extrayendo el nombre del
+   * fichero en la URL.
    *
    * @return Tipo de sindicación según el nombre en la URL
    * @throws PropertiesManagerException si la propiedad es inválida o no existe

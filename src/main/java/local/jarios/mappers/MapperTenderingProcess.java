@@ -20,10 +20,10 @@ import org.dgpe.codice.common.cbclib.UrgencyCodeType;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice.
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperTenderingProcess {
@@ -91,14 +91,14 @@ public final class MapperTenderingProcess {
 
     Optional.ofNullable(tenderingProcessType.getAuctionTerms())
         .ifPresent(auctionTerms ->
-            tenderingProcess.setAuctionTerms(
-                MapperAuctionTerms.getAuctionTerms(tenderingProcess, auctionTerms)));
+                       tenderingProcess.setAuctionTerms(
+                           MapperAuctionTerms.getAuctionTerms(tenderingProcess, auctionTerms)));
 
     Optional.ofNullable(tenderingProcessType.getEconomicOperatorShortList())
         .ifPresent(economicOperatorShortList ->
-            tenderingProcess.setEconomicOperatorShortList(
-                MapperEconomicOperatorShortList.getEconomicOperatorShortList(
-                    tenderingProcess, economicOperatorShortList)));
+                       tenderingProcess.setEconomicOperatorShortList(
+                           MapperEconomicOperatorShortList.getEconomicOperatorShortList(
+                               tenderingProcess, economicOperatorShortList)));
 
     Optional.ofNullable(tenderingProcessType.getDocumentAvailabilityPeriod())
         .ifPresent(period -> {

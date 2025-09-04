@@ -12,34 +12,33 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 /**
- * Entidad que representa un <b>Contacto</b> asociado a una Parte o
- * a una Parte Adjudicataria dentro del sistema PLACSP.
- * Contiene la información de comunicación básica: nombre,
- * teléfono, fax y correo electrónico.
- * Se almacena en la tabla <b>contact</b>.
+ * Entidad que representa un <b>Contacto</b> asociado a una Parte o a una Parte Adjudicataria dentro
+ * del sistema PLACSP. Contiene la información de comunicación básica: nombre, teléfono, fax y
+ * correo electrónico. Se almacena en la tabla <b>contact</b>.
  *
  * @author Juan
  * @since 20/03/2025
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "contact")
 public class Contact extends Auditable {
 
+  // =========================================================================
+  // PROPIEDADES DE LA ENTIDAD
+  // =========================================================================
   @Id
   @GeneratedValue(generator = "UUID")
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
-
-  // =========================================================================
-  // PROPIEDADES DE LA ENTIDAD
-  // =========================================================================
   @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String name;
   @Column(name = "telephone", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
@@ -48,6 +47,10 @@ public class Contact extends Auditable {
   private String telefax;
   @Column(name = "electronic_mail", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String electronicMail;
+
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   /**
    * Relación con la Parte genérica que posee este contacto.
    */
@@ -63,9 +66,6 @@ public class Contact extends Auditable {
                   "REFERENCES party(id) ON DELETE CASCADE"))
   private Party party;
 
-  // =========================================================================
-  // RELACIONES CON ENTIDADES PADRES
-  // =========================================================================
   /**
    * Relación con la Parte adjudicataria (winning_party) que posee este contacto.
    */
@@ -81,21 +81,15 @@ public class Contact extends Auditable {
                   "REFERENCES winning_party(id) ON DELETE CASCADE"))
   private WinningParty winningParty;
 
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public Contact() {
-    // Constructor vacío requerido por JPA
-  }
-
   // =========================================================================
   // MÉTODOS AUXILIARES
   // =========================================================================
-
+  /**
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
+   *
+   * @return cadena con los valores de {@code name}, {@code telephone}, {@code telefax},
+   *    {@code electronicMail}.
+   */
   @Override
   public String toString() {
     return "Contact: " +

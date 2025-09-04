@@ -49,12 +49,13 @@ public class EntityConsistencyTest {
 
       String tableName = tableAnnotation.name();
       assertNotNull(tableName, () -> entity.getSimpleName() + " tiene @Table sin name definido");
-      assertFalse(tableName.isEmpty(), () -> entity.getSimpleName() + " tiene @Table con name vacío");
+      assertFalse(tableName.isEmpty(),
+                  () -> entity.getSimpleName() + " tiene @Table con name vacío");
 
       // Verificar duplicados
       if (tableNames.containsKey(tableName)) {
         fail("Tabla duplicada: '" + tableName + "' usada por " +
-            entity.getSimpleName() + " y " + tableNames.get(tableName).getSimpleName());
+                 entity.getSimpleName() + " y " + tableNames.get(tableName).getSimpleName());
       } else {
         tableNames.put(tableName, entity);
       }
@@ -62,7 +63,8 @@ public class EntityConsistencyTest {
       // Convención básica singular/plural
       String simpleNameLower = entity.getSimpleName().toLowerCase();
       assertTrue(
-          tableName.toLowerCase().startsWith(simpleNameLower.substring(0, Math.min(5, simpleNameLower.length()))),
+          tableName.toLowerCase().startsWith(
+              simpleNameLower.substring(0, Math.min(5, simpleNameLower.length()))),
           () -> "El nombre de tabla '" + tableName + "' no parece consistente con la entidad " + entity.getSimpleName()
       );
     }
@@ -81,10 +83,12 @@ public class EntityConsistencyTest {
 
         String toStringResult = (String) toStringMethod.invoke(instance);
 
-        assertFalse(toStringResult.contains("[["), entity.getSimpleName() + ".toString tiene '[[' duplicado");
-        assertFalse(toStringResult.contains("]]"), entity.getSimpleName() + ".toString tiene ']]' duplicado");
+        assertFalse(toStringResult.contains("[["),
+                    entity.getSimpleName() + ".toString tiene '[[' duplicado");
+        assertFalse(toStringResult.contains("]]"),
+                    entity.getSimpleName() + ".toString tiene ']]' duplicado");
         assertTrue(toStringResult.startsWith(entity.getSimpleName() + ":"),
-            entity.getSimpleName() + ".toString debería empezar con '" + entity.getSimpleName() + ":'");
+                   entity.getSimpleName() + ".toString debería empezar con '" + entity.getSimpleName() + ":'");
       } catch (NoSuchMethodException e) {
         fail(entity.getSimpleName() + " no tiene método toString()");
       }
@@ -121,8 +125,8 @@ public class EntityConsistencyTest {
           boolean esText = col.columnDefinition().toLowerCase().contains("text");
 
           assertTrue(tieneLength || esText,
-              entity.getSimpleName() + "." + field.getName() +
-                  " debería tener length definido o columnDefinition=TEXT");
+                     entity.getSimpleName() + "." + field.getName() +
+                         " debería tener length definido o columnDefinition=TEXT");
         }
       }
     }
@@ -139,7 +143,7 @@ public class EntityConsistencyTest {
       if (table != null) {
         String name = table.name();
         assertTrue(name.equals(name.toLowerCase()) && !name.contains(" "),
-            "El nombre de tabla '" + name + "' de " + entity.getSimpleName() + " no sigue snake_case");
+                   "El nombre de tabla '" + name + "' de " + entity.getSimpleName() + " no sigue snake_case");
       }
     }
   }
@@ -161,7 +165,7 @@ public class EntityConsistencyTest {
                 || f.isAnnotationPresent(OneToOne.class)
                 || f.isAnnotationPresent(ManyToMany.class))
             .forEach(f -> assertFalse(body.contains(f.getName()),
-                entity.getSimpleName() + ".toString incluye relación JPA '" + f.getName() + "'"));
+                                      entity.getSimpleName() + ".toString incluye relación JPA '" + f.getName() + "'"));
       } catch (NoSuchMethodException ignored) {
       }
     }
@@ -196,15 +200,15 @@ public class EntityConsistencyTest {
         if (field.isAnnotationPresent(ManyToOne.class)) {
           ManyToOne ann = field.getAnnotation(ManyToOne.class);
           assertEquals(FetchType.LAZY, ann.fetch(),
-              entity.getSimpleName() + "." + field.getName() +
-                  " (ManyToOne) debería ser LAZY");
+                       entity.getSimpleName() + "." + field.getName() +
+                           " (ManyToOne) debería ser LAZY");
         }
 
         if (field.isAnnotationPresent(OneToMany.class)) {
           OneToMany ann = field.getAnnotation(OneToMany.class);
           assertEquals(FetchType.LAZY, ann.fetch(),
-              entity.getSimpleName() + "." + field.getName() +
-                  " (OneToMany) debería ser LAZY");
+                       entity.getSimpleName() + "." + field.getName() +
+                           " (OneToMany) debería ser LAZY");
         }
 
         if (field.isAnnotationPresent(OneToOne.class)) {
@@ -215,8 +219,8 @@ public class EntityConsistencyTest {
           if (isOwningSide) {
             // Lado propietario: sí debe ser LAZY
             assertEquals(FetchType.LAZY, ann.fetch(),
-                entity.getSimpleName() + "." + field.getName() +
-                    " (OneToOne dueño) debería ser LAZY");
+                         entity.getSimpleName() + "." + field.getName() +
+                             " (OneToOne dueño) debería ser LAZY");
           } else {
             // Lado inverso (mappedBy): permitimos LAZY o EAGER
             assertTrue(
@@ -241,8 +245,8 @@ public class EntityConsistencyTest {
         if (field.isAnnotationPresent(OneToMany.class)) {
           OneToMany ann = field.getAnnotation(OneToMany.class);
           assertFalse(ann.mappedBy().isEmpty(),
-              () -> entity.getSimpleName() + "." + field.getName() +
-                  " (OneToMany) debe definir mappedBy para evitar tabla join innecesaria");
+                      () -> entity.getSimpleName() + "." + field.getName() +
+                          " (OneToMany) debe definir mappedBy para evitar tabla join innecesaria");
         }
       }
     }
@@ -259,10 +263,11 @@ public class EntityConsistencyTest {
         if (field.isAnnotationPresent(JoinColumn.class)) {
           JoinColumn join = field.getAnnotation(JoinColumn.class);
           ForeignKey fk = join.foreignKey();
-          assertNotNull(fk, () -> entity.getSimpleName() + "." + field.getName() + " debe definir foreignKey");
+          assertNotNull(fk,
+                        () -> entity.getSimpleName() + "." + field.getName() + " debe definir foreignKey");
           assertFalse(fk.name().isEmpty(),
-              () -> entity.getSimpleName() + "." + field.getName() +
-                  " debe tener un nombre explícito en el foreignKey");
+                      () -> entity.getSimpleName() + "." + field.getName() +
+                          " debe tener un nombre explícito en el foreignKey");
         }
       }
     }
@@ -280,8 +285,8 @@ public class EntityConsistencyTest {
           String colName = field.getAnnotation(Column.class).name();
           if (!colName.isEmpty()) {
             assertTrue(colName.equals(colName.toLowerCase()) && !colName.contains(" "),
-                () -> entity.getSimpleName() + "." + field.getName() +
-                    " tiene nombre de columna inválido: " + colName);
+                       () -> entity.getSimpleName() + "." + field.getName() +
+                           " tiene nombre de columna inválido: " + colName);
           }
         }
       }
@@ -328,8 +333,8 @@ public class EntityConsistencyTest {
       for (Field field : entity.getDeclaredFields()) {
         if (field.isAnnotationPresent(Id.class)) {
           assertEquals(java.util.UUID.class, field.getType(),
-              () -> entity.getSimpleName() + "." + field.getName() +
-                  " debe ser de tipo UUID para mantener consistencia");
+                       () -> entity.getSimpleName() + "." + field.getName() +
+                           " debe ser de tipo UUID para mantener consistencia");
         }
       }
     }
@@ -343,7 +348,7 @@ public class EntityConsistencyTest {
     Set<Class<?>> entities = reflections.getTypesAnnotatedWith(Entity.class);
     for (Class<?> entity : entities) {
       assertTrue(local.jarios.entity.auxiliares.Auditable.class.isAssignableFrom(entity),
-          () -> entity.getSimpleName() + " debe extender de Auditable");
+                 () -> entity.getSimpleName() + " debe extender de Auditable");
     }
   }
 
@@ -356,8 +361,10 @@ public class EntityConsistencyTest {
     for (Class<?> entity : entities) {
       // Busca relaciones que pueden actuar como "padres"
       var parentFields = Arrays.stream(entity.getDeclaredFields())
-          .filter(f -> (f.isAnnotationPresent(OneToOne.class) || f.isAnnotationPresent(ManyToOne.class)))
-          .filter(f -> f.isAnnotationPresent(JoinColumn.class)) // 👈 solo los que tienen JoinColumn en este lado
+          .filter(f -> (f.isAnnotationPresent(OneToOne.class) || f.isAnnotationPresent(
+              ManyToOne.class)))
+          .filter(f -> f.isAnnotationPresent(
+              JoinColumn.class)) // 👈 solo los que tienen JoinColumn en este lado
           .toList();
 
       if (parentFields.isEmpty()) continue;
@@ -372,13 +379,13 @@ public class EntityConsistencyTest {
         if (multipleParents) {
           // múltiples padres → debe quedar con el valor por defecto (nullable = true)
           assertTrue(joinColumn.nullable(),
-              () -> entity.getSimpleName() + "." + field.getName() +
-                  " tiene múltiples padres → no debería marcar nullable=false explícitamente");
+                     () -> entity.getSimpleName() + "." + field.getName() +
+                         " tiene múltiples padres → no debería marcar nullable=false explícitamente");
         } else {
           // un único padre → debe ser obligatorio
           assertFalse(joinColumn.nullable(),
-              () -> entity.getSimpleName() + "." + field.getName() +
-                  " tiene un solo padre → debe ser nullable=false");
+                      () -> entity.getSimpleName() + "." + field.getName() +
+                          " tiene un solo padre → debe ser nullable=false");
         }
       }
     }
@@ -395,7 +402,8 @@ public class EntityConsistencyTest {
     for (Class<?> entity : entities) {
       var parentFields = Arrays.stream(entity.getDeclaredFields())
           .filter(f -> f.isAnnotationPresent(JoinColumn.class)) // lado débil
-          .filter(f -> f.isAnnotationPresent(OneToOne.class) || f.isAnnotationPresent(ManyToOne.class))
+          .filter(
+              f -> f.isAnnotationPresent(OneToOne.class) || f.isAnnotationPresent(ManyToOne.class))
           .toList();
 
       for (Field field : parentFields) {
@@ -404,13 +412,13 @@ public class EntityConsistencyTest {
 
           // Debe ser LAZY
           assertEquals(FetchType.LAZY, rel.fetch(),
-              () -> entity.getSimpleName() + "." + field.getName() +
-                  " debe usar fetch = LAZY (relación padre)");
+                       () -> entity.getSimpleName() + "." + field.getName() +
+                           " debe usar fetch = LAZY (relación padre)");
 
           // No debe tener cascade
           assertEquals(0, rel.cascade().length,
-              () -> entity.getSimpleName() + "." + field.getName() +
-                  " no debe tener cascade en el lado padre (JoinColumn)");
+                       () -> entity.getSimpleName() + "." + field.getName() +
+                           " no debe tener cascade en el lado padre (JoinColumn)");
         }
 
         if (field.isAnnotationPresent(ManyToOne.class)) {
@@ -418,13 +426,13 @@ public class EntityConsistencyTest {
 
           // Debe ser LAZY
           assertEquals(FetchType.LAZY, rel.fetch(),
-              () -> entity.getSimpleName() + "." + field.getName() +
-                  " debe usar fetch = LAZY (relación padre)");
+                       () -> entity.getSimpleName() + "." + field.getName() +
+                           " debe usar fetch = LAZY (relación padre)");
 
           // No debe tener cascade
           assertEquals(0, rel.cascade().length,
-              () -> entity.getSimpleName() + "." + field.getName() +
-                  " no debe tener cascade en el lado padre (JoinColumn)");
+                       () -> entity.getSimpleName() + "." + field.getName() +
+                           " no debe tener cascade en el lado padre (JoinColumn)");
         }
       }
     }
@@ -433,8 +441,8 @@ public class EntityConsistencyTest {
 
   private void checkJoinColumn(Class<?> entity, Field field) {
     assertTrue(field.isAnnotationPresent(JoinColumn.class),
-        () -> entity.getSimpleName() + "." + field.getName() +
-            " debe tener @JoinColumn");
+               () -> entity.getSimpleName() + "." + field.getName() +
+                   " debe tener @JoinColumn");
 
     JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
 
@@ -443,8 +451,8 @@ public class EntityConsistencyTest {
         " debe definir un foreignKey");
 
     assertTrue(fk.foreignKeyDefinition().toUpperCase().contains("ON DELETE CASCADE"),
-        () -> entity.getSimpleName() + "." + field.getName() +
-            " debe definir ON DELETE CASCADE en la foreignKeyDefinition");
+               () -> entity.getSimpleName() + "." + field.getName() +
+                   " debe definir ON DELETE CASCADE en la foreignKeyDefinition");
   }
 
   // 🔹 Utilidad para detectar si existe CascadeType.ALL

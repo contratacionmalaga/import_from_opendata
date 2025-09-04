@@ -19,14 +19,14 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Entidad que representa una referencia adicional de documento,
- * típicamente utilizada para importar ficheros Excel desde Internet
- * y asociarlos a un estado de carpeta de contrato.
+ * Entidad que representa una referencia adicional de documento, típicamente utilizada para importar
+ * ficheros Excel desde Internet y asociarlos a un estado de carpeta de contrato.
  *
  * <p>Hereda propiedades auditables comunes como creación y modificación.</p>
  *
- * @author Juan Antonio
- * @since 04/06/2024
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Setter
 @Getter
@@ -43,10 +43,15 @@ public class AdditionalDocumentReference extends Auditable {
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
+  // =========================================================================
+  // CLASES PADRES
+  // =========================================================================
   /**
    * Relación de muchos a uno con {@link ContractFolderStatus}.
-   * <p>Indica el estado de la carpeta del contrato al que está asociada esta referencia adicional.</p>
-   * <p>Al eliminar el estado de carpeta de contrato, se eliminarán las referencias asociadas gracias a {@code ON DELETE CASCADE}.</p>
+   * <p>Indica el estado de la carpeta del contrato al que está asociada esta referencia
+   * adicional.</p>
+   * <p>Al eliminar el estado de carpeta de contrato, se eliminarán las referencias asociadas
+   * gracias a {@code ON DELETE CASCADE}.</p>
    */
   @ManyToOne(
       fetch = FetchType.LAZY)
@@ -61,6 +66,9 @@ public class AdditionalDocumentReference extends Auditable {
                   "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
   private ContractFolderStatus contractFolderStatus;
 
+  // =========================================================================
+  // CLASES HIJAS
+  // =========================================================================
   /**
    * Relación uno a uno con {@link DocumentReference}.
    * <p>Esta referencia adicional tiene una referencia documental asociada,
@@ -69,6 +77,14 @@ public class AdditionalDocumentReference extends Auditable {
   @OneToOne(mappedBy = "additionalDocumentReference", cascade = CascadeType.ALL, orphanRemoval = true)
   private DocumentReference documentReference;
 
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
+  /**
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
+   *
+   * @return cadena con el nombre de la clase.
+   */
   @Override
   public String toString() {
 

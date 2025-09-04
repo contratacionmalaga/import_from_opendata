@@ -13,28 +13,22 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 /**
- * Entidad que representa una referencia documental asociada a la importación
- * de ficheros Excel desde Internet.
- * <p>
- * La clase permite modelar la relación de un documento principal con diferentes
- * tipos de referencias documentales adicionales, técnicas, legales o generales,
- * así como su posible adjunto asociado.
- * </p>
+ * Entidad que representa una referencia documental asociada a la importación de ficheros Excel
+ * desde Internet.
  *
- * <p>
- * Hereda de {@link Auditable}, lo que permite registrar metadatos de auditoría
- * (como fechas de creación, actualización o usuario responsable).
- * </p>
- *
- * <p>
+ * <p>La clase permite modelar la relación de un documento principal con diferentes tipos de
+ * referencias documentales adicionales, técnicas, legales o generales, así como su posible adjunto
+ * asociado.
+ * Hereda de {@link Auditable}, lo que permite registrar metadatos de auditoría (como fechas de
+ * creación, actualización o usuario responsable).
  * Cada instancia de esta entidad se corresponde con un registro en la tabla
- * <b>document_reference</b> de la base de datos.
- * </p>
+ * <b>document_reference</b> de la base de datos.</p>
  *
  * @author Juan Antonio
  * @version 1.0
@@ -42,21 +36,21 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "document_reference")
 public class DocumentReference extends Auditable {
 
   /**
-   * Identificador único de la entidad en formato UUID.
-   * Se genera automáticamente al persistir la entidad.
+   * Identificador único de la entidad en formato UUID. Se genera automáticamente al persistir la
+   * entidad.
    */
   @Id
   @GeneratedValue(generator = "UUID")
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
   /**
-   * Identificador del documento de referencia en el sistema origen.
-   * Campo obligatorio.
+   * Identificador del documento de referencia en el sistema origen. Campo obligatorio.
    */
   @Column(name = "id_document_reference", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String idDocumentReference;
@@ -65,6 +59,14 @@ public class DocumentReference extends Auditable {
    */
   @Column(name = "document_type_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
   private String documentTypeCode;
+  /**
+   * Código que indica el tipo de documento referenciado (ej. contrato, anexo, etc.).
+   */
+  @Column(name = "document_type", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  private String documentType;
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   /**
    * Relación uno a uno con la entidad {@link AdditionalDocumentReference}.
    * <p>
@@ -129,30 +131,23 @@ public class DocumentReference extends Auditable {
           foreignKeyDefinition = "FOREIGN KEY (general_document_document_reference_id) " +
               "REFERENCES general_document_document_reference(id) ON DELETE CASCADE"))
   private GeneralDocumentDocumentReference generalDocumentDocumentReference;
+  // =========================================================================
+  // RELACIONES HIJAS
+  // =========================================================================
   /**
    * Relación uno a uno con la entidad {@link Attachment}.
    * <p>
-   * Representa un adjunto asociado al documento de referencia.
-   * Esta relación está mapeada inversamente desde {@link Attachment}.
+   * Representa un adjunto asociado al documento de referencia. Esta relación está mapeada
+   * inversamente desde {@link Attachment}.
    * </p>
    */
   @OneToOne(mappedBy = "documentReference", cascade = CascadeType.ALL, orphanRemoval = true)
   private Attachment attachment;
-
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
   /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public DocumentReference() {
-    // Constructor vacío requerido por JPA
-  }
-
-  /**
-   * Devuelve una representación en cadena del objeto con los datos
-   * principales de la entidad.
+   * Devuelve una representación en cadena del objeto con los datos principales de la entidad.
    *
    * @return cadena con los valores de {@code idDocumentReference} y {@code documentTypeCode}.
    */

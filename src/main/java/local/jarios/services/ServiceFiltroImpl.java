@@ -14,11 +14,11 @@ import org.hibernate.SessionFactory;
 import java.util.List;
 
 /**
- * Implementación del servicio encargado de gestionar consultas
- * relacionadas con filtros para órganos de contratación.
+ * Implementación del servicio encargado de gestionar consultas relacionadas con filtros para
+ * órganos de contratación.
  * <p>
- * Utiliza un repositorio para acceder a la base de datos y
- * ejecutar consultas SQL específicas para obtener los datos filtrados.
+ * Utiliza un repositorio para acceder a la base de datos y ejecutar consultas SQL específicas para
+ * obtener los datos filtrados.
  * </p>
  *
  * <p><b>Autor:</b> juan</p>
@@ -29,27 +29,28 @@ import java.util.List;
 public class ServiceFiltroImpl implements ServiceFiltro {
 
   /**
-   * Repositorio para acceso y gestión de datos.
-   * Se usa para realizar operaciones CRUD y consultas personalizadas.
+   * Repositorio para acceso y gestión de datos. Se usa para realizar operaciones CRUD y consultas
+   * personalizadas.
    */
   private final Repository repository;
 
   /**
-   * Constructor que inicializa el repositorio con la {@link SessionFactory}
-   * adecuada para la conexión FILTRO_SQL.
+   * Constructor que inicializa el repositorio con la {@link SessionFactory} adecuada para la
+   * conexión FILTRO_SQL.
    *
    * @throws MiSessionFactoryProvider si ocurre un error al obtener la {@link SessionFactory}.
    */
   public ServiceFiltroImpl() throws MiSessionFactoryProvider {
-    SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(TipoConexion.FILTRO_SQL);
+    SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(
+        TipoConexion.FILTRO_SQL);
     log.debug("[ServiceFiltroImpl] Obtenido el objeto SessionFactory correctamente.");
     this.repository = new RepositoryImpl(sessionFactory);
     log.debug("[ServiceFiltroImpl] Obtenido el objeto Repository correctamente.");
   }
 
   /**
-   * Ejecuta una consulta SQL para obtener una lista de objetos {@link OrganoContratacion}
-   * que coinciden con el filtro especificado.
+   * Ejecuta una consulta SQL para obtener una lista de objetos {@link OrganoContratacion} que
+   * coinciden con el filtro especificado.
    *
    * @param filtroSQL Consulta SQL en forma de cadena que define el filtro a aplicar.
    * @return Lista de objetos {@link OrganoContratacion} que cumplen el filtro.
@@ -63,11 +64,12 @@ public class ServiceFiltroImpl implements ServiceFiltro {
       return repository.getListFiltroOcsFromFiltroSql(filtroSQL);
     } catch (MiRepositoryException ex) {
       msg = String.format("[getListFiltroOcsFromFiltroSql] - Error en la consulta: %s. Error: %s",
-          filtroSQL, ex.getMessage());
+                          filtroSQL, ex.getMessage());
       log.error(msg, ex);
       throw new MiServiceException(msg, ex);
     } catch (RuntimeException ex) {
-      msg = String.format("[getListFiltroOcsFromFiltroSql] - Error de ejecución en la consulta: %s. Error: %s",
+      msg = String.format(
+          "[getListFiltroOcsFromFiltroSql] - Error de ejecución en la consulta: %s. Error: %s",
           filtroSQL, ex.getMessage());
       log.error(msg, ex);
       throw new MiServiceException(msg, ex);

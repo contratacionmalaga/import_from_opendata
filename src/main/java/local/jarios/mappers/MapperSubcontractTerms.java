@@ -12,10 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperSubcontractTerms {
@@ -31,7 +28,8 @@ public final class MapperSubcontractTerms {
     //
     return Optional.ofNullable(subcontractTermsTypeList)
         .map(list -> list.stream()
-            .map(subcontractTermsType -> getSubcontractTerms(tenderingTerms, tenderResult, subcontractTermsType))
+            .map(subcontractTermsType -> getSubcontractTerms(tenderingTerms, tenderResult,
+                                                             subcontractTermsType))
             .toList())
         .orElseGet(List::of);
 

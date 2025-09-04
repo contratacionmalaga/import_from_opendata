@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -19,8 +20,8 @@ import java.util.UUID;
 /**
  * Representa un criterio de adjudicación en un proceso de licitación.
  * <p>
- * Este criterio especifica las condiciones necesarias para adjudicar un contrato,
- * pudiendo aplicarse tanto a nivel general como a nivel de lote.
+ * Este criterio especifica las condiciones necesarias para adjudicar un contrato, pudiendo
+ * aplicarse tanto a nivel general como a nivel de lote.
  * </p>
  *
  * <p>Contiene códigos que tipifican el criterio y subtipo, una descripción, notas
@@ -34,6 +35,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "awarding_criteria")
 public class AwardingCriteria extends Auditable {
@@ -41,8 +43,7 @@ public class AwardingCriteria extends Auditable {
   /**
    * Identificador único universal (UUID) del criterio de adjudicación.
    * <p>
-   * Clave primaria generada automáticamente.
-   * No puede ser actualizada ni ser nula.
+   * Clave primaria generada automáticamente. No puede ser actualizada ni ser nula.
    * </p>
    */
   @Id
@@ -70,16 +71,16 @@ public class AwardingCriteria extends Auditable {
   @Column(name = "note", columnDefinition = "TEXT")
   private String note;
   /**
-   * Valor numérico que representa el peso o importancia asignada al cumplimiento
-   * de este criterio dentro del proceso de licitación.
+   * Valor numérico que representa el peso o importancia asignada al cumplimiento de este criterio
+   * dentro del proceso de licitación.
    */
   @Column(name = "weight_numeric")
   private Double weightNumeric;
   /**
    * Referencia a los términos de adjudicación a los que pertenece este criterio.
    * <p>
-   * Relación muchos a uno con {@link AwardingTerms}.
-   * La eliminación en cascada está definida en la clave foránea.
+   * Relación muchos a uno con {@link AwardingTerms}. La eliminación en cascada está definida en la
+   * clave foránea.
    * </p>
    */
   @ManyToOne(
@@ -92,17 +93,6 @@ public class AwardingCriteria extends Auditable {
           name = "fk_awardingcriteria_awardingterms",
           foreignKeyDefinition = "FOREIGN KEY (awarding_terms_id) REFERENCES awarding_terms(id) ON DELETE CASCADE"))
   private AwardingTerms awardingTerms;
-
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public AwardingCriteria() {
-    // Constructor vacío requerido por JPA
-  }
 
   /**
    * Devuelve una representación en cadena del objeto {@code AwardingCriteria}.

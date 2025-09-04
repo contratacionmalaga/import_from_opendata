@@ -18,23 +18,18 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Utilidad para mapear objetos del modelo Codice {@link TenderResultType}
- * a entidades persistentes {@link TenderResult}.
- * <p>
- * Esta clase ofrece métodos estáticos para transformar listas y objetos individuales
- * del tipo {@link TenderResultType} en entidades JPA adecuadas para la persistencia.
- * </p>
- * <p>
- * En la conversión se aplican límites de tamaño, limpieza de cadenas y mapeos
- * de sub-objetos relacionados.
- * </p>
- * <p>
- * La clase es final y no instanciable.
- * </p>
+ * Utilidad para mapear objetos del modelo Codice {@link TenderResultType} a entidades persistentes
+ * {@link TenderResult}.
  *
- * <p><b>Autor:</b> Juan Antonio</p>
- * <p><b>Fecha:</b> 11/04/2024</p>
- * <p><b>Equipo:</b> Juan Antonio</p>
+ * <p>Esta clase ofrece métodos estáticos para transformar listas y objetos individuales del tipo
+ * {@link TenderResultType} en entidades JPA adecuadas para la persistencia.
+ * En la conversión se aplican límites de tamaño, limpieza de cadenas y mapeos de sub-objetos
+ * relacionados.
+ * La clase es final y no instanciable.</p>
+ *
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperTenderResult {
@@ -43,8 +38,8 @@ public final class MapperTenderResult {
   }
 
   /**
-   * Convierte una lista de objetos {@link TenderResultType} en una lista
-   * de entidades {@link TenderResult} asociadas a un {@link ContractFolderStatus}.
+   * Convierte una lista de objetos {@link TenderResultType} en una lista de entidades
+   * {@link TenderResult} asociadas a un {@link ContractFolderStatus}.
    *
    * @param contractFolderStatus entidad padre a la que se asocian los resultados de licitación.
    * @param listTenderResultType lista de objetos {@link TenderResultType} a convertir.
@@ -60,8 +55,8 @@ public final class MapperTenderResult {
   }
 
   /**
-   * Convierte un objeto {@link TenderResultType} en una entidad {@link TenderResult},
-   * realizando mapeos de sus atributos y sub-objetos relacionados.
+   * Convierte un objeto {@link TenderResultType} en una entidad {@link TenderResult}, realizando
+   * mapeos de sus atributos y sub-objetos relacionados.
    *
    * @param contractFolderStatus entidad padre para el mapeo.
    * @param tenderResultType     objeto fuente a convertir.
@@ -84,7 +79,8 @@ public final class MapperTenderResult {
 
     tenderResult.setDescription(
         StringHelper.eliminarCaracteres(
-            MapperStringFromList.getStringFromListDescriptionType(tenderResultType.getDescription())));
+            MapperStringFromList.getStringFromListDescriptionType(
+                tenderResultType.getDescription())));
 
     Optional.ofNullable(tenderResultType.getAwardDate())
         .map(date -> GregorianCalendarHelper.getDateFromXMLGregorianCalendar(date.getValue()))
@@ -124,7 +120,8 @@ public final class MapperTenderResult {
         .ifPresent(tenderResult::setStartDate);
 
     Optional.ofNullable(tenderResultType.getAwardedOwnerNationalityCode())
-        .map(code -> ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
+        .map(
+            code -> ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
         .ifPresent(tenderResult::setAwardedOwnerNationalityCode);
 
     Optional.ofNullable(tenderResultType.getWinningParty())
@@ -140,7 +137,8 @@ public final class MapperTenderResult {
             MapperTenderedProject.getTenderedProjectFromType(tenderResult, awardProject)));
 
     tenderResult.setListSubcontractTerms(
-        MapperSubcontractTerms.getListSubcontractTerms(null, tenderResult, tenderResultType.getSubcontractTerms()));
+        MapperSubcontractTerms.getListSubcontractTerms(null, tenderResult,
+                                                       tenderResultType.getSubcontractTerms()));
 
     return tenderResult;
   }

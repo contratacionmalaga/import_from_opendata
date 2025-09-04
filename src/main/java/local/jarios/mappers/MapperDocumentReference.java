@@ -9,16 +9,17 @@ import local.jarios.entity.placsp.TechnicalDocumentReference;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.DocumentReferenceType;
 import org.dgpe.codice.common.cbclib.DocumentTypeCodeType;
+import org.dgpe.codice.common.cbclib.DocumentTypeType;
 
 import java.util.Optional;
 
 /**
- * Mapper para convertir objetos {@link DocumentReferenceType} del modelo Codice
- * en la entidad interna {@link DocumentReference} usada en el proyecto.
+ * Mapper para convertir objetos {@link DocumentReferenceType} del modelo Codice en la entidad
+ * interna {@link DocumentReference} usada en el proyecto.
  * <p>
- * Este mapper asocia referencias documentales a sus posibles categorías:
- * adicionales, generales, legales y técnicas, y mapea propiedades relevantes
- * como el código de tipo de documento y el attachment.
+ * Este mapper asocia referencias documentales a sus posibles categorías: adicionales, generales,
+ * legales y técnicas, y mapea propiedades relevantes como el código de tipo de documento y el
+ * attachment.
  * <p>
  * Se aplican valores por defecto para evitar valores nulos en campos clave.
  *
@@ -34,14 +35,15 @@ public final class MapperDocumentReference {
   }
 
   /**
-   * Convierte un {@link DocumentReferenceType} en un objeto {@link DocumentReference}
-   * y lo vincula con sus entidades asociadas si existen.
+   * Convierte un {@link DocumentReferenceType} en un objeto {@link DocumentReference} y lo vincula
+   * con sus entidades asociadas si existen.
    *
    * @param additionalDocumentReference      Referencia documental adicional asociada.
    * @param generalDocumentDocumentReference Referencia documental general asociada.
    * @param legalDocumentReference           Referencia documental legal asociada.
    * @param technicalDocumentReference       Referencia documental técnica asociada.
-   * @param documentReferenceType            Objeto Codice que contiene los datos de referencia documental.
+   * @param documentReferenceType            Objeto Codice que contiene los datos de referencia
+   *                                         documental.
    * @return Entidad {@link DocumentReference} construida a partir de la información proporcionada.
    */
   public static DocumentReference getDocumentReferenceFromType(
@@ -63,6 +65,11 @@ public final class MapperDocumentReference {
         .map(DocumentTypeCodeType::getValue)
         .orElse(Constantes.CADENA_VACIA);
     documentReference.setDocumentTypeCode(docTypeCode);
+
+    String docType = Optional.ofNullable(documentReferenceType.getDocumentType())
+        .map(DocumentTypeType::getValue)
+        .orElse(Constantes.CADENA_VACIA);
+    documentReference.setDocumentTypeCode(docType);
 
     Optional.ofNullable(documentReferenceType.getAttachment())
         .ifPresent(attachmentType -> documentReference.setAttachment(

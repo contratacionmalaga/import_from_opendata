@@ -17,13 +17,13 @@ import java.util.Optional;
  * Proporciona métodos para obtener la fecha y hora actual en zonas horarias específicas.
  * </p>
  * <p>
- * Author: juan
- * Date: 21/06/2025
+ * Author: juan Date: 21/06/2025
  */
 @Slf4j
 public final class LocalDateTimeHelper {
 
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+      "yyyy-MM-dd'T'HH:mm:ss");
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
@@ -44,8 +44,8 @@ public final class LocalDateTimeHelper {
   }
 
   /**
-   * Calcula la diferencia entre dos instantes {@link LocalDateTime} y devuelve
-   * una cadena con la duración en formato "Xh Ym Zs Wms".
+   * Calcula la diferencia entre dos instantes {@link LocalDateTime} y devuelve una cadena con la
+   * duración en formato "Xh Ym Zs Wms".
    *
    * @param localDateTimeInicial Fecha y hora inicial.
    * @param localDateTimeFinal   Fecha y hora final.
@@ -86,7 +86,8 @@ public final class LocalDateTimeHelper {
       log.debug("[parseFechaSiValida] - La fecha es válida: {}", fecha);
       return Optional.of(fecha);
     } catch (DateTimeParseException ex) {
-      log.debug("[parseFechaSiValida] - La fecha NO es válida: {}. Detalle: {}", fechaStr, ex.getMessage());
+      log.debug("[parseFechaSiValida] - La fecha NO es válida: {}. Detalle: {}", fechaStr,
+                ex.getMessage());
       return Optional.empty();
     }
   }

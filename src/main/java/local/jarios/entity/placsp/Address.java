@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -20,12 +21,12 @@ import java.util.UUID;
 /**
  * Representa una dirección física asociada a diferentes entidades del sistema.
  * <p>
- * Contiene información detallada sobre la línea de dirección, ciudad, código postal
- * y subdivisiones administrativas del país.
+ * Contiene información detallada sobre la línea de dirección, ciudad, código postal y subdivisiones
+ * administrativas del país.
  * </p>
  * <p>
- * Mantiene relaciones con las entidades {@link Party}, {@link Location}, {@link WinningParty}
- * como entidades padres, y con {@link Country} como entidad hija.
+ * Mantiene relaciones con las entidades {@link Party}, {@link Location}, {@link WinningParty} como
+ * entidades padres, y con {@link Country} como entidad hija.
  * </p>
  * <p>
  * Hereda propiedades de auditoría de {@link Auditable}.
@@ -36,6 +37,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "address")
 public class Address extends Auditable {
@@ -43,8 +45,7 @@ public class Address extends Auditable {
   /**
    * Identificador único universal (UUID) de la dirección.
    * <p>
-   * Clave primaria generada automáticamente.
-   * No puede ser actualizada ni ser nula.
+   * Clave primaria generada automáticamente. No puede ser actualizada ni ser nula.
    * </p>
    */
   @Id
@@ -91,11 +92,15 @@ public class Address extends Auditable {
    */
   @Column(name = "country_subentity", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String countrySubentity;
+
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   /**
    * Entidad {@link Party} asociada a esta dirección.
    * <p>
-   * Relación uno a uno, carga perezosa, La eliminación en cascada se asegura mediante
-   * la clave foránea en la base de datos (ON DELETE CASCADE).
+   * Relación uno a uno, carga perezosa, La eliminación en cascada se asegura mediante la clave
+   * foránea en la base de datos (ON DELETE CASCADE).
    * </p>
    */
   @OneToOne(
@@ -107,15 +112,11 @@ public class Address extends Auditable {
           name = "fk_address_party",
           foreignKeyDefinition = "FOREIGN KEY (party_id) REFERENCES party(id) ON DELETE CASCADE"))
   private Party party;
-
-  //
-  // RELACIONES CON ENTIDADES PADRES
-  //
   /**
    * Entidad {@link Location} asociada a esta dirección.
    * <p>
-   * Relación uno a uno, carga perezosa, La eliminación en cascada se asegura mediante
-   * la clave foránea en la base de datos (ON DELETE CASCADE).
+   * Relación uno a uno, carga perezosa, La eliminación en cascada se asegura mediante la clave
+   * foránea en la base de datos (ON DELETE CASCADE).
    * </p>
    */
   @OneToOne(
@@ -130,8 +131,8 @@ public class Address extends Auditable {
   /**
    * Entidad {@link WinningParty} asociada a esta dirección.
    * <p>
-   * Relación uno a uno, carga perezosa, La eliminación en cascada se asegura mediante
-   * la clave foránea en la base de datos (ON DELETE CASCADE).
+   * Relación uno a uno, carga perezosa, La eliminación en cascada se asegura mediante la clave
+   * foránea en la base de datos (ON DELETE CASCADE).
    * </p>
    */
   @OneToOne(
@@ -143,31 +144,22 @@ public class Address extends Auditable {
           name = "fk_address_winningparty",
           foreignKeyDefinition = "FOREIGN KEY (winningparty_id) REFERENCES winning_party(id) ON DELETE CASCADE"))
   private WinningParty winningParty;
+
+
+  // =========================================================================
+  // RELACIONES HIJAS
+  // =========================================================================
   /**
    * Entidad {@link Country} que depende de esta dirección.
-   * <p>
-   * Relación uno a uno mapeada por el atributo {@code address} en {@link Country}.
-   * Se aplican cascada completa y eliminación de huérfanos.
-   * </p>
+   * <p>Relación uno a uno mapeada por el atributo {@code address} en {@link Country}. Se aplican
+   * cascada completa y eliminación de huérfanos.</p>
    */
   @OneToOne(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
   private Country country;
 
-  //
-  // RELACIONES CON ENTIDADES HIJAS
-  //
-
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public Address() {
-    // Constructor vacío requerido por JPA
-  }
-
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
   /**
    * Representación textual de la dirección.
    * <p>

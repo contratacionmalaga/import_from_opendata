@@ -1,8 +1,8 @@
 package local.jarios.common.util;
 
 /**
- * Constantes que definen tamaños estándar para campos en la base de datos o en
- * validaciones, para evitar la repetición de valores mágicos.
+ * Constantes que definen tamaños estándar para campos en la base de datos o en validaciones, para
+ * evitar la repetición de valores mágicos.
  * <p>
  * Esta clase es final y no debe ser instanciada.
  * </p>

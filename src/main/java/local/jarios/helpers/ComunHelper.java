@@ -77,10 +77,11 @@ public final class ComunHelper {
   }
 
   /**
-   * Devuelve una cadena con la fecha y hora formateada en el patrón "yyyy-MM-dd HH:mm:ss".
-   * Si el parámetro es null, usa la fecha y hora actual.
+   * Devuelve una cadena con la fecha y hora formateada en el patrón "yyyy-MM-dd HH:mm:ss". Si el
+   * parámetro es null, usa la fecha y hora actual.
    *
-   * @param localDateTime El objeto {@link LocalDateTime} a formatear, o null para usar la fecha/hora actual.
+   * @param localDateTime El objeto {@link LocalDateTime} a formatear, o null para usar la
+   *                      fecha/hora actual.
    * @return Fecha y hora formateada como cadena.
    */
   public static String getFechaHoraFormateada(LocalDateTime localDateTime) {

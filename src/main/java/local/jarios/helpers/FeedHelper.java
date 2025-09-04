@@ -66,7 +66,8 @@ public final class FeedHelper {
 
       // Salimos si nextLink no es válido desde el inicio
       if (!source.isNextLinkValid(nextLink)) {
-        log.warn("[parsearFeeds] - El NextLink inicial no es válido, se aborta el bucle: {}", nextLink);
+        log.warn("[parsearFeeds] - El NextLink inicial no es válido, se aborta el bucle: {}",
+                 nextLink);
       }
 
       while (source.isNextLinkValid(nextLink) && (!superadoNewestEntry)) {
@@ -77,7 +78,8 @@ public final class FeedHelper {
 
           // Obtengo el FeedType desde el fichero Atom
           var feedType = getFeedType(unmarshaller, reader);
-          log.debug("[parsearFeeds] - Obtenido el objeto FeedType desde el fichero Atom correctamente.");
+          log.debug(
+              "[parsearFeeds] - Obtenido el objeto FeedType desde el fichero Atom correctamente.");
 
           // Mapeo el fichero FeedType al objeto Feed
           var feed = MapperFeed.getFeed(feedType);
@@ -109,7 +111,8 @@ public final class FeedHelper {
   @SuppressWarnings("unchecked")
   private static FeedType getFeedType(Unmarshaller unmarshaller, BufferedReader reader) throws JAXBException {
     FeedType feedType = ((JAXBElement<FeedType>) unmarshaller.unmarshal(reader)).getValue();
-    log.debug("[getFeedType] - Updated FeedType: {}", feedType.getUpdated().getValue().toGregorianCalendar().toString());
+    log.debug("[getFeedType] - Updated FeedType: {}",
+              feedType.getUpdated().getValue().toGregorianCalendar().toString());
     return feedType;
   }
 

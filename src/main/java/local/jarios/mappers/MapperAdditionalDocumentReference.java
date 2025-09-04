@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice.
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperAdditionalDocumentReference {

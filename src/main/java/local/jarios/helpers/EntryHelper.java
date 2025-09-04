@@ -34,7 +34,8 @@ public final class EntryHelper {
    * Función que dado un Entry nos devuelve el valor del campo objeto asociado al expediente
    *
    * @param entry Entry del que devolvemos el valor ProcurementProjectName
-   * @return Cadena con el Objeto del Entry. NO devuelvo Optional puesto que el objeto es obligatorio.
+   * @return Cadena con el Objeto del Entry. NO devuelvo Optional puesto que el objeto es
+   * obligatorio.
    */
   public static String getObjetoFromEntry(Entry entry) {
 
@@ -49,7 +50,8 @@ public final class EntryHelper {
    * Función que dado un Entry nos devuelve el valor del campo NUTS de realización del expediente
    *
    * @param entry Entry del que devolvemos el valor RealizedLocationCountrySubCode
-   * @return Optional con el código NUTS (puede que no esté incluído en el modelo, motivo por el que uso Optional)
+   * @return Optional con el código NUTS (puede que no esté incluído en el modelo, motivo por el que
+   * uso Optional)
    */
   public static Optional<String> getNutsFromEntry(Entry entry) {
 
@@ -64,7 +66,8 @@ public final class EntryHelper {
    * Función que dado un Entry nos devuelve el valor del campo IdPlataforma del expediente
    *
    * @param entry Entry del que devolvemos el valor PartyIdentificationIdPlataforma
-   * @return Optional con el código IdPlataforma (puede que no esté incluído en el modelo, motivo del Optional)
+   * @return Optional con el código IdPlataforma (puede que no esté incluído en el modelo, motivo
+   * del Optional)
    */
   public static Optional<String> getIdPlataformaFromEntry(Entry entry) {
 
@@ -100,11 +103,13 @@ public final class EntryHelper {
 
     // Proceso todos los entry hasta que se supere el NewestEntry en cuyo caso salgo anticipadamente
     for (Entry entry : listEntry) {
-      boolean esMasReciente = newestEntry == null || entry.getUpdated().isAfter(newestEntry.getUpdated());
+      boolean esMasReciente = newestEntry == null || entry.getUpdated().isAfter(
+          newestEntry.getUpdated());
 
       if (!esMasReciente) {
 
-        log.info("[procesarListaEntry] SUPERADO newestEntry. Nº de Entries leídos del Feed: {}.", nEntryLeidos);
+        log.info("[procesarListaEntry] SUPERADO newestEntry. Nº de Entries leídos del Feed: {}.",
+                 nEntryLeidos);
         return true;
       }
 
@@ -120,8 +125,8 @@ public final class EntryHelper {
   }
 
   /**
-   * Función encarga del procesamiento de los objetos Entry
-   * Proceso si el Entry cumple con los filtros que estuvieran definidos al inicio de la ejecución
+   * Función encarga del procesamiento de los objetos Entry Proceso si el Entry cumple con los
+   * filtros que estuvieran definidos al inicio de la ejecución
    *
    * @param entry Objeto Entry que se está procesando
    * @throws MiInvalidDateFormatException Excepción en caso de error
@@ -143,28 +148,31 @@ public final class EntryHelper {
       // Creo un histórico asociado al Entry con la opción RECHAZAR y lo añado a la lsita
       Historico historico = new Historico(entry, EntryOpcion.RECHAZAR, evaluacionFiltrosEntry);
       VariablesGlobales.getListHistoricos().add(historico);
-      log.debug("[procesarEntrySegunExistencia] - No cumple los filtros. {}", evaluacionFiltrosEntry);
+      log.debug("[procesarEntrySegunExistencia] - No cumple los filtros. {}",
+                evaluacionFiltrosEntry);
 
     }
   }
 
   /**
-   * Procesa un Entry que ya se que cumple con los filtros
-   * Analizo si existe en MapBaseDatos y dependiendo de si existe o no actúo de una forma u otra
+   * Procesa un Entry que ya se que cumple con los filtros Analizo si existe en MapBaseDatos y
+   * dependiendo de si existe o no actúo de una forma u otra
    *
    * @param entry Objeto entry que será procesado
    */
   private static void procesarEntrySegunExistencia(Entry entry) {
 
     // Compruebo si el Entry figura en el MAP
-    boolean isEntryInMapFromAtoms = VariablesGlobales.getMapEntriesFromAtoms().containsKey(entry.getIdEntry());
+    boolean isEntryInMapFromAtoms = VariablesGlobales.getMapEntriesFromAtoms().containsKey(
+        entry.getIdEntry());
 
     if (isEntryInMapFromAtoms) {
       // Si existe en el MAP
 
       // Obtengo
       Entry entryFromAtoms = VariablesGlobales.getMapEntriesFromAtoms().get(entry.getIdEntry());
-      log.debug("[procesarEntrySegunExistencia] - Datos del Entry: {}", entryFromAtoms.toStringResumido());
+      log.debug("[procesarEntrySegunExistencia] - Datos del Entry: {}",
+                entryFromAtoms.toStringResumido());
 
       // Como existe en el Map lo tengo que seguir procesando
       procesarUnEntryQueExisteEnMapFromAtoms(entry, entryFromAtoms);
@@ -184,9 +192,9 @@ public final class EntryHelper {
   }
 
   /**
-   * Procesado de un Entry que figura en el MapBd
-   * Comparo el valor del campo Updated asociado al Entry en Memoria y al Entry en la Base de Datos y
-   * me quedo con la versión más moderna del Entry
+   * Procesado de un Entry que figura en el MapBd Comparo el valor del campo Updated asociado al
+   * Entry en Memoria y al Entry en la Base de Datos y me quedo con la versión más moderna del
+   * Entry
    *
    * @param entry      Objeto Entry que se está procesando
    * @param entryEnMap Objeto Entry que figura en el Map
@@ -197,7 +205,8 @@ public final class EntryHelper {
     String motivo;
 
     //
-    boolean isEntryAnteriorAlEntryEnMapFromAtoms = entry.getUpdated().isBefore(entryEnMap.getUpdated());
+    boolean isEntryAnteriorAlEntryEnMapFromAtoms = entry.getUpdated().isBefore(
+        entryEnMap.getUpdated());
 
     if (isEntryAnteriorAlEntryEnMapFromAtoms) {
       // La fecha del Entry es ANTERIOR o IGUAL a la fecha del Entry que figura en el MapFromAtoms

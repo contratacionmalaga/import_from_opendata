@@ -5,10 +5,9 @@ import local.jarios.entity.atom.Feed;
 import java.io.BufferedReader;
 
 /**
- * Interfaz genérica para definir la estructura común que deben implementar
- * las clases que proporcionan fuentes de datos tipo Feed.
- * Proporciona métodos para manejar enlaces iniciales, enlaces siguientes y
- * la apertura de streams para lectura.
+ * Interfaz genérica para definir la estructura común que deben implementar las clases que
+ * proporcionan fuentes de datos tipo Feed. Proporciona métodos para manejar enlaces iniciales,
+ * enlaces siguientes y la apertura de streams para lectura.
  *
  * @author Juan
  * @since 2024-06-04
@@ -33,8 +32,8 @@ public interface FeedSource {
   boolean isNextLinkValid(String link) throws Exception;
 
   /**
-   * Obtiene el enlace siguiente a partir del {@link Feed} actual para continuar
-   * la lectura o procesamiento.
+   * Obtiene el enlace siguiente a partir del {@link Feed} actual para continuar la lectura o
+   * procesamiento.
    *
    * @param feed objeto Feed con la información actual
    * @return enlace siguiente como {@code String}

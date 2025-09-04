@@ -12,22 +12,21 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Representa una solicitud adicional de publicación relacionada con
- * la importación de ficheros Excel desde Internet.
+ * Representa una solicitud adicional de publicación relacionada con la importación de ficheros
+ * Excel desde Internet.
  * <p>
- * Esta entidad persiste la información sobre la agencia solicitante,
- * la fecha y hora de envío, y su estado actual dentro del proceso
- * de publicación adicional.
+ * Esta entidad persiste la información sobre la agencia solicitante, la fecha y hora de envío, y su
+ * estado actual dentro del proceso de publicación adicional.
  * </p>
  * <p>
- * Hereda campos auditables comunes a todas las entidades que
- * implementan {@link Auditable}.
+ * Hereda campos auditables comunes a todas las entidades que implementan {@link Auditable}.
  * </p>
  *
  * @author Juan Antonio
@@ -35,6 +34,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "additional_publication_request")
 public class AdditionalPublicationRequest extends Auditable {
@@ -42,8 +42,7 @@ public class AdditionalPublicationRequest extends Auditable {
   /**
    * Identificador único universal (UUID) de la solicitud.
    * <p>
-   * Clave primaria, generado automáticamente.
-   * No se puede actualizar ni ser nulo.
+   * Clave primaria, generado automáticamente. No se puede actualizar ni ser nulo.
    * </p>
    */
   @Id
@@ -70,9 +69,9 @@ public class AdditionalPublicationRequest extends Auditable {
   /**
    * Estado actual de la solicitud.
    * <p>
-   * Relación muchos a uno con la entidad {@link AdditionalPublicationStatus}.
-   * La carga se realiza de forma perezosa (lazy) y con cascada completa (ALL).
-   * Al eliminar esta entidad, el estado asociado también será eliminado en cascada.
+   * Relación muchos a uno con la entidad {@link AdditionalPublicationStatus}. La carga se realiza
+   * de forma perezosa (lazy) y con cascada completa (ALL). Al eliminar esta entidad, el estado
+   * asociado también será eliminado en cascada.
    * </p>
    */
   @ManyToOne(
@@ -89,21 +88,10 @@ public class AdditionalPublicationRequest extends Auditable {
   private AdditionalPublicationStatus additionalPublicationStatus;
 
   /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public AdditionalPublicationRequest() {
-    // Constructor vacío requerido por JPA
-  }
-
-  /**
    * Representación textual de la entidad.
    * <p>
-   * Devuelve una cadena con los valores más relevantes para facilitar
-   * la depuración y el registro en logs.
+   * Devuelve una cadena con los valores más relevantes para facilitar la depuración y el registro
+   * en logs.
    * </p>
    *
    * @return Cadena con los campos {@code agencyId} y {@code sendDateTime}.

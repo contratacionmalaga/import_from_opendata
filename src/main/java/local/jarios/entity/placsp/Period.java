@@ -19,10 +19,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Description:
- * Author: juan
- * Date: 20/03/2025
- * Team:
+ * Description: Author: juan Date: 20/03/2025 Team:
  */
 
 @Setter

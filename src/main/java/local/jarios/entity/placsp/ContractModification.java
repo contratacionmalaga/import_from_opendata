@@ -14,18 +14,19 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * Entidad que representa una modificación contractual dentro del ciclo de vida
- * de un contrato público.
+ * Entidad que representa una modificación contractual dentro del ciclo de vida de un contrato
+ * público.
  * <p>
- * Una modificación de contrato puede afectar tanto a las condiciones económicas
- * como a las condiciones de duración, así como contener información adicional
- * sobre el contrato original y sus lotes.
+ * Una modificación de contrato puede afectar tanto a las condiciones económicas como a las
+ * condiciones de duración, así como contener información adicional sobre el contrato original y sus
+ * lotes.
  * </p>
  *
  * <p>
@@ -34,8 +35,8 @@ import java.util.UUID;
  * </p>
  *
  * <p>
- * Hereda de {@link Auditable}, por lo que incluye los metadatos de auditoría
- * (fecha de creación, última modificación, usuario, etc.).
+ * Hereda de {@link Auditable}, por lo que incluye los metadatos de auditoría (fecha de creación,
+ * última modificación, usuario, etc.).
  * </p>
  *
  * @author Juan
@@ -44,13 +45,14 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "contract_modification")
 public class ContractModification extends Auditable {
 
   /**
-   * Identificador único de la modificación contractual en formato UUID.
-   * Se genera automáticamente al persistir la entidad.
+   * Identificador único de la modificación contractual en formato UUID. Se genera automáticamente
+   * al persistir la entidad.
    */
   @Id
   @GeneratedValue(generator = "UUID")
@@ -59,8 +61,7 @@ public class ContractModification extends Auditable {
   /**
    * Identificador del contrato al que aplica la modificación.
    * <p>
-   * Campo obligatorio, limitado a
-   * {@link Constantes#TAMANO_MAXIMO_CAMPO_50} caracteres.
+   * Campo obligatorio, limitado a {@link Constantes#TAMANO_MAXIMO_CAMPO_50} caracteres.
    * </p>
    */
   @Column(name = "contract_id", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
@@ -68,8 +69,8 @@ public class ContractModification extends Auditable {
   /**
    * Identificador de la modificación del contrato.
    * <p>
-   * Un mismo contrato puede tener múltiples modificaciones,
-   * por lo que este campo permite diferenciarlas.
+   * Un mismo contrato puede tener múltiples modificaciones, por lo que este campo permite
+   * diferenciarlas.
    * </p>
    */
   @Column(name = "id_contract_modification", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
@@ -88,17 +89,25 @@ public class ContractModification extends Auditable {
   @Column(name = "note", columnDefinition = "TEXT")
   private String note;
   /**
-   * Identificador del lote afectado por la modificación contractual,
-   * en caso de que la licitación se realice por lotes.
+   * Identificador del lote afectado por la modificación contractual, en caso de que la licitación
+   * se realice por lotes.
    */
   @Column(name = "contract_modification_lot_id", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
   private String contractModificationLotId;
+
+  @Column(name = "contract_modification_reason_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String contractModificationReasonCode;
+
+  @Column(name = "contract_modification_justification", columnDefinition = "TEXT")
+  private String contractModificationJustification;
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   /**
-   * Estado del expediente de contratación al que está vinculada
-   * la modificación.
+   * Estado del expediente de contratación al que está vinculada la modificación.
    * <p>
-   * Relación muchos-a-uno con {@link ContractFolderStatus}.
-   * Incluye eliminación en cascada para mantener integridad.
+   * Relación muchos-a-uno con {@link ContractFolderStatus}. Incluye eliminación en cascada para
+   * mantener integridad.
    * </p>
    */
   @ManyToOne(
@@ -113,11 +122,14 @@ public class ContractModification extends Auditable {
               "FOREIGN KEY (contract_folder_status_id) " +
                   "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
   private ContractFolderStatus contractFolderStatus;
+  // =========================================================================
+  // RELACIONES HIJAS
+  // =========================================================================
   /**
    * Importe sin impuestos de la modificación.
    * <p>
-   * Puede ser positivo (incremento) o negativo (decremento).
-   * Relación uno-a-uno con {@link LegalMonetaryTotal}.
+   * Puede ser positivo (incremento) o negativo (decremento). Relación uno-a-uno con
+   * {@link LegalMonetaryTotal}.
    * </p>
    */
   @OneToOne(mappedBy = "contractModificationLegalMonetaryTotal", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -125,38 +137,31 @@ public class ContractModification extends Auditable {
   /**
    * Importe sin impuestos del contrato tras la modificación.
    * <p>
-   * Se calcula como el importe inicial más todas las modificaciones.
-   * Relación uno-a-uno con {@link LegalMonetaryTotal}.
+   * Se calcula como el importe inicial más todas las modificaciones. Relación uno-a-uno con
+   * {@link LegalMonetaryTotal}.
    * </p>
    */
   @OneToOne(mappedBy = "contractModificationFinalLegalMonetaryTotal", cascade = CascadeType.ALL, orphanRemoval = true)
   private LegalMonetaryTotal contractModificationFinalLegalMonetaryTotal;
   /**
-   * Duración final del contrato tras la modificación,
-   * expresada como una medida temporal.
-   * Relación uno-a-uno con {@link Measure}.
+   * Duración final del contrato tras la modificación, expresada como una medida temporal. Relación
+   * uno-a-uno con {@link Measure}.
    */
-  @OneToOne(mappedBy = "contractModification", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Measure finalDurationMeasure;
+  @OneToOne(mappedBy = "contractModificationFinalDurationMeasure", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Measure contractModificationFinalDurationMeasure;
 
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public ContractModification() {
-    // Constructor vacío requerido por JPA
-  }
+  @OneToOne(mappedBy = "contractModificationPartyIdentification", cascade = CascadeType.ALL, orphanRemoval = true)
+  private PartyIdentification contractModificationPartyIdentification;
 
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
   /**
-   * Devuelve una representación en cadena de la modificación contractual,
-   * mostrando los valores principales de sus atributos.
+   * Devuelve una representación en cadena de la modificación contractual, mostrando los valores
+   * principales de sus atributos.
    *
-   * @return cadena con los valores de {@code contractId},
-   * {@code issueDate}, {@code note}, {@code contractModificationLotId}
-   * y {@code idContractModification}.
+   * @return cadena con los valores de {@code contractId}, {@code issueDate}, {@code note},
+   * {@code contractModificationLotId} y {@code idContractModification}.
    */
   @Override
   public String toString() {

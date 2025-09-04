@@ -21,18 +21,17 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 /**
- * Entidad que representa una referencia documental adicional
- * asociada a una publicación adicional, incluyendo información
- * sobre fecha de emisión y tipo de documento.
+ * Entidad que representa una referencia documental adicional asociada a una publicación adicional,
+ * incluyendo información sobre fecha de emisión y tipo de documento.
  *
  * <p>Hereda campos auditables comunes (creación, modificación).</p>
  *
  * <p>Está asociada a un estado de publicación adicional y puede tener un
- * {@link Attachment} relacionado, que se sincroniza mediante cascada y
- * eliminación en órfano.</p>
+ * {@link Attachment} relacionado, que se sincroniza mediante cascada y eliminación en órfano.</p>
  *
- * @author Juan Antonio
- * @since 04/06/2024
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Setter
 @Getter
@@ -56,8 +55,8 @@ public class AdditionalPublicationDocumentReference extends Auditable {
   private LocalDate issueDate;
 
   /**
-   * Código que identifica el tipo de documento.
-   * Longitud máxima definida en {@link Constantes#TAMANO_MAXIMO_CAMPO_50}.
+   * Código que identifica el tipo de documento. Longitud máxima definida en
+   * {@link Constantes#TAMANO_MAXIMO_CAMPO_50}.
    */
   @Column(name = "document_type_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
   private String documentTypeCode;
@@ -91,8 +90,8 @@ public class AdditionalPublicationDocumentReference extends Auditable {
   private Attachment attachment;
 
   /**
-   * Representación en texto de la referencia documental adicional,
-   * mostrando fecha de emisión y código de tipo de documento.
+   * Representación en texto de la referencia documental adicional, mostrando fecha de emisión y
+   * código de tipo de documento.
    *
    * @return cadena con resumen de propiedades relevantes
    */

@@ -9,13 +9,14 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Clase singleton que mantiene una única instancia de {@link SessionFactory} por {@link TipoConexion}.
- * Asegura que las SessionFactory no se creen más de una vez.
+ * Clase singleton que mantiene una única instancia de {@link SessionFactory} por
+ * {@link TipoConexion}. Asegura que las SessionFactory no se creen más de una vez.
  */
 @Slf4j
 public final class SessionFactoryRegistry {
 
-  private static final Map<TipoConexion, SessionFactory> registry = new EnumMap<>(TipoConexion.class);
+  private static final Map<TipoConexion, SessionFactory> registry = new EnumMap<>(
+      TipoConexion.class);
   private static final Object lock = new Object();
 
   private SessionFactoryRegistry() {
@@ -32,13 +33,17 @@ public final class SessionFactoryRegistry {
   public static SessionFactory getSessionFactory(TipoConexion tipoConexion) throws MiSessionFactoryProvider {
     synchronized (lock) {
       if (!registry.containsKey(tipoConexion)) {
-        log.debug("[getSessionFactory] - El Map<TipoConexion, SessionFactory> no cotiene la conexión: {}", tipoConexion);
+        log.debug(
+            "[getSessionFactory] - El Map<TipoConexion, SessionFactory> no cotiene la conexión: {}",
+            tipoConexion);
 
         SessionFactory factory = new SessionFactoryProvider().getSessionFactory(tipoConexion);
         log.debug("[getSessionFactory] - Se ha generado la SessionFactory correctamente.}");
 
         registry.put(tipoConexion, factory);
-        log.debug("[getSessionFactory] - Asignada al Map<TipoConexion, SessionFactory> la conexión: {}", tipoConexion);
+        log.debug(
+            "[getSessionFactory] - Asignada al Map<TipoConexion, SessionFactory> la conexión: {}",
+            tipoConexion);
       }
       return registry.get(tipoConexion);
     }

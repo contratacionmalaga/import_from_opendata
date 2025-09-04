@@ -13,10 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio.
  */
 @Slf4j
 public final class MapperTendererQualificationRequest {
@@ -67,7 +64,8 @@ public final class MapperTendererQualificationRequest {
             TipoSolvencia.ECONOMICA);
 
     //
-    List<EvaluationCriteria> listEvaluationCriteria = new ArrayList<>(listTechnicalEvaluationcriteria);
+    List<EvaluationCriteria> listEvaluationCriteria = new ArrayList<>(
+        listTechnicalEvaluationcriteria);
     listEvaluationCriteria.addAll(listFinancialEvaluationcriteria);
     tendererQualificationRequest.setEvaluationCriteria(listEvaluationCriteria);
 

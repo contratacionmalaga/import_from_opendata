@@ -12,23 +12,23 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 /**
- * Entidad que representa las <b>condiciones especiales de ejecución de un contrato</b>
- * dentro de los {@link TenderingTerms}.
+ * Entidad que representa las <b>condiciones especiales de ejecución de un contrato</b> dentro de
+ * los {@link TenderingTerms}.
  * <p>
- * Se utilizan para indicar requisitos o condiciones adicionales
- * que el contratista debe cumplir durante la ejecución del contrato,
- * como cláusulas sociales, medioambientales u otros compromisos
+ * Se utilizan para indicar requisitos o condiciones adicionales que el contratista debe cumplir
+ * durante la ejecución del contrato, como cláusulas sociales, medioambientales u otros compromisos
  * específicos.
  * </p>
  *
  * <p>
- * Se almacena en la tabla <b>contract_execution_requirement</b> y hereda de
- * {@link Auditable}, incorporando trazabilidad de auditoría.
+ * Se almacena en la tabla <b>contract_execution_requirement</b> y hereda de {@link Auditable},
+ * incorporando trazabilidad de auditoría.
  * </p>
  *
  * <h2>Norma de referencia</h2>
@@ -45,13 +45,13 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "contract_execution_requirement")
 public class ContractExecutionRequirement extends Auditable {
 
   /**
-   * Identificador único de la condición especial de ejecución.
-   * Generado automáticamente como UUID.
+   * Identificador único de la condición especial de ejecución. Generado automáticamente como UUID.
    */
   @Id
   @GeneratedValue(generator = "UUID")
@@ -85,11 +85,11 @@ public class ContractExecutionRequirement extends Auditable {
   @Column(name = "name", columnDefinition = "TEXT")
   private String name;
   /**
-   * Relación con los términos de licitación ({@link TenderingTerms})
-   * a los que pertenece esta condición especial de ejecución.
+   * Relación con los términos de licitación ({@link TenderingTerms}) a los que pertenece esta
+   * condición especial de ejecución.
    * <p>
-   * Si se eliminan los términos de licitación, la condición también se elimina
-   * gracias a la política {@code ON DELETE CASCADE}.
+   * Si se eliminan los términos de licitación, la condición también se elimina gracias a la
+   * política {@code ON DELETE CASCADE}.
    * </p>
    */
   @ManyToOne(
@@ -108,17 +108,6 @@ public class ContractExecutionRequirement extends Auditable {
   // =========================================================================
   // RELACIONES CON ENTIDADES PADRES
   // =========================================================================
-
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public ContractExecutionRequirement() {
-    // Constructor vacío requerido por JPA
-  }
 
   // =========================================================================
   // MÉTODOS AUXILIARES

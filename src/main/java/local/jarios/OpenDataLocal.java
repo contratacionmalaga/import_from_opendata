@@ -9,10 +9,9 @@ import local.jarios.helpers.TipoSindicacionHelper;
 /**
  * Implementación concreta del proceso de importación de datos para fuentes locales.
  * <p>
- * Esta clase extiende {@link AbstractOpenData} y define el comportamiento específico
- * para la sindicación de datos desde fuentes locales. Sobrescribe los métodos necesarios
- * para identificar el tipo de sindicación, el lugar de importación, y cómo se parsean
- * los feeds.
+ * Esta clase extiende {@link AbstractOpenData} y define el comportamiento específico para la
+ * sindicación de datos desde fuentes locales. Sobrescribe los métodos necesarios para identificar
+ * el tipo de sindicación, el lugar de importación, y cómo se parsean los feeds.
  * </p>
  *
  * <p>
@@ -28,8 +27,8 @@ import local.jarios.helpers.TipoSindicacionHelper;
 public class OpenDataLocal extends AbstractOpenData {
 
   /**
-   * Punto de entrada para ejecutar el proceso completo de importación desde fuentes locales.
-   * Crea una instancia de esta clase y llama al método {@code procesar()} heredado.
+   * Punto de entrada para ejecutar el proceso completo de importación desde fuentes locales. Crea
+   * una instancia de esta clase y llama al método {@code procesar()} heredado.
    *
    * @param args argumentos de la línea de comandos (no se utilizan).
    */

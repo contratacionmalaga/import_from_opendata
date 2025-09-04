@@ -12,10 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperProcessJustification {
@@ -31,7 +28,7 @@ public final class MapperProcessJustification {
         .orElseGet(List::of) // evitar NPE si la lista es null
         .stream()
         .map(processJustificationType ->
-            getProcessJustification(tenderingProcess, processJustificationType))
+                 getProcessJustification(tenderingProcess, processJustificationType))
         .toList();
   }
 

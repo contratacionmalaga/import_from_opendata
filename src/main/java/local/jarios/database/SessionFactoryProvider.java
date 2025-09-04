@@ -16,8 +16,8 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
- * Clase encargada de construir una instancia de {@link SessionFactory}
- * utilizando propiedades externas y escaneo automático de entidades JPA.
+ * Clase encargada de construir una instancia de {@link SessionFactory} utilizando propiedades
+ * externas y escaneo automático de entidades JPA.
  */
 @Slf4j
 public class SessionFactoryProvider {
@@ -51,17 +51,21 @@ public class SessionFactoryProvider {
 
     try {
       final var hibernateProperties = getHibernateProperties(tipoConexion);
-      log.debug("[getSessionFactory] - Propiedades Hibernate obtenidas correctamente para tipo de conexión: {}. {}", tipoConexion, hibernateProperties);
+      log.debug(
+          "[getSessionFactory] - Propiedades Hibernate obtenidas correctamente para tipo de conexión: {}. {}",
+          tipoConexion, hibernateProperties);
 
       final var hibernateConfigurer = new HibernateConfigurer();
-      final Configuration configuration = hibernateConfigurer.buildConfiguration(hibernateProperties);
+      final Configuration configuration = hibernateConfigurer.buildConfiguration(
+          hibernateProperties);
       log.debug("[getSessionFactory] - Objeto Configuration obtenido correctamente.");
 
       if (tipoConexion == TipoConexion.MARIADB) {
         log.debug("[getSessionFactory] - El tipo de conexión es MariaDB.");
         final var entityScanner = new EntityScanner();
         entityScanner.scanAndAddEntities(configuration, CONFIG_PACKAGE_NAME);
-        log.debug("[getSessionFactory] - Entidades escaneadas desde el paquete '{}'", CONFIG_PACKAGE_NAME);
+        log.debug("[getSessionFactory] - Entidades escaneadas desde el paquete '{}'",
+                  CONFIG_PACKAGE_NAME);
       }
 
       final var sessionFactory = configuration.buildSessionFactory();
@@ -69,7 +73,8 @@ public class SessionFactoryProvider {
       return sessionFactory;
 
     } catch (HibernateException | IllegalArgumentException ex) {
-      final var msg = String.format("[getSessionFactory] - Error creando SessionFactory: %s", ex.getMessage());
+      final var msg = String.format("[getSessionFactory] - Error creando SessionFactory: %s",
+                                    ex.getMessage());
       log.error(msg, ex);
       throw new MiSessionFactoryProvider(msg, ex);
     }
@@ -111,14 +116,19 @@ public class SessionFactoryProvider {
    */
   private void setCommonConnectionProperties(Properties props, String file) {
     props.setProperty(JdbcSettings.JAKARTA_JDBC_URL,
-        propertyManager.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
+                      propertyManager.getProperty(file,
+                                                  PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
     props.setProperty(JdbcSettings.JAKARTA_JDBC_DRIVER,
-        propertyManager.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_DRIVER));
+                      propertyManager.getProperty(file,
+                                                  PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_DRIVER));
     props.setProperty(JdbcSettings.JAKARTA_JDBC_USER,
-        propertyManager.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_USER));
+                      propertyManager.getProperty(file,
+                                                  PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_USER));
     props.setProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD,
-        propertyManager.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
+                      propertyManager.getProperty(file,
+                                                  PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
 
-    log.debug("[setCommonConnectionProperties] Propiedades configuradas desde archivo '{}': {}", file, props);
+    log.debug("[setCommonConnectionProperties] Propiedades configuradas desde archivo '{}': {}",
+              file, props);
   }
 }

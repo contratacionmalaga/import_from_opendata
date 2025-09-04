@@ -12,16 +12,17 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 /**
- * Representa una categoría de clasificación utilizada para definir requisitos de participación
- * en un proceso de licitación.
+ * Representa una categoría de clasificación utilizada para definir requisitos de participación en
+ * un proceso de licitación.
  * <p>
- * Esta entidad corresponde a capacidades requeridas a los licitadores, que pueden aplicarse
- * tanto a nivel de lote como para toda la licitación.
+ * Esta entidad corresponde a capacidades requeridas a los licitadores, que pueden aplicarse tanto a
+ * nivel de lote como para toda la licitación.
  * </p>
  *
  * <p>
@@ -35,6 +36,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "classification_category")
 public class ClassificationCategory extends Auditable {
@@ -42,8 +44,7 @@ public class ClassificationCategory extends Auditable {
   /**
    * Identificador único universal (UUID) de la categoría de clasificación.
    * <p>
-   * Clave primaria generada automáticamente.
-   * No puede ser actualizada ni ser nula.
+   * Clave primaria generada automáticamente. No puede ser actualizada ni ser nula.
    * </p>
    */
   @Id
@@ -58,8 +59,8 @@ public class ClassificationCategory extends Auditable {
   /**
    * Esquema de clasificación al que pertenece esta categoría.
    * <p>
-   * Relación muchos a uno con la entidad {@link ClassificationScheme}.
-   * La eliminación en cascada está configurada en la clave foránea.
+   * Relación muchos a uno con la entidad {@link ClassificationScheme}. La eliminación en cascada
+   * está configurada en la clave foránea.
    * </p>
    */
   @ManyToOne(
@@ -74,17 +75,6 @@ public class ClassificationCategory extends Auditable {
               "FOREIGN KEY (classification_scheme_id) " +
                   "REFERENCES classification_scheme(id) ON DELETE CASCADE"))
   private ClassificationScheme classificationScheme;
-
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public ClassificationCategory() {
-    // Constructor vacío requerido por JPA
-  }
 
   @Override
   public String toString() {

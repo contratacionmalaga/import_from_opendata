@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -19,13 +20,13 @@ import java.util.UUID;
 /**
  * Entidad que representa un país dentro del sistema.
  * <p>
- * La clase modela los datos básicos de un país (código de identificación y nombre),
- * así como su relación con una dirección asociada.
+ * La clase modela los datos básicos de un país (código de identificación y nombre), así como su
+ * relación con una dirección asociada.
  * </p>
  *
  * <p>
- * Hereda de {@link Auditable}, lo que permite registrar información de auditoría
- * como fecha de creación, última modificación y usuario responsable.
+ * Hereda de {@link Auditable}, lo que permite registrar información de auditoría como fecha de
+ * creación, última modificación y usuario responsable.
  * </p>
  *
  * <p>
@@ -39,13 +40,14 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "country")
 public class Country extends Auditable {
 
   /**
-   * Identificador único de la entidad en formato UUID.
-   * Se genera automáticamente al persistir la entidad en la base de datos.
+   * Identificador único de la entidad en formato UUID. Se genera automáticamente al persistir la
+   * entidad en la base de datos.
    */
   @Id
   @GeneratedValue(generator = "UUID")
@@ -70,9 +72,8 @@ public class Country extends Auditable {
   /**
    * Relación uno a uno con la entidad {@link Address}.
    * <p>
-   * Permite asociar el país a una dirección concreta.
-   * Esta relación está definida con eliminación en cascada
-   * para mantener la integridad referencial.
+   * Permite asociar el país a una dirección concreta. Esta relación está definida con eliminación
+   * en cascada para mantener la integridad referencial.
    * </p>
    */
   @OneToOne(
@@ -86,20 +87,12 @@ public class Country extends Auditable {
           foreignKeyDefinition = "FOREIGN KEY (address_id) REFERENCES address(id) ON DELETE CASCADE"))
   private Address address;
 
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public Country() {
-    // Constructor vacío requerido por JPA
-  }
 
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
   /**
-   * Devuelve una representación en cadena del objeto con los
-   * valores principales de la entidad.
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
    *
    * @return cadena con los valores de {@code identificationCode} y {@code name}.
    */

@@ -26,10 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio.
  */
 @Slf4j
 public final class MapperNoticeInfo {
@@ -74,7 +71,7 @@ public final class MapperNoticeInfo {
                 noticeInfo,
                 Optional
                     .ofNullable(noticeInfoType
-                        .getAdditionalPublicationStatus())
+                                    .getAdditionalPublicationStatus())
                     .orElse(Collections.emptyList())));
 
     return noticeInfo;
@@ -122,7 +119,7 @@ public final class MapperNoticeInfo {
             additionalPublicationStatus,
             Optional
                 .ofNullable(additionalPublicationStatusType
-                    .getAdditionalPublicationDocumentReference())
+                                .getAdditionalPublicationDocumentReference())
                 .orElse(Collections.emptyList())));
 
     return additionalPublicationStatus;
@@ -218,7 +215,7 @@ public final class MapperNoticeInfo {
     Optional.ofNullable(additionalPublicationDocumentReferenceType.getAttachment())
         .map(att -> MapperAttachment
             .getAttachmentFromType(
-            null,
+                null,
                 additionalPublicationDocumentReference,
                 null,
                 att))

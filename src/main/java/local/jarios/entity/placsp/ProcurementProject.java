@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Description: Importaciones de Ficheros Excel desde Internet
- * Author: Juan Antonio
- * Date: 04/06/2024
+ * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
  * Team: Juan Antonio
  */
 @Setter
@@ -59,9 +57,9 @@ public class ProcurementProject extends Auditable {
   @Column(name = "mix_contract_indicator")
   private Boolean mixContractIndicator;
 
-  //
-  // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-  //
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   @OneToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -98,9 +96,9 @@ public class ProcurementProject extends Auditable {
                   "REFERENCES procurement_project_lot(id) ON DELETE CASCADE"))
   private ProcurementProjectLot procurementProjectLot;
 
-  //
-  // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-  //
+  // =========================================================================
+  // RELACIONES HIJAS
+  // =========================================================================
   @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.ALL, orphanRemoval = true)
   private BudgetAmount budgetAmount;
 
@@ -116,6 +114,15 @@ public class ProcurementProject extends Auditable {
   @OneToOne(mappedBy = "procurementProject", cascade = CascadeType.ALL, orphanRemoval = true)
   private ContractExtension contractExtension;
 
+  // =========================================================================
+  // MÉTODOS AUXILIARES
+  // =========================================================================
+  /**
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
+   *
+   * @return cadena con los valores de {@code name}, {@code description}, {@code typeCode},
+   *        {@code subtypeCode}, {@code mixContractIndicator}.
+   */
   @Override
   public String toString() {
 

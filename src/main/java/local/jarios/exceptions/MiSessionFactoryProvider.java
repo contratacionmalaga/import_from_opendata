@@ -9,8 +9,8 @@ package local.jarios.exceptions;
 public class MiSessionFactoryProvider extends RuntimeException {
 
   /**
-   * Constructor que crea una excepción {@code MiServiceException} con un mensaje
-   * y una causa especificada.
+   * Constructor que crea una excepción {@code MiServiceException} con un mensaje y una causa
+   * especificada.
    *
    * @param message Mensaje descriptivo del error ocurrido.
    * @param cause   Causa original que produjo esta excepción.
@@ -20,8 +20,8 @@ public class MiSessionFactoryProvider extends RuntimeException {
   }
 
   /**
-   * Constructor que crea una excepción {@code MiServiceException} con solo un mensaje
-   * descriptivo del error ocurrido.
+   * Constructor que crea una excepción {@code MiServiceException} con solo un mensaje descriptivo
+   * del error ocurrido.
    *
    * @param message Mensaje descriptivo del error.
    */

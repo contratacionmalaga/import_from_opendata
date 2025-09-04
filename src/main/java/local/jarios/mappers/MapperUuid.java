@@ -8,23 +8,18 @@ import org.dgpe.codice.common.cbclib.UUIDType;
 import java.util.List;
 
 /**
- * Clase utilitaria para mapear una lista de objetos {@link UUIDType}
- * a una lista de entidades {@link Uuid}.
- * <p>
- * Esta clase proporciona un método estático que crea una lista de objetos
- * {@link Uuid} asociados a una entidad {@link ContractFolderStatus}.
- * </p>
- * <p>
- * Cada objeto {@link UUIDType} se transforma en un objeto {@link Uuid} copiando
- * su valor y el esquema de nombre.
- * </p>
- * <p>
- * La clase es estática y no instanciable.
- * </p>
+ * Clase utilitaria para mapear una lista de objetos {@link UUIDType} a una lista de entidades
+ * {@link Uuid}.
  *
- * <p><b>Autor:</b> Juan Antonio</p>
- * <p><b>Fecha:</b> 11/04/2024</p>
- * <p><b>Equipo:</b> Juan Antonio</p>
+ * <p>Esta clase proporciona un método estático que crea una lista de objetos {@link Uuid} asociados a
+ * una entidad {@link ContractFolderStatus}.
+ * Cada objeto {@link UUIDType} se transforma en un objeto {@link Uuid} copiando su valor y el
+ * esquema de nombre.
+ * La clase es estática y no instanciable.</p>
+ *
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperUuid {
@@ -33,8 +28,8 @@ public final class MapperUuid {
   }
 
   /**
-   * Convierte una lista de {@link UUIDType} en una lista de {@link Uuid},
-   * asociando cada instancia al {@link ContractFolderStatus} proporcionado.
+   * Convierte una lista de {@link UUIDType} en una lista de {@link Uuid}, asociando cada instancia
+   * al {@link ContractFolderStatus} proporcionado.
    *
    * @param contractFolderStatus entidad padre a la que se asocian los UUIDs.
    * @param listUuidType         lista de objetos {@link UUIDType} a convertir.

@@ -22,10 +22,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperStringFromList {
@@ -111,7 +108,8 @@ public final class MapperStringFromList {
 
   public static String getStringFromListLotsCombinationContractingAuthorityRightsType(List<LotsCombinationContractingAuthorityRightsType> list) {
 
-    return list.isEmpty() ? "" : joinValues(list, LotsCombinationContractingAuthorityRightsType::getValue);
+    return list.isEmpty() ? "" : joinValues(list,
+                                            LotsCombinationContractingAuthorityRightsType::getValue);
   }
 
   public static String getStringFromListPersonalSituationType(List<PersonalSituationType> list) {

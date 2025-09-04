@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperProcurementProjectLot {
@@ -29,7 +26,8 @@ public final class MapperProcurementProjectLot {
     //
     return Optional.ofNullable(listProcurementProjectLotType)
         .map(list -> list.stream()
-            .map(procurementProjectLotType -> getProcurementProjectLotFromType(contractFolderStatus, procurementProjectLotType))
+            .map(procurementProjectLotType -> getProcurementProjectLotFromType(contractFolderStatus,
+                                                                               procurementProjectLotType))
             .toList())
         .orElseGet(List::of);
   }
@@ -43,8 +41,10 @@ public final class MapperProcurementProjectLot {
     procurementProjectLot.setContractFolderStatus(contractFolderStatus);
 
     Optional.ofNullable(procurementProjectLotType.getID()).ifPresent(id ->
-        procurementProjectLot.setIdLote(
-            ComunHelper.limitarRegistro(id.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
+                                                                         procurementProjectLot.setIdLote(
+                                                                             ComunHelper.limitarRegistro(
+                                                                                 id.getValue(),
+                                                                                 Constantes.TAMANO_MAXIMO_CAMPO_50))
     );
 
     procurementProjectLot.setProcurementProject(
@@ -52,9 +52,11 @@ public final class MapperProcurementProjectLot {
             null, null, procurementProjectLot, procurementProjectLotType.getProcurementProject()));
 
     Optional.ofNullable(procurementProjectLotType.getTenderingTerms()).ifPresent(tenderingTerms ->
-        procurementProjectLot.setTenderingTerms(
-            MapperTenderingTerms.getTenderingTermsFromType(
-                null, procurementProjectLot, tenderingTerms))
+                                                                                     procurementProjectLot.setTenderingTerms(
+                                                                                         MapperTenderingTerms.getTenderingTermsFromType(
+                                                                                             null,
+                                                                                             procurementProjectLot,
+                                                                                             tenderingTerms))
     );
 
     return procurementProjectLot;

@@ -10,14 +10,14 @@ import org.dgpe.codice.common.caclib.CountryType;
 import java.util.Optional;
 
 /**
- * Mapper para convertir objetos {@link CountryType} del modelo Codice
- * a la entidad interna {@link Country} usada en el proyecto.
+ * Mapper para convertir objetos {@link CountryType} del modelo Codice a la entidad interna
+ * {@link Country} usada en el proyecto.
  * <p>
- * Proporciona métodos para transformar datos de país asociados a una dirección
- * en objetos persistibles.
+ * Proporciona métodos para transformar datos de país asociados a una dirección en objetos
+ * persistibles.
  * <p>
- * Se aplican límites de tamaño a los campos para garantizar la compatibilidad
- * con la base de datos y evitar errores por datos demasiado largos.
+ * Se aplican límites de tamaño a los campos para garantizar la compatibilidad con la base de datos
+ * y evitar errores por datos demasiado largos.
  *
  * <p><b>Autor:</b> Juan Antonio</p>
  * <p><b>Fecha:</b> 06/07/2024</p>
@@ -31,8 +31,8 @@ public final class MapperCountry {
   }
 
   /**
-   * Convierte un objeto {@link CountryType} en una entidad {@link Country}
-   * vinculada a una {@link Address} dada.
+   * Convierte un objeto {@link CountryType} en una entidad {@link Country} vinculada a una
+   * {@link Address} dada.
    *
    * @param address     Entidad {@link Address} a la que se asocia el país.
    * @param countryType Objeto {@link CountryType} que contiene los datos del país.
@@ -43,11 +43,13 @@ public final class MapperCountry {
     country.setAddress(address);
 
     Optional.ofNullable(countryType.getName())
-        .map(name -> ComunHelper.limitarRegistro(name.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_500))
+        .map(name -> ComunHelper.limitarRegistro(name.getValue(),
+                                                 Constantes.TAMANO_MAXIMO_CAMPO_500))
         .ifPresent(country::setName);
 
     Optional.ofNullable(countryType.getIdentificationCode())
-        .map(code -> ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
+        .map(
+            code -> ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
         .ifPresent(country::setIdentificationCode);
 
     return country;

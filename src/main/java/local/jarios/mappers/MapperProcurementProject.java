@@ -14,10 +14,7 @@ import org.dgpe.codice.common.caclib.ProcurementProjectType;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperProcurementProject {
@@ -48,23 +45,26 @@ public final class MapperProcurementProject {
               MapperStringFromList.getStringFromListDescriptionType(ppt.getDescription())));
 
       Optional.ofNullable(ppt.getTypeCode()).ifPresent(typeCode ->
-          procurementProject.setTypeCode(
-              ComunHelper.limitarRegistro(
-                  typeCode.getValue(),
-                  Constantes.TAMANO_MAXIMO_CAMPO_50)));
+                                                           procurementProject.setTypeCode(
+                                                               ComunHelper.limitarRegistro(
+                                                                   typeCode.getValue(),
+                                                                   Constantes.TAMANO_MAXIMO_CAMPO_50)));
 
       Optional.ofNullable(ppt.getSubTypeCode()).ifPresent(subTypeCode ->
-          procurementProject.setSubtypeCode(
-              ComunHelper.limitarRegistro(
-                  subTypeCode.getValue(),
-                  Constantes.TAMANO_MAXIMO_CAMPO_50)));
+                                                              procurementProject.setSubtypeCode(
+                                                                  ComunHelper.limitarRegistro(
+                                                                      subTypeCode.getValue(),
+                                                                      Constantes.TAMANO_MAXIMO_CAMPO_50)));
 
       Optional.ofNullable(ppt.getMixContractIndicator()).ifPresent(mixContractIndicator ->
-          procurementProject.setMixContractIndicator(mixContractIndicator.isValue()));
+                                                                       procurementProject.setMixContractIndicator(
+                                                                           mixContractIndicator.isValue()));
 
       Optional.ofNullable(ppt.getBudgetAmount()).ifPresent(budgetAmount ->
-          procurementProject.setBudgetAmount(
-              MapperBudgetAmount.getBudgetAmount(procurementProject, budgetAmount)));
+                                                               procurementProject.setBudgetAmount(
+                                                                   MapperBudgetAmount.getBudgetAmount(
+                                                                       procurementProject,
+                                                                       budgetAmount)));
 
       procurementProject.setRequiredCommodityClassification(
           MapperCommodityClassification.getListCommodityClassification(
@@ -72,16 +72,23 @@ public final class MapperProcurementProject {
               ppt.getRequiredCommodityClassification()));
 
       Optional.ofNullable(ppt.getRealizedLocation()).ifPresent(realizedLocation ->
-          procurementProject.setRealizedLocation(
-              MapperLocation.getLocation(procurementProject, null, null, realizedLocation)));
+                                                                   procurementProject.setRealizedLocation(
+                                                                       MapperLocation.getLocation(
+                                                                           procurementProject, null,
+                                                                           null,
+                                                                           realizedLocation)));
 
       Optional.ofNullable(ppt.getPlannedPeriod()).ifPresent(plannedPeriod ->
-          procurementProject.setPlannedPeriod(
-              MapperPeriod.getPeriod(procurementProject, null, null, plannedPeriod)));
+                                                                procurementProject.setPlannedPeriod(
+                                                                    MapperPeriod.getPeriod(
+                                                                        procurementProject, null,
+                                                                        null, plannedPeriod)));
 
       Optional.ofNullable(ppt.getContractExtension()).ifPresent(contractExtension ->
-          procurementProject.setContractExtension(
-              MapperContractExtension.getContractExtension(procurementProject, contractExtension)));
+                                                                    procurementProject.setContractExtension(
+                                                                        MapperContractExtension.getContractExtension(
+                                                                            procurementProject,
+                                                                            contractExtension)));
 
     });
 

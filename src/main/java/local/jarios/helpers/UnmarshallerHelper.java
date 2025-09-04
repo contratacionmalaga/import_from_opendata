@@ -12,8 +12,8 @@ import javax.xml.bind.Unmarshaller;
  * <h2>Helper para crear y obtener instancias de {@link Unmarshaller}</h2>
  *
  * <p>Esta clase se encarga de centralizar la lógica necesaria para la creación
- * de un {@link JAXBContext} y, a partir de este, un {@link Unmarshaller}.
- * Se utiliza un patrón Singleton implícito para evitar recrear el contexto en cada invocación.</p>
+ * de un {@link JAXBContext} y, a partir de este, un {@link Unmarshaller}. Se utiliza un patrón
+ * Singleton implícito para evitar recrear el contexto en cada invocación.</p>
  *
  * <p><b>Características principales:</b></p>
  * <ul>
@@ -28,8 +28,8 @@ import javax.xml.bind.Unmarshaller;
 public final class UnmarshallerHelper {
 
   /**
-   * Constructor privado para evitar instanciación.
-   * Esta clase es utilitaria y solo expone métodos estáticos.
+   * Constructor privado para evitar instanciación. Esta clase es utilitaria y solo expone métodos
+   * estáticos.
    */
   private UnmarshallerHelper() {
     /* Constructor vacío para evitar instanciación */
@@ -38,9 +38,10 @@ public final class UnmarshallerHelper {
   /**
    * Obtiene un {@link JAXBContext} configurado para las entidades de Feed.
    *
-   * <p>Este método concatena todos los contextos de paquetes necesarios definidos en {@link Constantes}.
-   * Si ocurre un error durante la creación del contexto, lo captura, lo registra en logs y lo encapsula
-   * en una {@link MiUnmarshallerException}.</p>
+   * <p>Este método concatena todos los contextos de paquetes necesarios definidos en
+   * {@link Constantes}.
+   * Si ocurre un error durante la creación del contexto, lo captura, lo registra en logs y lo
+   * encapsula en una {@link MiUnmarshallerException}.</p>
    *
    * @return Un objeto {@link JAXBContext} configurado con los paquetes requeridos.
    * @throws MiUnmarshallerException si ocurre un error al crear la instancia del contexto.
@@ -48,12 +49,12 @@ public final class UnmarshallerHelper {
   private static JAXBContext getJAXBContext() throws MiUnmarshallerException {
     try {
       var contextPath = String.join(":",
-          Constantes.JAXB_ATOM,
-          Constantes.JAXB_ORG_DGPE_CODICE_COMMON_CACLIB,
-          Constantes.JAXB_ORG_DGPE_CODICE_COMMON_CBCLIB,
-          Constantes.JAXB_EXT_PLACE_CODICE_COMMON_CACLIB,
-          Constantes.JAXB_EXT_PLACE_CODICE_COMMON_CBCLIB,
-          Constantes.JAXB_TOMBSTONES);
+                                    Constantes.JAXB_ATOM,
+                                    Constantes.JAXB_ORG_DGPE_CODICE_COMMON_CACLIB,
+                                    Constantes.JAXB_ORG_DGPE_CODICE_COMMON_CBCLIB,
+                                    Constantes.JAXB_EXT_PLACE_CODICE_COMMON_CACLIB,
+                                    Constantes.JAXB_EXT_PLACE_CODICE_COMMON_CBCLIB,
+                                    Constantes.JAXB_TOMBSTONES);
 
       return JAXBContext.newInstance(contextPath);
     } catch (JAXBException ex) {

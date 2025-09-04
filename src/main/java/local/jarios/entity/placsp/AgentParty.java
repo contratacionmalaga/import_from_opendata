@@ -13,21 +13,17 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 /**
  * Representa una entidad agente dentro del sistema, vinculada a una {@link Party}.
- * <p>
- * Contiene información relevante como la URI del sitio web y el nombre de la entidad.
- * </p>
- * <p>
+ *
+ * <p>Contiene información relevante como la URI del sitio web y el nombre de la entidad.
  * Esta clase hereda las propiedades de auditoría de {@link Auditable}.
- * </p>
- * <p>
- * Mantiene una relación uno a uno con {@link Party} y con {@link PartyIdentification}.
- * </p>
+ * Mantiene una relación uno a uno con {@link Party} y con {@link PartyIdentification}.</p>
  *
  * <p><b>Author:</b> Juan Antonio</p>
  * <p><b>Date:</b> 06/07/2024</p>
@@ -35,6 +31,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "agent_party")
 public class AgentParty extends Auditable {
@@ -42,8 +39,7 @@ public class AgentParty extends Auditable {
   /**
    * Identificador único universal (UUID) de la entidad agente.
    * <p>
-   * Clave primaria generada automáticamente.
-   * No puede ser actualizada ni ser nula.
+   * Clave primaria generada automáticamente. No puede ser actualizada ni ser nula.
    * </p>
    */
   @Id
@@ -66,11 +62,15 @@ public class AgentParty extends Auditable {
    */
   @Column(name = "party_name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String partyName;
+
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   /**
    * Entidad {@link Party} asociada a este agente.
    * <p>
-   * Relación uno a uno, carga perezosa, con cascada para todas las operaciones.
-   * La eliminación en cascada se asegura mediante la clave foránea.
+   * Relación uno a uno, carga perezosa, con cascada para todas las operaciones. La eliminación en
+   * cascada se asegura mediante la clave foránea.
    * </p>
    */
   @OneToOne(
@@ -83,6 +83,10 @@ public class AgentParty extends Auditable {
           name = "fk_agentparty_party",
           foreignKeyDefinition = "FOREIGN KEY (party_id) REFERENCES party(id) ON DELETE CASCADE"))
   private Party party;
+
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   /**
    * Entidad {@link PartyIdentification} dependiente de este agente.
    * <p>
@@ -93,22 +97,12 @@ public class AgentParty extends Auditable {
   @OneToOne(mappedBy = "agentParty", cascade = CascadeType.ALL, orphanRemoval = true)
   private PartyIdentification partyIdentification;
 
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public AgentParty() {
-    // Constructor vacío requerido por JPA
-  }
-
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
   /**
    * Representación textual del agente.
-   * <p>
-   * Incluye la URI del sitio web y el nombre del agente.
-   * </p>
+   * <p>Incluye la URI del sitio web y el nombre del agente.</p>
    *
    * @return Cadena representativa con los datos principales del agente.
    */

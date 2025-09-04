@@ -17,19 +17,19 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * Implementación del repositorio que gestiona la persistencia y
- * recuperación de datos mediante Hibernate {@link SessionFactory}.
+ * Implementación del repositorio que gestiona la persistencia y recuperación de datos mediante
+ * Hibernate {@link SessionFactory}.
  * <p>
- * Proporciona métodos para persistir logs, obtener entradas y feeds,
- * y ejecutar consultas específicas para filtros.
+ * Proporciona métodos para persistir logs, obtener entradas y feeds, y ejecutar consultas
+ * específicas para filtros.
  * </p>
  * <p>
- * Utiliza transacciones para garantizar la integridad y gestión adecuada
- * de las operaciones sobre la base de datos.
+ * Utiliza transacciones para garantizar la integridad y gestión adecuada de las operaciones sobre
+ * la base de datos.
  * </p>
  * <p>
- * Implementa {@link AutoCloseable} para liberar recursos cerrando
- * la {@link SessionFactory} cuando sea necesario.
+ * Implementa {@link AutoCloseable} para liberar recursos cerrando la {@link SessionFactory} cuando
+ * sea necesario.
  * </p>
  *
  * <p><b>Autor:</b> juan</p>
@@ -81,8 +81,8 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   }
 
   /**
-   * Ejecuta una función dentro de una transacción Hibernate, gestionando
-   * commit, rollback y manejo de excepciones.
+   * Ejecuta una función dentro de una transacción Hibernate, gestionando commit, rollback y manejo
+   * de excepciones.
    *
    * @param function función que recibe la sesión y retorna un resultado.
    * @param metodo   nombre del método para logs y excepciones.
@@ -108,8 +108,8 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   }
 
   /**
-   * Maneja el error ocurrido en una transacción, realiza rollback si es posible,
-   * y registra el error en logs.
+   * Maneja el error ocurrido en una transacción, realiza rollback si es posible, y registra el
+   * error en logs.
    *
    * @param metodo      nombre del método donde ocurrió el error.
    * @param transaction transacción actual.
@@ -128,8 +128,8 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   }
 
   /**
-   * Obtiene un mapa de entradas ({@link Entry}) a partir de una consulta HQL.
-   * La clave del mapa es el ID de la entrada.
+   * Obtiene un mapa de entradas ({@link Entry}) a partir de una consulta HQL. La clave del mapa es
+   * el ID de la entrada.
    *
    * @param sql consulta HQL a ejecutar.
    * @return mapa con claves de ID y valores {@link Entry}.
@@ -153,8 +153,8 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   }
 
   /**
-   * Ejecuta una consulta nativa SQL para obtener una lista de
-   * {@link OrganoContratacion} de acuerdo al filtro indicado.
+   * Ejecuta una consulta nativa SQL para obtener una lista de {@link OrganoContratacion} de acuerdo
+   * al filtro indicado.
    *
    * @param filtroSQL consulta SQL nativa que define el filtro.
    * @return lista de objetos {@link OrganoContratacion}.
@@ -164,8 +164,10 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   public List<OrganoContratacion> getListFiltroOcsFromFiltroSql(String filtroSQL)
       throws MiRepositoryException {
     List<OrganoContratacion> list = ejecutarDentroDeTransaccion(session ->
-            session.createNativeQuery(filtroSQL, OrganoContratacion.class).getResultList(),
-        "getListFiltroOcsFromFiltroSql");
+                                                                    session.createNativeQuery(
+                                                                        filtroSQL,
+                                                                        OrganoContratacion.class).getResultList(),
+                                                                "getListFiltroOcsFromFiltroSql");
 
     list.forEach(f -> log.info(f.toString()));
     return list;

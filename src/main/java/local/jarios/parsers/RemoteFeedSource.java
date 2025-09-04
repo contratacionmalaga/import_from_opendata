@@ -94,8 +94,8 @@ public class RemoteFeedSource implements FeedSource {
   /**
    * Valida si la URL para el siguiente enlace es válida.
    * <p>
-   * Esta implementación captura errores de validación y no lanza excepciones,
-   * devolviendo {@code false} si la URL no es válida.
+   * Esta implementación captura errores de validación y no lanza excepciones, devolviendo
+   * {@code false} si la URL no es válida.
    * </p>
    *
    * @param link URL a validar.

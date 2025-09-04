@@ -19,10 +19,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description:
- * Author: juan
- * Date: 20/03/2025
- * Team:
+ * Description: Author: juan Date: 20/03/2025 Team:
  */
 
 //  4.35.3 Importe de adjudicación

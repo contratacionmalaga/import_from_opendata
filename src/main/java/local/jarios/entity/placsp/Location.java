@@ -19,10 +19,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description:
- * Author: juan
- * Date: 20/03/2025
- * Team:
+ * Description: Author: juan Date: 20/03/2025 Team:
  */
 
 @Setter
@@ -34,10 +31,9 @@ import java.util.UUID;
 )
 public class Location extends Auditable {
 
-  //
+  // =========================================================================
   // PROPIEDADES DEL MODELO
-  //
-
+  // =========================================================================
   @Id
   @GeneratedValue(generator = "UUID")
   @Column(name = "id", updatable = false, nullable = false)
@@ -49,9 +45,12 @@ public class Location extends Auditable {
   @Column(name = "country_subentity_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
   private String countrySubentityCode;
 
-  //
-  // RELACIONES CON ENTIDADES PADRES DE LA QUE ESTA DEPENDE
-  //
+  @Column(name = "description", columnDefinition = "TEXT")
+  private String description;
+
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   @OneToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -88,12 +87,20 @@ public class Location extends Auditable {
                   "REFERENCES winning_party(id) ON DELETE CASCADE"))
   private WinningParty winningParty;
 
-  //
-  // RELACIONES CON ENTIDADES HIJAS DEPENDIENTE DE ESTA
-  //
+  // =========================================================================
+  // RELACIONES HIJAS
+  // =========================================================================
   @OneToOne(mappedBy = "location", cascade = CascadeType.ALL, orphanRemoval = true)
   private Address address;
 
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
+  /**
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
+   *
+   * @return cadena con los valores de {@code countrySubentity} y {@code countrySubentityCode}.
+   */
   @Override
   public String toString() {
 

@@ -14,13 +14,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Mapper para transformar objetos {@link AwardingCriteriaType} del modelo Codice
- * a entidades internas {@link AwardingCriteria}.
+ * Mapper para transformar objetos {@link AwardingCriteriaType} del modelo Codice a entidades
+ * internas {@link AwardingCriteria}.
  *
  * <p>Proporciona métodos para convertir listas de tipos Codice
  * a listas de entidades de dominio.</p>
  *
- * @author juan
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperAwardingCriteria {
@@ -30,10 +32,11 @@ public final class MapperAwardingCriteria {
   }
 
   /**
-   * Convierte una lista de objetos {@link AwardingCriteriaType} en
-   * una lista de entidades {@link AwardingCriteria}, asignadas al {@link AwardingTerms} dado.
+   * Convierte una lista de objetos {@link AwardingCriteriaType} en una lista de entidades
+   * {@link AwardingCriteria}, asignadas al {@link AwardingTerms} dado.
    *
-   * @param awardingTerms            Entidad padre {@link AwardingTerms} para asignar a cada {@link AwardingCriteria}
+   * @param awardingTerms            Entidad padre {@link AwardingTerms} para asignar a cada
+   *                                 {@link AwardingCriteria}
    * @param listAwardingCriteriaType Lista de objetos {@link AwardingCriteriaType} a transformar
    * @return Lista de entidades {@link AwardingCriteria} mapeadas
    */
@@ -50,7 +53,8 @@ public final class MapperAwardingCriteria {
   /**
    * Transforma un objeto {@link AwardingCriteriaType} en una entidad {@link AwardingCriteria}.
    *
-   * @param awardingTerms        Entidad padre {@link AwardingTerms} para asignar a la entidad resultado
+   * @param awardingTerms        Entidad padre {@link AwardingTerms} para asignar a la entidad
+   *                             resultado
    * @param awardingCriteriaType Objeto {@link AwardingCriteriaType} a transformar
    * @return Entidad {@link AwardingCriteria} resultante
    */

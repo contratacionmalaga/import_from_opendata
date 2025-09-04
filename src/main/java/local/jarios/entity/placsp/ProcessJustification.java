@@ -18,9 +18,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description: Importaciones de Ficheros Excel desde Internet
- * Author: Juan Antonio
- * Date: 04/06/2024
+ * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
  * Team: Juan Antonio
  */
 
@@ -50,6 +48,9 @@ public class ProcessJustification extends Auditable {
   @Column(name = "description", columnDefinition = "TEXT")
   private String description;
 
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   @ManyToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -63,6 +64,14 @@ public class ProcessJustification extends Auditable {
                   "REFERENCES tendering_process(id) ON DELETE CASCADE"))
   private TenderingProcess tenderingProcess;
 
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
+  /**
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
+   *
+   * @return cadena con los valores de {@code reasonCode} y {@code description}.
+   */
   @Override
   public String toString() {
 

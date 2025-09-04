@@ -19,10 +19,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Setter
 @Getter
@@ -35,8 +32,6 @@ import java.util.UUID;
 public class Party extends Auditable {
 
   //
-  //
-  //
   @Id
   @GeneratedValue(generator = "UUID")
   @Column(name = "id", updatable = false, nullable = false)
@@ -45,12 +40,15 @@ public class Party extends Auditable {
   @Column(name = "web_site_uri", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String webSiteUri;
 
-  @Column(name = "party_name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "endpoint_id", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  private String endpointId;
+
+  @Column(name = "party_name", columnDefinition = "TEXT")
   private String partyName;
 
-  //
-  //
-  //
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   @OneToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -64,9 +62,9 @@ public class Party extends Auditable {
                   "REFERENCES located_contracting_party(id) ON DELETE CASCADE"))
   private LocatedContractingParty locatedContractingParty;
 
-  //
-  //
-  //
+  // =========================================================================
+  // RELACIONES HIJAS
+  // =========================================================================
   @OneToOne(mappedBy = "party", cascade = CascadeType.ALL, orphanRemoval = true)
   private Address postalAddress;
 
@@ -87,6 +85,7 @@ public class Party extends Auditable {
 
     return "Party: " +
         "[webSiteUri='" + webSiteUri + "', " +
+        "endpointId='" + endpointId + "', " +
         "partyName='" + partyName + "']";
   }
 }

@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.ContractExtensionType;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio.
  */
 @Slf4j
 public final class MapperContractExtension {

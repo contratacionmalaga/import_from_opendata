@@ -16,23 +16,22 @@ import org.hibernate.SessionFactory;
 import java.util.Map;
 
 /**
- * Implementación principal del servicio que maneja operaciones sobre feeds, logs
- * y entidades relacionadas a sindicación.
- * <p>
- * Esta clase utiliza un repositorio para gestionar la persistencia y acceso a datos,
- * permitiendo operaciones CRUD y consultas específicas.
- * </p>
+ * Implementación principal del servicio que maneja operaciones sobre feeds, logs y entidades
+ * relacionadas a sindicación.
  *
- * <p><b>Autor:</b> juan</p>
- * <p><b>Fecha:</b> 28/12/2024</p>
- * <p><b>Equipo:</b> (vacío)</p>
+ * <p>Esta clase utiliza un repositorio para gestionar la persistencia y acceso a datos, permitiendo
+ * operaciones CRUD y consultas específicas.</p>
+ *
+ * Autor: juan
+ * Fecha: 28/12/2024
+ * Equipo: (vacío)
  */
 @Slf4j
 public class ServicePrincipalImpl implements ServicePrincipal {
 
   /**
-   * Instancia del repositorio para acceso y gestión de datos.
-   * Se utiliza para realizar operaciones CRUD sobre las entidades persistentes.
+   * Instancia del repositorio para acceso y gestión de datos. Se utiliza para realizar operaciones
+   * CRUD sobre las entidades persistentes.
    */
   private final Repository repository;
 
@@ -43,7 +42,8 @@ public class ServicePrincipalImpl implements ServicePrincipal {
    */
   public ServicePrincipalImpl() throws MiServiceException {
     try {
-      SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(TipoConexion.MARIADB);
+      SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(
+          TipoConexion.MARIADB);
       this.repository = new RepositoryImpl(sessionFactory);
     } catch (HibernateException ex) {
       String msg = "Error al obtener la SessionFactory para la conexión MARIADB";
@@ -64,19 +64,22 @@ public class ServicePrincipalImpl implements ServicePrincipal {
       // El repositorio se encarga de la persistencia y manejo de las transacciones
       repository.persistirEnBaseDatos(miLog);
     } catch (MiRepositoryException ex) {
-      String msg = String.format("[persistirLog] - Error persistiendo Log con ID %s: %s", miLog.getId(), ex.getMessage());
+      String msg = String.format("[persistirLog] - Error persistiendo Log con ID %s: %s",
+                                 miLog.getId(), ex.getMessage());
       log.error(msg, ex);
       throw new MiServiceException(msg, ex);
     } catch (RuntimeException ex) {
-      String msg = String.format("[persistirLog] - Error desconocido al persistir el Log con ID %s: %s", miLog.getId(), ex.getMessage());
+      String msg = String.format(
+          "[persistirLog] - Error desconocido al persistir el Log con ID %s: %s", miLog.getId(),
+          ex.getMessage());
       log.error(msg, ex);
       throw new MiServiceException(msg, ex);
     }
   }
 
   /**
-   * Obtiene un mapa de entradas (Entries) indexadas por un String,
-   * correspondientes a un tipo específico de sindicación.
+   * Obtiene un mapa de entradas (Entries) indexadas por un String, correspondientes a un tipo
+   * específico de sindicación.
    *
    * @return un mapa con las entradas encontradas.
    * @throws MiServiceException si ocurre un error en la consulta.
@@ -94,7 +97,8 @@ public class ServicePrincipalImpl implements ServicePrincipal {
     try {
       return repository.getMapEntries(sql);
     } catch (MiRepositoryException ex) {
-      String msg = String.format("[getListEntries] - Error en la consulta: %s. Error: %s", sql, ex.getMessage());
+      String msg = String.format("[getListEntries] - Error en la consulta: %s. Error: %s", sql,
+                                 ex.getMessage());
       log.error(msg, ex);
       throw new MiServiceException(msg, ex);
     }

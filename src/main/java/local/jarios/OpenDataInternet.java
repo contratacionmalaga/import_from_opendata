@@ -17,9 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Clase encargada de procesar y comparar entradas (Entry) obtenidas desde fuentes remotas (INTERNET)
- * con las almacenadas en base de datos, determinando cuáles deben insertarse o actualizarse.
- * Extiende {@link AbstractOpenData} para integrar el flujo común de procesamiento de sindicación.
+ * Clase encargada de procesar y comparar entradas (Entry) obtenidas desde fuentes remotas
+ * (INTERNET) con las almacenadas en base de datos, determinando cuáles deben insertarse o
+ * actualizarse. Extiende {@link AbstractOpenData} para integrar el flujo común de procesamiento de
+ * sindicación.
  *
  * @author Juan
  * @since 04/07/2025
@@ -29,8 +30,8 @@ public class OpenDataInternet extends AbstractOpenData {
 
 
   /**
-   * Mapa que contiene los {@link Entry} que deben ser insertados o actualizados en la base de datos.
-   * La clave es el campo idEntry (no UUID).
+   * Mapa que contiene los {@link Entry} que deben ser insertados o actualizados en la base de
+   * datos. La clave es el campo idEntry (no UUID).
    */
   @Getter
   private final Map<String, Entry> mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos = new HashMap<>();
@@ -61,9 +62,8 @@ public class OpenDataInternet extends AbstractOpenData {
   }
 
   /**
-   * Procesa los feeds obtenidos desde internet.
-   * 1. Almacena la información en VariablesGlobales.mapEntriesFromAtom (Map#String,Entry#)
-   * 2.
+   * Procesa los feeds obtenidos desde internet. 1. Almacena la información en
+   * VariablesGlobales.mapEntriesFromAtom (Map#String,Entry#) 2.
    *
    * @throws MiServiceException si hay errores al consultar datos de base de datos
    * @throws MiParseException   si hay errores al parsear feeds remotos
@@ -76,7 +76,8 @@ public class OpenDataInternet extends AbstractOpenData {
 
     // Recupero el Map con los Entries (que cumplen los filtros) obtenido desde ATOMS de INTERNET
     Map<String, Entry> mapEntriesFromAtoms = VariablesGlobales.getMapEntriesFromAtoms();
-    log.info("[parsearAtomsFeeds] - Entries que cumplen filtros obtenidos desde Atoms de  INTERNET: {}.",
+    log.info(
+        "[parsearAtomsFeeds] - Entries que cumplen filtros obtenidos desde Atoms de  INTERNET: {}.",
         mapEntriesFromAtoms.size());
     // mapEntriesFromAtoms.values().forEach(e -> log.info("[INTERNET] {}", e.toStringResumido()));
 
@@ -107,7 +108,8 @@ public class OpenDataInternet extends AbstractOpenData {
         LocalDateTime updatedEntryEnBaseDatos = entryEnBaseDatos.getUpdated();
 
         if (updatedEntryEnBaseDatos == null ||
-            (updatedEntryEnMemoria != null && updatedEntryEnMemoria.isAfter(updatedEntryEnBaseDatos))) {
+            (updatedEntryEnMemoria != null && updatedEntryEnMemoria.isAfter(
+                updatedEntryEnBaseDatos))) {
           // Actualización necesaria
 
           // Conservo el UUID puesto que tengo que realizar un MERGE

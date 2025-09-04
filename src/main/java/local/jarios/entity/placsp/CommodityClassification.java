@@ -12,19 +12,19 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
 
 /**
- * Description: Importaciones de Ficheros Excel desde Internet
- * Author: Juan Antonio
- * Date: 04/06/2024
+ * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
  * Team: Juan Antonio
  */
 
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(
     name = "commodity_classification"
@@ -55,17 +55,6 @@ public class CommodityClassification extends Auditable {
               "FOREIGN KEY (procurement_project_id) " +
                   "REFERENCES procurement_project(id) ON DELETE CASCADE"))
   private ProcurementProject procurementProject;
-
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public CommodityClassification() {
-    // Constructor vacío requerido por JPA
-  }
 
   @Override
   public String toString() {

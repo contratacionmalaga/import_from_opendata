@@ -14,10 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperEvaluationCriteria {
@@ -35,7 +32,8 @@ public final class MapperEvaluationCriteria {
 
     for (var evaluationCriteriaType : listEvaluationCriteriaType) {
       listEvaluationCriteria.add(
-          getEvaluationCriteria(tendererQualificationRequest, evaluationCriteriaType, tipoSolvencia));
+          getEvaluationCriteria(tendererQualificationRequest, evaluationCriteriaType,
+                                tipoSolvencia));
     }
 
     return listEvaluationCriteria;
@@ -62,7 +60,8 @@ public final class MapperEvaluationCriteria {
 
     evaluationCriteria.setDescription(
         StringHelper.eliminarCaracteres(
-            MapperStringFromList.getStringFromListDescriptionType(evaluationCriteriaType.getDescription())
+            MapperStringFromList.getStringFromListDescriptionType(
+                evaluationCriteriaType.getDescription())
         )
     );
 

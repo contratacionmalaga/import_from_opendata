@@ -8,10 +8,7 @@ import org.dgpe.codice.common.caclib.BudgetAmountType;
 import java.util.Optional;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio.
  */
 @Slf4j
 public final class MapperBudgetAmount {

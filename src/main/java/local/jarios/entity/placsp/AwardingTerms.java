@@ -13,6 +13,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -22,9 +23,9 @@ import java.util.UUID;
 /**
  * Representa los términos de adjudicación en un proceso de licitación.
  * <p>
- * Esta entidad agrupa los criterios de adjudicación necesarios para otorgar un contrato.
- * Puede estar asociada a términos de licitación específicos y contener una lista de criterios
- * detallados que definen cómo se adjudicará el contrato.
+ * Esta entidad agrupa los criterios de adjudicación necesarios para otorgar un contrato. Puede
+ * estar asociada a términos de licitación específicos y contener una lista de criterios detallados
+ * que definen cómo se adjudicará el contrato.
  * </p>
  *
  * <p>Relacionada con la entidad {@link TenderingTerms} que representa los términos generales
@@ -36,6 +37,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "awarding_terms")
 public class AwardingTerms extends Auditable {
@@ -43,8 +45,7 @@ public class AwardingTerms extends Auditable {
   /**
    * Identificador único universal (UUID) de los términos de adjudicación.
    * <p>
-   * Clave primaria generada automáticamente.
-   * No puede ser actualizada ni ser nula.
+   * Clave primaria generada automáticamente. No puede ser actualizada ni ser nula.
    * </p>
    */
   @Id
@@ -54,8 +55,8 @@ public class AwardingTerms extends Auditable {
   /**
    * Referencia a los términos de licitación asociados a estos términos de adjudicación.
    * <p>
-   * Relación uno a uno con la entidad {@link TenderingTerms}.
-   * La eliminación en cascada está definida en la clave foránea.
+   * Relación uno a uno con la entidad {@link TenderingTerms}. La eliminación en cascada está
+   * definida en la clave foránea.
    * </p>
    */
   @OneToOne(
@@ -71,23 +72,12 @@ public class AwardingTerms extends Auditable {
   /**
    * Lista de criterios de adjudicación asociados a estos términos.
    * <p>
-   * Relación uno a muchos con la entidad {@link AwardingCriteria}.
-   * Los elementos de la lista se eliminan en cascada y son removidos si no están asociados.
+   * Relación uno a muchos con la entidad {@link AwardingCriteria}. Los elementos de la lista se
+   * eliminan en cascada y son removidos si no están asociados.
    * </p>
    */
   @OneToMany(mappedBy = "awardingTerms", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<AwardingCriteria> listAwardingCriteria = new ArrayList<>();
-
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public AwardingTerms() {
-    // Constructor vacío requerido por JPA
-  }
 
   @Override
   public String toString() {

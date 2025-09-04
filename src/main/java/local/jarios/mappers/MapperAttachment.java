@@ -10,14 +10,16 @@ import org.dgpe.codice.common.caclib.AttachmentType;
 import java.util.Optional;
 
 /**
- * Mapper para transformar objetos {@link AttachmentType} del modelo Codice
- * a entidades internas {@link Attachment}.
+ * Mapper para transformar objetos {@link AttachmentType} del modelo Codice a entidades internas
+ * {@link Attachment}.
  *
  * <p>Permite construir una instancia de {@link Attachment} a partir
- * de los objetos {@link DocumentReference}, {@link AdditionalPublicationDocumentReference}
- * y el tipo {@link AttachmentType} proporcionado.</p>
+ * de los objetos {@link DocumentReference}, {@link AdditionalPublicationDocumentReference} y el
+ * tipo {@link AttachmentType} proporcionado.</p>
  *
- * @author juan
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperAttachment {
@@ -29,9 +31,12 @@ public final class MapperAttachment {
   /**
    * Construye un objeto {@link Attachment} a partir de los datos proporcionados.
    *
-   * @param documentReference                      Referencia al documento principal, puede ser null.
-   * @param additionalPublicationDocumentReference Referencia a publicación adicional, puede ser null.
-   * @param attachmentType                         Objeto {@link AttachmentType} fuente de datos para el mapeo.
+   * @param documentReference                      Referencia al documento principal, puede ser
+   *                                               null.
+   * @param additionalPublicationDocumentReference Referencia a publicación adicional, puede ser
+   *                                               null.
+   * @param attachmentType                         Objeto {@link AttachmentType} fuente de datos
+   *                                               para el mapeo.
    * @return Instancia de {@link Attachment} construida.
    */
   public static Attachment getAttachmentFromType(

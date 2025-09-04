@@ -18,10 +18,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description:
- * Author: juan
- * Date: 16/03/2025
- * Team:
+ * Description: Author: juan Date: 16/03/2025 Team:
  */
 @Setter
 @Getter

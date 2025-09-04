@@ -54,12 +54,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Clase abstracta que gestiona el procesamiento general para la importación y análisis
- * de datos OpenData basados en feeds ATOM, incluyendo carga de configuración,
- * parseo, persistencia y notificaciones.
+ * Clase abstracta que gestiona el procesamiento general para la importación y análisis de datos
+ * OpenData basados en feeds ATOM, incluyendo carga de configuración, parseo, persistencia y
+ * notificaciones.
  * <p>
- * Las subclases deben implementar métodos específicos para definir el tipo de sindicacion,
- * lugar de importación y la lógica de parseo de los feeds.
+ * Las subclases deben implementar métodos específicos para definir el tipo de sindicacion, lugar de
+ * importación y la lógica de parseo de los feeds.
  * </p>
  */
 @Slf4j
@@ -68,8 +68,9 @@ public abstract class AbstractOpenData {
   /**
    * Servicio de gestión de propiedades de configuración.
    * <p>
-   * Se obtiene como instancia singleton mediante {@link PropertiesManagerServiceImpl#getInstance()}.
-   * Permite cargar, acceder y gestionar propiedades definidas en ficheros externos.
+   * Se obtiene como instancia singleton mediante
+   * {@link PropertiesManagerServiceImpl#getInstance()}. Permite cargar, acceder y gestionar
+   * propiedades definidas en ficheros externos.
    * </p>
    */
   public static PropertiesManagerService propertiesManager = null;
@@ -77,8 +78,8 @@ public abstract class AbstractOpenData {
   /**
    * Nombre de la aplicación, cargado desde las propiedades externas.
    * <p>
-   * Se obtiene desde el fichero de configuración a través de {@code propertiesManager}
-   * utilizando la clave {@code Constantes.KEY_APP_NAME}.
+   * Se obtiene desde el fichero de configuración a través de {@code propertiesManager} utilizando
+   * la clave {@code Constantes.KEY_APP_NAME}.
    * </p>
    */
   public static String appName = null;
@@ -86,8 +87,8 @@ public abstract class AbstractOpenData {
   /**
    * Versión de la aplicación en ejecución.
    * <p>
-   * Se determina mediante el componente {@link local.jarios.version.api.Version}
-   * que analiza los metadatos del JAR en ejecución.
+   * Se determina mediante el componente {@link local.jarios.version.api.Version} que analiza los
+   * metadatos del JAR en ejecución.
    * </p>
    */
   public static String appVersion = null;
@@ -95,9 +96,9 @@ public abstract class AbstractOpenData {
   /**
    * Maneja de forma centralizada las excepciones que ocurren durante la ejecución del programa.
    * <p>
-   * Este método registra el mensaje de error proporcionado, imprime el stack trace del error
-   * con sangría personalizada, intenta enviar un email con el detalle del error,
-   * y finaliza el programa indicando un error en la ejecución.
+   * Este método registra el mensaje de error proporcionado, imprime el stack trace del error con
+   * sangría personalizada, intenta enviar un email con el detalle del error, y finaliza el programa
+   * indicando un error en la ejecución.
    * </p>
    *
    * @param ex           La excepción que fue lanzada.
@@ -119,7 +120,8 @@ public abstract class AbstractOpenData {
 
     } catch (EmailException e) {
 
-      log.error("[manejarExcepcion] -Error inesperado al intentar enviar email de fallo: {}", e.getMessage());
+      log.error("[manejarExcepcion] -Error inesperado al intentar enviar email de fallo: {}",
+                e.getMessage());
     }
 
     finalizar(Mensajes.FINAL_ERRONEO, 1);
@@ -128,8 +130,8 @@ public abstract class AbstractOpenData {
   /**
    * Envía un email con el asunto y cuerpo indicados usando la configuración de propiedades.
    * <p>
-   * Método común para centralizar el envío de emails evitando duplicidad.
-   * Controla excepciones relacionadas con el envío y las registra.
+   * Método común para centralizar el envío de emails evitando duplicidad. Controla excepciones
+   * relacionadas con el envío y las registra.
    * </p>
    *
    * @param estadistica Asunto del email a enviar.
@@ -162,24 +164,30 @@ public abstract class AbstractOpenData {
       log.debug("[enviarEmail] - Correo enviado correctamente.");
 
     } catch (EmailException e) {
-      log.error("[enviarEmail] - No se pudo enviar el email: Error en el servicio de correo -> {}", e.getMessage());
+      log.error("[enviarEmail] - No se pudo enviar el email: Error en el servicio de correo -> {}",
+                e.getMessage());
       throw new EmailException("No se pudo enviar el email: Error en el servicio de correo", e);
     }
   }
 
   /**
-   * Construye un objeto {@link EmailData} con toda la información necesaria para el envío de un correo,
-   * en función del resultado del proceso (éxito o error).
+   * Construye un objeto {@link EmailData} con toda la información necesaria para el envío de un
+   * correo, en función del resultado del proceso (éxito o error).
    * <p>
-   * Utiliza la configuración cargada desde el sistema de propiedades para establecer remitente y destinatario.
-   * El asunto y el cuerpo del mensaje se generan usando las utilidades de {@link EmailHelper}.
+   * Utiliza la configuración cargada desde el sistema de propiedades para establecer remitente y
+   * destinatario. El asunto y el cuerpo del mensaje se generan usando las utilidades de
+   * {@link EmailHelper}.
    * </p>
    *
-   * @param estadistica Objeto {@link Estadistica} que contiene datos del proceso. Puede ser {@code null} en caso de error.
-   * @param ex          Excepción lanzada durante la ejecución, en caso de fallo. Puede ser {@code null} si el proceso fue exitoso.
-   * @param success     Indicador booleano que señala si el proceso finalizó correctamente ({@code true}) o con error ({@code false}).
+   * @param estadistica Objeto {@link Estadistica} que contiene datos del proceso. Puede ser
+   *                    {@code null} en caso de error.
+   * @param ex          Excepción lanzada durante la ejecución, en caso de fallo. Puede ser
+   *                    {@code null} si el proceso fue exitoso.
+   * @param success     Indicador booleano que señala si el proceso finalizó correctamente
+   *                    ({@code true}) o con error ({@code false}).
    * @return Objeto {@link EmailData} completamente inicializado y listo para ser enviado.
-   * @throws EmailException Si ocurre un error al obtener el nombre del host o las propiedades necesarias.
+   * @throws EmailException Si ocurre un error al obtener el nombre del host o las propiedades
+   *                        necesarias.
    */
   private static EmailData construirEmailData(Estadistica estadistica, Exception ex, boolean success) {
 
@@ -209,7 +217,8 @@ public abstract class AbstractOpenData {
       return new EmailData(from, to, asunto, cuerpo);
 
     } catch (MiUnknownHostException e) {
-      log.error("[construirEmailData] - Error al obtener el nombre del host. Error: {}", e.getMessage());
+      log.error("[construirEmailData] - Error al obtener el nombre del host. Error: {}",
+                e.getMessage());
       throw new EmailException("Error al obtener el nombre del host.", e);
 
     } catch (PropertiesManagerException e) {
@@ -219,7 +228,8 @@ public abstract class AbstractOpenData {
   }
 
   /**
-   * Convierte los campos de una instancia de {@link Estadistica} en una matriz de cadenas de texto.
+   * Convierte los campos de una instancia de {@link Estadistica} en una matriz de cadenas de
+   * texto.
    * <p>
    * Cada fila de la matriz representa un par clave-valor donde:
    * <ul>
@@ -272,9 +282,9 @@ public abstract class AbstractOpenData {
   /**
    * Convierte el stack trace de una excepción en un arreglo de cadenas de texto.
    * <p>
-   * Cada elemento del arreglo representa una línea del stack trace, tal como se imprimiría
-   * en un log o consola. Este método es útil para enviar errores por correo o almacenarlos
-   * en sistemas donde no se puede registrar el {@code Throwable} directamente.
+   * Cada elemento del arreglo representa una línea del stack trace, tal como se imprimiría en un
+   * log o consola. Este método es útil para enviar errores por correo o almacenarlos en sistemas
+   * donde no se puede registrar el {@code Throwable} directamente.
    * </p>
    *
    * @param ex la excepción de la cual se extrae el stack trace
@@ -282,9 +292,12 @@ public abstract class AbstractOpenData {
    */
   public static String[] obtenerStackTraceComoArray(Throwable ex) {
     StackTraceElement[] elementos = ex.getStackTrace();
-    log.debug("[obtenerStackTraceComoArray] - Obtenidos los elementos del StactTrace. Nº elementos: {}", elementos.length);
+    log.debug(
+        "[obtenerStackTraceComoArray] - Obtenidos los elementos del StactTrace. Nº elementos: {}",
+        elementos.length);
     String[] resultado = new String[elementos.length];
-    log.debug("[obtenerStackTraceComoArray] - Defino un String[] con el número de elementos del StackTrace.");
+    log.debug(
+        "[obtenerStackTraceComoArray] - Defino un String[] con el número de elementos del StackTrace.");
     for (int i = 0; i < elementos.length; i++) {
       resultado[i] = elementos[i].toString();
       log.debug("[obtenerStackTraceComoArray] - Elemento: {} - {}", i, elementos[i].toString());
@@ -293,12 +306,12 @@ public abstract class AbstractOpenData {
   }
 
   /**
-   * Finaliza la ejecución del programa mostrando un mensaje de log
-   * y llamando a System.exit con el código proporcionado.
+   * Finaliza la ejecución del programa mostrando un mensaje de log y llamando a System.exit con el
+   * código proporcionado.
    *
    * @param mensaje  Mensaje que se mostrará en el log.
-   * @param exitCode Código de salida del sistema:
-   *                 0 para éxito, 1 para error. Otros valores también serán aceptados.
+   * @param exitCode Código de salida del sistema: 0 para éxito, 1 para error. Otros valores también
+   *                 serán aceptados.
    */
   public static void finalizar(String mensaje, int exitCode) {
     if (exitCode == 0) {
@@ -320,8 +333,8 @@ public abstract class AbstractOpenData {
   /**
    * Obtiene el tipo de sindicacion que será usado en el proceso.
    * <p>
-   * Método abstracto que debe implementar la subclase para indicar
-   * el tipo de sindicacion específico.
+   * Método abstracto que debe implementar la subclase para indicar el tipo de sindicacion
+   * específico.
    * </p>
    *
    * @return TipoSindicacion a utilizar en el proceso.
@@ -329,12 +342,12 @@ public abstract class AbstractOpenData {
   protected abstract TipoSindicacion getTipoSindicacion();
 
   /**
-   * Parsea los feeds ATOM para extraer las entradas (entries) y otros datos
-   * relevantes, actualizando el log y estadísticas asociados.
+   * Parsea los feeds ATOM para extraer las entradas (entries) y otros datos relevantes,
+   * actualizando el log y estadísticas asociados.
    *
    * <p>
-   * Método abstracto que debe implementar la subclase para definir
-   * la lógica específica de parseo según la fuente o formato.
+   * Método abstracto que debe implementar la subclase para definir la lógica específica de parseo
+   * según la fuente o formato.
    * </p>
    *
    * @throws MiParseException si ocurre un error durante el parseo.
@@ -345,8 +358,8 @@ public abstract class AbstractOpenData {
   /**
    * Obtiene el lugar de importación de los datos, que puede ser local o desde internet.
    * <p>
-   * Método abstracto que debe implementar la subclase para definir
-   * el lugar de importación correspondiente.
+   * Método abstracto que debe implementar la subclase para definir el lugar de importación
+   * correspondiente.
    * </p>
    *
    * @return LugarImportacion que indica el origen de los datos.
@@ -354,12 +367,11 @@ public abstract class AbstractOpenData {
   protected abstract LugarImportacion getLugarImportacion();
 
   /**
-   * Método principal que ejecuta el flujo completo de procesamiento:
-   * carga de configuración, inicialización, parseo, persistencia,
-   * envío de notificaciones y gestión de errores.
+   * Método principal que ejecuta el flujo completo de procesamiento: carga de configuración,
+   * inicialización, parseo, persistencia, envío de notificaciones y gestión de errores.
    * <p>
-   * Controla y registra logs detallados, maneja excepciones específicas,
-   * y finaliza el programa según el resultado.
+   * Controla y registra logs detallados, maneja excepciones específicas, y finaliza el programa
+   * según el resultado.
    * </p>
    */
   protected void procesar() {
@@ -371,13 +383,16 @@ public abstract class AbstractOpenData {
 
       // Obtener la instancia singleton
       Version versionService = new VersionImpl();
-      log.info("[procesar] - El servicio de consulta de la versión del JAR se ha creado correctamente.");
+      log.info(
+          "[procesar] - El servicio de consulta de la versión del JAR se ha creado correctamente.");
 
       propertiesManager = PropertiesManagerServiceImpl.getInstance();
-      log.info("[procesar] - El servicio de consulta de los ficheros .properties se ha creado correctamente.");
+      log.info(
+          "[procesar] - El servicio de consulta de los ficheros .properties se ha creado correctamente.");
 
       propertiesManager.setConfigDir(Constantes.PROPERTIES_DIR);
-      log.info("[procesar] - Establecido el directorio donde se encuentran los ficheros de configuracón: /{}.",
+      log.info(
+          "[procesar] - Establecido el directorio donde se encuentran los ficheros de configuracón: /{}.",
           Constantes.PROPERTIES_DIR);
 
       // === Configuración inicial ===
@@ -390,7 +405,8 @@ public abstract class AbstractOpenData {
       log.info("[procesar] - Leídas todas las propiedades de todos los ficheros properties.");
 
       List<String> listFicheros = propertiesManager.getListFiles();
-      log.info("[procesar] - Cargados en memoria el contenido de los ficheros de configuración: {}.",
+      log.info(
+          "[procesar] - Cargados en memoria el contenido de los ficheros de configuración: {}.",
           listFicheros);
 
       // Obtengo y Muestro el valor de la key dentro del properties que tiene el nombre del aplicativo
@@ -413,10 +429,12 @@ public abstract class AbstractOpenData {
       if (VariablesGlobales.getLugarImportacion().equals(LugarImportacion.INTERNET)) {
 
         VariablesGlobales.setMapEntriesFromBaseDatos(getMapEntryFromBaseDatos());
-        VariablesGlobales.setNewestEntry(obtenerUltimaEntrada(VariablesGlobales.getMapEntriesFromBaseDatos()));
+        VariablesGlobales.setNewestEntry(
+            obtenerUltimaEntrada(VariablesGlobales.getMapEntriesFromBaseDatos()));
       }
 
-      Log miLog = new Log(VariablesGlobales.getLugarImportacion(), VariablesGlobales.getTipoSindicacion());
+      Log miLog = new Log(VariablesGlobales.getLugarImportacion(),
+                          VariablesGlobales.getTipoSindicacion());
       log.info("[procesar] - Creación correcta del objeto {}.", miLog);
 
       // Creo el objeto Estadistica que se inicializa con el Log anteriormente creado y con el
@@ -479,7 +497,8 @@ public abstract class AbstractOpenData {
       // Obtengo un resumen de la importación que se acaba de realizar previa a la grabación en base de datos
       String nFeeds = StringHelper.getNumeroConFormato(mapFeedConEntries.size());
       String nEntries = StringHelper.getNumeroConFormato(mapEntriesToBaseDatos.size());
-      String nHistoricos = StringHelper.getNumeroConFormato(VariablesGlobales.getListHistoricos().size());
+      String nHistoricos = StringHelper.getNumeroConFormato(
+          VariablesGlobales.getListHistoricos().size());
       log.info("[procesar] - **** RESUMEN DE LA IMPORTACIÓN");
       log.info("[procesar] - Nº Feeds que tienen Entry que cumplen los filtros: {}", nFeeds);
       log.info("[procesar] - Nº Entries que cumplen los filtros: {}", nEntries);
@@ -488,15 +507,19 @@ public abstract class AbstractOpenData {
       // La lista de Historico la paso a un mapa para poder realizar filtrado por el tipo de acción realizada
       Map<EntryOpcion, Long> mapHistorico = VariablesGlobales.getListHistoricos().stream()
           .collect(Collectors.groupingBy(Historico::getEntryOpcion,
-              () -> new EnumMap<>(EntryOpcion.class),
-              Collectors.counting()));
+                                         () -> new EnumMap<>(EntryOpcion.class),
+                                         Collectors.counting()));
       log.info("[procesar] - Generado un Map de históricos según la opción.");
 
       // Asigno los valores al objeto estadistica
-      estadistica.setNRegistrosHistoricosInsertar(mapHistorico.getOrDefault(EntryOpcion.INSERTAR, 0L));
-      estadistica.setNRegistrosHistoricosEliminar(mapHistorico.getOrDefault(EntryOpcion.ELIMINAR, 0L));
-      estadistica.setNRegistrosHistoricosActualizar(mapHistorico.getOrDefault(EntryOpcion.ACTUALIZAR, 0L));
-      estadistica.setNRegistrosHistoricosRechazar(mapHistorico.getOrDefault(EntryOpcion.RECHAZAR, 0L));
+      estadistica.setNRegistrosHistoricosInsertar(
+          mapHistorico.getOrDefault(EntryOpcion.INSERTAR, 0L));
+      estadistica.setNRegistrosHistoricosEliminar(
+          mapHistorico.getOrDefault(EntryOpcion.ELIMINAR, 0L));
+      estadistica.setNRegistrosHistoricosActualizar(
+          mapHistorico.getOrDefault(EntryOpcion.ACTUALIZAR, 0L));
+      estadistica.setNRegistrosHistoricosRechazar(
+          mapHistorico.getOrDefault(EntryOpcion.RECHAZAR, 0L));
       log.info("[procesar] - Asignados valores a estadísticas.");
 
       // Transformo los valores a string para su correcta impresión en el log
@@ -507,10 +530,11 @@ public abstract class AbstractOpenData {
 
       // Obtengo la duración, la almaceno en Estadistica y asigno esta a miLog
       LocalDateTime fechaHoraFinal = LocalDateTimeHelper.getLocalDateTimeNow();
-      String duracion = LocalDateTimeHelper.getDiferenciaLocalDateTime(fechaHoraInicial, fechaHoraFinal);
+      String duracion = LocalDateTimeHelper.getDiferenciaLocalDateTime(fechaHoraInicial,
+                                                                       fechaHoraFinal);
       estadistica.setDuracion(duracion);
       miLog.setEstadistica(estadistica);
-      log.info("[procesar] - Calculo la duración y la asigno la estadísticas al log.");
+      log.info("[procesar] - Calculo la duración y asigno la estadísticas al log.");
 
       //
       //     PERSISTENCIA EN LA BASE DE DATOS
@@ -563,6 +587,7 @@ public abstract class AbstractOpenData {
   }
 
   private void logHistorico(String tipo, Long valor) {
-    log.info("[procesar] - Nº Históricos ({}): {}", tipo, StringHelper.getNumeroConFormato(Math.toIntExact(valor)));
+    log.info("[procesar] - Nº Históricos ({}): {}", tipo,
+             StringHelper.getNumeroConFormato(Math.toIntExact(valor)));
   }
 }

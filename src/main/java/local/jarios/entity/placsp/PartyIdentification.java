@@ -18,10 +18,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Setter
 @Getter
@@ -56,9 +53,9 @@ public class PartyIdentification extends Auditable {
   @Column(name = "otros", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
   private String otros;
 
-  //
-  //
-  //
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   @OneToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -95,9 +92,29 @@ public class PartyIdentification extends Auditable {
                   "REFERENCES winning_party(id) ON DELETE CASCADE"))
   private WinningParty winningParty;
 
+  @OneToOne(
+      fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "contract_modification_id",
+      referencedColumnName = "id",
+      foreignKey = @ForeignKey(
+          name = "fk_partyidentification_contractmodification",
+          foreignKeyDefinition =
+              "FOREIGN KEY (contract_modification_id) " +
+                  "REFERENCES contract_modification(id) ON DELETE CASCADE"))
+  private ContractModification contractModificationPartyIdentification;
+
+  // =========================================================================
+  // OTROS MÉTODOS
+  // =========================================================================
+  /**
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
+   *
+   * @return cadena con los valores de {@code idPlataforma}, {@code dir3}, {@code nif},
+   *        {@code idOcPlat}, {@code otros}.
+   */
   @Override
   public String toString() {
-
     return "PartyIdentification: " +
         "[idPlataforma='" + idPlataforma + "', " +
         "dir3='" + dir3 + "', " +

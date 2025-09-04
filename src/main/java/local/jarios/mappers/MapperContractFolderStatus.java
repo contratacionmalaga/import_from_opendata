@@ -15,10 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio.
  */
 @Slf4j
 public final class MapperContractFolderStatus {
@@ -112,7 +109,7 @@ public final class MapperContractFolderStatus {
             contractFolderStatus,
             contractFolderStatusType.getUUID()));
 
-    contractFolderStatus.setListNoticeInfo(
+    contractFolderStatus.setListValideNoticeInfo(
         MapperNoticeInfo.getListNoticeInfoFromType(
             contractFolderStatus, null, contractFolderStatusType.getValidNoticeInfo()));
 

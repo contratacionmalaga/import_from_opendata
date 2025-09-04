@@ -65,8 +65,8 @@ public final class JsonHelper {
    * Serializa una entidad a JSON utilizando Jackson.
    *
    * <p>Si la entidad es {@code null}, devuelve la constante
-   * {@link Constantes#JSON_VACIO}. En caso de error durante la serialización,
-   * el error se registra en el log y también se devuelve un JSON vacío.</p>
+   * {@link Constantes#JSON_VACIO}. En caso de error durante la serialización, el error se registra
+   * en el log y también se devuelve un JSON vacío.</p>
    *
    * @param <T>     tipo de la entidad a serializar
    * @param entidad instancia de la entidad que debe ser serializada

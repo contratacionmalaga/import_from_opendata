@@ -20,19 +20,19 @@ import org.oasis.ubl.common.udt.IndicatorType;
 import java.util.Optional;
 
 /**
- * Clase utilitaria para mapear objetos del modelo Codice {@link TenderingTermsType}
- * a la entidad persistente {@link TenderingTerms}.
+ * Clase utilitaria para mapear objetos del modelo Codice {@link TenderingTermsType} a la entidad
+ * persistente {@link TenderingTerms}.
  * <p>
- * Proporciona métodos estáticos para transformar instancias del modelo Codice
- * en entidades JPA que representan las condiciones de licitación dentro del sistema.
+ * Proporciona métodos estáticos para transformar instancias del modelo Codice en entidades JPA que
+ * representan las condiciones de licitación dentro del sistema.
  * </p>
  * <p>
  * Esta clase es final y no instanciable.
  * </p>
  *
- * <p><b>Autor:</b> Juan Antonio</p>
- * <p><b>Fecha:</b> 11/04/2024</p>
- * <p><b>Equipo:</b> Juan Antonio</p>
+ * <b>Autor:</b> Juan Antonio
+ * <b>Fecha:</b> 06/07/2024
+ * <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperTenderingTerms {
@@ -41,15 +41,17 @@ public final class MapperTenderingTerms {
   }
 
   /**
-   * Crea una instancia de {@link TenderingTerms} a partir de un objeto {@link TenderingTermsType}
-   * y la asocia a un {@link ContractFolderStatus} y un {@link ProcurementProjectLot}.
+   * Crea una instancia de {@link TenderingTerms} a partir de un objeto {@link TenderingTermsType} y
+   * la asocia a un {@link ContractFolderStatus} y un {@link ProcurementProjectLot}.
    * <p>
-   * El método mapea todos los campos disponibles en {@code tenderingTermsType} hacia la entidad persistente,
-   * aplicando las correspondientes transformaciones y limitaciones de tamaño.
+   * El método mapea todos los campos disponibles en {@code tenderingTermsType} hacia la entidad
+   * persistente, aplicando las correspondientes transformaciones y limitaciones de tamaño.
    * </p>
    *
-   * @param contractFolderStatus  Entidad padre {@link ContractFolderStatus} a la que se asocia el {@link TenderingTerms}.
-   * @param procurementProjectLot Entidad {@link ProcurementProjectLot} asociada al {@link TenderingTerms}.
+   * @param contractFolderStatus  Entidad padre {@link ContractFolderStatus} a la que se asocia el
+   *                              {@link TenderingTerms}.
+   * @param procurementProjectLot Entidad {@link ProcurementProjectLot} asociada al
+   *                              {@link TenderingTerms}.
    * @param tenderingTermsType    Objeto fuente con datos del modelo Codice para mapear.
    * @return Instancia de {@link TenderingTerms} con los datos mapeados y lista para persistencia.
    */
@@ -135,7 +137,8 @@ public final class MapperTenderingTerms {
 
     Optional.ofNullable(tenderingTermsType.getTendererQualificationRequest())
         .ifPresent(req -> tenderingTerms.setTendererQualificationRequest(
-            MapperTendererQualificationRequest.getTendererQualificationRequest(tenderingTerms, req)));
+            MapperTendererQualificationRequest.getTendererQualificationRequest(tenderingTerms,
+                                                                               req)));
 
     Optional.ofNullable(tenderingTermsType.getTenderRecipientParty())
         .ifPresent(party -> tenderingTerms.setTenderRecipientParty(

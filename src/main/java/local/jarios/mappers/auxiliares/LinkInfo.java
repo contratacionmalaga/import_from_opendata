@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.w3._2005.atom.FeedType;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Getter
 @Setter

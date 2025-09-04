@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Mapper para convertir objetos del modelo Atom {@link FeedType} y {@link EntryType}
- * a las entidades internas {@link Feed} y {@link Entry} usadas en el proyecto.
+ * Mapper para convertir objetos del modelo Atom {@link FeedType} y {@link EntryType} a las
+ * entidades internas {@link Feed} y {@link Entry} usadas en el proyecto.
  * <p>
- * Proporciona métodos para transformar listas de entradas Atom en listas de
- * objetos {@link Entry} vinculados a un {@link Feed} dado.
+ * Proporciona métodos para transformar listas de entradas Atom en listas de objetos {@link Entry}
+ * vinculados a un {@link Feed} dado.
  * <p>
- * Se aplican límites de tamaño a los campos para asegurar compatibilidad con
- * la base de datos y evitar errores por datos demasiado largos.
+ * Se aplican límites de tamaño a los campos para asegurar compatibilidad con la base de datos y
+ * evitar errores por datos demasiado largos.
  *
  * @author juan
  */
@@ -38,8 +38,8 @@ public final class MapperEntry {
   }
 
   /**
-   * Convierte un objeto {@link FeedType} y su lista de {@link EntryType}
-   * en una lista de objetos {@link Entry} vinculados al {@link Feed} proporcionado.
+   * Convierte un objeto {@link FeedType} y su lista de {@link EntryType} en una lista de objetos
+   * {@link Entry} vinculados al {@link Feed} proporcionado.
    *
    * @param feed     Entidad {@link Feed} a la que se asociarán las entradas.
    * @param feedType Objeto {@link FeedType} que contiene las entradas Atom.
@@ -63,8 +63,8 @@ public final class MapperEntry {
   }
 
   /**
-   * Convierte un objeto {@link EntryType} en una entidad {@link Entry}
-   * vinculada a un {@link Feed} dado.
+   * Convierte un objeto {@link EntryType} en una entidad {@link Entry} vinculada a un {@link Feed}
+   * dado.
    *
    * @param feed      Entidad {@link Feed} asociada.
    * @param entryType Objeto {@link EntryType} a convertir.
@@ -96,12 +96,14 @@ public final class MapperEntry {
         .ifPresent(entry::setSummary);
 
     Optional.ofNullable(entryType.getUpdated())
-        .map(updated -> updated.getValue().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
+        .map(
+            updated -> updated.getValue().toGregorianCalendar().toZonedDateTime().toLocalDateTime())
         .ifPresent(entry::setUpdated);
 
     if (VariablesGlobales.getTipoSindicacion().equals(TipoSindicacion.CPM)) {
       entry.setListPreliminaryMarketConsultationStatus(
-          MapperPreliminaryMarketConsultationStatus.getListPreliminaryMarketConsultationStatusFromListType(entry, entryType));
+          MapperPreliminaryMarketConsultationStatus.getListPreliminaryMarketConsultationStatusFromListType(
+              entry, entryType));
     } else {
       entry.setListContractFolderStatus(
           MapperContractFolderStatus.getListContractFolderStatusFromListType(entry, entryType));

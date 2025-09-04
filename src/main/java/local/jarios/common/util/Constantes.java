@@ -3,10 +3,10 @@ package local.jarios.common.util;
 /**
  * Clase final que contiene constantes globales utilizadas en toda la aplicación.
  * <p>
- * Estas constantes incluyen configuraciones para encriptación, formatos de fecha,
- * nombres de archivos, tipos de enlaces, delimitadores, espacios de nombres JAXB,
- * tamaños máximos de campos para validaciones, identificadores específicos para
- * el componente PARTY, y valores comunes usados en diferentes contextos.
+ * Estas constantes incluyen configuraciones para encriptación, formatos de fecha, nombres de
+ * archivos, tipos de enlaces, delimitadores, espacios de nombres JAXB, tamaños máximos de campos
+ * para validaciones, identificadores específicos para el componente PARTY, y valores comunes usados
+ * en diferentes contextos.
  * </p>
  * <p>
  * Esta clase no debe ser instanciada.
@@ -22,69 +22,67 @@ public final class Constantes {
   public static final String JSON_VACIO = "{}";
 
   /**
-   * Nombre del directorio donde se almacenan los archivos de configuración
-   * de la aplicación, como properties u otros ficheros de ajustes.
+   * Nombre del directorio donde se almacenan los archivos de configuración de la aplicación, como
+   * properties u otros ficheros de ajustes.
    */
   public static final String PROPERTIES_DIR = "properties";
 
   /**
-   * Cadena vacía estándar para evitar valores nulos y simplificar
-   * la manipulación de cadenas en la aplicación.
+   * Cadena vacía estándar para evitar valores nulos y simplificar la manipulación de cadenas en la
+   * aplicación.
    */
   public static final String CADENA_VACIA = "";
 
   /**
-   * Caracter de retorno de carro estándar (ASCII 13),
-   * utilizado en algunas operaciones de texto o formatos específicos.
+   * Caracter de retorno de carro estándar (ASCII 13), utilizado en algunas operaciones de texto o
+   * formatos específicos.
    */
   public static final String RETORNO_CARRO = "\r";
 
   /**
-   * Caracter de salto de línea estándar (ASCII 10),
-   * usado para separar líneas de texto.
+   * Caracter de salto de línea estándar (ASCII 10), usado para separar líneas de texto.
    */
   public static final String SALTO_LINEA = "\n";
 
   /**
-   * Representación HTML del retorno de carro, útil para
-   * formateo en textos que se mostrarán en entornos web.
+   * Representación HTML del retorno de carro, útil para formateo en textos que se mostrarán en
+   * entornos web.
    */
   public static final String RETORNO_CARRO_HTML = "&#xD;";
 
   /**
-   * Formato estándar para fecha y hora en la aplicación,
-   * compatible con la mayoría de parsers y formatos de bases de datos.
-   * Ejemplo: 2024-07-18 15:30:00
+   * Formato estándar para fecha y hora en la aplicación, compatible con la mayoría de parsers y
+   * formatos de bases de datos. Ejemplo: 2024-07-18 15:30:00
    */
   public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
   /**
-   * Nombre del archivo principal para licitaciones mayores,
-   * utilizado para la importación o procesamiento de datos.
+   * Nombre del archivo principal para licitaciones mayores, utilizado para la importación o
+   * procesamiento de datos.
    */
   public static final String FILENAME_MAYORES = "licitacionesPerfilesContratanteCompleto3.atom";
 
   /**
-   * Nombre del archivo que contiene contratos menores,
-   * utilizado para la importación o procesamiento específico.
+   * Nombre del archivo que contiene contratos menores, utilizado para la importación o
+   * procesamiento específico.
    */
   public static final String FILENAME_MENORES = "contratosMenoresPerfilesContratantes.atom";
 
   /**
-   * Archivo que contiene plataformas agregadas excluyendo los contratos menores,
-   * para análisis o procesamiento de datos.
+   * Archivo que contiene plataformas agregadas excluyendo los contratos menores, para análisis o
+   * procesamiento de datos.
    */
   public static final String FILENAME_AGREGADAS = "PlataformasAgregadasSinMenores.atom";
 
   /**
-   * Archivo relacionado con encargos medios propios del sector público,
-   * para importar datos específicos de este ámbito.
+   * Archivo relacionado con encargos medios propios del sector público, para importar datos
+   * específicos de este ámbito.
    */
   public static final String FILENAME_ENCARGOSMEDIOSPROPIOS = "EMP_SectorPublico.atom";
 
   /**
-   * Archivo para consultas preliminares de mercado en el sector público,
-   * utilizado para importar o analizar información.
+   * Archivo para consultas preliminares de mercado en el sector público, utilizado para importar o
+   * analizar información.
    */
   public static final String FILENAME_CONSULTASPRELIMINARESMERCADO = "CPM_SectorPublico.atom";
 
@@ -120,15 +118,14 @@ public final class Constantes {
   /* Formatos de fecha */
 
   /**
-   * Formato estándar para fechas sin tiempo, útil para validaciones y conversiones.
-   * Ejemplo: 2024-07-18
+   * Formato estándar para fechas sin tiempo, útil para validaciones y conversiones. Ejemplo:
+   * 2024-07-18
    */
   public static final String FORMATO_FECHA = "yyyy-MM-dd";
 
   /**
-   * Fecha límite para lectura o procesamiento de datos históricos.
-   * Datos anteriores a esta fecha pueden ser descartados o tratados
-   * de forma especial.
+   * Fecha límite para lectura o procesamiento de datos históricos. Datos anteriores a esta fecha
+   * pueden ser descartados o tratados de forma especial.
    */
   public static final String FECHA_FINAL_LECTURA = "2018-01-01";
 

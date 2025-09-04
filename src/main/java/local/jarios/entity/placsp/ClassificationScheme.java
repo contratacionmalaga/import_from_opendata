@@ -14,17 +14,18 @@ import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Representa un esquema de clasificación utilizado para definir requisitos de participación
- * en un proceso de licitación.
+ * Representa un esquema de clasificación utilizado para definir requisitos de participación en un
+ * proceso de licitación.
  * <p>
- * Este esquema puede incluir varias categorías de clasificación y se asocia a una solicitud
- * de cualificación del licitador.
+ * Este esquema puede incluir varias categorías de clasificación y se asocia a una solicitud de
+ * cualificación del licitador.
  * </p>
  *
  * <p>
@@ -37,6 +38,7 @@ import java.util.UUID;
  */
 @Setter
 @Getter
+@NoArgsConstructor
 @Entity
 @Table(name = "classification_scheme")
 public class ClassificationScheme extends Auditable {
@@ -44,8 +46,7 @@ public class ClassificationScheme extends Auditable {
   /**
    * Identificador único universal (UUID) del esquema de clasificación.
    * <p>
-   * Clave primaria generada automáticamente.
-   * No puede ser actualizada ni ser nula.
+   * Clave primaria generada automáticamente. No puede ser actualizada ni ser nula.
    * </p>
    */
   @Id
@@ -55,28 +56,13 @@ public class ClassificationScheme extends Auditable {
   /**
    * UUID externo del esquema, que puede usarse para referencia adicional.
    */
-  @Column(name = "uuid", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
-  private String uuid;
-  /**
-   * Nombre descriptivo del esquema de clasificación.
-   */
-  @Column(name = "name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
-  private String name;
-  /**
-   * Nota o comentario adicional sobre el esquema de clasificación.
-   */
-  @Column(name = "note", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
-  private String note;
-  /**
-   * Descripción textual detallada del esquema.
-   */
-  @Column(name = "description", columnDefinition = "TEXT")
-  private String description;
+  @Column(name = "classification_scheme_id", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  private String classificationSchemeId;
   /**
    * Solicitud de cualificación del licitador asociada a este esquema de clasificación.
    * <p>
-   * Relación muchos a uno con la entidad {@link TendererQualificationRequest}.
-   * La eliminación en cascada está configurada en la clave foránea.
+   * Relación muchos a uno con la entidad {@link TendererQualificationRequest}. La eliminación en
+   * cascada está configurada en la clave foránea.
    * </p>
    */
   @ManyToOne(
@@ -94,30 +80,16 @@ public class ClassificationScheme extends Auditable {
   /**
    * Lista de categorías de clasificación que forman parte de este esquema.
    * <p>
-   * Relación uno a muchos con la entidad {@link ClassificationCategory}.
-   * La eliminación en cascada y la remoción huérfana están habilitadas.
+   * Relación uno a muchos con la entidad {@link ClassificationCategory}. La eliminación en cascada
+   * y la remoción huérfana están habilitadas.
    * </p>
    */
   @OneToMany(mappedBy = "classificationScheme", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ClassificationCategory> classificationCategory;
 
-  /**
-   * Constructor por defecto.
-   * <p>
-   * Requerido por JPA para la correcta creación de proxies
-   * y por Lombok para la inicialización básica.
-   * </p>
-   */
-  public ClassificationScheme() {
-    // Constructor vacío requerido por JPA
-  }
-
   @Override
   public String toString() {
     return "ClassificationScheme: " +
-        "[uuid='" + uuid + "', " +
-        "name='" + name + "', " +
-        "note='" + note + "', " +
-        "description='" + description + "']";
+        "[classificationSchemeId='" + classificationSchemeId + "]";
   }
 }

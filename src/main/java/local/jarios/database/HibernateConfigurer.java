@@ -6,12 +6,12 @@ import org.hibernate.cfg.Configuration;
 import java.util.Properties;
 
 /**
- * Clase utilitaria para construir configuraciones de Hibernate
- * a partir de un conjunto de propiedades personalizadas.
+ * Clase utilitaria para construir configuraciones de Hibernate a partir de un conjunto de
+ * propiedades personalizadas.
  *
  * <p>Se encarga de inicializar un objeto {@link Configuration}
- * de Hibernate y aplicarle las propiedades necesarias para
- * establecer la conexión, el dialecto, y otros parámetros del ORM.</p>
+ * de Hibernate y aplicarle las propiedades necesarias para establecer la conexión, el dialecto, y
+ * otros parámetros del ORM.</p>
  *
  * <p>Útil para centralizar la inicialización de Hibernate desde código
  * en lugar de usar archivos XML tradicionales.</p>
@@ -39,7 +39,8 @@ public class HibernateConfigurer {
 
     // Seteamos las propiedades
     configuration.setProperties(hibernateProperties);
-    log.debug("[buildConfiguration] - Hibernate Configuration creada con {} propiedades.", hibernateProperties.size());
+    log.debug("[buildConfiguration] - Hibernate Configuration creada con {} propiedades.",
+              hibernateProperties.size());
 
     return configuration;
   }

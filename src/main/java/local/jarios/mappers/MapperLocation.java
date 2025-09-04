@@ -8,14 +8,12 @@ import local.jarios.entity.placsp.WinningParty;
 import local.jarios.helpers.ComunHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.LocationType;
+import un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.TextType;
 
 import java.util.Optional;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperLocation {
@@ -41,18 +39,22 @@ public final class MapperLocation {
 
     Optional.ofNullable(locationType.getCountrySubentityCode())
         .map(code ->
-            ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
+                 ComunHelper.limitarRegistro(code.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_50))
         .ifPresent(location::setCountrySubentityCode);
 
     Optional.ofNullable(locationType.getCountrySubentity())
         .map(sub ->
-            ComunHelper.limitarRegistro(sub.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_500))
+                 ComunHelper.limitarRegistro(sub.getValue(), Constantes.TAMANO_MAXIMO_CAMPO_500))
         .ifPresent(location::setCountrySubentity);
 
     Optional.ofNullable(locationType.getAddress())
-        .map(addr ->
-            MapperAddress.getAddress(null, location, null, addr))
+        .map(address ->
+                 MapperAddress.getAddress(null, location, null, address))
         .ifPresent(location::setAddress);
+
+    Optional.ofNullable(locationType.getDescription())
+        .map(TextType::getValue)
+        .ifPresent(location::setDescription);
 
     return location;
   }

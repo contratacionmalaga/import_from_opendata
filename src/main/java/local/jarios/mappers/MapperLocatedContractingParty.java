@@ -11,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
 /**
- * Description: Subtipos del modelo Codice
- * Author: juan
- * Date: 11/04/2024
- * Team: Juan Antonio
+ * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio
  */
 @Slf4j
 public final class MapperLocatedContractingParty {
@@ -34,7 +31,8 @@ public final class MapperLocatedContractingParty {
     // LocatedContractingParty
     LocatedContractingParty locatedContractingParty = new LocatedContractingParty();
     locatedContractingParty.setContractFolderStatus(contractFolderStatus);
-    locatedContractingParty.setPreliminaryMarketConsultationStatus(preliminaryMarketConsultationStatus);
+    locatedContractingParty.setPreliminaryMarketConsultationStatus(
+        preliminaryMarketConsultationStatus);
 
     Optional.ofNullable(locatedContractingPartyType.getContractingPartyTypeCode())
         .map(code -> ComunHelper.limitarRegistro(

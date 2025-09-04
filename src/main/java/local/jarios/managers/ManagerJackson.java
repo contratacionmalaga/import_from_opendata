@@ -7,13 +7,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
- * Clase de utilidad para la serialización de objetos Java a formato JSON
- * utilizando la librería <b>Jackson</b>.
+ * Clase de utilidad para la serialización de objetos Java a formato JSON utilizando la librería
+ * <b>Jackson</b>.
  *
  * <p>Su principal propósito es ofrecer un método estático para convertir
- * cualquier objeto Java en una representación JSON con <i>pretty printing</i>
- * y soporte completo para clases de fecha y hora de Java 8
- * ({@link java.time.LocalDateTime}, {@link java.time.LocalDate}, etc.).</p>
+ * cualquier objeto Java en una representación JSON con <i>pretty printing</i> y soporte completo
+ * para clases de fecha y hora de Java 8 ({@link java.time.LocalDateTime},
+ * {@link java.time.LocalDate}, etc.).</p>
  *
  * <h2>Características principales:</h2>
  * <ul>

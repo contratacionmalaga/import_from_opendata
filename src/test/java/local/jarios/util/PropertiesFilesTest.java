@@ -49,7 +49,7 @@ public class PropertiesFilesTest {
         Field field = PropertiesFiles.class.getDeclaredField(fieldName);
         String actualValue = (String) field.get(null);
         assertEquals(expectedValue, actualValue,
-            () -> "Valor incorrecto para " + fieldName);
+                     () -> "Valor incorrecto para " + fieldName);
       } catch (NoSuchFieldException e) {
         fail("Falta la constante " + fieldName + " en PropertiesFiles");
       }

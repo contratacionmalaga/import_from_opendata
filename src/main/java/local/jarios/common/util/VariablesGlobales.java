@@ -17,9 +17,9 @@ import java.util.Map;
 /**
  * Clase final que contiene variables globales utilizadas en todo el proyecto.
  * <p>
- * Esta clase agrupa estructuras de datos estáticas que almacenan información
- * compartida durante la ejecución del programa, como filtros, entradas procesadas,
- * feeds y acciones históricas sobre entradas.
+ * Esta clase agrupa estructuras de datos estáticas que almacenan información compartida durante la
+ * ejecución del programa, como filtros, entradas procesadas, feeds y acciones históricas sobre
+ * entradas.
  * </p>
  * <p>
  * No debe ser instanciada.
@@ -30,8 +30,8 @@ import java.util.Map;
 public final class VariablesGlobales {
 
   /**
-   * Mapa que almacena los identificadores de plataforma y los órganos de contratación
-   * que se aplican mediante el filtro SQL.
+   * Mapa que almacena los identificadores de plataforma y los órganos de contratación que se
+   * aplican mediante el filtro SQL.
    */
   @Getter
   @Setter

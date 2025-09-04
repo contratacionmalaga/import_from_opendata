@@ -18,15 +18,12 @@ import lombok.Setter;
 import java.util.UUID;
 
 /**
- * Description: Juan Antonio
- * Author: juan
- * Date: 06/07/2024
- * Team: Juan Antonio
+ * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
  */
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
+@Entity
 @Table(
     name = "external_reference"
 )
@@ -50,9 +47,9 @@ public class ExternalReference extends Auditable {
   @Column(name = "filename", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String filename;
 
-  //
-  //
-  //
+  // =========================================================================
+  // RELACIONES PADRES
+  // =========================================================================
   @OneToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -64,6 +61,14 @@ public class ExternalReference extends Auditable {
           foreignKeyDefinition = "FOREIGN KEY (attachment_id) REFERENCES attachment(id) ON DELETE CASCADE"))
   private Attachment attachment;
 
+  // =========================================================================
+  // MÉTODOS AUXILIARES
+  // =========================================================================
+  /**
+   * Devuelve una representación en cadena del objeto con los valores principales de la entidad.
+   *
+   * @return cadena con el nombre de la clase y los valores de las propiedades de la clase
+   */
   @Override
   public String toString() {
 

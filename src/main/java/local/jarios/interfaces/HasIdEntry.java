@@ -3,8 +3,8 @@ package local.jarios.interfaces;
 /**
  * Interfaz para entidades que poseen un identificador único tipo UUID.
  * <p>
- * Garantiza que las clases que implementen esta interfaz tengan los métodos
- * para obtener y establecer su ID.
+ * Garantiza que las clases que implementen esta interfaz tengan los métodos para obtener y
+ * establecer su ID.
  * </p>
  *
  * @param <V> tipo de dato del identificador único de la entidad

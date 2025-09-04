@@ -21,8 +21,8 @@ import java.util.UUID;
 /**
  * Entidad JPA que representa una medida de duración asociada a un {@link Period}.
  * <p>
- * Esta clase modela una duración con una unidad y un valor numérico, que puede ser
- * parte de estructuras más complejas en PLACSP u otros modelos de contratación pública.
+ * Esta clase modela una duración con una unidad y un valor numérico, que puede ser parte de
+ * estructuras más complejas en PLACSP u otros modelos de contratación pública.
  * </p>
  *
  * <p>La entidad hereda campos de auditoría desde {@link Auditable}.</p>
@@ -86,7 +86,7 @@ public class Measure extends Auditable {
           foreignKeyDefinition = "FOREIGN KEY (contract_modification_id) " +
               "REFERENCES contract_modification(id) ON DELETE CASCADE")
   )
-  private ContractModification contractModification;
+  private ContractModification contractModificationFinalDurationMeasure;
 
   /**
    * Devuelve una representación en texto del objeto, útil para depuración.

@@ -18,7 +18,8 @@ public final class FileHelper {
    * Analiza si un String que se pasa es un File válido (EXISTE, SE PUEDA LEER, .entity..)
    *
    * @param strPathFichero Fichero con la ruta absoluta
-   * @return Devuelve un valor indicando si el fichero es valido y en caso contrario indica el motivo
+   * @return Devuelve un valor indicando si el fichero es valido y en caso contrario indica el
+   * motivo
    */
   public static boolean esFileValido(String strPathFichero) {
 
