@@ -6,6 +6,7 @@ import local.jarios.entity.placsp.DocumentReference;
 import local.jarios.entity.placsp.GeneralDocumentDocumentReference;
 import local.jarios.entity.placsp.LegalDocumentReference;
 import local.jarios.entity.placsp.TechnicalDocumentReference;
+import local.jarios.enums.TipoDocumento;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.DocumentReferenceType;
 import org.dgpe.codice.common.cbclib.DocumentTypeCodeType;
@@ -59,6 +60,20 @@ public final class MapperDocumentReference {
     documentReference.setGeneralDocumentDocumentReference(generalDocumentDocumentReference);
     documentReference.setLegalDocumentReference(legalDocumentReference);
     documentReference.setTechnicalDocumentReference(technicalDocumentReference);
+
+    // Determinar cuál no es nulo y asignar el tipo
+    if (additionalDocumentReference != null) {
+      documentReference.setDocumentReferenceType(TipoDocumento.ADDICIONAL);
+    } else if (generalDocumentDocumentReference != null) {
+      documentReference.setDocumentReferenceType(TipoDocumento.GENERAL);
+    } else if (legalDocumentReference != null) {
+      documentReference.setDocumentReferenceType(TipoDocumento.PCAP);
+    } else if (technicalDocumentReference != null) {
+      documentReference.setDocumentReferenceType(TipoDocumento.PPT);
+    } else {
+      documentReference.setDocumentReferenceType(TipoDocumento.UNKNOWN);
+    }
+
     documentReference.setIdDocumentReference(documentReferenceType.getID().getValue());
 
     String docTypeCode = Optional.ofNullable(documentReferenceType.getDocumentTypeCode())
@@ -74,7 +89,10 @@ public final class MapperDocumentReference {
     Optional.ofNullable(documentReferenceType.getAttachment())
         .ifPresent(attachmentType -> documentReference.setAttachment(
             MapperAttachment.getAttachmentFromType(
-                documentReference, null, null, attachmentType)));
+                documentReference,
+                null,
+                null,
+                attachmentType)));
 
     return documentReference;
   }

@@ -25,12 +25,14 @@ public final class MapperLegalDocumentReference {
     legalDocumentReference.setContractFolderStatus(contractFolderStatus);
 
     Optional.ofNullable(documentReferenceType)
-        .map(docRefType -> MapperDocumentReference.getDocumentReferenceFromType(
-            null,
-            null,
-            legalDocumentReference,
-            null,
-            docRefType))
+        .map(docRefType ->
+             MapperDocumentReference.getDocumentReferenceFromType(
+                null,
+                null,
+                legalDocumentReference,
+                null,
+                docRefType)
+             )
         .ifPresent(legalDocumentReference::setDocumentReference);
 
     return legalDocumentReference;

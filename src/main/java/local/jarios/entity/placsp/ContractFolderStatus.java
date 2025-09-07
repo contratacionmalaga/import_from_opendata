@@ -98,7 +98,6 @@ public class ContractFolderStatus extends Auditable {
    * {@link LocatedContractingParty}.
    */
   @OneToOne(mappedBy = "contractFolderStatus", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "located_contracting_party_id", nullable = false)
   private LocatedContractingParty locatedContractingParty;
   /**
    * Documento técnico asociado al expediente. Relación uno-a-uno con

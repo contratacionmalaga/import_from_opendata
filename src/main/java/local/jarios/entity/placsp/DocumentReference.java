@@ -3,6 +3,8 @@ package local.jarios.entity.placsp;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +14,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
 import local.jarios.entity.auxiliares.Auditable;
+import local.jarios.enums.TipoDocumento;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -64,6 +67,12 @@ public class DocumentReference extends Auditable {
    */
   @Column(name = "document_type", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String documentType;
+  /**
+   * Código que indica el tipo de documento referenciado (ej. contrato, anexo, etc.).
+   */
+  @Enumerated(EnumType.STRING)
+  @Column(name = "document_reference_type", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private TipoDocumento documentReferenceType;
   // =========================================================================
   // RELACIONES PADRES
   // =========================================================================

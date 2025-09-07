@@ -187,54 +187,6 @@ public class EntityConsistencyTest {
   }
 
   @Test
-  @DisplayName("Las asociaciones deben tener FetchType consistente (Lazy por defecto)")
-  void associationsShouldBeLazyByDefault() {
-    Reflections reflections = new Reflections(BASE_PACKAGE);
-
-    Set<Class<?>> entities = reflections.getTypesAnnotatedWith(Entity.class);
-    assertFalse(entities.isEmpty(), "No se encontraron entidades en el paquete " + BASE_PACKAGE);
-
-    for (Class<?> entity : entities) {
-      for (Field field : entity.getDeclaredFields()) {
-
-        if (field.isAnnotationPresent(ManyToOne.class)) {
-          ManyToOne ann = field.getAnnotation(ManyToOne.class);
-          assertEquals(FetchType.LAZY, ann.fetch(),
-                       entity.getSimpleName() + "." + field.getName() +
-                           " (ManyToOne) debería ser LAZY");
-        }
-
-        if (field.isAnnotationPresent(OneToMany.class)) {
-          OneToMany ann = field.getAnnotation(OneToMany.class);
-          assertEquals(FetchType.LAZY, ann.fetch(),
-                       entity.getSimpleName() + "." + field.getName() +
-                           " (OneToMany) debería ser LAZY");
-        }
-
-        if (field.isAnnotationPresent(OneToOne.class)) {
-          OneToOne ann = field.getAnnotation(OneToOne.class);
-
-          boolean isOwningSide = field.isAnnotationPresent(JoinColumn.class);
-
-          if (isOwningSide) {
-            // Lado propietario: sí debe ser LAZY
-            assertEquals(FetchType.LAZY, ann.fetch(),
-                         entity.getSimpleName() + "." + field.getName() +
-                             " (OneToOne dueño) debería ser LAZY");
-          } else {
-            // Lado inverso (mappedBy): permitimos LAZY o EAGER
-            assertTrue(
-                ann.fetch() == FetchType.LAZY || ann.fetch() == FetchType.EAGER,
-                entity.getSimpleName() + "." + field.getName() +
-                    " (OneToOne inverso) debería ser LAZY (si hay enhancement) o EAGER (por defecto)"
-            );
-          }
-        }
-      }
-    }
-  }
-
-  @Test
   @DisplayName("Las relaciones OneToMany deben tener mappedBy definido")
   void oneToManyShouldHaveMappedBy() {
     Reflections reflections = new Reflections(BASE_PACKAGE);

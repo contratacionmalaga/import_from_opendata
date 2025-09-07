@@ -75,7 +75,6 @@ public class LocatedContractingParty extends Auditable {
   // RELACIONES HIJAS
   // =========================================================================
   @OneToOne(mappedBy = "locatedContractingParty", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "party_id", nullable = false)
   private Party party;
 
   // =========================================================================
