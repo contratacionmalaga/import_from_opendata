@@ -6,7 +6,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -52,7 +51,7 @@ public class DeletedEntry extends Auditable {
       nullable = false,
       referencedColumnName = "id",
       foreignKey = @ForeignKey(
-          name = "fk_deleted-entry_feed",
+          name = "fk_deletedentry_feed",
           foreignKeyDefinition = "FOREIGN KEY (feed_id) REFERENCES feed(id) ON DELETE CASCADE")
   )
   private Feed feed;

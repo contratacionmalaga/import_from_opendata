@@ -7,10 +7,8 @@ import local.jarios.entity.atom.Feed;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.mappers.auxiliares.LinkInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.purl.atompub.tombstones._1.DeletedEntryType;
 import org.w3._2005.atom.FeedType;
 
-import javax.xml.bind.JAXBElement;
 import java.util.List;
 import java.util.Optional;
 

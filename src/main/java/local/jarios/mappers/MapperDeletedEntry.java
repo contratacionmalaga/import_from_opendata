@@ -48,6 +48,7 @@ public final class MapperDeletedEntry {
 
     if (feedType.getAny() != null) {
       for (int indice = 0; indice < feedType.getAny().size(); indice++) {
+        @SuppressWarnings("unchecked")
         DeletedEntryType deletedEntryType = ((JAXBElement<DeletedEntryType>) feedType.getAny().get(indice)).getValue();
         DeletedEntry deletedEntry = getDeletedEntryFromFeedType(feed, deletedEntryType);
         System.out.println(deletedEntry);

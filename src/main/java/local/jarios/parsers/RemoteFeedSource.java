@@ -18,8 +18,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Implementación de {@link FeedSource} para obtener feeds remotos a través de URLs.
- * <p>
- * Esta clase ofrece:
+ * <p>Esta clase ofrece:
  * <ul>
  *   <li>Validación centralizada y robusta de URLs conforme a la especificación RFC.</li>
  *   <li>Evitación del uso de constructores URL(String) deprecated.</li>
@@ -29,8 +28,8 @@ import java.nio.charset.StandardCharsets;
  * <p>La configuración de la URL inicial se obtiene de un archivo de propiedades gestionado mediante
  * {@link PropertiesManagerService}.</p>
  *
- * <p><b>Autor:</b> juan</p>
- * <p><b>Fecha:</b> 04/07/2025 (mejorado 05/07/2025)</p>
+ * Autor: juan
+ * Fecha: 04/07/2025 (mejorado 05/07/2025)
  */
 @Slf4j
 public class RemoteFeedSource implements FeedSource {
