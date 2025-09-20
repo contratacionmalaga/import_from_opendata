@@ -45,7 +45,7 @@ public final class MapperEntry {
    * @param feedType Objeto {@link FeedType} que contiene las entradas Atom.
    * @return Lista de objetos {@link Entry} convertidos desde {@link EntryType}.
    */
-  public static List<Entry> getListEntryFromEntryType(Feed feed, FeedType feedType) {
+  public static List<Entry> getListEntryFromFeedType(Feed feed, FeedType feedType) {
 
     //
     List<Entry> listEntry = new ArrayList<>();
@@ -53,7 +53,7 @@ public final class MapperEntry {
     for (EntryType entryType : feedType.getEntry()) {
 
       //
-      Entry entry = getEntryFromEntryType(feed, entryType);
+      Entry entry = getEntryFromFeedType(feed, entryType);
 
       //
       listEntry.add(entry);
@@ -70,7 +70,7 @@ public final class MapperEntry {
    * @param entryType Objeto {@link EntryType} a convertir.
    * @return Objeto {@link Entry} construido a partir de {@code entryType}.
    */
-  private static Entry getEntryFromEntryType(Feed feed, EntryType entryType) {
+  private static Entry getEntryFromFeedType(Feed feed, EntryType entryType) {
 
     //
     var entry = new Entry();
