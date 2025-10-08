@@ -18,16 +18,18 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Implementación de {@link FeedSource} para obtener feeds remotos a través de URLs.
+ *
  * <p>Esta clase ofrece:
  * <ul>
  *   <li>Validación centralizada y robusta de URLs conforme a la especificación RFC.</li>
  *   <li>Evitación del uso de constructores URL(String) deprecated.</li>
  *   <li>Logging detallado y manejo exhaustivo de excepciones propias.</li>
- *   <li>Validación segura en {@link #isNextLinkValid(String)} para evitar fallos ante URLs inválidas.</li>
+ *   <li>Validación segura en {@link #isNextLinkValid(String)} para evitar fallos ante
+ *   URLs inválidas.</li>
  * </ul>
+ *
  * <p>La configuración de la URL inicial se obtiene de un archivo de propiedades gestionado mediante
  * {@link PropertiesManagerService}.</p>
- *
  * Autor: juan
  * Fecha: 04/07/2025 (mejorado 05/07/2025)
  */
@@ -47,12 +49,7 @@ public class RemoteFeedSource implements FeedSource {
   }
 
   /**
-   * Valida una URL según criterios:
-   * <ul>
-   *   <li>No puede ser nula o vacía.</li>
-   *   <li>Debe tener sintaxis válida según RFC.</li>
-   *   <li>Debe contener autoridad válida (host, puerto, etc.).</li>
-   * </ul>
+   * Valida una URL.
    *
    * @param url URL a validar.
    * @throws MiUrlException si la URL no cumple con los criterios anteriores.
@@ -92,8 +89,7 @@ public class RemoteFeedSource implements FeedSource {
 
   /**
    * Valida si la URL para el siguiente enlace es válida.
-   * <p>
-   * Esta implementación captura errores de validación y no lanza excepciones, devolviendo
+   * <p>Esta implementación captura errores de validación y no lanza excepciones, devolviendo
    * {@code false} si la URL no es válida.
    * </p>
    *
