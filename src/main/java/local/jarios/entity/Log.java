@@ -58,13 +58,13 @@ public class Log extends Auditable {
   private Configuracion configuracion;
 
   // Relaciones uno a muchos
-  @OneToMany(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "miLog", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<OrganoContratacion> listOrganoContratacion = new ArrayList<>();
 
-  @OneToMany(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "miLog", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Feed> listFeed = new ArrayList<>();
 
-  @OneToMany(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "miLog", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Historico> listHistorio = new ArrayList<>();
 
   // Constructor principal

@@ -2,8 +2,13 @@ package local.jarios.repositories;
 
 import jakarta.persistence.TypedQuery;
 import local.jarios.entity.Log;
+import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
+import local.jarios.entity.atom.Feed;
+import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.auxiliares.OrganoContratacion;
+import local.jarios.entity.placsp.ContractFolderStatus;
+import local.jarios.entity.placsp.PreliminaryMarketConsultationStatus;
 import local.jarios.exceptions.MiRepositoryException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
@@ -187,4 +192,128 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     }
   }
 
+  public void persistirLogEnBloques(Log miLog) {
+
+    ejecutarDentroDeTransaccion(session -> {
+
+      long start = System.currentTimeMillis();
+
+      var map = sessionFactory.getProperties();
+
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        log.debug("[persistirLogEnBloques] - {}", entry.getKey() + " = " + entry.getValue());
+      }
+
+      String batchSizeStr = (String) map.get("hibernate.jdbc.batch_size");
+      int batchSize = Integer.parseInt(batchSizeStr);
+      log.debug(String.valueOf(batchSize));
+
+      int contador = 0;
+
+      session.persist(miLog);
+      session.flush();
+      log.info("Persistido Log");
+
+      if (miLog.getConfiguracion() != null) {
+        miLog.getConfiguracion().setMiLog(miLog);
+        session.persist(miLog.getConfiguracion());
+        log.info("Persistido Configuracion");
+      }
+
+      if (miLog.getEstadistica() != null) {
+        miLog.getEstadistica().setMiLog(miLog);
+        session.persist(miLog.getEstadistica());
+        log.info("Persistido Estadistica");
+      }
+
+      for (OrganoContratacion oc : miLog.getListOrganoContratacion()) {
+        oc.setMiLog(miLog);
+        session.persist(oc);
+        if (++contador % batchSize == 0) {
+          session.flush();
+          session.clear();
+        }
+      }
+      log.info("Persistida la List<OrganoContratacion>");
+
+      for (Historico historico : miLog.getListHistorio()) {
+        historico.setMiLog(miLog);
+        session.persist(historico);
+        if (++contador % batchSize == 0) {
+          session.flush();
+          session.clear();
+        }
+      }
+      log.info("Persistida la List<Historico>");
+
+      for (Feed feed : miLog.getListFeed()) {
+        feed.setMiLog(miLog);
+        session.persist(feed);
+        log.info("Persistido Feed - {}", feed.getLinkSelf());
+
+        for (DeletedEntry deletedEntry : feed.getListDeletedEntry()) {
+          deletedEntry.setFeed(feed);
+          session.persist(deletedEntry);
+          log.info("Persistido DeletedEntry - {}", deletedEntry.getRef());
+
+          if (++contador % batchSize == 0) {
+            session.flush();
+            session.clear();
+          }
+        }
+
+        for (Entry entry : feed.getListEntry()) {
+          entry.setFeed(feed);
+          session.persist(entry);
+          log.info("Persistido Entry - {}", entry.getIdEntry());
+
+          for (ContractFolderStatus contractFolderStatus : entry.getListContractFolderStatus()) {
+            contractFolderStatus.setEntry(entry);
+            session.persist(contractFolderStatus);
+            log.info("Persistido ContractFolderStatus - {}", contractFolderStatus.getContractFolderId());
+
+            if (++contador % batchSize == 0) {
+              session.flush();
+              session.clear();
+            }
+          }
+
+          for (PreliminaryMarketConsultationStatus pmcs : entry.getListPreliminaryMarketConsultationStatus()) {
+            pmcs.setEntry(entry);
+            session.persist(pmcs);
+            log.info("Persistido PreliminaryMarketConsultationStatus - {}", pmcs.getPreliminaryMarketConsultationID());
+            if (++contador % batchSize == 0) {
+              session.flush();
+              session.clear();
+            }
+          }
+
+          if (++contador % batchSize == 0) {
+            session.flush();
+            session.clear();
+          }
+        }
+
+        if (++contador % batchSize == 0) {
+          session.flush();
+          session.clear();
+        }
+      }
+
+      // Flush final
+      session.flush();
+      session.clear();
+
+      session.merge(miLog);
+      flushAndClear(session);
+
+      long end = System.currentTimeMillis();
+
+      log.debug("[persistirLogEnBloques] - Persistencia de Log completada correctamente.");
+
+      log.info("Tiempo de ejecución en base de datos: {}", (end - start) + "ms");
+
+      return null;
+    }, "persistirEnBaseDatos");
+  }
 }

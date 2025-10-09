@@ -65,10 +65,10 @@ public class Feed extends Auditable {
   )
   private Log miLog;
 
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "feed", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Entry> listEntry = new ArrayList<>();
 
-  @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "feed", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<DeletedEntry> listDeletedEntry = new ArrayList<>();
 
   // Representaciones en texto

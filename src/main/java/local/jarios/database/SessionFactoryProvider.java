@@ -51,17 +51,16 @@ public class SessionFactoryProvider {
 
     try {
       final var hibernateProperties = getHibernateProperties(tipoConexion);
-      log.debug(
-          "[getSessionFactory] - Propiedades Hibernate obtenidas correctamente para tipo de conexión: {}. {}",
-          tipoConexion, hibernateProperties);
+      log.debug("[getSessionFactory] - Hibernate.properties obtenidas correctamente.");
+      log.debug("[getSessionFactory] - {}", hibernateProperties);
 
       final var hibernateConfigurer = new HibernateConfigurer();
       final Configuration configuration = hibernateConfigurer.buildConfiguration(
           hibernateProperties);
       log.debug("[getSessionFactory] - Objeto Configuration obtenido correctamente.");
 
-      if (tipoConexion == TipoConexion.MARIADB) {
-        log.debug("[getSessionFactory] - El tipo de conexión es MariaDB.");
+      if (tipoConexion == TipoConexion.PRINCIPAL) {
+        log.debug("[getSessionFactory] - Tipo de conexión Principal.");
         final var entityScanner = new EntityScanner();
         entityScanner.scanAndAddEntities(configuration, CONFIG_PACKAGE_NAME);
         log.debug("[getSessionFactory] - Entidades escaneadas desde el paquete '{}'",
@@ -88,9 +87,9 @@ public class SessionFactoryProvider {
    */
   private Properties getHibernateProperties(TipoConexion tipoConexion) {
     return switch (tipoConexion) {
-      case MARIADB -> configurePrincipalProperties(
+      case PRINCIPAL -> configurePrincipalProperties(
           propertyManager.getProperties(PropertiesFiles.HIBERNATE));
-      case FILTRO_SQL -> configureConnectionProperties(PropertiesFiles.JAKARTA_FILTRO);
+      case FILTRO_SQL -> configureFiltroProperties();
     };
   }
 
@@ -105,9 +104,9 @@ public class SessionFactoryProvider {
   /**
    * Configura propiedades para cualquier conexión basada en el archivo indicado.
    */
-  private Properties configureConnectionProperties(String propertiesFile) {
+  private Properties configureFiltroProperties() {
     final var props = new Properties();
-    setCommonConnectionProperties(props, propertiesFile);
+    setCommonConnectionProperties(props, PropertiesFiles.JAKARTA_FILTRO);
     return props;
   }
 
@@ -128,7 +127,12 @@ public class SessionFactoryProvider {
                       propertyManager.getProperty(file,
                                                   PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
 
-    log.debug("[setCommonConnectionProperties] Propiedades configuradas desde archivo '{}': {}",
+    log.debug("[setCommonConnectionProperties] - Propiedades configuradas desde archivo '{}': {}",
               file, props);
+
+    for (String key : props.stringPropertyNames()) {
+      String value = props.getProperty(key);
+      log.debug("[setCommonConnectionProperties] -  {} = {}", key, value);
+    }
   }
 }

@@ -29,6 +29,14 @@ public interface Repository {
   void persistirEnBaseDatos(Log miLog) throws MiRepositoryException;
 
   /**
+   * Persiste un objeto {@link Log} en la base de datos.
+   *
+   * @param miLog Instancia de {@link Log} a persistir.
+   * @throws MiRepositoryException Si ocurre un error durante la persistencia.
+   */
+  void persistirLogEnBloques(Log miLog) throws MiRepositoryException;
+
+  /**
    * Devuelve una lista de filtros de órganos de contratación construidos a partir de un filtro SQL
    * específico.
    *

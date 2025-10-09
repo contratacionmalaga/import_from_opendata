@@ -43,7 +43,7 @@ public class ServicePrincipalImpl implements ServicePrincipal {
   public ServicePrincipalImpl() throws MiServiceException {
     try {
       SessionFactory sessionFactory = SessionFactoryRegistry.getSessionFactory(
-          TipoConexion.MARIADB);
+          TipoConexion.PRINCIPAL);
       this.repository = new RepositoryImpl(sessionFactory);
     } catch (HibernateException ex) {
       String msg = "Error al obtener la SessionFactory para la conexión MARIADB";
@@ -62,7 +62,7 @@ public class ServicePrincipalImpl implements ServicePrincipal {
   public void persistirEnBaseDatos(Log miLog) throws MiServiceException {
     try {
       // El repositorio se encarga de la persistencia y manejo de las transacciones
-      repository.persistirEnBaseDatos(miLog);
+      repository.persistirLogEnBloques(miLog);
     } catch (MiRepositoryException ex) {
       String msg = String.format("[persistirLog] - Error persistiendo Log con ID %s: %s",
                                  miLog.getId(), ex.getMessage());
