@@ -109,8 +109,6 @@ public final class MapperEntry {
           MapperContractFolderStatus.getListContractFolderStatusFromListType(entry, entryType));
     }
 
-    entry.setNuts("ES617");
-
     return entry;
   }
 }

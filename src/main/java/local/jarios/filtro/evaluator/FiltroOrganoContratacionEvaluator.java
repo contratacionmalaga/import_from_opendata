@@ -34,9 +34,16 @@ public class FiltroOrganoContratacionEvaluator implements FiltroEvaluator {
       return Optional.of(tipo.getMensajeError());
     }
 
-    boolean encontrado = filtroSql.containsKey(idPlataformaOpt.get());
+    String idPlataforma = idPlataformaOpt.get();
+    boolean encontrado = filtroSql.containsKey(idPlataforma);
 
-    return encontrado ? Optional.empty() : Optional.of(tipo.getMensajeError());
+    if (encontrado) {
+      String nuts = filtroSql.get(idPlataforma);
+      entry.setNuts(nuts);
+      return Optional.empty();
+    } else {
+      return Optional.of(tipo.getMensajeError());
+    }
   }
 
   @Override
