@@ -50,6 +50,9 @@ public class Log extends Auditable {
   @Column(name = "lugar_importacion", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
   private LugarImportacion lugarImportacion;
 
+  @Column(name = "ubicacion", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String ubicacion;
+
   // Relaciones uno a uno
   @OneToOne(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true)
   private Estadistica estadistica;
@@ -76,6 +79,7 @@ public class Log extends Auditable {
   @Override
   public String toString() {
     return "Log: [" +
+        "ubicacion='" + ubicacion + "', " +
         "tipoSindicacion='" + tipoSindicacion + "', " +
         "lugarImportacion=" + lugarImportacion +
         "]";
