@@ -1,5 +1,7 @@
 package local.jarios;
 
+import local.jarios.common.util.Constantes;
+import local.jarios.common.util.Mensajes;
 import local.jarios.common.util.VariablesGlobales;
 import local.jarios.entity.atom.Entry;
 import local.jarios.enums.LugarImportacion;
@@ -17,13 +19,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Clase encargada de procesar y comparar entradas (Entry) obtenidas desde fuentes remotas
- * (INTERNET) con las almacenadas en base de datos, determinando cuáles deben insertarse o
- * actualizarse. Extiende {@link AbstractOpenData} para integrar el flujo común de procesamiento de
- * sindicación.
+ * Implementación concreta del proceso de importación de datos para fuentes locales.
+ * <p>
+ * Esta clase extiende {@link AbstractOpenData} y define el comportamiento específico para la
+ * sindicación de datos desde fuentes locales. Sobrescribe los métodos necesarios para identificar
+ * el tipo de sindicación, el lugar de importación, y cómo se parsean los feeds.
+ * </p>
  *
- * @author Juan
- * @since 04/07/2025
+ * <p>
+ * El punto de entrada {@code main} permite ejecutar el proceso completo llamando a
+ * {@link AbstractOpenData#procesar(String configDir)}.
+ * </p>
+ *
+ * @author Juan Antonio
+ * @see AbstractOpenData
+ * @see FeedHelper
+ * @see TipoSindicacionHelper
  */
 @Slf4j
 public class OpenDataInternet extends AbstractOpenData {
@@ -40,7 +51,22 @@ public class OpenDataInternet extends AbstractOpenData {
    * Método main para ejecutar el procesamiento directamente desde consola o entorno standalone.
    */
   public static void main(String[] args) {
-    new OpenDataInternet().procesar();
+
+    // Inicio del log
+    log.info("[OpenDataInternet.main] - {}", Mensajes.INICIO);
+
+    String configDir = Constantes.PROPERTIES_DIR; // valor por defecto
+    log.info("[OpenDataInternet.main] - Directorio por defecto: {}", configDir);
+
+    for (String arg : args) {
+      if (arg.startsWith("--configDir=")) {
+        configDir = arg.substring("--configDir=".length());
+      }
+    }
+
+    log.info("[OpenDataInternet.main] - Directorio enviado: {}", configDir);
+
+    new OpenDataLocal().procesar(configDir);
   }
 
   /**
@@ -119,17 +145,13 @@ public class OpenDataInternet extends AbstractOpenData {
           mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos.put(idEntry, entryFromAtom);
           log.info("[parsearAtomsFeeds] - {} -> ACTUALIZAR.", entryFromAtom.toStringResumido());
 
-          /**
-           * TRABAJAR CON EL HISTÓRICO PARA ESTABLECER EL VALOR SOBRE LA PRIMERA APARICIÓN DEL OBJETO
-           */
+          // TRABAJAR CON EL HISTÓRICO PARA ESTABLECER EL VALOR SOBRE LA PRIMERA APARICIÓN DEL OBJETO
 
         } else {
 
           log.info("[parsearAtomsFeeds] - {} -> REGISTRAR", entryFromAtom.toStringResumido());
 
-          /**
-           * TRABAJAR CON EL HISTÓRICO PARA ESTABLECER EL VALOR SOBRE LA PRIMERA APARICIÓN DEL OBJETO
-           */
+          // TRABAJAR CON EL HISTÓRICO PARA ESTABLECER EL VALOR SOBRE LA PRIMERA APARICIÓN DEL OBJETO
 
         }
       }
