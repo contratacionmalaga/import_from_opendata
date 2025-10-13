@@ -2,6 +2,7 @@ package local.jarios.services;
 
 import local.jarios.database.SessionFactoryRegistry;
 import local.jarios.entity.auxiliares.OrganoContratacion;
+import local.jarios.entity.auxiliares.Provincia;
 import local.jarios.enums.TipoConexion;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.exceptions.MiServiceException;
@@ -52,25 +53,53 @@ public class ServiceFiltroImpl implements ServiceFiltro {
    * Ejecuta una consulta SQL para obtener una lista de objetos {@link OrganoContratacion} que
    * coinciden con el filtro especificado.
    *
-   * @param filtroSQL Consulta SQL en forma de cadena que define el filtro a aplicar.
+   * @param sql Consulta SQL en forma de cadena que define el filtro a aplicar.
    * @return Lista de objetos {@link OrganoContratacion} que cumplen el filtro.
    * @throws MiServiceException si ocurre un error al ejecutar la consulta o acceder a datos.
    */
   @Override
-  public List<OrganoContratacion> getListFiltroOcsFromFiltroSql(String filtroSQL) throws MiServiceException {
+  public List<OrganoContratacion> getListOrganosContratacionFromSql(String sql) throws MiServiceException {
     String msg;
 
     try {
-      return repository.getListFiltroOcsFromFiltroSql(filtroSQL);
+      return repository.getListOrganosContratacionFromSql(sql);
     } catch (MiRepositoryException ex) {
       msg = String.format("[getListFiltroOcsFromFiltroSql] - Error en la consulta: %s. Error: %s",
-                          filtroSQL, ex.getMessage());
+                          sql, ex.getMessage());
       log.error(msg, ex);
       throw new MiServiceException(msg, ex);
     } catch (RuntimeException ex) {
       msg = String.format(
           "[getListFiltroOcsFromFiltroSql] - Error de ejecución en la consulta: %s. Error: %s",
-          filtroSQL, ex.getMessage());
+          sql, ex.getMessage());
+      log.error(msg, ex);
+      throw new MiServiceException(msg, ex);
+    }
+  }
+
+  /**
+   * Ejecuta una consulta SQL para obtener una lista de objetos {@link OrganoContratacion} que
+   * coinciden con el filtro especificado.
+   *
+   * @param sql Consulta SQL en forma de cadena que define el filtro a aplicar.
+   * @return Lista de objetos {@link Provincia} que cumplen el filtro.
+   * @throws MiServiceException si ocurre un error al ejecutar la consulta o acceder a datos.
+   */
+  @Override
+  public List<Provincia> getListProvinciasFromSql(String sql) throws MiServiceException {
+    String msg;
+
+    try {
+      return repository.getListProvinciasFromSql(sql);
+    } catch (MiRepositoryException ex) {
+      msg = String.format("[getListFiltroOcsFromFiltroSql] - Error en la consulta: %s. Error: %s",
+                          sql, ex.getMessage());
+      log.error(msg, ex);
+      throw new MiServiceException(msg, ex);
+    } catch (RuntimeException ex) {
+      msg = String.format(
+          "[getListFiltroOcsFromFiltroSql] - Error de ejecución en la consulta: %s. Error: %s",
+          sql, ex.getMessage());
       log.error(msg, ex);
       throw new MiServiceException(msg, ex);
     }

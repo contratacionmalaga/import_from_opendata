@@ -26,8 +26,8 @@ import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.exceptions.MiServiceException;
 import local.jarios.exceptions.MiUnknownHostException;
+import local.jarios.filtro.FiltroManager;
 import local.jarios.helpers.ComunHelper;
-import local.jarios.helpers.FiltroHelper;
 import local.jarios.helpers.LocalDateTimeHelper;
 import local.jarios.helpers.StringHelper;
 import local.jarios.properties.api.PropertiesManagerService;
@@ -414,7 +414,6 @@ public abstract class AbstractOpenData {
       // Si el lugar de importación es INTERNET entonces tengo que obtener el Map con los Entry y de paso
       //      el NewestEntry
       if (VariablesGlobales.getLugarImportacion().equals(LugarImportacion.INTERNET)) {
-
         VariablesGlobales.setMapEntriesFromBaseDatos(getMapEntryFromBaseDatos());
         VariablesGlobales.setNewestEntry(
             obtenerUltimaEntrada(VariablesGlobales.getMapEntriesFromBaseDatos()));
@@ -432,9 +431,19 @@ public abstract class AbstractOpenData {
       //
       LocalDateTime fechaHoraInicial = LocalDateTimeHelper.getLocalDateTimeNow();
 
-      // Cargo los filtros que se amplican y los imprimo
-      FiltroHelper.loadFilters();
+      // Creo el objeto para cargar los filtros
+      FiltroManager filtroManager = new FiltroManager();
+      filtroManager.cargarFiltros();
       log.info("[procesar] - Cargados correctamente los filtros que se aplican en esta ejecución.");
+
+      // Acceso a la lista de OCs cargada para asignarle el Log a cada uno de los elementos
+      List<OrganoContratacion> listaOcs = filtroManager.getListaOcs();
+      listaOcs.forEach(oc -> {
+        oc.setMiLog(miLog);
+      });
+
+      // Asigno la lista al Log.
+      miLog.setListOrganoContratacion(listaOcs);
 
       // Creo el objeto Configuracion
       Configuracion configuracion = new Configuracion(miLog);
@@ -449,12 +458,6 @@ public abstract class AbstractOpenData {
       log.info("[procesar] - **** INICIO DEL PARSEO DE LOS FICHEROS ATOMS.");
       parsearAtomsFeeds();
       log.info("[procesar] - **** FINALIZADO EL PARSEO DE LOS FICHEROS ATOMS.");
-
-      List<OrganoContratacion> listOrganoContratacion = VariablesGlobales.getMapFiltroSql().entrySet().stream()
-          .map(entry -> new OrganoContratacion(miLog, entry.getKey(), entry.getValue()))
-          .toList();
-      miLog.setListOrganoContratacion(listOrganoContratacion);
-      log.info("[procesar] - Asignada la lista de órganos de contratación al log.");
 
       // Obtengo el Map según la importación se realiza desde Internet o desde Local
       Map<String, Entry> mapEntriesToBaseDatos =

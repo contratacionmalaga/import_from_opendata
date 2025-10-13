@@ -8,6 +8,7 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.auxiliares.OrganoContratacion;
+import local.jarios.entity.auxiliares.Provincia;
 import local.jarios.entity.placsp.ContractFolderStatus;
 import local.jarios.entity.placsp.PreliminaryMarketConsultationStatus;
 import local.jarios.exceptions.MiRepositoryException;
@@ -162,21 +163,38 @@ public class RepositoryImpl implements Repository, AutoCloseable {
    * Ejecuta una consulta nativa SQL para obtener una lista de {@link OrganoContratacion} de acuerdo
    * al filtro indicado.
    *
-   * @param filtroSQL consulta SQL nativa que define el filtro.
+   * @param sql consulta SQL nativa que define el filtro.
    * @return lista de objetos {@link OrganoContratacion}.
    * @throws MiRepositoryException si ocurre error en la consulta.
    */
   @Override
-  public List<OrganoContratacion> getListFiltroOcsFromFiltroSql(String filtroSQL)
+  public List<OrganoContratacion> getListOrganosContratacionFromSql(String sql)
       throws MiRepositoryException {
-    List<OrganoContratacion> list = ejecutarDentroDeTransaccion(session ->
-                                                                    session.createNativeQuery(
-                                                                        filtroSQL,
-                                                                        OrganoContratacion.class).getResultList(),
-                                                                "getListFiltroOcsFromFiltroSql");
+    // Obtengo la list dentro de un transacción
 
-    list.forEach(f -> log.info(f.toString()));
-    return list;
+    return ejecutarDentroDeTransaccion(
+session ->
+        session.createNativeQuery(sql, OrganoContratacion.class).getResultList(),
+"getListFiltroOcsFromSql");
+  }
+
+  /**
+   * Ejecuta una consulta nativa SQL para obtener una lista de {@link OrganoContratacion} de acuerdo
+   * al filtro indicado.
+   *
+   * @param sql consulta SQL nativa que define el filtro.
+   * @return lista de objetos {@link Provincia}.
+   * @throws MiRepositoryException si ocurre error en la consulta.
+   */
+  @Override
+  public List<Provincia> getListProvinciasFromSql(String sql)
+      throws MiRepositoryException {
+    // Obtengo la list dentro de un transacción
+
+    return ejecutarDentroDeTransaccion(
+        session ->
+            session.createNativeQuery(sql, Provincia.class).getResultList(),
+        "getListProvinciasFromSql");
   }
 
   /**

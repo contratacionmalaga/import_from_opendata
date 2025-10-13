@@ -60,6 +60,9 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
   @Column(name = "updated")
   private LocalDateTime updated;
 
+  @Column(name = "nuts", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String nuts;
+
   // Relaciones
   @ManyToOne(
       fetch = FetchType.LAZY)
@@ -87,7 +90,8 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
         "link='" + link + "', " +
         "summary='" + summary + "', " +
         "title='" + title + "', " +
-        "updated='" + updated + "']";
+        "updated='" + updated + "', " +
+        "nuts='" + nuts + "']";
   }
 
   public String toStringResumido() {

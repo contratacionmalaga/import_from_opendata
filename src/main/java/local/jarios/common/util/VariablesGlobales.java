@@ -2,6 +2,7 @@ package local.jarios.common.util;
 
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
 import lombok.Getter;
@@ -28,22 +29,6 @@ import java.util.Map;
  * @author juan
  */
 public final class VariablesGlobales {
-
-  /**
-   * Ubicación con el código NUTS de la provincia desde la que se realiza la
-   * importación de los expedientes
-   */
-  @Getter
-  @Setter
-  private static String ubicacion;
-
-  /**
-   * Mapa que almacena los identificadores de plataforma y los órganos de contratación que se
-   * aplican mediante el filtro SQL.
-   */
-  @Getter
-  @Setter
-  private static Map<String, String> mapFiltroSql = new HashMap<>();
 
   /**
    * Mapa que contiene los objetos Entry indexados por su identificador durante la ejecución.
@@ -121,7 +106,15 @@ public final class VariablesGlobales {
    */
   @Getter
   @Setter
-  private static String filtroSql;
+  private static String filtroOcs;
+
+  /**
+   * Mapa que almacena los identificadores de plataforma y los órganos de contratación que se
+   * aplican mediante el filtro SQL.
+   */
+  @Getter
+  @Setter
+  private static Map<String, String> mapFiltroSql = new HashMap<>();
 
   /**
    * Constructor privado para evitar instanciación.

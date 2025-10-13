@@ -43,6 +43,12 @@ public class OrganoContratacion extends Auditable {
   @Column(name = "nombre_oc", nullable = false, length = TamanoCampos.TAMANO_2500)
   private String nombre_oc;
 
+  @Column(name = "codigo_postal", nullable = false, length = TamanoCampos.TAMANO_2500)
+  private String codigo_postal;
+
+  @Column(name = "codigo_nuts", nullable = false, length = TamanoCampos.TAMANO_2500)
+  private String codigo_nuts;
+
   //
   //
   //
@@ -60,20 +66,22 @@ public class OrganoContratacion extends Auditable {
   //
   //
   //
-  public OrganoContratacion(String idPlataforma, String nombreOc) {
+  public OrganoContratacion(String idPlataforma, String nombreOc, String codigo_postal) {
 
     this.id_plataforma = idPlataforma;
     this.nombre_oc = nombreOc;
+    this.codigo_postal = codigo_postal;
   }
 
   //
   //
   //
-  public OrganoContratacion(Log miLog, String idPlataforma, String nombreOc) {
+  public OrganoContratacion(Log miLog, String idPlataforma, String nombreOc, String codigo_postal) {
 
     this.miLog = miLog;
     this.id_plataforma = idPlataforma;
     this.nombre_oc = nombreOc;
+    this.codigo_postal = codigo_postal;
   }
 
   @Override
@@ -81,7 +89,9 @@ public class OrganoContratacion extends Auditable {
 
     return "OrganoContratacion: [" +
         "idPlataforma='" + id_plataforma + "', " +
-        "nombreOc='" + nombre_oc + "']";
+        "nombreOc='" + nombre_oc + "', " +
+        "codigo_postal='" + codigo_postal + "', " +
+        "codigo_nuts='" + codigo_nuts + "']";
   }
 }
 

@@ -15,6 +15,7 @@ import local.jarios.entity.placsp.ProcurementProject;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiInvalidDateFormatException;
+import local.jarios.filtro.FiltroManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Comparator;
@@ -89,7 +90,7 @@ public final class EntryHelper {
   }
 
   /**
-   * Obtiene la lista de feeds parseados desde local o remoto.
+   * Procesa una lista de Entry y devuelve TRUE | FALSE según se haya superado NewestEntry.
    */
   public static boolean procesarListaEntry(List<Entry> listEntry)
       throws MiInvalidDateFormatException {
@@ -103,13 +104,15 @@ public final class EntryHelper {
 
     // Proceso todos los entry hasta que se supere el NewestEntry en cuyo caso salgo anticipadamente
     for (Entry entry : listEntry) {
-      boolean esMasReciente = newestEntry == null || entry.getUpdated().isAfter(
-          newestEntry.getUpdated());
 
+      //
+      boolean esMasReciente = newestEntry == null || entry.getUpdated().isAfter(newestEntry.getUpdated());
+
+      //
       if (!esMasReciente) {
 
-        log.info("[procesarListaEntry] SUPERADO newestEntry. Nº de Entries leídos del Feed: {}.",
-                 nEntryLeidos);
+        //
+        log.info("[procesarListaEntry] SUPERADO newestEntry. Entries leídos del Feed: {}.", nEntryLeidos);
         return true;
       }
 
@@ -133,23 +136,17 @@ public final class EntryHelper {
    */
   public static void procesarEntry(Entry entry) {
 
+    FiltroManager filtroManager = new FiltroManager();
+
     // Compruebo que si el entry cumple con los filtros establecidos
-    String evaluacionFiltrosEntry = FiltroHelper.entryCumpleFiltros(entry);
+    String evaluacionFiltrosEntry = filtroManager.evaluarFiltros(entry);
+    log.info("{} -> {}", entry.getIdEntry(), evaluacionFiltrosEntry);
 
     if (evaluacionFiltrosEntry.equals(Mensajes.ENTRY_CUMPLE_FILTROS)) {
       // Cumple con los filtros
 
       // Inicio el procesamiento del entry
       procesarEntrySegunExistencia(entry);
-
-    } else {
-      // No cumple con los filtros
-
-      // Creo un histórico asociado al Entry con la opción RECHAZAR y lo añado a la lsita
-      Historico historico = new Historico(entry, EntryOpcion.RECHAZAR, evaluacionFiltrosEntry);
-      VariablesGlobales.getListHistoricos().add(historico);
-      log.debug("[procesarEntrySegunExistencia] - No cumple los filtros. {}",
-                evaluacionFiltrosEntry);
 
     }
   }
@@ -163,8 +160,7 @@ public final class EntryHelper {
   private static void procesarEntrySegunExistencia(Entry entry) {
 
     // Compruebo si el Entry figura en el MAP
-    boolean isEntryInMapFromAtoms = VariablesGlobales.getMapEntriesFromAtoms().containsKey(
-        entry.getIdEntry());
+    boolean isEntryInMapFromAtoms = VariablesGlobales.getMapEntriesFromAtoms().containsKey(entry.getIdEntry());
 
     if (isEntryInMapFromAtoms) {
       // Si existe en el MAP

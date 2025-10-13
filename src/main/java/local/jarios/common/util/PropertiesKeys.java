@@ -55,7 +55,7 @@ public final class PropertiesKeys {
   /**
    * Clave para la sentencia SQL del filtro.
    */
-  public static final String FILTER_SQL = "filter.sql";
+  public static final String FILTER_ORGANOS_CONTRATACION = "filter.ocs";
 
   /**
    * Clave para el objeto del filtro.
@@ -66,11 +66,6 @@ public final class PropertiesKeys {
    * Clave para el filtro NUTS.
    */
   public static final String FILTER_NUTS = "filter.nuts";
-
-  /**
-   * Clave para el filtro con la ubicación desde la que se realiza la importación.
-   */
-  public static final String FILTER_UBICACION = "filter.ubicacion";
 
   /* Claves de propiedades para Jakarta Persistence */
 

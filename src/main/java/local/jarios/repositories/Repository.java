@@ -4,6 +4,7 @@ import local.jarios.entity.Log;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.OrganoContratacion;
+import local.jarios.entity.auxiliares.Provincia;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.exceptions.MiServiceException;
 
@@ -40,11 +41,21 @@ public interface Repository {
    * Devuelve una lista de filtros de órganos de contratación construidos a partir de un filtro SQL
    * específico.
    *
-   * @param filtroSQL Filtro SQL para filtrar los órganos de contratación.
+   * @param sql Filtro SQL para filtrar los órganos de contratación.
    * @return Lista de {@link OrganoContratacion} que cumplen el filtro.
    * @throws MiRepositoryException Si ocurre un error en Hibernate durante la consulta.
    */
-  List<OrganoContratacion> getListFiltroOcsFromFiltroSql(String filtroSQL) throws MiRepositoryException;
+  List<OrganoContratacion> getListOrganosContratacionFromSql(String sql) throws MiRepositoryException;
+
+  /**
+   * Devuelve una lista de filtros de órganos de contratación construidos a partir de un filtro SQL
+   * específico.
+   *
+   * @param sql Filtro SQL para filtrar los órganos de contratación.
+   * @return Lista de {@link Provincia} que cumplen el filtro.
+   * @throws MiRepositoryException Si ocurre un error en Hibernate durante la consulta.
+   */
+  List<Provincia> getListProvinciasFromSql(String sql) throws MiRepositoryException;
 
   /**
    * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.

@@ -26,7 +26,7 @@ public final class Mensajes {
   public static final String ENTIDADES =
       "{}Se han encontrado {} entidades dentro del paquete {}.";
   public static final String ENTRY_NUEVO = "El Entry no figura en la base de datos.";
-  public static final String ENTRY_NO_FILTRO_SQL = "El Entry no cumple el filtro SQL.";
+  public static final String ENTRY_NO_FILTRO_ORGANOS_CONTRATACION = "El Entry no cumple el filtro ORGANOS CONTRATACIÓN.";
   public static final String ENTRY_NO_FILTRO_FECHAS = "El Entry no cumple el filtro FECHAS.";
   public static final String ENTRY_NO_FILTRO_OBJETO = "El Entry no cumple el filtro OBJETO.";
   public static final String ENTRY_NO_FILTRO_NUTS = "El Entry no cumple el filtro NUTS.";
