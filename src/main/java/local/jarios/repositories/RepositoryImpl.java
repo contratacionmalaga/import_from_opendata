@@ -1,6 +1,7 @@
 package local.jarios.repositories;
 
 import jakarta.persistence.TypedQuery;
+import local.jarios.common.util.VariablesGlobales;
 import local.jarios.entity.Log;
 import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
@@ -192,109 +193,117 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     }
   }
 
+  /**
+   * Función encargada de persistir en la base de datos la importación utilizando bloques.
+   *
+   * @param miLog Instancia de {@link Log} a persistir.
+   */
   public void persistirLogEnBloques(Log miLog) {
 
-    // Obtengo el objeto session a partir de SessionFactory
-    Session session = sessionFactory.openSession();
+    ejecutarDentroDeTransaccion(session -> {
 
-    // Apunto el inicio
-    long start = System.currentTimeMillis();
+      // Apunto el inicio
+      long start = System.currentTimeMillis();
 
-    // Obtengo las propiedades del objeto SessionFactory
-    var map = sessionFactory.getProperties();
+      // Obtengo las propiedades del objeto SessionFactory
+      var map = sessionFactory.getProperties();
 
-    for (Map.Entry<String, Object> entry : map.entrySet()) {
-      log.debug("[persistirLogEnBloques] - {}", entry.getKey() + " = " + entry.getValue());
-    }
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        log.debug("[persistirLogEnBloques] - {}", entry.getKey() + " = " + entry.getValue());
+      }
 
-    String batchSizeStr = (String) map.get("hibernate.jdbc.batch_size");
-    int batchSize = Integer.parseInt(batchSizeStr);
-    log.debug(String.valueOf(batchSize));
+      String batchSizeStr = (String) map.get("hibernate.jdbc.batch_size");
+      int batchSize = Integer.parseInt(batchSizeStr);
+      log.debug(String.valueOf(batchSize));
 
-    int contador = 0;
+      int contador = 0;
 
-    session.persist(miLog);
-    session.flush();
-    log.info("Persistido el regsitro Log");
+      session.persist(miLog);
+      session.flush();
+      log.info("Persistido el regsitro Log");
 
-    if (miLog.getConfiguracion() != null) {
-      miLog.getConfiguracion().setMiLog(miLog);
-      session.persist(miLog.getConfiguracion());
-      log.info("Persistido el registro Configuracion");
-    }
+      if (miLog.getConfiguracion() != null) {
+        miLog.getConfiguracion().setMiLog(miLog);
+        session.persist(miLog.getConfiguracion());
+        log.info("Persistido el registro Configuracion");
+      }
 
-    if (miLog.getEstadistica() != null) {
-      miLog.getEstadistica().setMiLog(miLog);
-      session.persist(miLog.getEstadistica());
-      log.info("Persistido el registro Estadistica");
-    }
+      if (miLog.getEstadistica() != null) {
+        miLog.getEstadistica().setMiLog(miLog);
+        session.persist(miLog.getEstadistica());
+        log.info("Persistido el registro Estadistica");
+      }
 
-    for (OrganoContratacion oc : miLog.getListOrganoContratacion()) {
-      oc.setMiLog(miLog);
-      session.persist(oc);
-    }
-    session.flush();
-    session.clear();
-    log.info("Persistidos {} registros del tipo OrganoContratacion", miLog.getListOrganoContratacion().size());
-
-    for (Historico historico : miLog.getListHistorio()) {
-      historico.setMiLog(miLog);
-      session.persist(historico);
-    }
-    session.flush();
-    session.clear();
-    log.info("Persistidos {} registros del tipo Historico", miLog.getListOrganoContratacion().size());
-
-    for (Feed feed : miLog.getListFeed()) {
-      feed.setMiLog(miLog);
-      session.persist(feed);
-      log.info("Persistido Feed - {}", feed.getLinkSelf());
-
-      for (DeletedEntry deletedEntry : feed.getListDeletedEntry()) {
-        deletedEntry.setFeed(feed);
-        session.persist(deletedEntry);
+      for (OrganoContratacion oc : miLog.getListOrganoContratacion()) {
+        oc.setMiLog(miLog);
+        session.persist(oc);
       }
       session.flush();
       session.clear();
-      log.info("Persistidos {} registros del tipo DeletedEntry", feed.getListDeletedEntry().size());
+      log.info("Persistidos {} registros del tipo OrganoContratacion", miLog.getListOrganoContratacion().size());
 
-      for (Entry entry : feed.getListEntry()) {
-        entry.setFeed(feed);
-        session.persist(entry);
-
-        int n_registros = entry.getListContractFolderStatus().isEmpty() ?
-            entry.getListPreliminaryMarketConsultationStatus().size() :
-            entry.getListContractFolderStatus().size();
-
-        for (ContractFolderStatus contractFolderStatus : entry.getListContractFolderStatus()) {
-          contractFolderStatus.setEntry(entry);
-          session.persist(contractFolderStatus);
-        }
-
-        for (PreliminaryMarketConsultationStatus pmcs : entry.getListPreliminaryMarketConsultationStatus()) {
-          pmcs.setEntry(entry);
-          session.persist(pmcs);
-        }
-
-        if (++contador % batchSize == 0) {
-          session.flush();
-          session.clear();
-        }
-
-        log.info("Persistido Entry - {} - {}", contador + "/" + n_registros, entry.getIdEntry());
-
+      for (Historico historico : miLog.getListHistorio()) {
+        historico.setMiLog(miLog);
+        session.persist(historico);
       }
-    }
+      session.flush();
+      session.clear();
+      log.info("Persistidos {} registros del tipo Historico", miLog.getListOrganoContratacion().size());
 
-    // Flush final
-    flushAndClear(session);
-    session.merge(miLog);
-    flushAndClear(session);
+      // Obtengo el número de registros desde la base de datos en memoria
+      int n_registros = VariablesGlobales.getMapEntriesFromAtoms().size();
 
-    long end = System.currentTimeMillis();
+      // Recorro cada feed dentro de la lista de Feeds asociada al Log.
+      for (Feed feed : miLog.getListFeed()) {
+        feed.setMiLog(miLog);
+        session.persist(feed);
+        log.info("Persistido Feed - {}", feed.getLinkSelf());
 
-    log.debug("[persistirLogEnBloques] - Persistencia de Log completada correctamente.");
+        for (DeletedEntry deletedEntry : feed.getListDeletedEntry()) {
+          deletedEntry.setFeed(feed);
+          session.persist(deletedEntry);
+        }
+        session.flush();
+        session.clear();
+        log.info("Persistidos {} registros del tipo DeletedEntry", feed.getListDeletedEntry().size());
 
-    log.info("Tiempo de ejecución en base de datos: {}", (end - start) + "ms");
+        // Recorro cada entry dentro de la lista de Entrys asociada al Feed.
+        for (Entry entry : feed.getListEntry()) {
+          entry.setFeed(feed);
+          session.persist(entry);
+
+          // Recorro los ContractFolderStatus
+          for (ContractFolderStatus contractFolderStatus : entry.getListContractFolderStatus()) {
+            contractFolderStatus.setEntry(entry);
+            session.persist(contractFolderStatus);
+          }
+
+          // Recorro los PreliminaryMarketConsultationStatus
+          for (PreliminaryMarketConsultationStatus pmcs : entry.getListPreliminaryMarketConsultationStatus()) {
+            pmcs.setEntry(entry);
+            session.persist(pmcs);
+          }
+
+          if (++contador % batchSize == 0) {
+            session.flush();
+            session.clear();
+          }
+
+          log.info("Persistido Entry - {} - {}", contador + "/" + n_registros, entry.getIdEntry());
+
+        }
+      }
+
+      // Flush final
+      flushAndClear(session);
+      session.merge(miLog);
+      flushAndClear(session);
+
+      long end = System.currentTimeMillis();
+      log.debug("[persistirLogEnBloques] - Persistencia de Log completada correctamente.");
+      log.info("Tiempo de ejecución en base de datos: {}", (end - start) + "ms");
+
+      return null; // el método Function<Session, R> espera un retorno
+    }, "persistirLogEnBloques");
   }
 }

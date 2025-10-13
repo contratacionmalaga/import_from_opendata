@@ -30,6 +30,14 @@ import java.util.Map;
 public final class VariablesGlobales {
 
   /**
+   * Ubicación con el código NUTS de la provincia desde la que se realiza la
+   * importación de los expedientes
+   */
+  @Getter
+  @Setter
+  private static String ubicacion;
+
+  /**
    * Mapa que almacena los identificadores de plataforma y los órganos de contratación que se
    * aplican mediante el filtro SQL.
    */

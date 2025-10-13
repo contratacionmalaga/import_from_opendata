@@ -67,6 +67,9 @@ public class Configuracion extends Auditable {
   @Column(name = "filtro_nuts")
   private String filtroNuts;
 
+  @Column(name = "filtro_ubicacion")
+  private String filtroUbicacion;
+
   //
   //
   //
@@ -110,6 +113,7 @@ public class Configuracion extends Auditable {
     this.filtroSql = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_SQL);
     this.filtroObjeto = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_OBJETO);
     this.filtroNuts = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_NUTS);
+    this.filtroUbicacion = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_UBICACION);
   }
 
   @Override
@@ -123,7 +127,7 @@ public class Configuracion extends Auditable {
         "filtroFechaFinLectura='" + filtroFechaFinLectura + "', " +
         "filtroSql='" + filtroSql + "', " +
         "filtroObjeto='" + filtroObjeto + "', " +
-        "filtroNuts='" + filtroNuts + "']";
-
+        "filtroNuts='" + filtroNuts + "', " +
+        "filtroUbicacion='" + filtroUbicacion + "']";
   }
 }

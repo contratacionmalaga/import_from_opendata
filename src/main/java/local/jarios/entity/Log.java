@@ -71,7 +71,9 @@ public class Log extends Auditable {
   private List<Historico> listHistorio = new ArrayList<>();
 
   // Constructor principal
-  public Log(LugarImportacion lugarImportacion, TipoSindicacion tipoSindicacion) {
+  public Log(
+      LugarImportacion lugarImportacion,
+      TipoSindicacion tipoSindicacion) {
     this.lugarImportacion = lugarImportacion;
     this.tipoSindicacion = tipoSindicacion;
   }
