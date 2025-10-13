@@ -60,7 +60,7 @@
 
         <!-- JAXB versions -->
         <jaxb.core.version>2.3.0.1</jaxb.core.version>
-        <jaxb.impl.version>2.3.1</jaxb.impl.version>
+        <jaxb.impl.version>4.0.6</jaxb.impl.version>
         <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
         <javax.activation.version>1.2.0</javax.activation.version>
 
