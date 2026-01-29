@@ -18,12 +18,12 @@ public interface HasIdEntry<V> {
    *
    * @return identificador de tipo {@code V}.
    */
-  String getIdEntry();
+  String getEntryId();
 
   /**
    * Establece el identificador único de la entidad.
    *
-   * @param idEntry valor a asignar de tipo {@code V}.
+   * @param entryId valor a asignar de tipo {@code V}.
    */
-  void setIdEntry(String idEntry);
+  void setEntryId(String entryId);
 }

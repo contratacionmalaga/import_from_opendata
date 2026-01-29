@@ -19,8 +19,10 @@ public final class Mensajes {
       "No se puede leer. {}";
   public static final String MENSAJE_VALOR_SWITCH_INCORRECTO =
       "EL VALOR DE {}: ({}) NO ES VÁLIDO";
-  public static final String INICIO =
-      "**** Inicio de la ejecución del programa ****";
+  public static final String INICIO_LOCAL =
+      "**** INICIO DE LA EJECUCIÓN DEL PROGRAMA -- LOCAL  ****";
+  public static final String INICIO_INTERNET =
+      "**** INICIO DE LA EJECUCIÓN DEL PROGRAMA -- INTERNET  ****";
   public static final String FINAL_CORRECTO =
       "**** La ejecución ha finalizado CORRECTAMENTE ****";
   public static final String ENTIDADES =
@@ -31,6 +33,20 @@ public final class Mensajes {
   public static final String ENTRY_NO_FILTRO_OBJETO = "El Entry no cumple el filtro OBJETO.";
   public static final String ENTRY_NO_FILTRO_NUTS = "El Entry no cumple el filtro NUTS.";
   public static final String ENTRY_CUMPLE_FILTROS = "El Entry cumple los filtros.";
+
+  /**
+   * Mensaje con marcador para el número de órganos de contratación en base de datos antes de la
+   * importación.
+   */
+  public static final String NREGISTROS_OC_BASEDATOS_ANTES =
+      "Nº de órganos de contratación en base de datos: {}";
+
+  /**
+   * Mensaje con marcador para el número de órganos de contratación importados del Excel.
+   */
+  public static final String NREGISTROS_OC_EXCEl =
+      "Nº de órganos de contratación en excel: {}";
+
   /**
    * Mensaje insertar
    */

@@ -6,6 +6,7 @@ import local.jarios.enums.LugarImportacion;
 import local.jarios.enums.TipoSindicacion;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.helpers.FeedHelper;
+import local.jarios.helpers.StringHelper;
 import local.jarios.helpers.TipoSindicacionHelper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,14 +42,15 @@ public class OpenDataLocal extends AbstractOpenData {
   public static void main(String[] args) {
 
     // Inicio del log
-    log.info("[OpenDataLocal.main] - {}", Mensajes.INICIO);
+    StringHelper.generarTitulo(log, Mensajes.INICIO_LOCAL);
 
     String configDir = Arrays.stream(args)
         .filter(arg -> arg.startsWith("--configDir="))
         .map(arg -> arg.substring("--configDir=".length()))
         .findFirst()
         .orElseGet(() -> {
-          log.info("[OpenDataLocal.main] - No se encontró el parámetro '--configDir='. Usando valor por defecto: {}", Constantes.PROPERTIES_DIR);
+          log.info("No se especificó el parámetro '--configDir='. Usando el valor por defecto: {}",
+                   Constantes.PROPERTIES_DIR);
           return Constantes.PROPERTIES_DIR;
         });
 

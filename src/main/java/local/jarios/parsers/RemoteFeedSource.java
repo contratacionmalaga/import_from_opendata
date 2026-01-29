@@ -118,7 +118,7 @@ public class RemoteFeedSource implements FeedSource {
   @Override
   public String getNextLink(Feed feed) throws MiUrlException {
     String url = feed.getLinkNext();
-    log.debug("[getNextLink] nextLink del Feed '{}': {}", feed.toStringResumido(), url);
+    log.debug("[getNextLink] nextLink del Feed '{}': {}", feed, url);
     validateUrl(url);
     return url;
   }

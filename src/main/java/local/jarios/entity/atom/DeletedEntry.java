@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
-import local.jarios.entity.auxiliares.Auditable;
+import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,7 +25,7 @@ import java.util.UUID;
 @Table(
     name = "deleted_entry"
 )
-public class DeletedEntry extends Auditable {
+public class DeletedEntry extends AuditableCreatedAt {
 
   // Primary Key
   @Id
@@ -59,9 +59,6 @@ public class DeletedEntry extends Auditable {
   // Representaciones en texto
   @Override
   public String toString() {
-    return "DeletedEntry: [" +
-        "updated='" + updated + "', " +
-        "ref='" + ref + "', " +
-        "comment='" + comment + "']";
+    return "DeletedEntry: [" + ref + ", " + comment + "]";
   }
 }

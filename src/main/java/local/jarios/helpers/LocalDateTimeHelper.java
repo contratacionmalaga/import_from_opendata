@@ -3,6 +3,7 @@ package local.jarios.helpers;
 import local.jarios.common.util.Constantes;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -90,5 +91,16 @@ public final class LocalDateTimeHelper {
                 ex.getMessage());
       return Optional.empty();
     }
+  }
+
+  /**
+   * Obtiene la fecha y hora local actual en la zona horaria de Madrid (Europe/Madrid).
+   *
+   * @return {@link LocalDateTime} con la fecha y hora actual en Madrid.
+   */
+  public static LocalDateTime getLocalDateTimeFromXmlGregorianCalendar(
+      XMLGregorianCalendar xmlGregorianCalendar
+  ) {
+    return xmlGregorianCalendar.toGregorianCalendar().toZonedDateTime().toLocalDateTime();
   }
 }

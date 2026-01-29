@@ -12,7 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
-import local.jarios.entity.Log;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.atom.Entry;
 import local.jarios.enums.EntryOpcion;
 import lombok.Getter;
@@ -27,7 +27,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "historico")
-public class Historico extends Auditable {
+public class Historico extends AuditableCreatedAt {
 
   // Primary Key
   @Id
@@ -61,6 +61,12 @@ public class Historico extends Auditable {
   @Column(name = "motivo", columnDefinition = "TEXT")
   private String entryMotivo;
 
+  @Column(name = "id_plataforma", length = TamanoCampos.TAMANO_50)
+  private String idPlataforma;
+
+  @Column(name = "nif", length = TamanoCampos.TAMANO_50)
+  private String nif;
+
   // Relationship
   @ManyToOne(
       fetch = FetchType.LAZY)
@@ -78,21 +84,26 @@ public class Historico extends Auditable {
   public Historico(Entry entry, EntryOpcion opcion, String motivo) {
     this.miLog = entry.getFeed().getMiLog();
     this.feedLinkSelf = entry.getFeed().getLinkSelf();
-    this.entryId = entry.getIdEntry();
+    this.entryId = entry.getEntryId();
     this.entryLink = entry.getLink();
     this.entrySummary = entry.getSummary();
     this.entryTitle = entry.getTitle();
     this.entryUpdated = entry.getUpdated();
     this.entryOpcion = opcion;
     this.entryMotivo = motivo;
+    this.nif = entry.getNifFromEntry();
+    this.idPlataforma = entry.getIdPlataformaFromEntry();
   }
 
   // String representaciones
   @Override
   public String toString() {
     return "Historico: [" +
-        "entryId='" + entryId + "', " +
         "feedLinkSelf='" + feedLinkSelf + "', " +
+        "entryId='" + entryId + "', " +
+        "entryLink='" + entryLink + "', " +
+        "entrySummary='" + entrySummary + "', " +
+        "entryTitle='" + entryTitle + "', " +
         "entryUpdated='" + entryUpdated + "', " +
         "entryOpcion='" + entryOpcion + "', " +
         "entryMotivo='" + entryMotivo + "']";

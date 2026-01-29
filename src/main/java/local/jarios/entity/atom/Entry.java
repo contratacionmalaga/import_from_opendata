@@ -1,6 +1,5 @@
 package local.jarios.entity.atom;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,9 +12,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import local.jarios.common.util.Constantes;
-import local.jarios.entity.auxiliares.Auditable;
-import local.jarios.entity.placsp.ContractFolderStatus;
-import local.jarios.entity.placsp.PreliminaryMarketConsultationStatus;
+import local.jarios.common.util.VariablesGlobales;
+import local.jarios.entity.auxiliares.AuditableCreatedAt;
+import local.jarios.entity.codice.ContractFolderStatus;
+import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
+import local.jarios.enums.TipoSindicacion;
 import local.jarios.interfaces.HasIdEntry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,10 +34,10 @@ import java.util.UUID;
 @Table(
     name = "entry",
     indexes = {
-        @Index(name = "idx_unique_entry", columnList = "id_entry", unique = true)
+        @Index(name = "idx_unique_entry", columnList = "entry_id", unique = true)
     }
 )
-public class Entry extends Auditable implements HasIdEntry<Entry> {
+public class Entry extends AuditableCreatedAt implements HasIdEntry<Entry> {
 
   // Primary Key
   @Id
@@ -45,10 +46,14 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
   private UUID id;
 
   // Campos de entrada
-  @Column(name = "id_entry", nullable = false, unique = true, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
-  private String idEntry;
+  @Column(name = "entry_id", nullable = false, unique = true, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  private String entryId;
 
-  @Column(name = "link", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  // Campos de entrada
+  @Column(name = "entry_id_corto", nullable = false, unique = true, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String entryIdCorto;
+
+  @Column(name = "link", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String link;
 
   @Column(name = "summary", columnDefinition = "TEXT")
@@ -57,11 +62,8 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
   @Column(name = "title", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
   private String title;
 
-  @Column(name = "updated")
+  @Column(name = "updated", nullable = false)
   private LocalDateTime updated;
-
-  @Column(name = "nuts", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
-  private String nuts;
 
   // Relaciones
   @ManyToOne(
@@ -77,28 +79,64 @@ public class Entry extends Auditable implements HasIdEntry<Entry> {
   private Feed feed;
 
   @OneToMany(mappedBy = "entry", orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<ContractFolderStatus> listContractFolderStatus = new ArrayList<>();
+  private List<ContractFolderStatus> contractFolderStatusList = new ArrayList<>();
 
   @OneToMany(mappedBy = "entry", orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<PreliminaryMarketConsultationStatus> listPreliminaryMarketConsultationStatus = new ArrayList<>();
+  private List<PreliminaryMarketConsultationStatus> preliminaryMarketConsultationStatusList = new ArrayList<>();
 
   // Representaciones en texto
   @Override
   public String toString() {
-    return "Entry: [" +
-        "idEntry='" + idEntry + "', " +
-        "link='" + link + "', " +
-        "summary='" + summary + "', " +
-        "title='" + title + "', " +
-        "updated='" + updated + "', " +
-        "nuts='" + nuts + "']";
+    return "Entry: [" + entryId + ", " + updated + ", " + getNifFromEntry() + ", " + getIdPlataformaFromEntry() + "]";
   }
 
-  public String toStringResumido() {
-    return "Entry: [" +
-        "idEntry='" + idEntry + "', " +
-        "updated='" + updated + "', " +
-        "id='" + id +
-        "']";
+  /**
+   * Obtiene el IdPlataforma asociado a un Entry
+   *
+   * @return Devuelve el identificador
+   */
+  public String getIdPlataformaFromEntry() {
+
+    if (VariablesGlobales.getTipoSindicacion() == TipoSindicacion.CPM) {
+      return this.getPreliminaryMarketConsultationStatusList().stream()
+          .map(PreliminaryMarketConsultationStatus::getIdPlataforma)
+          .filter(id -> id != null && !id.isBlank())
+          .findFirst()
+          .orElse("No se encontró idPlataforma para el entry: " + this.getEntryId());
+    }
+
+    // No CPM: si ya tienes el id en ContractFolderStatus, úsalo directamente
+    return this.getContractFolderStatusList().stream()
+        .map(ContractFolderStatus::getIdPlataforma) // probablemente String
+        .filter(id -> id != null && !id.isBlank())
+        .findFirst()
+        .orElse("No se encontró idPlataforma para el entry: " + this.getEntryId());
+  }
+
+  /**
+   * Obtiene el IdPlataforma asociado a un Entry
+   *
+   * @return Devuelve el identificador
+   */
+  public String getNifFromEntry() {
+
+    if (VariablesGlobales.getTipoSindicacion() == TipoSindicacion.CPM) {
+      return this.getPreliminaryMarketConsultationStatusList().stream()
+          .map(PreliminaryMarketConsultationStatus::getNif)
+          .filter(id -> id != null && !id.isBlank())
+          .findFirst()
+          .orElseThrow(() -> new IllegalStateException(
+              "No se encontró Nif asociado al entry: " + this.getEntryId()
+          ));
+    }
+
+    // No CPM: si ya tienes el id en ContractFolderStatus, úsalo directamente
+    return this.getContractFolderStatusList().stream()
+        .map(ContractFolderStatus::getNif) // probablemente String
+        .filter(id -> id != null && !id.isBlank())
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException(
+            "No se encontró Nif asociado al entry: " + this.getEntryId()
+        ));
   }
 }

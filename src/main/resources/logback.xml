@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Quita esto cuando ya no estés depurando logback -->
+    <!-- <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/> -->
+
+    <property name="APP_NAME" value="import-from-opendata"/>
+    <property name="LOG_PATH" value="logs"/>
+    <timestamp key="ts" datePattern="yyyy-MM-dd_HH-mm-ss"/>
+
+    <!-- Patrón fichero (más completo) -->
+    <property name="FILE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %-40.40logger:%-4line - %msg%n"/>
+
+    <!-- Consola: limpio, con logger fijo y línea -->
+    <property name="CONSOLE_PATTERN"
+              value="%d{HH:mm:ss.SSS} %-5level %-30.30logger:%-4line - %msg%n"/>
+
+    <!-- ===================== -->
+    <!-- APPENDER FICHERO (TODO) -->
+    <!-- ===================== -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_PATH}/${APP_NAME}_${ts}.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ===================== -->
+    <!-- APPENDER HIBERNATE -->
+    <!-- ===================== -->
+    <appender name="HIBERNATE_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_PATH}/${APP_NAME}_hibernate_${ts}.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ===================== -->
+    <!-- APPENDER CONSOLA (SOLO TU APP) -->
+    <!-- ===================== -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ===================== -->
+    <!-- TU CÓDIGO A CONSOLA + A FICHERO -->
+    <!-- additivity=false => evita duplicar en consola por el root -->
+    <!-- ===================== -->
+    <logger name="local.jarios" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- ===================== -->
+    <!-- STACK PERSISTENCIA / JPA -->
+    <!-- ===================== -->
+
+    <!-- Hibernate -->
+    <logger name="org.hibernate" level="INFO" additivity="false">
+        <appender-ref ref="HIBERNATE_FILE"/>
+    </logger>
+
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <appender-ref ref="HIBERNATE_FILE"/>
+    </logger>
+
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE" additivity="false">
+        <appender-ref ref="HIBERNATE_FILE"/>
+    </logger>
+
+    <!-- HikariCP -->
+    <logger name="com.zaxxer.hikari" level="INFO" additivity="false">
+        <appender-ref ref="HIBERNATE_FILE"/>
+    </logger>
+
+    <!-- MariaDB / JDBC -->
+    <logger name="org.mariadb.jdbc" level="WARN" additivity="false">
+        <appender-ref ref="HIBERNATE_FILE"/>
+    </logger>
+
+    <!-- Reflections (escaneo de entidades, etc.) -->
+    <logger name="org.reflections" level="INFO" additivity="false">
+        <appender-ref ref="HIBERNATE_FILE"/>
+    </logger>
+
+    <!-- ===================== -->
+    <!-- ROOT: TODO LO DEMÁS SOLO A FICHERO -->
+    <!-- ===================== -->
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

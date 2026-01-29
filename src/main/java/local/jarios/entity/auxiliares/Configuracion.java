@@ -13,7 +13,6 @@ import local.jarios.common.util.Constantes;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.common.util.VariablesGlobales;
-import local.jarios.entity.Log;
 import local.jarios.properties.api.PropertiesManagerService;
 import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import lombok.Getter;
@@ -33,43 +32,56 @@ import java.util.UUID;
     name = "configuracion"
 )
 @Slf4j
-public class Configuracion extends Auditable {
+public class Configuracion extends AuditableCreatedAt {
 
-  //
-  //
-  //
+  /**
+   * Identificador.
+   */
   @Id
   @GeneratedValue(generator = "UUID")
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
+  /**
+   * Fecha del fichero excel asociado a los órganos de contratación.
+   */
   @Column(name = "path", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String path;
 
+  /**
+   * Fecha del fichero excel asociado a los órganos de contratación.
+   */
   @Column(name = "filename", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String filename;
 
+  /**
+   * Fecha del fichero excel asociado a los órganos de contratación.
+   */
   @Column(name = "url", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
   private String url;
 
+  /**
+   * Fecha del fichero excel asociado a los órganos de contratación.
+   */
   @Column(name = "filtro_fecha_inicio_lectura")
   private LocalDateTime filtroFechaInicioLectura;
 
+  /**
+   * Fecha del fichero excel asociado a los órganos de contratación.
+   */
   @Column(name = "filtro_fecha_fin_lectura")
   private LocalDateTime filtroFechaFinLectura;
 
-  @Column(name = "filtro_sql", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
-  private String filtroSql;
+  /**
+   * Fecha del fichero excel asociado a los órganos de contratación.
+   */
+  @Column(name = "filtro_codigos_postales", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  private String filtroCodigosPostales;
 
-  @Column(name = "filtro_objeto")
-  private String filtroObjeto;
+  @Column(name = "filtro_nif", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  private String filtroNifs;
 
-  @Column(name = "filtro_nuts")
-  private String filtroNuts;
 
-  //
-  //
-  //
   @OneToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -81,10 +93,11 @@ public class Configuracion extends Auditable {
           foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
   private Log miLog;
 
-
-  //
-  //
-  //
+  /**
+   * Constructor de la clase.
+   *
+   * @param miLog Log asociado.
+   */
   public Configuracion(Log miLog) {
 
     this.miLog = miLog;
@@ -107,9 +120,12 @@ public class Configuracion extends Auditable {
 
     this.filtroFechaInicioLectura = VariablesGlobales.getFiltroFechaInicial();
     this.filtroFechaFinLectura = VariablesGlobales.getFiltroFechaFinal();
-    this.filtroSql = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_ORGANOS_CONTRATACION);
-    this.filtroObjeto = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_OBJETO);
-    this.filtroNuts = props.getProperty(PropertiesFiles.FILTER, PropertiesKeys.FILTER_NUTS);
+    this.filtroCodigosPostales = props.getProperty(
+        PropertiesFiles.FILTER,
+        PropertiesKeys.FILTER_CODIGOS_POSTALES);
+    this.filtroNifs = props.getProperty(
+        PropertiesFiles.FILTER,
+        PropertiesKeys.FILTER_NIFS);
   }
 
   @Override
@@ -121,8 +137,7 @@ public class Configuracion extends Auditable {
         "url='" + url + "', " +
         "filtroFechaInicioLectura='" + filtroFechaInicioLectura + "', " +
         "filtroFechaFinLectura='" + filtroFechaFinLectura + "', " +
-        "filtroSql='" + filtroSql + "', " +
-        "filtroObjeto='" + filtroObjeto + "', " +
-        "filtroNuts='" + filtroNuts + "', " + "']";
+        "filtroCodigosPostales='" + filtroCodigosPostales +
+        "filtroNifs='" + filtroNifs + "']";
   }
 }

@@ -55,17 +55,12 @@ public final class PropertiesKeys {
   /**
    * Clave para la sentencia SQL del filtro.
    */
-  public static final String FILTER_ORGANOS_CONTRATACION = "filter.ocs";
+  public static final String FILTER_CODIGOS_POSTALES = "filter.codigosPostales";
 
   /**
-   * Clave para el objeto del filtro.
+   * Variable que contiene la lista con los nifs por los que filtrar.
    */
-  public static final String FILTER_OBJETO = "filter.objeto";
-
-  /**
-   * Clave para el filtro NUTS.
-   */
-  public static final String FILTER_NUTS = "filter.nuts";
+  public static final String FILTER_NIFS = "filter.nifs";
 
   /* Claves de propiedades para Jakarta Persistence */
 

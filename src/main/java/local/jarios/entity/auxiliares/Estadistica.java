@@ -9,8 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import local.jarios.common.util.Constantes;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.Log;
 import local.jarios.exceptions.MiUnknownHostException;
 import local.jarios.helpers.ComunHelper;
 import local.jarios.helpers.StringHelper;
@@ -32,10 +32,10 @@ import java.util.UUID;
 @Table(
     name = "estadistica"
 )
-public class Estadistica extends Auditable {
+public class Estadistica extends AuditableCreatedAt {
 
   /**
-   * Identificador
+   * Identificador.
    */
   @Id
   @GeneratedValue(generator = "UUID")
@@ -43,7 +43,7 @@ public class Estadistica extends Auditable {
   private UUID id;
 
   /**
-   * Equipo desde el que se realiza la importación
+   * Equipo desde el que se realiza la importación.
    */
   @Column(name = "equipo", nullable = false, length = TamanoCampos.TAMANO_100)
   private String equipo;
@@ -52,35 +52,71 @@ public class Estadistica extends Auditable {
    * Número de registros históricos que se deben crear.
    */
   @Column(name = "n_registros_historicos_insertar")
-  private Long nRegistrosHistoricosInsertar;
+  private Long numRegistrosHistoricosInsertar;
 
   /**
    * Número de registros históricos que se deben eliminar.
    */
   @Column(name = "n_registros_historicos_eliminar")
-  private Long nRegistrosHistoricosEliminar;
+  private Long numRegistrosHistoricosEliminar;
 
   /**
    * Número de registros históricos que se deben actualizar.
    */
   @Column(name = "n_registros_historicos_actualizar")
-  private Long nRegistrosHistoricosActualizar;
+  private Long numRegistrosHistoricosActualizar;
 
   /**
    * Número de registros históricos que se deben actualizar.
    */
   @Column(name = "n_registros_historicos_rechazar")
-  private Long nRegistrosHistoricosRechazar;
+  private Long numRegistrosHistoricosRechazar;
 
   /**
-   * Duración
+   * Número de ficheros atoms procesado.
    */
-  @Column(name = "duracion", nullable = false, length = TamanoCampos.TAMANO_100)
-  private String duracion;
+  @Column(name = "total_historicos")
+  private Long totalHistoricos;
 
-  //
-  //
-  //
+  /**
+   * Número de ficheros atoms procesado.
+   */
+  @Column(name = "n_ficheros_atoms")
+  private Long numFicherosAtoms;
+
+  /**
+   * Número de ficheros atoms procesado.
+   */
+  @Column(name = "n_organos_contratacion_filtro")
+  private Long numOrganosContratacionFiltro;
+
+  /**
+   * Número de ficheros atoms procesado.
+   */
+  @Column(name = "n_nifs_filtro")
+  private Long numNifsFiltro;
+
+  /**
+   * Número de ficheros atoms procesado.
+   */
+  @Column(name = "n_deleted_entries")
+  private Long numDeletedEntries;
+
+  /**
+   * Duración total del proceso de importación en formato legible.
+   */
+  @Column(name = "duracion_parseo", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String duracionParseo;
+
+  /**
+   * Duración total del proceso de importación en formato legible.
+   */
+  @Column(name = "duracion_persistencia", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  private String duracionPersistencia;
+
+  /**
+   * Relación UNO a UNO
+   */
   @OneToOne(
       fetch = FetchType.LAZY)
   @JoinColumn(
@@ -92,33 +128,40 @@ public class Estadistica extends Auditable {
           foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
   private Log miLog;
 
-  //
-  //
-  //
+  /**
+   * Creación del objeto
+   *
+   * @param miLog Log
+   * @throws MiUnknownHostException excepción
+   */
+
   public Estadistica(Log miLog) throws MiUnknownHostException {
 
     this.miLog = miLog;
     this.equipo = ComunHelper.getHostName();
   }
 
+  /**
+   *
+   * @return cadena de caracteres
+   */
   @Override
   public String toString() {
 
-    String nInsertar = nRegistrosHistoricosInsertar == null ? "0" :
-        StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosInsertar));
-    String nEliminar = nRegistrosHistoricosEliminar == null ? "0" :
-        StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosEliminar));
-    String nActualizar = nRegistrosHistoricosActualizar == null ? "0" :
-        StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosActualizar));
-    String nRechazar = nRegistrosHistoricosRechazar == null ? "0" :
-        StringHelper.getNumeroConFormato(Math.toIntExact(nRegistrosHistoricosRechazar));
+    String nInsertar = numRegistrosHistoricosInsertar == null ? "0" :
+        StringHelper.getNumeroConFormato(Math.toIntExact(numRegistrosHistoricosInsertar));
+    String nEliminar = numRegistrosHistoricosEliminar == null ? "0" :
+        StringHelper.getNumeroConFormato(Math.toIntExact(numRegistrosHistoricosEliminar));
+    String nActualizar = numRegistrosHistoricosActualizar == null ? "0" :
+        StringHelper.getNumeroConFormato(Math.toIntExact(numRegistrosHistoricosActualizar));
+    String nRechazar = numRegistrosHistoricosRechazar == null ? "0" :
+        StringHelper.getNumeroConFormato(Math.toIntExact(numRegistrosHistoricosRechazar));
 
     return "Estadistica: [" +
         "nRegistrosHistoricosInsertar='" + nInsertar + "', " +
         "nRegistrosHistoricosEliminar='" + nEliminar + "', " +
         "nRegistrosHistoricosActualizar='" + nActualizar + "', " +
         "nRegistrosHistoricosRechazar='" + nRechazar + "', " +
-        "duracion='" + duracion +
         "']";
   }
 }

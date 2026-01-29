@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class OpenDataInternet extends AbstractOpenData {
    * datos. La clave es el campo idEntry (no UUID).
    */
   @Getter
-  private final Map<String, Entry> mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos = new HashMap<>();
+  private final Map<String, Entry> mapEntriesToBaseDatos = new HashMap<>();
 
   /**
    * Método main para ejecutar el procesamiento directamente desde consola o entorno standalone.
@@ -53,20 +54,19 @@ public class OpenDataInternet extends AbstractOpenData {
   public static void main(String[] args) {
 
     // Inicio del log
-    log.info("[OpenDataInternet.main] - {}", Mensajes.INICIO);
+    StringHelper.generarTitulo(log, Mensajes.INICIO_INTERNET);
 
-    String configDir = Constantes.PROPERTIES_DIR; // valor por defecto
-    log.info("[OpenDataInternet.main] - Directorio por defecto: {}", configDir);
+    String configDir = Arrays.stream(args)
+        .filter(arg -> arg.startsWith("--configDir="))
+        .map(arg -> arg.substring("--configDir=".length()))
+        .findFirst()
+        .orElseGet(() -> {
+          log.info("No se especificó el parámetro '--configDir='. Usando el valor por defecto: {}",
+                   Constantes.PROPERTIES_DIR);
+          return Constantes.PROPERTIES_DIR;
+        });
 
-    for (String arg : args) {
-      if (arg.startsWith("--configDir=")) {
-        configDir = arg.substring("--configDir=".length());
-      }
-    }
-
-    log.info("[OpenDataInternet.main] - Directorio enviado: {}", configDir);
-
-    new OpenDataLocal().procesar(configDir);
+    new OpenDataInternet().procesar(configDir);
   }
 
   /**
@@ -124,8 +124,8 @@ public class OpenDataInternet extends AbstractOpenData {
         // No existe en BD → insertar
 
         // Inserto el Entry en el Map Resultante
-        mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos.put(idEntry, entryFromAtom);
-        log.info("[parsearAtomsFeeds] - {} -> INSERTAR.", entryFromAtom.toStringResumido());
+        mapEntriesToBaseDatos.put(idEntry, entryFromAtom);
+        log.info("[parsearAtomsFeeds] - {} -> INSERTAR.", entryFromAtom);
 
       } else {
 
@@ -142,14 +142,14 @@ public class OpenDataInternet extends AbstractOpenData {
           entryFromAtom.setId(entryEnBaseDatos.getId());
 
           // Inserto el Entry en el Map Resultante
-          mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos.put(idEntry, entryFromAtom);
-          log.info("[parsearAtomsFeeds] - {} -> ACTUALIZAR.", entryFromAtom.toStringResumido());
+          mapEntriesToBaseDatos.put(idEntry, entryFromAtom);
+          log.info("[parsearAtomsFeeds] - {} -> ACTUALIZAR.", entryFromAtom);
 
           // TRABAJAR CON EL HISTÓRICO PARA ESTABLECER EL VALOR SOBRE LA PRIMERA APARICIÓN DEL OBJETO
 
         } else {
 
-          log.info("[parsearAtomsFeeds] - {} -> REGISTRAR", entryFromAtom.toStringResumido());
+          log.info("[parsearAtomsFeeds] - {} -> REGISTRAR", entryFromAtom);
 
           // TRABAJAR CON EL HISTÓRICO PARA ESTABLECER EL VALOR SOBRE LA PRIMERA APARICIÓN DEL OBJETO
 
@@ -159,7 +159,7 @@ public class OpenDataInternet extends AbstractOpenData {
 
     //
     String valor = StringHelper
-        .getNumeroConFormato(mapEntriesResultantesCompararMapsFromAtosConMapFromBaseDatos.size());
+        .getNumeroConFormato(mapEntriesToBaseDatos.size());
     log.info("[parsearAtomsFeeds] Nº total de registros a enviar a la Base de Datos: {}", valor);
   }
 }

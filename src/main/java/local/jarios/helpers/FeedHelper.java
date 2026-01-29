@@ -1,12 +1,14 @@
 package local.jarios.helpers;
 
 import local.jarios.common.util.VariablesGlobales;
+import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.exceptions.MiUnmarshallerException;
+import local.jarios.filtro.FiltroManager;
 import local.jarios.interfaces.FeedSource;
-import local.jarios.mappers.MapperFeed;
+import local.jarios.mappers.atom.MapperFeed;
 import local.jarios.parsers.LocalFeedSource;
 import local.jarios.parsers.RemoteFeedSource;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.BufferedReader;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,36 +64,51 @@ public final class FeedHelper {
     try {
 
       var unmarshaller = getValidUnmarshaller();
-      log.debug("[parsearFeeds] - Obtención de objeto Unmarshaller correctamente.");
+      log.debug("Obtención de objeto Unmarshaller correctamente.");
       String nextLink = source.getInitialLink();
 
       // Salimos si nextLink no es válido desde el inicio
       if (!source.isNextLinkValid(nextLink)) {
-        log.warn("[parsearFeeds] - El NextLink inicial no es válido, se aborta el bucle: {}",
-                 nextLink);
+        log.error("El NextLink inicial no es válido: {}.", nextLink);
       }
 
       while (source.isNextLinkValid(nextLink) && (!superadoNewestEntry)) {
 
-        try (var reader = source.openBufferedReader(nextLink)) {
+        try (BufferedReader reader = source.openBufferedReader(nextLink)) {
 
-          log.info("[parsearFeeds] - **** Parseando el feed '{}' ****", nextLink);
+          log.info("**** Parseando el feed '{}' ****", nextLink);
 
-          // Obtengo el FeedType desde el fichero Atom
-          var feedType = getFeedType(unmarshaller, reader);
-          log.debug(
-              "[parsearFeeds] - Obtenido el objeto FeedType desde el fichero Atom correctamente.");
+          FeedType feedType = getFeedType(unmarshaller, reader);
+          log.info("  Obtenido el objeto FeedType desde el fichero Atom correctamente.");
 
-          // Mapeo el fichero FeedType al objeto Feed
-          var feed = MapperFeed.getFeed(feedType);
-          log.debug("[parsearFeeds] - Procesado del feed correctamente.");
+          Feed feed = MapperFeed.getFeed(feedType);
+          log.info("  Obtenido el objeto Feed desde el objeto FeedType.");
 
-          List<Entry> listEntry = feed.getListEntry();
-          log.info("[parsearFeeds] - Nº de objetos Entry en en Feed: {}.", listEntry.size());
+          List<Entry> listEntry = feed.getEntryList();
+          log.info(
+              "  Obtengo la lista de Entry asociada al Feed: {} elementos.",
+              listEntry.size()
+          );
+
+          List<DeletedEntry> listDeletedEntry = feed.getDeletedEntryList();
+          log.info(
+              "  Obtengo la lista de DeletedEntry asociada al Feed: {} elementos.",
+              listDeletedEntry.size()
+          );
+
+          feed.setEntryList(new ArrayList<>());
+          log.info("  Borro la lista de Entry asociado al Feed antes de añadirlo al conjunto.");
+
+          VariablesGlobales.getSetFeedsFromAtoms().add(feed);
+          log.info("  Añadido el Feed al conjunto de Feeds correctamente.");
 
           // Proceso los Entrys del objeto Feed devolviendo TRUE | FALSE según se haya superado el valor
           //      de updated asocaido al newestEntry
-          superadoNewestEntry = EntryHelper.procesarListaEntry(listEntry);
+          var processor = new EntryProcessor(
+              new EntryProcessor.FiltroManagerEntryFilter(new FiltroManager()),
+              new VariablesGlobalesEntryState()
+          );
+          superadoNewestEntry = processor.processEntries(listEntry);
 
           //
           if (!superadoNewestEntry) {
@@ -100,6 +118,7 @@ public final class FeedHelper {
       }
 
     } catch (Exception e) {
+      e.printStackTrace();
       throw new MiParseException(e);
     }
   }

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +56,7 @@ public final class MapHelper {
     return concatenatedString.toString();
   }
 
-  public static Map<String, String> getMapFromList(
+  public static Map<String, OrganoContratacion> getMapFromList(
       List<OrganoContratacion> listFiltroOrganoContratacion) {
 
     //
@@ -67,9 +68,7 @@ public final class MapHelper {
 
     // Devuelvo el mapa
     return listFiltroOrganoContratacion.stream().collect(
-        Collectors.toMap(
-            OrganoContratacion::getId_plataforma,
-            OrganoContratacion::getNombre_oc));
+        Collectors.toMap(OrganoContratacion::getIdPlataforma, Function.identity()));
   }
 
   public static <K, V> void printMap(Map<K, V> map) {
@@ -97,8 +96,8 @@ public final class MapHelper {
 
     //
     map.forEach((key, value) -> {
-      if (!key.equals(value.getIdEntry())) {
-        log.info("[analisisMap] - ERROR!!! Key: '{}' | Value: {}", key, value.getIdEntry());
+      if (!key.equals(value.getEntryId())) {
+        log.info("[analisisMap] - ERROR!!! Key: '{}' | Value: {}", key, value.getEntryId());
         nErrores.getAndIncrement();
       }
     });
