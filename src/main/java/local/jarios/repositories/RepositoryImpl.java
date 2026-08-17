@@ -271,8 +271,12 @@ public class RepositoryImpl implements Repository, AutoCloseable {
             session.persist(oc);
           }
 
-          Set<String> updatedEntryIds =
-              entryIdsForOption(safeList(plan.historicoList()), EntryOpcion.ACTUALIZAR);
+          Set<String> updatedEntryIds = safeSet(plan.replacementEntryIds());
+          log.info(
+              "Persistencia importacion: feeds={}, historicos={}, reemplazos={}",
+              plan.feedSet().size(),
+              safeList(plan.historicoList()).size(),
+              updatedEntryIds.size());
           deleteExistingEntriesForUpdates(session, updatedEntryIds);
           persistFeedsInCurrentTransaction(session, miLog, plan.feedSet());
 
@@ -490,6 +494,10 @@ public class RepositoryImpl implements Repository, AutoCloseable {
 
   private static <T> List<T> safeList(List<T> list) {
     return list == null ? List.of() : list;
+  }
+
+  private static <T> Set<T> safeSet(Set<T> set) {
+    return set == null ? Set.of() : set;
   }
 
   private void flushAndClear(Session session) {

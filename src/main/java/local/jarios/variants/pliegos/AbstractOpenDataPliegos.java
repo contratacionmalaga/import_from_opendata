@@ -2,6 +2,7 @@ package local.jarios.variants.pliegos;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.core.abstracts.AbstractOpenDataBase;
@@ -90,6 +91,11 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
     Configuracion configuracion = new Configuracion(miLog, context);
     Estadistica estadistica = buildEstadistica(context, miLog, inicio);
 
+    Set<String> replacementEntryIds =
+        ImportPersistencePlan.replacementEntryIdsFromHistoricos(context.getListHistoricos());
+    int historicosGenerados = context.getListHistoricos().size();
+    context.getListHistoricos().clear();
+
     ImportPersistencePlan plan =
         new ImportPersistencePlan(
             miLog,
@@ -97,11 +103,15 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
             List.of(),
             List.of(),
             context.getConjuntoFeedsFromAtoms(),
-            context.getListHistoricos(),
+            replacementEntryIds,
+            List.of(),
             estadistica);
 
     getServicePrincipal().persistirImportacion(plan);
-    log.info("Persistida la importacion completa en una unica transaccion.");
+    log.info(
+        "Persistida importacion Pliegos en una unica transaccion: historicosGenerados={}, historicosPersistidos=0, reemplazos={}",
+        StringHelper.getNumeroConFormato(historicosGenerados),
+        StringHelper.getNumeroConFormato(replacementEntryIds.size()));
     imprimirTitulo("PRESISTENCIA FINALIZADA CORRECTAMENTE");
     return estadistica;
   }
