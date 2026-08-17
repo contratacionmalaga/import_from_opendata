@@ -33,6 +33,12 @@ jobs:
         with:
           package-token: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
 
+      - name: Install local CODICE artifacts
+        run: |
+          mvn -B install:install-file -Dfile=lib/atom-1.0.jar -DgroupId=org.w3._2005.atom -DartifactId=atom -Dversion=1.0 -Dpackaging=jar
+          mvn -B install:install-file -Dfile=lib/codice-2.8.0.jar -DgroupId=place.codice -DartifactId=codice -Dversion=2.8.0 -Dpackaging=jar
+          mvn -B install:install-file -Dfile=lib/codice-ext-1.5.0.jar -DgroupId=place.codice -DartifactId=codice-ext -Dversion=1.5.0 -Dpackaging=jar
+
       - name: Test
         run: mvn -B test
 
@@ -41,3 +47,4 @@ jobs:
 
       - name: SpotBugs security scan
         run: mvn -B spotbugs:check
+
