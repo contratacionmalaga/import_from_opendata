@@ -10,15 +10,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.List;
+import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.UUID;
-
 
 /**
  * Entidad que representa el personal activo en el sistema. Esta clase contiene información personal
@@ -31,38 +29,31 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(
-    name = "nif"
-)
+@Table(name = "nif")
 @Slf4j
 public class Nif extends AuditableCreatedAt {
 
-  /**
-   * Identificador único del órgano de contratación.
-   */
+  /** Identificador único del órgano de contratación. */
   @Id
   @GeneratedValue(generator = "UUID")
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
-  /**
-   * Identificador único de la plataforma.
-   */
+  /** Identificador único de la plataforma. */
   @JsonIgnore
   @Column(name = "nif", nullable = false, length = TamanoCampos.TAMANO_100)
   private String nif;
 
   // Relationship
-  @ManyToOne(
-      fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "log_id",
       nullable = false,
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_nif_log",
-          foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE")
-  )
+      foreignKey =
+          @ForeignKey(
+              name = "fk_nif_log",
+              foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
   private Log miLog;
 
   /**
@@ -81,8 +72,6 @@ public class Nif extends AuditableCreatedAt {
    */
   public static void imprimirLista(List<String> nifList) {
 
-    nifList.forEach(
-        nif -> log.info("  {}", nif)
-    );
+    nifList.forEach(nif -> log.info("  {}", nif));
   }
 }

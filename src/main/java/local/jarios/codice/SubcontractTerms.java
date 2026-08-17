@@ -8,7 +8,6 @@ import lombok.Setter;
  * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
  * Team: Juan Antonio
  */
-
 @Setter
 @Getter
 @NoArgsConstructor
@@ -22,8 +21,6 @@ public class SubcontractTerms {
   @Override
   public String toString() {
 
-    return "SubcontractTerms: " +
-        "[rate='" + rate + "', " +
-        "description='" + description + "']";
+    return "SubcontractTerms: " + "[rate='" + rate + "', " + "description='" + description + "']";
   }
 }

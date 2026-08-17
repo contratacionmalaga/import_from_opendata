@@ -1,15 +1,24 @@
 package local.jarios.mappers.codice;
 
-import local.jarios.codice.TendererQualificationRequest;
-import local.jarios.codice.TendererQualificationRequestMapper;
-import local.jarios.common.util.Constantes;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import local.jarios.common.util.TamanoCampos;
+import local.jarios.entity.codice.ContractExecutionRequirement;
 import local.jarios.entity.codice.ContractFolderStatus;
+import local.jarios.entity.codice.EvaluationCriteria;
+import local.jarios.entity.codice.FinancialGuarantee;
 import local.jarios.entity.codice.ProcurementProjectLot;
+import local.jarios.entity.codice.TendererQualificationRequest;
 import local.jarios.entity.codice.TenderingTerms;
-import local.jarios.helpers.ComunHelper;
+import local.jarios.enums.TipoSolvencia;
+import local.jarios.helpers.StringHelper;
 import local.jarios.mappers.auxiliares.MapperStringFromList;
 import org.dgpe.codice.common.caclib.DocumentReferenceType;
 import org.dgpe.codice.common.caclib.InvoicingTermsType;
+import org.dgpe.codice.common.caclib.SubcontractTermsType;
+import org.dgpe.codice.common.caclib.TendererQualificationRequestType;
 import org.dgpe.codice.common.caclib.TenderingTermsType;
 import org.dgpe.codice.common.cbclib.ElectronicInvoicingIndicatorType;
 import org.dgpe.codice.common.cbclib.EorderingIndicatorType;
@@ -17,167 +26,216 @@ import org.dgpe.codice.common.cbclib.EpaymentMeansIndicatorType;
 import org.dgpe.codice.common.cbclib.IDType;
 import org.dgpe.codice.common.cbclib.ProcurementNationalLegislationCodeType;
 import org.oasis.ubl.common.udt.IndicatorType;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
+import un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.QuantityType;
 
 public final class MapperTenderingTerms {
 
-  private MapperTenderingTerms() {
-  }
+  private MapperTenderingTerms() {}
 
   public static TenderingTerms getTenderingTermsFromType(
       ContractFolderStatus contractFolderStatus,
       ProcurementProjectLot procurementProjectLot,
-      TenderingTermsType tenderingTermsType
-  ) {
+      TenderingTermsType tenderingTermsType) {
 
-    var tenderingTerms = new TenderingTerms();
+    TenderingTerms tenderingTerms = new TenderingTerms();
     tenderingTerms.setContractFolderStatus(contractFolderStatus);
     tenderingTerms.setProcurementProjectLot(procurementProjectLot);
 
     if (tenderingTermsType == null) {
-      // Valores por defecto coherentes
-      tenderingTerms.setAwardingCriteriaList(List.of());
-      tenderingTerms.setListFinancialGuarantee(List.of()); // ajusta si tu mapper devuelve null
-      applyTendererQualificationRequest(tenderingTerms, null);
+      tenderingTerms.setAwardingCriteriaList(new ArrayList<>());
+      tenderingTerms.setListContractExecutionRequirement(new ArrayList<>());
+      tenderingTerms.setListFinancialGuarantee(new ArrayList<>());
+      tenderingTerms.setTendererQualificationRequest(null);
+      tenderingTerms.setSubcontractTermsRate(null);
+      tenderingTerms.setSubcontractTermsDescription(null);
+
       return tenderingTerms;
     }
 
     // === Indicators / booleans (manteniendo "seteamos incluso null") ===
     tenderingTerms.setRequiredCurriculaIndicator(
-        mapNullable(tenderingTermsType.getRequiredCurriculaIndicator(), IndicatorType::isValue)
-    );
+        mapNullable(tenderingTermsType.getRequiredCurriculaIndicator(), IndicatorType::isValue));
 
     tenderingTerms.setVariantConstraintIndicator(
-        mapNullable(tenderingTermsType.getVariantConstraintIndicator(), IndicatorType::isValue)
-    );
+        mapNullable(tenderingTermsType.getVariantConstraintIndicator(), IndicatorType::isValue));
 
     tenderingTerms.setEorderingIndicator(
-        mapNullable(tenderingTermsType.getEorderingIndicator(), EorderingIndicatorType::isValue)
-    );
+        mapNullable(tenderingTermsType.getEorderingIndicator(), EorderingIndicatorType::isValue));
 
     tenderingTerms.setEpaymentMeansIndicator(
-        mapNullable(tenderingTermsType.getEpaymentMeansIndicator(),
-                    EpaymentMeansIndicatorType::isValue)
-    );
+        mapNullable(
+            tenderingTermsType.getEpaymentMeansIndicator(), EpaymentMeansIndicatorType::isValue));
 
     tenderingTerms.setElectronicInvoicingIndicator(
         mapChainNullable(
             tenderingTermsType.getInvoicingTerms(),
             InvoicingTermsType::getElectronicInvoicingIndicator,
-            ElectronicInvoicingIndicatorType::isValue
-        )
-    );
+            ElectronicInvoicingIndicatorType::isValue));
 
     // === Strings (listas) con limit + normalización ===
     tenderingTerms.setPriceRevisionFormulaDescription(
-        limitedString(
+        StringHelper.normalizeAndLimit(
             MapperStringFromList.getStringFromListPriceRevisionFormulaDescriptionType(
-                tenderingTermsType.getPriceRevisionFormulaDescription()
-            ),
-            Constantes.TAMANO_MAXIMO_CAMPO_500
-        )
-    );
+                tenderingTermsType.getPriceRevisionFormulaDescription()),
+            TamanoCampos.TAMANO_500));
 
     tenderingTerms.setFundingProgramCode(
-        limitedString(
+        StringHelper.normalizeAndLimit(
             MapperStringFromList.getStringFromListFundingProgramCodeType(
-                tenderingTermsType.getFundingProgramCode()
-            ),
-            Constantes.TAMANO_MAXIMO_CAMPO_500
-        )
-    );
+                tenderingTermsType.getFundingProgramCode()),
+            TamanoCampos.TAMANO_500));
 
     tenderingTerms.setFundingProgram(
-        limitedString(
+        StringHelper.normalizeAndLimit(
             MapperStringFromList.getStringFromListFundingProgramType(
-                tenderingTermsType.getFundingProgram()
-            ),
-            Constantes.TAMANO_MAXIMO_CAMPO_500
-        )
-    );
+                tenderingTermsType.getFundingProgram()),
+            TamanoCampos.TAMANO_500));
 
     // === Codes / IDs ===
     tenderingTerms.setProcurementNationalLegislationCode(
-        limitedString(
-            mapNullable(tenderingTermsType.getProcurementNationalLegislationCode(),
-                        ProcurementNationalLegislationCodeType::getValue),
-            Constantes.TAMANO_MAXIMO_CAMPO_50
-        )
-    );
+        StringHelper.normalizeAndLimit(
+            mapNullable(
+                tenderingTermsType.getProcurementNationalLegislationCode(),
+                ProcurementNationalLegislationCodeType::getValue),
+            TamanoCampos.TAMANO_50));
 
     tenderingTerms.setProcurementLegislationDocumentReference(
-        limitedString(
+        StringHelper.normalizeAndLimit(
             mapChainNullable(
                 tenderingTermsType.getProcurementLegislationDocumentReference(),
                 DocumentReferenceType::getID,
-                IDType::getValue
-            ),
-            Constantes.TAMANO_MAXIMO_CAMPO_50
-        )
-    );
+                IDType::getValue),
+            TamanoCampos.TAMANO_50));
 
     // === Numbers ===
     tenderingTerms.setReceivedAppealQuantity(
         Optional.ofNullable(tenderingTermsType.getReceivedAppealQuantity())
             .map(qty -> qty.getValue() == null ? null : qty.getValue().doubleValue())
-            .orElse(null)
-    );
+            .orElse(null));
 
     // === Awarding criteria ===
     tenderingTerms.setAwardingCriteriaList(
         Optional.ofNullable(tenderingTermsType.getAwardingTerms())
-            .map(awardTerms -> MapperAwardingCriteria.getListAwardingCriteria(
-                tenderingTerms,
-                awardTerms.getAwardingCriteria()
-            ))
-            .orElse(List.of()) // si necesitas null: cambia a .orElse(null)
-    );
+            .map(
+                awardTerms ->
+                    MapperAwardingCriteria.getListAwardingCriteria(
+                        tenderingTerms, awardTerms.getAwardingCriteria()))
+            .orElse(new ArrayList<>()));
+
+    // === Contract execution requirement ===
+    List<ContractExecutionRequirement> contractExecutionRequirementList =
+        Optional.of(
+                MapperContractExecutionRequirement.getListContractExecutionRequirement(
+                    tenderingTerms, tenderingTermsType.getContractExecutionRequirement()))
+            .orElse(new ArrayList<>());
+
+    tenderingTerms.setListContractExecutionRequirement(contractExecutionRequirementList);
 
     // === Financial guarantee ===
     // Si MapperFinancialGuarantee puede devolver null, y quieres lista vacía:
-    var guarantees = MapperFinancialGuarantee.getListFinancialGuarantee(
-        tenderingTerms,
-        tenderingTermsType.getRequiredFinancialGuarantee()
-    );
-    tenderingTerms.setListFinancialGuarantee(guarantees == null ? List.of() : guarantees);
+    List<FinancialGuarantee> guaranteeList =
+        Optional.of(
+                MapperFinancialGuarantee.getListFinancialGuarantee(
+                    tenderingTerms, tenderingTermsType.getRequiredFinancialGuarantee()))
+            .orElse(new ArrayList<>());
+    tenderingTerms.setListFinancialGuarantee(guaranteeList);
 
-    // === TendererQualificationRequest ===
-    var tqr = Optional.ofNullable(tenderingTermsType.getTendererQualificationRequest())
-        .map(TendererQualificationRequestMapper::getTendererQualificationRequest)
-        .orElse(null);
+    applyAllowedSubcontractTerms(tenderingTerms, tenderingTermsType.getAllowedSubcontractTerms());
 
-    applyTendererQualificationRequest(tenderingTerms, tqr);
+    tenderingTerms.setTendererQualificationRequest(
+        getTendererQualificationRequest(
+            tenderingTerms, tenderingTermsType.getTendererQualificationRequest()));
 
     return tenderingTerms;
   }
 
-  private static void applyTendererQualificationRequest(TenderingTerms tenderingTerms, TendererQualificationRequest req) {
-    if (req == null) {
-      tenderingTerms.setPersonalSituation(null);
-      tenderingTerms.setDescription(null);
-      tenderingTerms.setEmployeeQuantity(null);
-      tenderingTerms.setEmployeeQuantityDescription(null);
+  private static void applyAllowedSubcontractTerms(
+      TenderingTerms tenderingTerms,
+      java.util.List<? extends org.dgpe.codice.common.caclib.SubcontractTermsType>
+          allowedSubcontractTerms) {
+    if (allowedSubcontractTerms == null || allowedSubcontractTerms.isEmpty()) {
+      tenderingTerms.setSubcontractTermsRate(null);
+      tenderingTerms.setSubcontractTermsDescription(null);
       return;
     }
 
-    tenderingTerms.setPersonalSituation(req.getPersonalSituation());
-    tenderingTerms.setDescription(req.getDescription());
-    tenderingTerms.setEmployeeQuantity(req.getEmployeeQuantity());
-    tenderingTerms.setEmployeeQuantityDescription(req.getEmployeeQuantityDescription());
+    SubcontractTermsType firstSubcontractTerms = allowedSubcontractTerms.getFirst();
+
+    tenderingTerms.setSubcontractTermsRate(
+        Optional.ofNullable(firstSubcontractTerms.getRate())
+            .map(rate -> rate.getValue() == null ? null : rate.getValue().doubleValue())
+            .orElse(null));
+
+    tenderingTerms.setSubcontractTermsDescription(
+        StringHelper.normalizeAndLimit(
+            MapperStringFromList.getStringFromListDescriptionType(
+                firstSubcontractTerms.getDescription()),
+            TamanoCampos.TAMANO_500));
+  }
+
+  private static TendererQualificationRequest getTendererQualificationRequest(
+      TenderingTerms tenderingTerms,
+      TendererQualificationRequestType tendererQualificationRequestType) {
+    if (tendererQualificationRequestType == null) {
+      return null;
+    }
+
+    TendererQualificationRequest tendererQualificationRequest = new TendererQualificationRequest();
+    tendererQualificationRequest.setTenderingTerms(tenderingTerms);
+
+    tendererQualificationRequest.setPersonalSituation(
+        StringHelper.eliminarCaracteres(
+            MapperStringFromList.getStringFromListPersonalSituationType(
+                tendererQualificationRequestType.getPersonalSituation())));
+
+    tendererQualificationRequest.setDescription(
+        StringHelper.eliminarCaracteres(
+            MapperStringFromList.getStringFromListDescriptionType(
+                tendererQualificationRequestType.getDescription())));
+
+    tendererQualificationRequest.setEmployeeQuantityDescription(
+        StringHelper.eliminarCaracteres(
+            MapperStringFromList.getStringFromListEmployeeQuantityDescriptionType(
+                tendererQualificationRequestType.getEmployeeQuantityDescription())));
+
+    tendererQualificationRequest.setEmployeeQuantity(
+        Optional.ofNullable(tendererQualificationRequestType.getEmployeeQuantity())
+            .map(QuantityType::getValue)
+            .orElse(null));
+
+    List<EvaluationCriteria> listFinancialEvaluationCriteria =
+        MapperEvaluationCriteria.getListEvaluationCriteria(
+            tendererQualificationRequest,
+            tendererQualificationRequestType.getFinancialEvaluationCriteria(),
+            TipoSolvencia.ECONOMICA);
+
+    List<EvaluationCriteria> listTechnicalEvaluationCriteria =
+        MapperEvaluationCriteria.getListEvaluationCriteria(
+            tendererQualificationRequest,
+            tendererQualificationRequestType.getTechnicalEvaluationCriteria(),
+            TipoSolvencia.TECNICA);
+
+    List<EvaluationCriteria> evaluationCriteriaList = new ArrayList<>();
+
+    evaluationCriteriaList.addAll(listFinancialEvaluationCriteria);
+    evaluationCriteriaList.addAll(listTechnicalEvaluationCriteria);
+
+    tendererQualificationRequest.setEvaluationCriteria(evaluationCriteriaList);
+
+    tendererQualificationRequest.setRequiredBusinessClassificationScheme(
+        MapperClassificationScheme.getListClassificationScheme(
+            tendererQualificationRequest,
+            tendererQualificationRequestType.getRequiredBusinessClassificationScheme()));
+
+    tendererQualificationRequest.setSpecificTendererRequirement(
+        MapperTendererRequirement.getListTendererRequirement(
+            tendererQualificationRequest,
+            tendererQualificationRequestType.getSpecificTendererRequirement()));
+
+    return tendererQualificationRequest;
   }
 
   // ---------- Helpers (pequeños, testables, sin duplicidad) ----------
-
-  private static String limitedString(String value, int max) {
-    if (value == null) return null;
-    var trimmed = value.trim();
-    if (trimmed.isBlank()) return null;
-    return ComunHelper.limitarRegistro(trimmed, max);
-  }
-
   private static <T, R> R mapNullable(T value, Function<T, R> mapper) {
     return value == null ? null : mapper.apply(value);
   }
@@ -200,7 +258,8 @@ public final class MapperTenderingTerms {
     return b == null ? null : bc.apply(b);
   }
 
-  private static <A, B, C, D> D mapChainNullable(A a, Function<A, B> ab, Function<B, C> bc, Function<C, D> cd) {
+  private static <A, B, C, D> D mapChainNullable(
+      A a, Function<A, B> ab, Function<B, C> bc, Function<C, D> cd) {
     if (a == null) return null;
     var b = ab.apply(a);
     if (b == null) return null;

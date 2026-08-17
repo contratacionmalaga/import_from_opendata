@@ -4,13 +4,10 @@ import org.dgpe.codice.common.cbclib.ContractModificationDurationMeasureType;
 import org.dgpe.codice.common.cbclib.FinalDurationMeasureType;
 import org.dgpe.codice.common.cbclib.MeasureType;
 
-/**
- * Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio
- */
+/** Description: Juan Antonio Author: juan Date: 06/07/2024 Team: Juan Antonio */
 public final class MeassureMapper {
 
-  private MeassureMapper() {
-  }
+  private MeassureMapper() {}
 
   public static Measure getMeasure(MeasureType measureType) {
 

@@ -1,43 +1,40 @@
 package local.jarios.mappers.codice;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import local.jarios.entity.codice.FinancialGuarantee;
 import local.jarios.entity.codice.TenderingTerms;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.FinancialGuaranteeType;
 import org.dgpe.codice.common.cbclib.GuaranteeTypeCodeType;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-/**
- * Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio
- */
+/** Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio */
 @Slf4j
 public final class MapperFinancialGuarantee {
 
-  private MapperFinancialGuarantee() {
-  }
+  private MapperFinancialGuarantee() {}
 
   public static List<FinancialGuarantee> getListFinancialGuarantee(
-      TenderingTerms tenderingTerms,
-      List<FinancialGuaranteeType> listFinancialGuaranteeType) {
+      TenderingTerms tenderingTerms, List<FinancialGuaranteeType> listFinancialGuaranteeType) {
 
     //
     return Optional.ofNullable(listFinancialGuaranteeType)
-        .map(list -> list.stream()
-            .map(financialGuaranteeType -> getFinancialGuarantee(tenderingTerms,
-                                                                 financialGuaranteeType))
-            .toList())
+        .map(
+            list ->
+                list.stream()
+                    .map(
+                        financialGuaranteeType ->
+                            getFinancialGuarantee(tenderingTerms, financialGuaranteeType))
+                    .toList())
         .orElse(Collections.emptyList());
   }
 
   private static FinancialGuarantee getFinancialGuarantee(
-      TenderingTerms tenderingTerms,
-      FinancialGuaranteeType financialGuaranteeType) {
+      TenderingTerms tenderingTerms, FinancialGuaranteeType financialGuaranteeType) {
 
     //
-    var financialGuarantee = new FinancialGuarantee();
+    FinancialGuarantee financialGuarantee = new FinancialGuarantee();
     financialGuarantee.setTenderingTerms(tenderingTerms);
 
     Optional.ofNullable(financialGuaranteeType.getGuaranteeTypeCode())

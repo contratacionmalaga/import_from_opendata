@@ -1,37 +1,37 @@
 package local.jarios.mappers.codice;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import local.jarios.common.util.Constantes;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.codice.ContractFolderStatus;
 import local.jarios.entity.codice.TenderResult;
-import local.jarios.helpers.ComunHelper;
 import local.jarios.helpers.GregorianCalendarHelper;
 import local.jarios.helpers.StringHelper;
 import local.jarios.mappers.auxiliares.MapperStringFromList;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.PartyIdentificationType;
+import org.dgpe.codice.common.caclib.SubcontractTermsType;
 import org.dgpe.codice.common.caclib.TenderResultType;
 import org.dgpe.codice.common.cbclib.AbnormallyLowTendersIndicatorType;
 import org.dgpe.codice.common.cbclib.CityNameType;
 import org.dgpe.codice.common.cbclib.IDType;
+import org.dgpe.codice.common.cbclib.IdentificationCodeType;
 import org.dgpe.codice.common.cbclib.IssueDateType;
+import org.dgpe.codice.common.cbclib.NameType;
 import org.dgpe.codice.common.cbclib.PostalZoneType;
 import org.dgpe.codice.common.cbclib.ResultCodeType;
 import org.dgpe.codice.common.cbclib.SMEAwardedIndicatorType;
 import org.dgpe.codice.common.cbclib.StartDateType;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 @Slf4j
 public final class MapperTenderResult {
 
-  private MapperTenderResult() {
-  }
+  private MapperTenderResult() {}
 
   public static List<TenderResult> getListTenderResultFromType(
-      ContractFolderStatus contractFolderStatus,
-      List<TenderResultType> listTenderResultType) {
+      ContractFolderStatus contractFolderStatus, List<TenderResultType> listTenderResultType) {
 
     Objects.requireNonNull(contractFolderStatus, "contractFolderStatus no puede ser null");
     if (listTenderResultType == null || listTenderResultType.isEmpty()) {
@@ -45,13 +45,13 @@ public final class MapperTenderResult {
   }
 
   private static TenderResult getTenderResultFromType(
-      ContractFolderStatus contractFolderStatus,
-      TenderResultType tenderResultType) {
+      ContractFolderStatus contractFolderStatus, TenderResultType tenderResultType) {
 
     TenderResult tenderResult = new TenderResult();
     tenderResult.setContractFolderStatus(contractFolderStatus);
 
     mapCamposBasicos(tenderResult, tenderResultType);
+    mapSubcontractTerms(tenderResult, tenderResultType);
     mapWinningParty(tenderResult, tenderResultType);
     mapContract(tenderResult, tenderResultType);
     mapAwardedTenderedProject(tenderResult, tenderResultType);
@@ -63,7 +63,7 @@ public final class MapperTenderResult {
 
     Optional.ofNullable(src.getResultCode())
         .map(ResultCodeType::getValue)
-        .map(v -> ComunHelper.limitarRegistro(v, Constantes.TAMANO_MAXIMO_CAMPO_50))
+        .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_50))
         .ifPresent(tr::setResultCode);
 
     Optional.ofNullable(src.getReceivedTenderQuantity())
@@ -72,9 +72,7 @@ public final class MapperTenderResult {
 
     tr.setDescriptionTenderResult(
         StringHelper.eliminarCaracteres(
-            MapperStringFromList.getStringFromListDescriptionType(src.getDescription())
-        )
-    );
+            MapperStringFromList.getStringFromListDescriptionType(src.getDescription())));
 
     Optional.ofNullable(src.getAwardDate())
         .map(d -> GregorianCalendarHelper.getDateFromXMLGregorianCalendar(d.getValue()))
@@ -114,76 +112,128 @@ public final class MapperTenderResult {
         .ifPresent(tr::setStartDate);
 
     Optional.ofNullable(src.getAwardedOwnerNationalityCode())
-        .map(c -> ComunHelper.limitarRegistro(
-            c.getValue(),
-            Constantes.TAMANO_MAXIMO_CAMPO_50)
-        )
+        .map(c -> StringHelper.limit(c.getValue(), TamanoCampos.TAMANO_50))
         .ifPresent(tr::setAwardedOwnerNationalityCode);
+  }
+
+  private static void mapSubcontractTerms(TenderResult tr, TenderResultType type) {
+
+    if (type.getSubcontractTerms().isEmpty()) {
+
+      tr.setSubcontractTermsDescription(null);
+      tr.setSubcontractTermsRate(null);
+      return;
+    }
+
+    SubcontractTermsType firstSubcontractType = type.getSubcontractTerms().getFirst();
+
+    tr.setSubcontractTermsDescription(
+        StringHelper.limit(
+            MapperStringFromList.getStringFromListDescriptionType(
+                firstSubcontractType.getDescription()),
+            TamanoCampos.TAMANO_2500));
+
+    tr.setSubcontractTermsRate(
+        firstSubcontractType.getRate() == null
+            ? null
+            : firstSubcontractType.getRate().getValue().doubleValue());
   }
 
   private static void mapWinningParty(TenderResult tr, TenderResultType src) {
     Optional.ofNullable(src.getWinningParty())
-        .ifPresent(wp -> {
-          mapWinningPartyName(tr, wp);
-          mapWinningPartyPhysicalLocation(tr, wp);
-          mapWinningPartyIdentification(tr, wp.getPartyIdentification());
-        });
+        .ifPresent(
+            wp -> {
+              mapWinningPartyName(tr, wp);
+              mapWinningPartyPhysicalLocation(tr, wp);
+              mapWinningPartyContact(tr, wp);
+              mapWinningPartyIdentification(tr, wp.getPartyIdentification());
+            });
   }
 
   private static void mapWinningPartyName(
-      TenderResult tr, org.dgpe.codice.common.caclib.PartyType wp
-  ) {
+      TenderResult tr, org.dgpe.codice.common.caclib.PartyType wp) {
     Optional.ofNullable(wp.getPartyName())
         .map(MapperStringFromList::getStringFromListPartyNameType)
         .map(StringHelper::eliminarCaracteres)
-        .map(v -> ComunHelper.limitarRegistro(v, Constantes.TAMANO_MAXIMO_CAMPO_500))
+        .map(v -> StringHelper.limit(StringHelper.sanitizePartyName(v), TamanoCampos.TAMANO_500))
         .ifPresent(tr::setPartyName);
   }
 
+  private static void mapWinningPartyContact(
+      TenderResult tr, org.dgpe.codice.common.caclib.PartyType wp) {
+    Optional.ofNullable(wp.getContact())
+        .ifPresent(
+            contact -> {
+              Optional.ofNullable(contact.getName())
+                  .map(org.dgpe.codice.common.cbclib.NameType::getValue)
+                  .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_500))
+                  .ifPresent(tr::setContactName);
+
+              Optional.ofNullable(contact.getTelephone())
+                  .map(org.dgpe.codice.common.cbclib.TelephoneType::getValue)
+                  .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_500))
+                  .ifPresent(tr::setContactTelephone);
+
+              Optional.ofNullable(contact.getElectronicMail())
+                  .map(org.dgpe.codice.common.cbclib.ElectronicMailType::getValue)
+                  .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_500))
+                  .ifPresent(tr::setContactElectronicMail);
+            });
+  }
+
   private static void mapWinningPartyPhysicalLocation(
-      TenderResult tr, org.dgpe.codice.common.caclib.PartyType wp
-  ) {
+      TenderResult tr, org.dgpe.codice.common.caclib.PartyType wp) {
     Optional.ofNullable(wp.getPhysicalLocation())
-        .ifPresent(pl -> {
+        .ifPresent(
+            pl -> {
+              Optional.ofNullable(pl.getCountrySubentityCode())
+                  .map(c -> StringHelper.limit(c.getValue(), TamanoCampos.TAMANO_50))
+                  .ifPresent(tr::setCountrySubentityCode);
 
-          Optional.ofNullable(pl.getCountrySubentityCode())
-              .map(c -> ComunHelper.limitarRegistro(
-                  c.getValue(),
-                  Constantes.TAMANO_MAXIMO_CAMPO_50)
-              )
-              .ifPresent(tr::setCountrySubentityCode);
+              Optional.ofNullable(pl.getCountrySubentity())
+                  .map(c -> StringHelper.limit(c.getValue(), TamanoCampos.TAMANO_500))
+                  .ifPresent(tr::setCountrySubentity);
 
-          Optional.ofNullable(pl.getCountrySubentity())
-              .map(c -> ComunHelper.limitarRegistro(
-                  c.getValue(),
-                  Constantes.TAMANO_MAXIMO_CAMPO_500)
-              )
-              .ifPresent(tr::setCountrySubentity);
+              // Address
+              Optional.ofNullable(pl.getAddress())
+                  .ifPresent(
+                      addr -> {
 
-          Optional.ofNullable(pl.getAddress())
-              .ifPresent(addr -> {
-                Optional.ofNullable(addr.getCityName())
-                    .map(CityNameType::getValue)
-                    .map(v -> ComunHelper.limitarRegistro(
-                        v,
-                        Constantes.TAMANO_MAXIMO_CAMPO_500)
-                    )
-                    .ifPresent(tr::setCityName);
+                        // CityName
+                        Optional.ofNullable(addr.getCityName())
+                            .map(CityNameType::getValue)
+                            .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_500))
+                            .ifPresent(tr::setCityName);
 
-                Optional.ofNullable(addr.getPostalZone())
-                    .map(PostalZoneType::getValue)
-                    .map(v -> ComunHelper.limitarRegistro(
-                        v,
-                        Constantes.TAMANO_MAXIMO_CAMPO_500)
-                    )
-                    .ifPresent(tr::setPostalZone);
-              });
-        });
+                        // PostalZone
+                        Optional.ofNullable(addr.getPostalZone())
+                            .map(PostalZoneType::getValue)
+                            .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_500))
+                            .ifPresent(tr::setPostalZone);
+
+                        // Country
+                        Optional.ofNullable(addr.getCountry())
+                            .ifPresent(
+                                country -> {
+
+                                  // CountryName
+                                  Optional.ofNullable(country.getName())
+                                      .map(NameType::getValue)
+                                      .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_500))
+                                      .ifPresent(tr::setCountryName);
+
+                                  // CountryIdentificationCode
+                                  Optional.ofNullable(country.getIdentificationCode())
+                                      .map(IdentificationCodeType::getValue)
+                                      .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_500))
+                                      .ifPresent(tr::setCountryIdentificationCode);
+                                });
+                      });
+            });
   }
 
   private static void mapWinningPartyIdentification(
-      TenderResult tr, List<PartyIdentificationType> list
-  ) {
+      TenderResult tr, List<PartyIdentificationType> list) {
     if (list == null || list.isEmpty()) return;
 
     for (PartyIdentificationType pit : list) {
@@ -195,11 +245,11 @@ public final class MapperTenderResult {
 
       if (value == null || value.isBlank() || scheme == null) continue;
 
-      String limited = ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50);
+      String limited = StringHelper.limit(value, TamanoCampos.TAMANO_50);
 
       switch (scheme) {
         case Constantes.IDPLATAFORMA -> tr.setIdPlataforma(limited);
-        case Constantes.NIF -> tr.setNif(limited);
+        case Constantes.NIF -> tr.setNif(StringHelper.sanitizeNif(limited));
         case Constantes.OTROS -> {
           tr.setOtros(limited);
           tr.setNif(limited); // si lo necesitas
@@ -213,46 +263,43 @@ public final class MapperTenderResult {
 
   private static void mapContract(TenderResult tr, TenderResultType src) {
     Optional.ofNullable(src.getContract())
-        .ifPresent(c -> {
-          Optional.ofNullable(c.getID())
-              .map(IDType::getValue)
-              .map(v -> ComunHelper.limitarRegistro(v, Constantes.TAMANO_MAXIMO_CAMPO_50))
-              .ifPresent(tr::setIdContract);
+        .ifPresent(
+            c -> {
+              Optional.ofNullable(c.getID())
+                  .map(IDType::getValue)
+                  .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_50))
+                  .ifPresent(tr::setIdContract);
 
-          Optional.ofNullable(c.getIssueDate())
-              .map(IssueDateType::getValue)
-              .map(GregorianCalendarHelper::getDateFromXMLGregorianCalendar)
-              .ifPresent(tr::setIssueDate);
-        });
+              Optional.ofNullable(c.getIssueDate())
+                  .map(IssueDateType::getValue)
+                  .map(GregorianCalendarHelper::getDateFromXMLGregorianCalendar)
+                  .ifPresent(tr::setIssueDate);
+            });
   }
 
   private static void mapAwardedTenderedProject(TenderResult tr, TenderResultType src) {
     Optional.ofNullable(src.getAwardedTenderedProject())
-        .ifPresent(atp -> {
+        .ifPresent(
+            atp -> {
+              Optional.ofNullable(atp.getProcurementProjectLotID())
+                  .map(id -> StringHelper.limit(id.getValue(), TamanoCampos.TAMANO_50))
+                  .ifPresent(tr::setProcurementProjectLotId);
 
-          Optional.ofNullable(atp.getProcurementProjectLotID())
-              .map(id -> ComunHelper.limitarRegistro(
-                  id.getValue(),
-                  Constantes.TAMANO_MAXIMO_CAMPO_50)
-              )
-              .ifPresent(tr::setProcurementProjectLotId);
+              Optional.ofNullable(atp.getLegalMonetaryTotal())
+                  .ifPresent(
+                      lmt -> {
+                        Optional.ofNullable(lmt.getPayableAmount())
+                            .map(a -> a.getValue().doubleValue())
+                            .ifPresent(tr::setPayableAmount);
 
-          Optional.ofNullable(atp.getLegalMonetaryTotal())
-              .ifPresent(lmt -> {
-                Optional.ofNullable(lmt.getPayableAmount())
-                    .map(a -> a.getValue().doubleValue())
-                    .ifPresent(tr::setPayableAmount);
+                        Optional.ofNullable(lmt.getTaxExclusiveAmount())
+                            .map(a -> a.getValue().doubleValue())
+                            .ifPresent(tr::setTaxExclusiveAmount);
 
-                Optional.ofNullable(lmt.getTaxExclusiveAmount())
-                    .map(a -> a.getValue().doubleValue())
-                    .ifPresent(tr::setTaxExclusiveAmount);
-
-                Optional.ofNullable(lmt.getTaxInclusiveAmount())
-                    .map(a -> a.getValue().doubleValue())
-                    .ifPresent(tr::setTaxInclusiveAmount);
-              });
-        });
+                        Optional.ofNullable(lmt.getTaxInclusiveAmount())
+                            .map(a -> a.getValue().doubleValue())
+                            .ifPresent(tr::setTaxInclusiveAmount);
+                      });
+            });
   }
 }
-
-

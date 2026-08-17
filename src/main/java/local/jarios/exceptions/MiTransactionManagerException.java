@@ -13,7 +13,7 @@ public class MiTransactionManagerException extends RuntimeException {
    * especificada.
    *
    * @param message Mensaje descriptivo del error ocurrido.
-   * @param cause   Causa original que produjo esta excepción.
+   * @param cause Causa original que produjo esta excepción.
    */
   public MiTransactionManagerException(String message, Throwable cause) {
     super(message, cause);

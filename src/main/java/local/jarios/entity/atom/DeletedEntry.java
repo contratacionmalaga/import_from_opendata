@@ -9,22 +9,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import local.jarios.common.util.Constantes;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(
-    name = "deleted_entry"
-)
+@Table(name = "deleted_entry")
 public class DeletedEntry extends AuditableCreatedAt {
 
   // Primary Key
@@ -37,28 +34,21 @@ public class DeletedEntry extends AuditableCreatedAt {
   @Column(name = "updated")
   private LocalDateTime updated;
 
-  @Column(name = "ref", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "ref", length = TamanoCampos.TAMANO_500)
   private String ref;
 
-  @Column(name = "comment", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "comment", length = TamanoCampos.TAMANO_50)
   private String comment;
 
   // Relaciones
-  @ManyToOne(
-      fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "feed_id",
       nullable = false,
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_deletedentry_feed",
-          foreignKeyDefinition = "FOREIGN KEY (feed_id) REFERENCES feed(id) ON DELETE CASCADE")
-  )
+      foreignKey =
+          @ForeignKey(
+              name = "fk_deletedentry_feed",
+              foreignKeyDefinition = "FOREIGN KEY (feed_id) REFERENCES feed(id) ON DELETE CASCADE"))
   private Feed feed;
-
-  // Representaciones en texto
-  @Override
-  public String toString() {
-    return "DeletedEntry: [" + ref + ", " + comment + "]";
-  }
 }

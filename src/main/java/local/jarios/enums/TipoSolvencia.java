@@ -8,7 +8,5 @@ public enum TipoSolvencia {
   TECNICA,
   ECONOMICA;
 
-  TipoSolvencia() {
-
-  }
+  TipoSolvencia() {}
 }

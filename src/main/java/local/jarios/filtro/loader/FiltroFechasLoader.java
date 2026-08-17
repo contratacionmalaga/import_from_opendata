@@ -1,9 +1,13 @@
 package local.jarios.filtro.loader;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import local.jarios.common.util.Constantes;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
-import local.jarios.common.util.VariablesGlobales;
+import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.filtro.interfaces.FiltroLoader;
 import local.jarios.properties.api.PropertiesManagerService;
 import local.jarios.properties.api.PropertiesManagerServiceImpl;
@@ -11,14 +15,7 @@ import local.jarios.properties.exception.PropertiesManagerException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
-/**
- * Description: Loader de filtros de fechas de lectura. Author: juan Date: 13/10/2025
- */
+/** Description: Loader de filtros de fechas de lectura. Author: juan Date: 13/10/2025 */
 @Slf4j
 public class FiltroFechasLoader implements FiltroLoader {
 
@@ -27,23 +24,19 @@ public class FiltroFechasLoader implements FiltroLoader {
   private final PropertiesManagerService propertyManager =
       PropertiesManagerServiceImpl.getInstance();
 
-  @Getter
-  private LocalDateTime fechaInicial;
+  @Getter private LocalDateTime fechaInicial;
 
-  @Getter
-  private LocalDateTime fechaFinal;
+  @Getter private LocalDateTime fechaFinal;
 
   @Override
-  public void cargar() throws PropertiesManagerException {
+  public void cargar(OpenDataExecutionContext context) throws PropertiesManagerException {
 
-    String fechaInicialStr = propertyManager.getProperty(
-        PropertiesFiles.FILTER,
-        PropertiesKeys.FILTER_FECHAINICIALLECTURA
-    );
-    String fechaFinalStr = propertyManager.getProperty(
-        PropertiesFiles.FILTER,
-        PropertiesKeys.FILTER_FECHAFINALLECTURA
-    );
+    String fechaInicialStr =
+        propertyManager.getProperty(
+            PropertiesFiles.FILTER, PropertiesKeys.FILTER_FECHAINICIALLECTURA);
+    String fechaFinalStr =
+        propertyManager.getProperty(
+            PropertiesFiles.FILTER, PropertiesKeys.FILTER_FECHAFINALLECTURA);
 
     boolean inicioValido = esFechaValida(fechaInicialStr);
     boolean finValido = esFechaValida(fechaFinalStr);
@@ -58,19 +51,13 @@ public class FiltroFechasLoader implements FiltroLoader {
 
       fechaInicial = parseInicio(fechaInicialStr);
       fechaFinal = getFechaFinalPorDefecto();
-      log.debug(
-          "Solo fecha inicial informada. Fecha final por defecto usada: {}",
-          fechaFinal
-      );
+      log.debug("Solo fecha inicial informada. Fecha final por defecto usada: {}", fechaFinal);
 
     } else if (finValido) {
 
       fechaInicial = getFechaInicialPorDefecto();
       fechaFinal = parseFin(fechaFinalStr);
-      log.debug(
-          "Solo fecha final informada. Fecha inicial por defecto usada: {}",
-          fechaInicial
-      );
+      log.debug("Solo fecha final informada. Fecha inicial por defecto usada: {}", fechaInicial);
 
     } else {
 
@@ -81,8 +68,8 @@ public class FiltroFechasLoader implements FiltroLoader {
 
     validarRangoFechas();
 
-    VariablesGlobales.setFiltroFechaInicial(fechaInicial);
-    VariablesGlobales.setFiltroFechaFinal(fechaFinal);
+    context.setFiltroFechaInicial(fechaInicial);
+    context.setFiltroFechaFinal(fechaFinal);
 
     log.debug("Filtro de fechas establecido. Inicio: {}, Fin: {}", fechaInicial, fechaFinal);
   }
@@ -108,16 +95,13 @@ public class FiltroFechasLoader implements FiltroLoader {
   }
 
   private LocalDateTime getFechaFinalPorDefecto() {
-    return LocalDate
-        .parse(Constantes.FECHA_FINAL_LECTURA, FORMATTER)
-        .atTime(LocalTime.MAX);
+    return LocalDate.parse(Constantes.FECHA_FINAL_LECTURA, FORMATTER).atTime(LocalTime.MAX);
   }
 
   private void validarRangoFechas() {
-    if (fechaFinal.isAfter(fechaInicial)) {
-      throw new IllegalArgumentException(
-          "La fecha inicial no puede ser posterior a la fecha final"
-      );
+    // Las fechas van desde ahora hacia el pasado, por lo tanto la inicial es posterior a la final
+    if (fechaInicial.isBefore(fechaFinal)) {
+      throw new IllegalArgumentException("La fecha inicial no puede ser ANTERIOR a la fecha final");
     }
   }
 }

@@ -8,7 +8,5 @@ public enum TipoFinalEjecucion {
   ERROR,
   CORRECTO;
 
-  TipoFinalEjecucion() {
-
-  }
+  TipoFinalEjecucion() {}
 }

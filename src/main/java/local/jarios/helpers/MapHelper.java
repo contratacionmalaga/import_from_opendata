@@ -1,25 +1,21 @@
 package local.jarios.helpers;
 
-import local.jarios.common.util.Constantes;
-import local.jarios.entity.auxiliares.OrganoContratacion;
-import local.jarios.interfaces.HasIdEntry;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import local.jarios.common.util.Constantes;
+import local.jarios.entity.auxiliares.OrganoContratacion;
+import local.jarios.interfaces.HasIdEntry;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- * Interfaz para acciones sobre objetos Map
- */
+/** Interfaz para acciones sobre objetos Map */
 @Slf4j
 public final class MapHelper {
 
-  private MapHelper() {
-  }
+  private MapHelper() {}
 
   /**
    * Validador de maps
@@ -67,8 +63,8 @@ public final class MapHelper {
     }
 
     // Devuelvo el mapa
-    return listFiltroOrganoContratacion.stream().collect(
-        Collectors.toMap(OrganoContratacion::getIdPlataforma, Function.identity()));
+    return listFiltroOrganoContratacion.stream()
+        .collect(Collectors.toMap(OrganoContratacion::getIdPlataforma, Function.identity()));
   }
 
   public static <K, V> void printMap(Map<K, V> map) {
@@ -83,7 +79,6 @@ public final class MapHelper {
     log.info("[printKeyValue] - {} | {}", key, value.toString());
   }
 
-
   public static <K, V extends HasIdEntry<V>> int analisisMap(Map<K, V> map) {
 
     //
@@ -95,12 +90,13 @@ public final class MapHelper {
     AtomicInteger nErrores = new AtomicInteger();
 
     //
-    map.forEach((key, value) -> {
-      if (!key.equals(value.getEntryId())) {
-        log.info("[analisisMap] - ERROR!!! Key: '{}' | Value: {}", key, value.getEntryId());
-        nErrores.getAndIncrement();
-      }
-    });
+    map.forEach(
+        (key, value) -> {
+          if (!key.equals(value.getEntryId())) {
+            log.info("[analisisMap] - ERROR!!! Key: '{}' | Value: {}", key, value.getEntryId());
+            nErrores.getAndIncrement();
+          }
+        });
 
     //
     return nErrores.get();

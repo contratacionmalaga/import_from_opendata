@@ -9,30 +9,30 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import local.jarios.codice.AwardingTerms;
-import local.jarios.common.util.Constantes;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 /**
  * Representa un criterio de adjudicación en un proceso de licitación.
- * <p>
- * Este criterio especifica las condiciones necesarias para adjudicar un contrato, pudiendo
+ *
+ * <p>Este criterio especifica las condiciones necesarias para adjudicar un contrato, pudiendo
  * aplicarse tanto a nivel general como a nivel de lote.
- * </p>
  *
- * <p>Contiene códigos que tipifican el criterio y subtipo, una descripción, notas
- * y un valor numérico que indica la importancia o peso del criterio.</p>
+ * <p>Contiene códigos que tipifican el criterio y subtipo, una descripción, notas y un valor
+ * numérico que indica la importancia o peso del criterio.
  *
- * <p>Relacionada con la entidad {@link AwardingTerms} que agrupa varios criterios.</p>
+ * <p>Relacionada con la entidad {@link AwardingTerms} que agrupa varios criterios.
  *
- * <p><b>Author:</b> Juan Antonio</p>
- * <p><b>Date:</b> 04/06/2024</p>
- * <p><b>Team:</b> Juan Antonio</p>
+ * <p><b>Author:</b> Juan Antonio
+ *
+ * <p><b>Date:</b> 04/06/2024
+ *
+ * <p><b>Team:</b> Juan Antonio
  */
 @Setter
 @Getter
@@ -41,33 +41,28 @@ import java.util.UUID;
 @Table(name = "awarding_criteria")
 public class AwardingCriteria extends AuditableCreatedAt {
 
-  /**
-   * Identificador único universal (UUID) del estado de publicación.
-   */
+  /** Identificador único universal (UUID) del estado de publicación. */
   @Id
   @GeneratedValue(generator = "UUID")
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
-  /**
-   * Código que tipifica el tipo de criterio de adjudicación.
-   */
-  @Column(name = "awarding_criteria_type_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+
+  /** Código que tipifica el tipo de criterio de adjudicación. */
+  @Column(name = "awarding_criteria_type_code", length = TamanoCampos.TAMANO_50)
   private String awardingCriteriaTypeCode;
-  /**
-   * Código que identifica el subtipo del criterio de adjudicación.
-   */
-  @Column(name = "awarding_criteria_subtype_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+
+  /** Código que identifica el subtipo del criterio de adjudicación. */
+  @Column(name = "awarding_criteria_subtype_code", length = TamanoCampos.TAMANO_50)
   private String awardingCriteriaSubTypeCode;
-  /**
-   * Descripción textual del criterio de adjudicación.
-   */
+
+  /** Descripción textual del criterio de adjudicación. */
   @Column(name = "description", columnDefinition = "TEXT")
   private String description;
-  /**
-   * Notas o detalles adicionales relativos al criterio de adjudicación.
-   */
+
+  /** Notas o detalles adicionales relativos al criterio de adjudicación. */
   @Column(name = "note", columnDefinition = "TEXT")
   private String note;
+
   /**
    * Valor numérico que representa el peso o importancia asignada al cumplimiento de este criterio
    * dentro del proceso de licitación.
@@ -75,29 +70,15 @@ public class AwardingCriteria extends AuditableCreatedAt {
   @Column(name = "weight_numeric")
   private Double weightNumeric;
 
-  @ManyToOne(
-      fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "tendering_terms_id",
       nullable = false,
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_tendering_terms_awarding_criteria",
-          foreignKeyDefinition = "FOREIGN KEY (tendering_terms_id) REFERENCES tendering_terms(id) ON DELETE CASCADE"))
+      foreignKey =
+          @ForeignKey(
+              name = "tendering_terms_awarding_criteria",
+              foreignKeyDefinition =
+                  "FOREIGN KEY (tendering_terms_id) REFERENCES tendering_terms(id) ON DELETE CASCADE"))
   private TenderingTerms tenderingTerms;
-
-  /**
-   * Devuelve una representación en cadena del objeto {@code AwardingCriteria}.
-   *
-   * @return Cadena con valores de los campos principales del criterio.
-   */
-  @Override
-  public String toString() {
-    return "AwardingCriteria: " +
-        "[awardingCriteriaTypeCode='" + awardingCriteriaTypeCode + "', " +
-        "awardingCriteriaSubTypeCode='" + awardingCriteriaSubTypeCode + "', " +
-        "description='" + description + "', " +
-        "note='" + note + "', " +
-        "weightNumeric='" + weightNumeric + "']";
-  }
 }

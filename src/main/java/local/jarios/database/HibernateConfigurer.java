@@ -1,28 +1,26 @@
 package local.jarios.database;
 
+import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.Configuration;
-
-import java.util.Properties;
 
 /**
  * Clase utilitaria para construir configuraciones de Hibernate a partir de un conjunto de
  * propiedades personalizadas.
  *
- * <p>Se encarga de inicializar un objeto {@link Configuration}
- * de Hibernate y aplicarle las propiedades necesarias para establecer la conexión, el dialecto, y
- * otros parámetros del ORM.</p>
+ * <p>Se encarga de inicializar un objeto {@link Configuration} de Hibernate y aplicarle las
+ * propiedades necesarias para establecer la conexión, el dialecto, y otros parámetros del ORM.
  *
- * <p>Útil para centralizar la inicialización de Hibernate desde código
- * en lugar de usar archivos XML tradicionales.</p>
+ * <p>Útil para centralizar la inicialización de Hibernate desde código en lugar de usar archivos
+ * XML tradicionales.
  */
 @Slf4j
 public class HibernateConfigurer {
 
-  /**
-   * Constructor por defecto.
-   */
-  public HibernateConfigurer() { /*    */ }
+  /** Constructor por defecto. */
+  public HibernateConfigurer() {
+    /*    */
+  }
 
   /**
    * Construye una configuración de Hibernate a partir de las propiedades proporcionadas.
@@ -39,8 +37,7 @@ public class HibernateConfigurer {
 
     // Seteamos las propiedades
     configuration.setProperties(hibernateProperties);
-    log.debug("Hibernate Configuration creada con {} propiedades.",
-              hibernateProperties.size());
+    log.debug("Hibernate Configuration creada con {} propiedades.", hibernateProperties.size());
 
     return configuration;
   }

@@ -1,5 +1,10 @@
 package local.jarios.database;
 
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.enums.TipoConexion;
@@ -11,12 +16,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.JdbcSettings;
-
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * Proveedor de SessionFactory para distintos tipos de conexión. Principios: - SRP: orquesta la
@@ -30,26 +29,23 @@ public final class SessionFactoryProvider {
   private static final String CONFIG_PACKAGE_NAME = "local.jarios.entity";
 
   // Claves mínimas necesarias para conectar
-  private static final Set<String> REQUIRED_JAKARTA_KEYS = Set.of(
-      PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL,
-      PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_DRIVER,
-      PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_USER,
-      PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD
-  );
+  private static final Set<String> REQUIRED_JAKARTA_KEYS =
+      Set.of(
+          PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL,
+          PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_DRIVER,
+          PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_USER,
+          PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD);
 
   private final PropertiesManagerService propertiesManager;
   private final HibernateConfigurer hibernateConfigurer;
   private final EntityScanner entityScanner;
   private final Map<TipoConexion, ConnectionStrategy> strategies;
 
-  /**
-   * Constructor recomendado (inyectable).
-   */
+  /** Constructor recomendado (inyectable). */
   public SessionFactoryProvider(
       PropertiesManagerService propertiesManager,
       HibernateConfigurer hibernateConfigurer,
-      EntityScanner entityScanner
-  ) {
+      EntityScanner entityScanner) {
     this.propertiesManager = Objects.requireNonNull(propertiesManager, "propertiesManager");
     this.hibernateConfigurer = Objects.requireNonNull(hibernateConfigurer, "hibernateConfigurer");
     this.entityScanner = Objects.requireNonNull(entityScanner, "entityScanner");
@@ -60,9 +56,7 @@ public final class SessionFactoryProvider {
     this.strategies = Map.copyOf(map);
   }
 
-  /**
-   * Constructor de conveniencia si no usas DI.
-   */
+  /** Constructor de conveniencia si no usas DI. */
   public SessionFactoryProvider(PropertiesManagerService propertiesManager) {
     this(propertiesManager, new HibernateConfigurer(), new EntityScanner());
   }
@@ -74,7 +68,8 @@ public final class SessionFactoryProvider {
    * @return SessionFactory configurada
    * @throws MiSessionFactoryProvider si hay errores al leer properties o construir Hibernate
    */
-  public SessionFactory getSessionFactory(TipoConexion tipoConexion) throws MiSessionFactoryProvider {
+  public SessionFactory getSessionFactory(TipoConexion tipoConexion)
+      throws MiSessionFactoryProvider {
     Objects.requireNonNull(tipoConexion, "tipoConexion no puede ser null");
 
     ConnectionStrategy strategy = strategies.get(tipoConexion);
@@ -87,8 +82,8 @@ public final class SessionFactoryProvider {
       ResolvedConfig resolved = strategy.resolve(propertiesManager);
 
       // 2) Construir Configuration
-      Configuration configuration = hibernateConfigurer.buildConfiguration(
-          resolved.hibernateProperties());
+      Configuration configuration =
+          hibernateConfigurer.buildConfiguration(resolved.hibernateProperties());
 
       // 3) Opcional: escaneo de entidades
       if (resolved.shouldScanEntities()) {
@@ -103,7 +98,8 @@ public final class SessionFactoryProvider {
 
     } catch (PropertiesManagerException ex) {
       // CLAVE: ahora capturamos la excepción real del servicio de properties
-      String msg = "Error leyendo configuración de properties para " + tipoConexion + ": " + ex.getMessage();
+      String msg =
+          "Error leyendo configuración de properties para " + tipoConexion + ": " + ex.getMessage();
       log.error(msg, ex);
       throw new MiSessionFactoryProvider(msg, ex);
 
@@ -128,23 +124,24 @@ public final class SessionFactoryProvider {
     boolean ok = pm.validateRequiredKeys(file, REQUIRED_JAKARTA_KEYS);
     if (!ok) {
       throw new PropertiesManagerException(
-          "Faltan claves requeridas en '" + file + "'. Requeridas: " + REQUIRED_JAKARTA_KEYS
-      );
+          "Faltan claves requeridas en '" + file + "'. Requeridas: " + REQUIRED_JAKARTA_KEYS);
     }
 
-    target.setProperty(JdbcSettings.JAKARTA_JDBC_URL,
-                       pm.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
-    target.setProperty(JdbcSettings.JAKARTA_JDBC_DRIVER,
-                       pm.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_DRIVER));
-    target.setProperty(JdbcSettings.JAKARTA_JDBC_USER,
-                       pm.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_USER));
-    target.setProperty(JdbcSettings.JAKARTA_JDBC_PASSWORD,
-                       pm.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
+    target.setProperty(
+        JdbcSettings.JAKARTA_JDBC_URL,
+        pm.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_URL));
+    target.setProperty(
+        JdbcSettings.JAKARTA_JDBC_DRIVER,
+        pm.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_DRIVER));
+    target.setProperty(
+        JdbcSettings.JAKARTA_JDBC_USER,
+        pm.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_USER));
+    target.setProperty(
+        JdbcSettings.JAKARTA_JDBC_PASSWORD,
+        pm.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
   }
 
-  /**
-   * Log seguro: imprime properties pero enmascara password.
-   */
+  /** Log seguro: imprime properties pero enmascara password. */
   private void safeLogProperties(String tag, Properties props) {
     if (!log.isDebugEnabled()) return;
 
@@ -163,18 +160,13 @@ public final class SessionFactoryProvider {
     }
   }
 
-  /**
-   * Estrategia para resolver configuración por tipo de conexión.
-   */
+  /** Estrategia para resolver configuración por tipo de conexión. */
   private interface ConnectionStrategy {
     ResolvedConfig resolve(PropertiesManagerService pm) throws PropertiesManagerException;
   }
 
-  /**
-   * Resultado inmutable de la resolución de configuración.
-   */
-  private record ResolvedConfig(Properties hibernateProperties, boolean shouldScanEntities) {
-  }
+  /** Resultado inmutable de la resolución de configuración. */
+  private record ResolvedConfig(Properties hibernateProperties, boolean shouldScanEntities) {}
 
   // =========================================================
   // Helpers

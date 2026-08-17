@@ -9,26 +9,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import local.jarios.common.util.Constantes;
+import java.util.UUID;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 /**
  * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
  * Team: Juan Antonio
  */
-
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(
-    name = "commodity_classification"
-)
+@Table(name = "commodity_classification")
 public class CommodityClassification extends AuditableCreatedAt {
 
   //
@@ -39,37 +35,30 @@ public class CommodityClassification extends AuditableCreatedAt {
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
-  @Column(name = "item_classification_code", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "item_classification_code", nullable = false, length = TamanoCampos.TAMANO_50)
   private String itemClassificationCode;
 
-  @ManyToOne(
-      fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "procurement_project_id",
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_cpv_procurementproject",
-          foreignKeyDefinition =
-              "FOREIGN KEY (procurement_project_id) " +
-                  "REFERENCES procurement_project(id) ON DELETE CASCADE"))
+      foreignKey =
+          @ForeignKey(
+              name = "cpv_procurementproject",
+              foreignKeyDefinition =
+                  "FOREIGN KEY (procurement_project_id) "
+                      + "REFERENCES procurement_project(id) ON DELETE CASCADE"))
   private ProcurementProject procurementProject;
 
-  @ManyToOne(
-      fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "procurement_project_lot_id",
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_cpv_procurementprojectlot",
-          foreignKeyDefinition =
-              "FOREIGN KEY (procurement_project_lot_id) " +
-                  "REFERENCES procurement_project_lot(id) ON DELETE CASCADE"))
+      foreignKey =
+          @ForeignKey(
+              name = "fk_cpv_procurementprojectlot",
+              foreignKeyDefinition =
+                  "FOREIGN KEY (procurement_project_lot_id) "
+                      + "REFERENCES procurement_project_lot(id) ON DELETE CASCADE"))
   private ProcurementProjectLot procurementProjectLot;
-
-  @Override
-  public String toString() {
-
-    return "CommodityClassification: " +
-        "[itemClassificationCode='" + itemClassificationCode + "']";
-  }
 }

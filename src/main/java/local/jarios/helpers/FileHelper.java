@@ -1,50 +1,67 @@
 package local.jarios.helpers;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import local.jarios.common.util.Mensajes;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-
-/**
- * Interfaz para acciones sobre objetos File
- */
+/** Interfaz para acciones sobre objetos File */
 @Slf4j
 public final class FileHelper {
 
-  private FileHelper() {
-  }
+  private FileHelper() {}
 
   /**
    * Analiza si un String que se pasa es un File válido (EXISTE, SE PUEDA LEER, .entity..)
    *
    * @param strPathFichero Fichero con la ruta absoluta
    * @return Devuelve un valor indicando si el fichero es valido y en caso contrario indica el
-   * motivo
+   *     motivo
    */
   public static boolean esFileValido(String strPathFichero) {
+    return resolveReadableFile(strPathFichero) != null;
+  }
 
+  public static Path requireReadableFile(String strPathFichero) throws IOException {
+    Path file = resolveReadableFile(strPathFichero);
+    if (file == null) {
+      throw new IOException("Fichero no valido: " + strPathFichero);
+    }
+    return file;
+  }
 
-    //
-    File filePathFichero = new File(strPathFichero);
-
-    // Verificación de existencia del archivo
-    if (!filePathFichero.exists()) {
-      log.debug(Mensajes.FILE_NOT_EXIST, strPathFichero);
-      return false;
+  private static Path resolveReadableFile(String strPathFichero) {
+    if (strPathFichero == null || strPathFichero.isBlank()) {
+      log.warn(Mensajes.FILE_NOT_EXIST, strPathFichero);
+      return null;
     }
 
-    // Verificación de si es un archivo
-    if (!filePathFichero.isFile()) {
-      log.debug(Mensajes.NOT_FILE, strPathFichero);
-      return false;
-    }
+    try {
+      Path filePathFichero = Path.of(strPathFichero).toAbsolutePath().normalize();
 
-    // Verificación de permisos de lectura
-    if (!filePathFichero.canRead()) {
-      log.debug(Mensajes.FILE_NOT_READ, strPathFichero);
-      return false;
-    }
+      if (!Files.exists(filePathFichero)) {
+        log.warn(Mensajes.FILE_NOT_EXIST, strPathFichero);
+        return null;
+      }
 
-    return true;
+      Path realPath = filePathFichero.toRealPath();
+
+      if (!Files.isRegularFile(realPath)) {
+        log.warn(Mensajes.NOT_FILE, strPathFichero);
+        return null;
+      }
+
+      if (!Files.isReadable(realPath)) {
+        log.warn(Mensajes.FILE_NOT_READ, strPathFichero);
+        return null;
+      }
+
+      return realPath;
+    } catch (InvalidPathException | IOException ex) {
+      log.warn(Mensajes.FILE_NOT_EXIST, strPathFichero);
+      return null;
+    }
   }
 }

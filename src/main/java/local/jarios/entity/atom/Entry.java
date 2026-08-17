@@ -11,21 +11,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import local.jarios.common.util.Constantes;
-import local.jarios.common.util.VariablesGlobales;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
-import local.jarios.entity.codice.ContractFolderStatus;
-import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
-import local.jarios.enums.TipoSindicacion;
-import local.jarios.interfaces.HasIdEntry;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import local.jarios.common.util.TamanoCampos;
+import local.jarios.core.enums.TipoSindicacion;
+import local.jarios.entity.auxiliares.AuditableCreatedAt;
+import local.jarios.entity.codice.ContractFolderStatus;
+import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
+import local.jarios.interfaces.HasIdEntry;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Setter
@@ -33,10 +32,8 @@ import java.util.UUID;
 @Entity
 @Table(
     name = "entry",
-    indexes = {
-        @Index(name = "idx_unique_entry", columnList = "entry_id", unique = true)
-    }
-)
+    indexes = {@Index(name = "idx_unique_entry", columnList = "entry_id", unique = true)})
+@Slf4j
 public class Entry extends AuditableCreatedAt implements HasIdEntry<Entry> {
 
   // Primary Key
@@ -46,58 +43,52 @@ public class Entry extends AuditableCreatedAt implements HasIdEntry<Entry> {
   private UUID id;
 
   // Campos de entrada
-  @Column(name = "entry_id", nullable = false, unique = true, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "entry_id", nullable = false, unique = true, length = TamanoCampos.TAMANO_500)
   private String entryId;
 
   // Campos de entrada
-  @Column(name = "entry_id_corto", nullable = false, unique = true, length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "entry_id_corto", nullable = false, unique = true, length = TamanoCampos.TAMANO_50)
   private String entryIdCorto;
 
-  @Column(name = "link", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "link", nullable = false, length = TamanoCampos.TAMANO_500)
   private String link;
 
   @Column(name = "summary", columnDefinition = "TEXT")
   private String summary;
 
-  @Column(name = "title", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  @Column(name = "title", length = TamanoCampos.TAMANO_2500)
   private String title;
 
   @Column(name = "updated", nullable = false)
   private LocalDateTime updated;
 
   // Relaciones
-  @ManyToOne(
-      fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "feed_id",
       nullable = false,
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_entry_feed",
-          foreignKeyDefinition = "FOREIGN KEY (feed_id) REFERENCES feed(id) ON DELETE CASCADE")
-  )
+      foreignKey =
+          @ForeignKey(
+              name = "fk_entry_feed",
+              foreignKeyDefinition = "FOREIGN KEY (feed_id) REFERENCES feed(id) ON DELETE CASCADE"))
   private Feed feed;
 
   @OneToMany(mappedBy = "entry", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<ContractFolderStatus> contractFolderStatusList = new ArrayList<>();
 
   @OneToMany(mappedBy = "entry", orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<PreliminaryMarketConsultationStatus> preliminaryMarketConsultationStatusList = new ArrayList<>();
-
-  // Representaciones en texto
-  @Override
-  public String toString() {
-    return "Entry: [" + entryId + ", " + updated + ", " + getNifFromEntry() + ", " + getIdPlataformaFromEntry() + "]";
-  }
+  private List<PreliminaryMarketConsultationStatus> preliminaryMarketConsultationStatusList =
+      new ArrayList<>();
 
   /**
    * Obtiene el IdPlataforma asociado a un Entry
    *
    * @return Devuelve el identificador
    */
-  public String getIdPlataformaFromEntry() {
+  public String getIdPlataformaFromEntry(TipoSindicacion tipoSindicacion) {
 
-    if (VariablesGlobales.getTipoSindicacion() == TipoSindicacion.CPM) {
+    if (tipoSindicacion == TipoSindicacion.CONSULTAS) {
       return this.getPreliminaryMarketConsultationStatusList().stream()
           .map(PreliminaryMarketConsultationStatus::getIdPlataforma)
           .filter(id -> id != null && !id.isBlank())
@@ -114,20 +105,19 @@ public class Entry extends AuditableCreatedAt implements HasIdEntry<Entry> {
   }
 
   /**
-   * Obtiene el IdPlataforma asociado a un Entry
-   *
    * @return Devuelve el identificador
    */
-  public String getNifFromEntry() {
+  public String getNifFromEntry(TipoSindicacion tipoSindicacion) {
 
-    if (VariablesGlobales.getTipoSindicacion() == TipoSindicacion.CPM) {
+    if (tipoSindicacion == TipoSindicacion.CONSULTAS) {
       return this.getPreliminaryMarketConsultationStatusList().stream()
           .map(PreliminaryMarketConsultationStatus::getNif)
           .filter(id -> id != null && !id.isBlank())
           .findFirst()
-          .orElseThrow(() -> new IllegalStateException(
-              "No se encontró Nif asociado al entry: " + this.getEntryId()
-          ));
+          .orElseThrow(
+              () ->
+                  new IllegalStateException(
+                      "No se encontró Nif asociado al entry: " + this.getEntryId()));
     }
 
     // No CPM: si ya tienes el id en ContractFolderStatus, úsalo directamente
@@ -135,8 +125,9 @@ public class Entry extends AuditableCreatedAt implements HasIdEntry<Entry> {
         .map(ContractFolderStatus::getNif) // probablemente String
         .filter(id -> id != null && !id.isBlank())
         .findFirst()
-        .orElseThrow(() -> new IllegalStateException(
-            "No se encontró Nif asociado al entry: " + this.getEntryId()
-        ));
+        .orElseThrow(
+            () ->
+                new IllegalStateException(
+                    "No se encontró Nif asociado al entry: " + this.getEntryId()));
   }
 }

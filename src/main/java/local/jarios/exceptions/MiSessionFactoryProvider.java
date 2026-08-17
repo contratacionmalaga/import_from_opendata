@@ -13,7 +13,7 @@ public class MiSessionFactoryProvider extends RuntimeException {
    * especificada.
    *
    * @param message Mensaje descriptivo del error ocurrido.
-   * @param cause   Causa original que produjo esta excepción.
+   * @param cause Causa original que produjo esta excepción.
    */
   public MiSessionFactoryProvider(String message, Throwable cause) {
     super(message, cause);

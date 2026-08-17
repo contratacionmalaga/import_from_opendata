@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
+import java.time.LocalDateTime;
 import local.jarios.helpers.LocalDateTimeHelper;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 /**
  * Description: Clase que añade elementos de Auditorías a las clases que la extienden Author: juan
@@ -19,7 +18,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public class AuditableCreatedAt {
 
-  //Getters y Setters
+  // Getters y Setters
   @JsonIgnore
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;

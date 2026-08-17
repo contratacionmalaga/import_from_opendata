@@ -9,27 +9,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import local.jarios.common.util.Constantes;
+import java.time.LocalDate;
+import java.util.UUID;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
 /**
  * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
  * Team: Juan Antonio
  */
-
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(
-    name = "tender_result"
-)
+@Table(name = "tender_result")
 
 //
 public class TenderResult extends AuditableCreatedAt {
@@ -40,7 +36,7 @@ public class TenderResult extends AuditableCreatedAt {
   private UUID id;
 
   // 4.35.1 Tipo de resultado
-  @Column(name = "result_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "result_code", length = TamanoCampos.TAMANO_50)
   private String resultCode;
 
   // 4.35.5 Motivación - Descripción textual
@@ -64,7 +60,7 @@ public class TenderResult extends AuditableCreatedAt {
   private Double higherTenderAmountQuantity;
 
   // 4.35.7 Información sobre el contrato - Fecha de inicio del contrato
-  @Column(name = "start_date", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "start_date", length = TamanoCampos.TAMANO_50)
   private LocalDate startDate;
 
   // 4.35.6 Ofertas recibidas - Número de ofertas recibidas de pymes
@@ -84,26 +80,22 @@ public class TenderResult extends AuditableCreatedAt {
   private Boolean sMEAwardedIndicator;
 
   // 4.35.7 Información sobre el contratista - Nacionalidad del contratista (código)
-  @Column(name = "awarded_owner_nationality_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "awarded_owner_nationality_code", length = TamanoCampos.TAMANO_50)
   private String awardedOwnerNationalityCode;
 
   // 4.35.6 Ofertas recibidas - Se han excluído ofertas por ser anormalmente bajas
   @Column(name = "abnormally_low_tenders_indicator")
   private Boolean abnormallyLowTendersIndicator;
 
-  /**
-   * Contract
-   */
-  @Column(name = "id_contract", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  /** Contract */
+  @Column(name = "id_contract", length = TamanoCampos.TAMANO_50)
   private String idContract;
 
   @Column(name = "issue_date")
   private LocalDate issueDate;
 
-  /**
-   * AwardedTenderedProject
-   */
-  @Column(name = "procurement_project_lot_id", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  /** AwardedTenderedProject */
+  @Column(name = "procurement_project_lot_id", length = TamanoCampos.TAMANO_50)
   private String procurementProjectLotId;
 
   @Column(name = "payable_amount")
@@ -115,85 +107,70 @@ public class TenderResult extends AuditableCreatedAt {
   @Column(name = "tax_inclusive_amount")
   private Double taxInclusiveAmount;
 
-  /**
-   * SubcontractTerms
-   */
-  @Column(name = "rate")
-  private Double rate;
+  /** SubcontractTerms */
+  @Column(name = "subcontract_terms_rate")
+  private Double subcontractTermsRate;
 
   @Column(name = "subcontract_terms_description", columnDefinition = "TEXT")
   private String subcontractTermsDescription;
 
   // PartyName
-  @Column(name = "party_name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "party_name", length = TamanoCampos.TAMANO_500)
   private String partyName;
 
   // PhysicalLocation
-  @Column(name = "country_subentity_code", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "country_subentity_code", length = TamanoCampos.TAMANO_50)
   private String countrySubentityCode;
 
-  @Column(name = "country_subentity", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "country_subentity", length = TamanoCampos.TAMANO_500)
   private String countrySubentity;
 
   // Address
-  @Column(name = "city_name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "city_name", length = TamanoCampos.TAMANO_500)
   private String cityName;
 
-  @Column(name = "postal_zone", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "postal_zone", length = TamanoCampos.TAMANO_500)
   private String postalZone;
 
-  // Contact
-  @Column(name = "contact_name", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
-  private String contactMame;
+  @Column(name = "country_name", length = TamanoCampos.TAMANO_500)
+  private String countryName;
 
-  @Column(name = "contact_telephone", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "country_identification_code", length = TamanoCampos.TAMANO_500)
+  private String countryIdentificationCode;
+
+  // Contact
+  @Column(name = "contact_name", length = TamanoCampos.TAMANO_500)
+  private String contactName;
+
+  @Column(name = "contact_telephone", length = TamanoCampos.TAMANO_500)
   private String contactTelephone;
 
-  @Column(name = "contact_electronic_mail", length = Constantes.TAMANO_MAXIMO_CAMPO_500)
+  @Column(name = "contact_electronic_mail", length = TamanoCampos.TAMANO_500)
   private String contactElectronicMail;
 
   // Party Identification
-  @Column(name = "id_plataforma", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "id_plataforma", length = TamanoCampos.TAMANO_50)
   private String idPlataforma;
 
-  @Column(name = "nif", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "nif", length = TamanoCampos.TAMANO_50)
   private String nif;
 
-  @Column(name = "otros", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "otros", length = TamanoCampos.TAMANO_50)
   private String otros;
 
   // ////////////////////
   // RELACIONES PADRE
   // ////////////////////
-  @ManyToOne(
-      fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "contract_folder_status_id",
       nullable = false,
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_tenderresult_contractfolderstatus",
-          foreignKeyDefinition =
-              "FOREIGN KEY (contract_folder_status_id) " +
-                  "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
+      foreignKey =
+          @ForeignKey(
+              name = "tenderresult_cfs",
+              foreignKeyDefinition =
+                  "FOREIGN KEY (contract_folder_status_id) "
+                      + "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
   private ContractFolderStatus contractFolderStatus;
-
-  @Override
-  public String toString() {
-
-    return "TenderResult: " +
-        "[resultCode='" + resultCode + "', " +
-        "descriptionTenderResult='" + descriptionTenderResult + "', " +
-        "awardDate='" + awardDate + "', " +
-        "receivedTenderQuantity='" + receivedTenderQuantity + "', " +
-        "lowerTenderAmountQuantity='" + lowerTenderAmountQuantity + "', " +
-        "higherTenderAmountQuantity='" + higherTenderAmountQuantity + "', " +
-        "startDate='" + startDate + "', " +
-        "sMEsReceivedTenderQuantity='" + sMEsReceivedTenderQuantity + "', " +
-        "eUNationalsReceivedTenderQuantity='" + eUNationalsReceivedTenderQuantity + "', " +
-        "nonEUNationalsReceivedTenderQuantity='" + nonEUNationalsReceivedTenderQuantity + "', " +
-        "sMEAwardedIndicator='" + sMEAwardedIndicator + "', " +
-        "awardedOwnerNationalityCode='" + awardedOwnerNationalityCode + "', " +
-        "abnormallyLowTendersIndicator='" + abnormallyLowTendersIndicator + "']";
-  }
 }

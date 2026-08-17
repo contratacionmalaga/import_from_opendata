@@ -11,30 +11,24 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import local.jarios.common.util.Constantes;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 /**
  * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
  * Team: Juan Antonio
  */
-
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(
-    name = "tendering_terms"
-)
-
+@Table(name = "tendering_terms")
 public class TenderingTerms extends AuditableCreatedAt {
 
   @Id
@@ -60,21 +54,21 @@ public class TenderingTerms extends AuditableCreatedAt {
 
   // 4.28.1 Programas de financiación europea
   // - Lista de Códigos de Financiación Europea
-  @Column(name = "funding_program_code", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  @Column(name = "funding_program_code", length = TamanoCampos.TAMANO_500)
   private String fundingProgramCode;
 
   // 4.28.1 Programas de financiación europea
   // - Descripción de programas de financiación: Descripción textual de los
   // programas que financian este contrato
-  @Column(name = "funding_program", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  @Column(name = "funding_program", length = TamanoCampos.TAMANO_500)
   private String fundingProgram;
 
   // 4.29 Garantías requeridas
   // - Lista de garantías requeridas
-  @Column(name = "procurement_national_legislation_code", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "procurement_national_legislation_code", length = TamanoCampos.TAMANO_50)
   private String procurementNationalLegislationCode;
 
-  @Column(name = "procurement_legislation_document_reference", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "procurement_legislation_document_reference", length = TamanoCampos.TAMANO_50)
   private String procurementLegislationDocumentReference;
 
   // 4.46 Número de recursos presentados
@@ -99,91 +93,58 @@ public class TenderingTerms extends AuditableCreatedAt {
   @Column(name = "electronic_invoicing_indicator")
   private Boolean electronicInvoicingIndicator;
 
-  /**
-   * SubcontractTerms
-   */
-  @Column(name = "rate")
-  private Double rate;
+  /** SubcontractTerms */
+  @Column(name = "subcontract_terms_rate")
+  private Double subcontractTermsRate;
 
   @Column(name = "subcontract_terms_description", columnDefinition = "TEXT")
   private String subcontractTermsDescription;
 
-  /**
-   * TenderQualificationRequest
-   */
-  // Título habilitante: Descripción textual de los requisitos específicos del operador económico para poder
-  // participar en la licitación.
-  @Column(name = "personal_situation", columnDefinition = "TEXT")
-  private String personalSituation;
-
-  // Solvencia requerida: Descripción textual de la información y trámites necesarios para evaluar si se cumplen
-  // los requisitos de capacidad.
-  @Column(name = "description", columnDefinition = "TEXT")
-  private String description;
-
-  @Column(name = "employee_quantity")
-  private BigDecimal employeeQuantity;
-
-  @Column(name = "employee_quantity_description", columnDefinition = "TEXT")
-  private String employeeQuantityDescription;
-
-  @OneToOne(
-      fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "contract_folder_status_id",
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_tenderingterms_contractfolderstatus",
-          foreignKeyDefinition =
-              "FOREIGN KEY (contract_folder_status_id) " +
-                  "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
+      foreignKey =
+          @ForeignKey(
+              name = "tenderingterms_cfs",
+              foreignKeyDefinition =
+                  "FOREIGN KEY (contract_folder_status_id) "
+                      + "REFERENCES contract_folder_status(id) ON DELETE CASCADE"))
   private ContractFolderStatus contractFolderStatus;
 
-  @OneToOne(
-      fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "procurement_project_lot_id",
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_tenderingterms_procurementprojectlot",
-          foreignKeyDefinition =
-              "FOREIGN KEY (procurement_project_lot_id) " +
-                  "REFERENCES procurement_project_lot(id) ON DELETE CASCADE"))
+      foreignKey =
+          @ForeignKey(
+              name = "tenderingterms_ppl",
+              foreignKeyDefinition =
+                  "FOREIGN KEY (procurement_project_lot_id) "
+                      + "REFERENCES procurement_project_lot(id) ON DELETE CASCADE"))
   private ProcurementProjectLot procurementProjectLot;
 
+  @OneToOne(mappedBy = "tenderingTerms", cascade = CascadeType.ALL, orphanRemoval = true)
+  private TendererQualificationRequest tendererQualificationRequest;
+
   @OneToMany(
       mappedBy = "tenderingTerms",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
-      fetch = FetchType.LAZY
-  )
+      fetch = FetchType.LAZY)
   private List<AwardingCriteria> awardingCriteriaList = new ArrayList<>();
 
-//  @OneToMany(mappedBy = "tenderingTerms", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//  private List<ContractExecutionRequirement> listContractExecutionRequirement = new ArrayList<>();
+  @OneToMany(
+      mappedBy = "tenderingTerms",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  private List<ContractExecutionRequirement> listContractExecutionRequirement = new ArrayList<>();
 
   @OneToMany(
       mappedBy = "tenderingTerms",
       cascade = CascadeType.ALL,
       orphanRemoval = true,
-      fetch = FetchType.LAZY
-  )
+      fetch = FetchType.LAZY)
   private List<FinancialGuarantee> listFinancialGuarantee = new ArrayList<>();
-
-  @Override
-  public String toString() {
-
-    return "TenderingTerms: " +
-        "requiredCurriculaIndicator='" + requiredCurriculaIndicator + "', " +
-        "variantConstraintIndicator='" + variantConstraintIndicator + "', " +
-        "priceRevisionFormulaDescription='" + priceRevisionFormulaDescription + "', " +
-        "fundingProgramCode='" + fundingProgramCode + "', " +
-        "fundingProgram='" + fundingProgram + "', " +
-        "procurementNationalLegislationCode='" + procurementNationalLegislationCode + "', " +
-        "procurementLegislationDocumentReference='" + procurementLegislationDocumentReference + "', " +
-        "receivedAppealQuantity='" + receivedAppealQuantity + "', " +
-        "eorderingIndicator='" + eorderingIndicator + "', " +
-        "epaymentMeansIndicator='" + epaymentMeansIndicator + "', " +
-        "electronicInvoicingIndicator='" + electronicInvoicingIndicator + "']";
-  }
 }

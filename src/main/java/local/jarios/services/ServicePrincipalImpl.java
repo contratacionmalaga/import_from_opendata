@@ -1,8 +1,11 @@
 package local.jarios.services;
 
-import local.jarios.common.util.VariablesGlobales;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.database.SessionFactoryRegistry;
-import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
@@ -12,16 +15,12 @@ import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.TipoConexion;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.exceptions.MiServiceException;
+import local.jarios.repositories.EntrySnapshot;
 import local.jarios.repositories.Repository;
 import local.jarios.repositories.RepositoryImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 @Slf4j
 public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
@@ -40,6 +39,10 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
     }
   }
 
+  ServicePrincipalImpl(Repository repository) {
+    this.repository = Objects.requireNonNull(repository, "repository no puede ser null");
+  }
+
   private static void requireNonNull(Object obj, String msg) {
     Objects.requireNonNull(obj, msg);
   }
@@ -53,8 +56,9 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
   @Override
   public void persistirConfiguracion(Configuracion configuracion) throws MiServiceException {
     requireNonNull(configuracion, "configuracion no puede ser null");
-    executeVoid(() -> repository.persistirConfiguracion(configuracion),
-                "[persistirConfiguracion] - Error persistiendo Configuracion");
+    executeVoid(
+        () -> repository.persistirConfiguracion(configuracion),
+        "[persistirConfiguracion] - Error persistiendo Configuracion");
   }
 
   @Override
@@ -62,8 +66,9 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
     requireNonNull(miLog, "miLog no puede ser null");
     requireNonNull(nifList, "nifList no puede ser null");
 
-    executeVoid(() -> repository.persistirListaNifFiltro(miLog, nifList),
-                "[persistirListaNifFiltro] - Error persistiendo lista NIF");
+    executeVoid(
+        () -> repository.persistirListaNifFiltro(miLog, nifList),
+        "[persistirListaNifFiltro] - Error persistiendo lista NIF");
   }
 
   @Override
@@ -72,8 +77,9 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
     requireNonNull(miLog, "miLog no puede ser null");
     requireNonNull(listOcsFiltro, "listOcsFiltro no puede ser null");
 
-    executeVoid(() -> repository.persistirListaOcFiltro(miLog, listOcsFiltro),
-                "[persistirListaOcFiltro] - Error persistiendo lista OCs");
+    executeVoid(
+        () -> repository.persistirListaOcFiltro(miLog, listOcsFiltro),
+        "[persistirListaOcFiltro] - Error persistiendo lista OCs");
   }
 
   @Override
@@ -82,16 +88,18 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
     requireNonNull(miLog, "miLog no puede ser null");
     requireNonNull(listHistorico, "listHistorico no puede ser null");
 
-    executeVoid(() -> repository.persistirListaHistoricos(miLog, listHistorico),
-                "[persistirListaHistoricos] - Error persistiendo lista Historicos");
+    executeVoid(
+        () -> repository.persistirListaHistoricos(miLog, listHistorico),
+        "[persistirListaHistoricos] - Error persistiendo lista Historicos");
   }
 
   @Override
   public void persistirEstadistica(Estadistica estadistica) throws MiServiceException {
     requireNonNull(estadistica, "estadistica no puede ser null");
 
-    executeVoid(() -> repository.persistirEstadistica(estadistica),
-                "[persistirEstadistica] - Error persistiendo Estadistica");
+    executeVoid(
+        () -> repository.persistirEstadistica(estadistica),
+        "[persistirEstadistica] - Error persistiendo Estadistica");
   }
 
   @Override
@@ -99,8 +107,17 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
     requireNonNull(miLog, "miLog no puede ser null");
     requireNonNull(feedSet, "feedSet no puede ser null");
 
-    executeVoid(() -> repository.persistirSetFeeds(miLog, feedSet),
-                "[persistirSetFeeds] - Error persistiendo Feeds");
+    executeVoid(
+        () -> repository.persistirSetFeeds(miLog, feedSet),
+        "[persistirSetFeeds] - Error persistiendo Feeds");
+  }
+
+  @Override
+  public void persistirImportacion(ImportPersistencePlan plan) throws MiServiceException {
+    requireNonNull(plan, "plan no puede ser null");
+    executeVoid(
+        () -> repository.persistirImportacion(plan),
+        "[persistirImportacion] - Error persistiendo importacion completa");
   }
 
   // ===========================
@@ -108,17 +125,22 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
   // ===========================
 
   @Override
-  public Map<String, Entry> getMapEntries() throws MiServiceException {
-    String sql = String.format(
-        "SELECT e FROM Entry e " +
-            "JOIN e.feed f " +
-            "JOIN f.miLog l " +
-            "WHERE l.tipoSindicacion = '%s'",
-        VariablesGlobales.getTipoSindicacion()
-    );
+  public Map<String, EntrySnapshot> getEntrySnapshots(TipoSindicacion tipoSindicacion)
+      throws MiServiceException {
+    requireNonNull(tipoSindicacion, "tipoSindicacion no puede ser null");
 
-    return execute(() -> repository.getMapEntries(sql),
-                   "[getMapEntries] - Error en la consulta: " + sql);
+    return execute(
+        () -> repository.getEntrySnapshots(tipoSindicacion),
+        "[getEntrySnapshots] - Error consultando entradas para " + tipoSindicacion);
+  }
+
+  @Override
+  public long countEntries(TipoSindicacion tipoSindicacion) throws MiServiceException {
+    requireNonNull(tipoSindicacion, "tipoSindicacion no puede ser null");
+
+    return execute(
+        () -> repository.countEntries(tipoSindicacion),
+        "[countEntries] - Error contando entradas para " + tipoSindicacion);
   }
 
   private <T> T execute(SupplierWithException<T> supplier, String errorMsg)

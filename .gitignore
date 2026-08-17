@@ -4,3 +4,6 @@ target/
 logs/
 properties/
 settings.xml
+dependency-reduced-pom.xml
+dep.txt
+*.iml
