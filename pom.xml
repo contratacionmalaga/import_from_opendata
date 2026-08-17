@@ -13,19 +13,19 @@
   <name>Importador de CODICE</name>
   <description>Cliente que parsea los ficheros atoms con los datos abiertos expuestos por la Plataforma de Contratación del Sector Público</description>
   <scm>
-    <connection>scm:git:https://github.com/contratacionmalaga/import-from-codice.git</connection>
-    <developerConnection>scm:git:git@github.com:contratacionmalaga/import-from-codice.git</developerConnection>
-    <url>https://github.com/contratacionmalaga/import-from-codice</url>
+    <connection>scm:git:https://github.com/contratacionmalaga/import_from_opendata.git</connection>
+    <developerConnection>scm:git:git@github.com:contratacionmalaga/import_from_opendata.git</developerConnection>
+    <url>https://github.com/contratacionmalaga/import_from_opendata</url>
     <tag>HEAD</tag>
   </scm>
   <distributionManagement>
     <repository>
       <id>github-releases</id>
-      <url>https://maven.pkg.github.com/contratacionmalaga/import-from-codice</url>
+      <url>https://maven.pkg.github.com/contratacionmalaga/import_from_opendata</url>
     </repository>
     <snapshotRepository>
       <id>github-snapshots</id>
-      <url>https://maven.pkg.github.com/contratacionmalaga/import-from-codice</url>
+      <url>https://maven.pkg.github.com/contratacionmalaga/import_from_opendata</url>
     </snapshotRepository>
   </distributionManagement>
   <properties>
