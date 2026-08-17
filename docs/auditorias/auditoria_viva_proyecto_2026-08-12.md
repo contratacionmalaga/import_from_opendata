@@ -53,7 +53,7 @@ Se ha ejecutado `scripts/use-java21-maven3916.ps1 test` usando `JAVA_HOME=C:\jav
 | R01 | Hecho | Critica | Build | El proyecto declara Java 21; existe JDK 21.0.11, pero el `PATH` por defecto ejecuta Java 8. | `scripts/use-java21-maven3916.ps1 test`: 13 tests, 0 failures, 0 errors | Mantener el script como entrada reproducible; preferir JDK 21 LTS para este proyecto salvo migracion planificada a JDK 25 LTS. |
 | R02 | Hecho | Critica | Build | Existe Maven 3.9.16 y hay script reproducible de proyecto. El `PATH` global puede seguir sin exponer `mvn`. | `scripts/use-java21-maven3916.ps1`; `mvn test` pasa al anteponer su `bin` al `PATH` | Mantener script; Maven Wrapper queda como mejora opcional si se quiere independencia de `C:\java\software`. |
 | R03 | En curso | Alta | Seguridad | La API key NVD hardcodeada se ha retirado del `pom.xml`; queda pendiente rotar la clave expuesta y configurar `NVD_API_KEY` en CI/entorno. | `pom.xml`: `nvdApiKey=${env.NVD_API_KEY}` | Rotar la clave expuesta y guardar `NVD_API_KEY` como secret. |
-| R04 | En curso | Alta | Seguridad | OWASP Dependency Check queda configurado igual que en `import-from-gc`: ejecucion explicita del goal Maven, `NVD_API_KEY` por entorno, umbral CVSS 8.0 y OSS Index desactivado. | `pom.xml`: `failBuildOnCVSS=8.0`, `nvdApiKey=${env.NVD_API_KEY}`, `ossIndexAnalyzerEnabled=false` | Ejecutar auditoria real con `NVD_API_KEY` y revisar vulnerabilidades. |
+| R04 | Hecho | Alta | Seguridad | OWASP Dependency Check queda configurado igual que en `import-from-gc` y ya se ejecuto auditoria real. El primer pase bloqueo por Jackson/PostgreSQL; tras actualizar parent/Jackson/PostgreSQL el goal queda en verde. | 2026-08-17: `org.owasp:dependency-check-maven:check` falla por `jackson-databind-2.19.4` y `postgresql-42.7.10`; tras remediacion pasa con `BUILD SUCCESS` y reporte en `target/dependency-check-report.html`. | Mantener seguimiento de la advertencia `log4j-api-2.25.4`/`CVE-2026-49844`; no actualizar a Log4j 3 beta para release estable. |
 | R05 | Hecho | Alta | Persistencia | HQL libre eliminado de `getMapEntries`; la query vive en repositorio y usa parametro `:tipoSindicacion`. | `Repository.java`, `RepositoryImpl.java`, `ServicePrincipalImpl.java` | Siguiente mejora: reducir carga masiva de entidades completas. |
 | R06 | En curso | Alta | Rendimiento | La comparacion historica ya usa snapshots `entryId/updated` en lugar de entidades `Entry` completas. | `RepositoryImpl.getEntrySnapshots`; `EntrySnapshot`; `EntryProcessorSnapshotTest` | Medir contra BD real y valorar paginacion si el mapa de snapshots tambien crece demasiado. |
 | R07 | Hecho | Alta | Logica | Filtro de fechas corregido a rango inclusivo, alineado con el comentario del metodo. | `FiltroFechasEvaluator.java`; `FiltroFechasEvaluatorTest` | Mantener tests de rango dentro/bordes/fuera/invertido/nulo. |
@@ -72,7 +72,7 @@ Se ha ejecutado `scripts/use-java21-maven3916.ps1 test` usando `JAVA_HOME=C:\jav
 |---|---|---:|---|---|---|
 | H01 | Hecho | Critica | Build reproducible | Existe `mvnw` o script equivalente, CI usa JDK 21+, `mvn -version` y `mvn test` funcionan con entorno documentado | 2026-08-12: `scripts/use-java21-maven3916.ps1 test` pasa 13/13 |
 | H02 | En curso | Critica | Seguridad de secretos | NVD API key y credenciales fuera del repo; clave expuesta rotada | 2026-08-12: `pom.xml` usa `${env.NVD_API_KEY}`; pendiente rotacion/configuracion externa |
-| H03 | En curso | Alta | Dependencias auditables | Dependency Check configurado como en el resto de proyectos y ejecutable bajo demanda | 2026-08-12: plugin alineado con `import-from-gc`; pendiente ejecucion real con `NVD_API_KEY` |
+| H03 | Hecho | Alta | Dependencias auditables | Dependency Check configurado como en el resto de proyectos y ejecutado bajo demanda antes de release | 2026-08-17: primer OWASP real bloquea por Jackson/PostgreSQL; `pom.xml` sube parent `jarios-parent` a `1.0.4`, Jackson a `2.22.1` y PostgreSQL a `42.7.13`; segundo OWASP: `BUILD SUCCESS` |
 | H04 | Hecho | Alta | Query historica segura | `getMapEntries` parametrizado y sin HQL libre en la interfaz publica | 2026-08-12: `mvn test`: 13 tests, 0 failures, 0 errors |
 | H05 | En curso | Alta | Menor consumo de memoria | Carga historica por proyeccion/paginacion/lotes; prueba con volumen representativo | 2026-08-17: Pliegos INTERNET `run-6` finaliza correctamente con 519 feeds y 104.867 entries; `flush/clear` por lote evita el bloqueo observado en `PersistentBag.equalsSnapshot`; Pliegos ya no envia historicos a persistencia y conserva reemplazos mediante `replacementEntryIds`. |
 | H06 | Hecho | Alta | Filtros fiables | Tests del filtro de fechas y correccion validada | 2026-08-12: corregido rango inclusivo; `mvn test`: 13 tests, 0 failures, 0 errors |
@@ -90,12 +90,12 @@ Fuente principal: `maven-metadata.xml` de Maven Central (`https://repo.maven.apa
 
 | Artefacto | Actual | Ultima en Maven Central | Accion |
 |---|---:|---:|---|
-| `com.fasterxml.jackson.core:jackson-databind` | 2.21.2 | 2.22.1 | Actualizable tras tests de serializacion/deserializacion. |
-| `com.fasterxml.jackson.datatype:jackson-datatype-jsr310` | 2.21.2 | 2.22.1 | Actualizar junto con Jackson core. |
+| `com.fasterxml.jackson.core:jackson-databind` | 2.22.1 | 2.22.1 | Aplicado para remediar OWASP; alineado con `jarios-parent:1.0.4`. |
+| `com.fasterxml.jackson.datatype:jackson-datatype-jsr310` | 2.22.1 | 2.22.1 | Aplicado junto con Jackson core; `jackson-annotations` queda gestionado por parent en `2.22`. |
 | `org.jsoup:jsoup` | 1.22.1 | 1.23.1 | Actualizable con tests de parseo HTML/XML usados. |
 | `com.zaxxer:HikariCP` | 7.0.2 | 7.1.0 | Actualizable; revisar compatibilidad con Java minimo requerido. |
 | `org.mariadb.jdbc:mariadb-java-client` | 3.5.8 | 3.5.10 | Actualizable; probar conexion y batch insert. |
-| `org.postgresql:postgresql` | 42.7.10 | 42.7.13 | Actualizable si PostgreSQL sigue siendo soporte real. Si no se usa, evaluar eliminar. |
+| `org.postgresql:postgresql` | 42.7.13 | 42.7.13 | Aplicado para remediar OWASP manteniendo soporte PostgreSQL. |
 | `org.junit.jupiter:junit-jupiter` | 6.0.3 | 6.1.3 | Actualizable; ademas eliminar propiedad obsoleta `junit-jupiter.version=5.12.2` o usarla. |
 | `org.apache.commons:commons-collections4` | 4.5.0 | 4.6.0 | Actualizable con tests. |
 | `commons-codec:commons-codec` | 1.21.0 | 1.22.1 | Actualizable con tests. |
@@ -227,7 +227,7 @@ mvn test
 | `scripts/use-java21-maven3916.ps1 spotless:check` | Falla: 173 de 175 ficheros Java necesitan formato; 2 ya estaban limpios. No se aplico `spotless:apply`. | Decidir si se acepta un cambio masivo de formato separado. |
 | `scripts/use-java21-maven3916.ps1 spotbugs:check` | Inicialmente fallaba con 6 bugs medios. Tras validar rutas/URLs y acotar exclusiones justificadas, queda limpio: 0 bugs, 0 errores. | SpotBugs ya puede considerarse candidato a gate, pendiente decidir fase Maven/CI. |
 | `scripts/use-java21-maven3916.ps1 versions:display-dependency-updates versions:display-plugin-updates` | Correcto. Lista actualizaciones de dependencias/plugins; varias ultimas son beta/alpha/milestone y no deben aplicarse automaticamente. | Mantener actualizaciones por tandas pequenas con tests. |
-| `scripts/use-java21-maven3916.ps1 org.owasp:dependency-check-maven:check` | No ejecutado en esta sesion: requiere `NVD_API_KEY` en entorno y consulta externa a NVD. | Ejecutar con la misma operativa que `import-from-gc`: clave en entorno/CI, no versionada. |
+| `scripts/use-java21-maven3916.ps1 org.owasp:dependency-check-maven:check` | 2026-08-17: primer pase real falla por CVSS >= 8 en `jackson-databind-2.19.4` y `postgresql-42.7.10`; tras subir parent/Jackson/PostgreSQL pasa con `BUILD SUCCESS`. | Mantener reporte en `target/dependency-check-report.html` como evidencia local y repetir antes de cada release. |
 
 ## Patron aplicado para Dependency Check/NVD
 
@@ -244,6 +244,7 @@ Alineado con `import-from-gc`:
 
 | Fecha | Cambio | Evidencia |
 |---|---|---|
+| 2026-08-17 | Remediadas vulnerabilidades bloqueantes detectadas por OWASP antes de `v7.0.0`. | Primer `dependency-check-maven:check`: `BUILD FAILURE` por `jackson-databind-2.19.4` (`CVE-2026-54512`, CVSS 8.1) y `postgresql-42.7.10` (`CVE-2026-54291`, CVSS 8.2). Remediacion: `jarios-parent` `1.0.3 -> 1.0.4`, `jackson.version` `2.19.4 -> 2.22.1`, `postgre.version` `42.7.10 -> 42.7.13`. Validacion posterior: `clean verify` 30 tests, 0 fallos; `spotless:check` OK; `spotbugs:check` 0 bugs/0 errores; OWASP `BUILD SUCCESS`, con advertencia no bloqueante en `log4j-api-2.25.4` (`CVE-2026-49844`). |
 | 2026-08-17 | Actualizado workflow `Java CI with Maven` para retirar acciones deprecadas. | `.github/workflows/maven-ci.yml`: `actions/checkout@v4 -> @v7` y `actions/setup-java@v4 -> @v5`; tags verificados con `git ls-remote --tags` antes del cambio. GitHub Actions run `32051910392`: `success`; pasos `Test`, `Spotless` y `SpotBugs security scan` en verde, sin las anotaciones previas de Node.js 20/setup-java v4. |
 | 2026-08-17 | Validado CI remoto de los commits de restricciones LOCAL en Pliegos y Malaga. | GitHub Actions `Java CI with Maven`: run `32051320957` para `02384c0` finalizado en `success`; run `32051549609` para `b215c94` finalizado en `success`; pasos `Test`, `Spotless` y `SpotBugs security scan` en verde. Advertencias pendientes: migrar `actions/checkout@v4` y `actions/setup-java@v4` por deprecacion Node.js 20/setup-java v4. |
 | 2026-08-17 | Cubierta y validada la restriccion de Malaga LOCAL sobre BD no vacia. | Nuevo test `OpenDataMalagaLocalTest.local_import_rejects_non_empty_database_before_parsing`; `scripts/use-java21-maven3916.ps1 spotless:apply test`: 30 tests, 0 fallos; validacion real Malaga LOCAL contra `opendata-malaga` con `hibernate.hbm2ddl.auto=validate`: aborta antes de parsear con 19.040 entries existentes y recomienda usar INTERNET o vaciar BD antes de carga local. |
