@@ -28,7 +28,8 @@ import org.junit.jupiter.api.Test;
 class AbstractOpenDataPliegosPersistencePlanTest {
 
   @Test
-  void persist_all_passes_context_historicos_to_import_plan() throws Exception {
+  void persist_all_uses_historicos_only_for_replacements_without_persisting_them()
+      throws Exception {
     CapturingServicePrincipal servicePrincipal = new CapturingServicePrincipal();
     TestOpenDataPliegos openData = new TestOpenDataPliegos();
     injectServicePrincipal(openData, servicePrincipal);
@@ -44,10 +45,9 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     openData.persistAll(context);
 
     assertThat(servicePrincipal.plan).isNotNull();
-    assertThat(servicePrincipal.plan.historicoList()).isSameAs(context.getListHistoricos());
-    assertThat(servicePrincipal.plan.historicoList())
-        .extracting(Historico::getEntryOpcion)
-        .containsExactly(EntryOpcion.ACTUALIZAR);
+    assertThat(servicePrincipal.plan.historicoList()).isEmpty();
+    assertThat(servicePrincipal.plan.replacementEntryIds()).containsExactly("entry-1");
+    assertThat(context.getListHistoricos()).isEmpty();
   }
 
   private static void injectServicePrincipal(

@@ -70,6 +70,40 @@ class RepositoryImplPersistenceIntegrationTest {
   }
 
   @Test
+  void replaces_existing_entry_from_explicit_replacement_ids_without_persisting_historicos()
+      throws Exception {
+    try (SessionFactory sessionFactory = newSessionFactory()) {
+      RepositoryImpl repository = new RepositoryImpl(sessionFactory);
+      seedExistingEntry(sessionFactory, "entry-1", "old-short", "old-title", "old-nif");
+
+      Log importLog = new Log(LugarImportacion.INTERNET, TipoSindicacion.MAYORES);
+      Feed importFeed = feed("new-feed");
+      Entry replacement = entry("entry-1", "old-short", "new-title", "new-nif");
+      importFeed.getEntryList().add(replacement);
+
+      repository.persistirImportacion(
+          new ImportPersistencePlan(
+              importLog,
+              null,
+              List.of(),
+              List.of(),
+              Set.of(importFeed),
+              Set.of("entry-1"),
+              List.of(),
+              new Estadistica(importLog)));
+
+      assertThat(count(sessionFactory, "SELECT COUNT(e) FROM Entry e WHERE e.entryId = 'entry-1'"))
+          .isEqualTo(1L);
+      assertThat(
+              singleString(
+                  sessionFactory, "SELECT e.title FROM Entry e WHERE e.entryId = 'entry-1'"))
+          .isEqualTo("new-title");
+      assertThat(count(sessionFactory, "SELECT COUNT(h) FROM Historico h")).isZero();
+      assertThat(count(sessionFactory, "SELECT COUNT(e) FROM Estadistica e")).isEqualTo(1L);
+    }
+  }
+
+  @Test
   void rolls_back_complete_import_when_persisting_duplicate_inserts_fails() throws Exception {
     try (SessionFactory sessionFactory = newSessionFactory()) {
       RepositoryImpl repository = new RepositoryImpl(sessionFactory);
