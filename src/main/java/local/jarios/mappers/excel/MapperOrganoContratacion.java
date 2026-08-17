@@ -8,10 +8,10 @@ import lombok.extern.slf4j.Slf4j;
  * Clase utilitaria para mapear filas de Excel (representadas como arrays de String) a entidades del
  * dominio{@link OrganoContratacion}.
  *
- * <p>Esta clase está diseñada para facilitar la conversión de datos importados desde
- * hojas de cálculo a objetos manejables en la aplicación.</p>
+ * <p>Esta clase está diseñada para facilitar la conversión de datos importados desde hojas de
+ * cálculo a objetos manejables en la aplicación.
  *
- * <p>Clase final con constructor privado para evitar instanciación.</p>
+ * <p>Clase final con constructor privado para evitar instanciación.
  *
  * @author Juan Antonio
  * @since 04/06/2024
@@ -19,9 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class MapperOrganoContratacion {
 
-  /**
-   * Constructor privado para evitar instanciación.
-   */
+  /** Constructor privado para evitar instanciación. */
   private MapperOrganoContratacion() {
     // SIN IMPLEMENTAR
   }

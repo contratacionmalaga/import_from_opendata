@@ -4,383 +4,284 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>local.jarios</groupId>
+    <parent>
+        <groupId>local.jarios</groupId>
+        <artifactId>jarios-parent</artifactId>
+        <version>1.0.3</version>
+        <relativePath>../jarios-parent/pom.xml</relativePath>
+    </parent>
     <artifactId>import-from-opendata</artifactId>
-    <version>5.1.0</version>
+    <version>7.0.0</version>
     <packaging>jar</packaging>
 
     <name>Importador de CODICE</name>
     <description>Cliente que parsea los ficheros atoms con los datos abiertos expuestos por la Plataforma de Contratación del Sector Público</description>
 
     <scm>
-        <connection>scm:git:https://github.com/contratacionmalaga/import_from_codice.git</connection>
-        <developerConnection>scm:git:git@github.com:contratacionmalaga/import_from_codice.git</developerConnection>
-        <url>https://github.com/contratacionmalaga/import_from_codice</url>
+        <connection>scm:git:https://github.com/contratacionmalaga/import-from-codice.git</connection>
+        <developerConnection>scm:git:git@github.com:contratacionmalaga/import-from-codice.git</developerConnection>
+        <url>https://github.com/contratacionmalaga/import-from-codice</url>
         <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
         <repository>
             <id>github-releases</id>
-            <url>https://maven.pkg.github.com/contratacionmalaga/import_from_codice</url>
+            <url>https://maven.pkg.github.com/contratacionmalaga/import-from-codice</url>
         </repository>
         <snapshotRepository>
             <id>github-snapshots</id>
-            <url>https://maven.pkg.github.com/contratacionmalaga/import_from_codice</url>
+            <url>https://maven.pkg.github.com/contratacionmalaga/import-from-codice</url>
         </snapshotRepository>
     </distributionManagement>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <maven.minimum.version>3.6.3</maven.minimum.version>
 
-        <!-- Version management -->
         <version.trimmed>${project.version}</version.trimmed>
-        <final.name>${project.artifactId}-${version.trimmed}</final.name>
-
-        <!-- Dependencias -->
-        <assertj.version>3.27.7</assertj.version>
+        <final.name>${project.artifactId}-${version.trimmed}-${artifact.suffix}-${profile.suffix}</final.name>
         <checkstyle.version>13.0.0</checkstyle.version>
         <commons.text.version>1.15.0</commons.text.version>
         <commons.collections.version>4.5.0</commons.collections.version>
-        <commons.codec.version>1.20.0</commons.codec.version>
-        <hibernate.version>7.2.2.Final</hibernate.version>
-        <hikaricp.version>7.0.2</hikaricp.version>
-        <jackson.version>2.21.0</jackson.version>
+        <commons.codec.version>1.21.0</commons.codec.version>
+        <jackson.version>2.19.4</jackson.version>
         <jakarta.annotation.version>3.0.0</jakarta.annotation.version>
-        <jakarta.mail.version>2.0.2</jakarta.mail.version>
-        <jakarta.persistence.version>3.2.0</jakarta.persistence.version>
         <jakarta.validation.version>3.1.1</jakarta.validation.version>
         <jaxb.core.version>2.3.0.1</jaxb.core.version>
         <jaxb.impl.version>2.3.1</jaxb.impl.version>
         <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
         <javax.activation.version>1.2.0</javax.activation.version>
-        <jsoup.version>1.22.1</jsoup.version>
-        <logback.version>1.5.26</logback.version>
-        <log4j.to.slf4j.version>2.25.3</log4j.to.slf4j.version>
-        <lombok.version>1.18.42</lombok.version>
-        <mariadb.version>3.5.7</mariadb.version>
-        <poi.version>5.5.1</poi.version>
-        <reflections.version>0.10.2</reflections.version>
-        <slf4j.version>2.0.17</slf4j.version>
+        <log4j.to.slf4j.version>2.25.4</log4j.to.slf4j.version>
+        <postgre.version>42.7.10</postgre.version>
         <uuid.version>5.1.0</uuid.version>
+        <h2.version>2.4.240</h2.version>
 
-        <!-- Versiones de Codice -->
         <atom.version>1.0</atom.version>
         <codice.version>2.8.0</codice.version>
-        <codice.place.ext.version>1.4.0</codice.place.ext.version>
-
-        <!-- Versiones de los Helpers -->
-        <version-helper.version>5.3.0</version-helper.version>
-        <encrypt-helper.version>5.2.0</encrypt-helper.version>
-        <email-helper.version>5.2.0</email-helper.version>
-        <property-helper.version>5.2.0</property-helper.version>
-
-        <!-- Versinoes de los Plugins -->
-        <build.helper.maven.plugin>3.6.1</build.helper.maven.plugin>
-        <dependency.check.maven.version>12.2.0</dependency.check.maven.version>
-        <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
-        <maven.clean.plugin.version>3.5.0</maven.clean.plugin.version>
-        <maven.compiler.plugin.version>3.14.1</maven.compiler.plugin.version>
-        <maven.dependency.plugin.version>3.9.0</maven.dependency.plugin.version>
-        <maven.enforcer.plugin.version>3.6.2</maven.enforcer.plugin.version>
-        <maven.failsafe.plugin.version>3.5.4</maven.failsafe.plugin.version>
-        <maven.jar.plugin.version>3.5.0</maven.jar.plugin.version>
-        <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
-        <maven.release.plugin.version>3.3.1</maven.release.plugin.version>
-        <maven.shade.plugin.version>3.6.1</maven.shade.plugin.version>
-        <maven.site.plugin.version>4.0.0-M16</maven.site.plugin.version>
-        <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
-        <spotbugs.maven.plugin.version>4.9.8.2</spotbugs.maven.plugin.version>
-        <spotless.maven.plugin.version>3.2.1</spotless.maven.plugin.version>
-        <versions.maven.plugin.version>2.21.0</versions.maven.plugin.version>
-
-        <!-- Quality/security -->
-        <findsecbugs.plugin.version>1.12.0</findsecbugs.plugin.version>
-
-        <!-- Thresholds -->
+        <codice.place.ext.version>1.5.0</codice.place.ext.version>
+        <version-helper.version>6.1.1</version-helper.version>
+        <encrypt-helper.version>7.0.2</encrypt-helper.version>
+        <email-helper.version>6.1.1</email-helper.version>
+        <property-helper.version>6.0.2</property-helper.version>
         <checkstyle.max.violations>10000</checkstyle.max.violations>
-
     </properties>
 
     <dependencies>
-
-        <!-- assertj.version -->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-to-slf4j</artifactId>
             <version>${log4j.to.slf4j.version}</version>
         </dependency>
-
-        <!-- ========= LOGGING (solo Logback) ========= -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
-
-        <!-- ========= JSON ========= -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-
-        <!-- ========= Parsing / util ========= -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
         </dependency>
-
-        <!-- ========= ORM / DB ========= -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-hikaricp</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${hikaricp.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
             <version>${mariadb.version}</version>
         </dependency>
-
-        <!-- ========= Jakarta / JAXB ========= -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgre.version}</version>
+        </dependency>
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
             <version>${jakarta.persistence.version}</version>
         </dependency>
-
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
             <version>${jakarta.validation.version}</version>
         </dependency>
-
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
             <version>${jakarta.annotation.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
             <version>${jaxb.core.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
             <version>${jaxb.impl.version}</version>
         </dependency>
-
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>${jaxb.api.version}</version>
         </dependency>
-
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>javax.activation-api</artifactId>
             <version>${javax.activation.version}</version>
         </dependency>
-
-        <!-- ========= CODICE ========= -->
         <dependency>
             <groupId>org.w3._2005.atom</groupId>
             <artifactId>atom</artifactId>
             <version>${atom.version}</version>
         </dependency>
-
         <dependency>
             <groupId>place.codice</groupId>
             <artifactId>codice</artifactId>
             <version>${codice.version}</version>
         </dependency>
-
         <dependency>
             <groupId>place.codice</groupId>
             <artifactId>codice-ext</artifactId>
             <version>${codice.place.ext.version}</version>
         </dependency>
-
-        <!-- Jakarta Mail -->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
             <version>${jakarta.mail.version}</version>
         </dependency>
-
-        <!-- ========= Commons ========= -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>${commons.text.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>${commons.collections.version}</version>
         </dependency>
-
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>${commons.codec.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>${reflections.version}</version>
         </dependency>
-
-        <!-- ========= Lombok ========= -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- ========= Helpers (con exclusiones para dejar solo Logback) ========= -->
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>encrypt-helper</artifactId>
             <version>${encrypt-helper.version}</version>
         </dependency>
-
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>version-helper</artifactId>
             <version>${version-helper.version}</version>
         </dependency>
-
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>email-helper</artifactId>
             <version>${email-helper.version}</version>
         </dependency>
-
         <dependency>
             <groupId>local.jarios</groupId>
             <artifactId>properties-helper</artifactId>
             <version>${property-helper.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>${final.name}</finalName>
-
         <plugins>
-
-            <!-- maven.checkstyle.plugin.version -->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-checkstyle-plugin</artifactId>-->
-<!--                <version>${maven.checkstyle.plugin.version}</version>-->
-<!--                <dependencies>-->
-<!--                    <dependency>-->
-<!--                        <groupId>com.puppycrawl.tools</groupId>-->
-<!--                        <artifactId>checkstyle</artifactId>-->
-<!--                        <version>${checkstyle.version}</version>-->
-<!--                    </dependency>-->
-<!--                </dependencies>-->
-<!--                <configuration>-->
-<!--                    <configLocation>config/checkstyle/google_checks.xml</configLocation>-->
-<!--                    <consoleOutput>true</consoleOutput>-->
-<!--                    <failsOnError>false</failsOnError>-->
-<!--                    <violationSeverity>warning</violationSeverity>-->
-<!--                    <maxAllowedViolations>${checkstyle.max.violations}</maxAllowedViolations>-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>validate</id>-->
-<!--                        <phase>validate</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>check</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-
-            <!-- maven.clean.plugin.version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>${maven.clean.plugin.version}</version>
             </plugin>
-
-            <!-- maven.compiler.plugin.version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.plugin.version}</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.source}</target>
+                    <release>${maven.compiler.release}</release>
+                    
                 </configuration>
             </plugin>
-
-            <!-- maven.dependency.plugin.version -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven.dependency.plugin.version}</version>
             </plugin>
-
-            <!-- maven.enforcer.plugin.version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -394,15 +295,13 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.6.3</version>
+                                    <version>${maven.minimum.version}</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- maven.jar.plugin.version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -419,8 +318,6 @@
                     </archive>
                 </configuration>
             </plugin>
-
-            <!-- maven.javadoc.plugin.version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -434,21 +331,14 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
+                    <release>${maven.compiler.release}</release>
                     <show>private</show>
                     <nohelp>true</nohelp>
-                    <!-- No hace que el build falle si javadoc da error -->
                     <failOnError>false</failOnError>
-
-                    <!-- Quita doclint (evita la mayoría de warnings/errores por HTML, @param, etc.) -->
                     <doclint>none</doclint>
-
-                    <!-- Opcional: más “silencioso” -->
                     <quiet>true</quiet>
                 </configuration>
             </plugin>
-
-            <!-- maven.release.plugin.version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
@@ -460,9 +350,6 @@
                     <pushChanges>true</pushChanges>
                 </configuration>
             </plugin>
-
-            <!-- Fat JAR for execution -->
-            <!-- maven.shade.plugin.version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -475,8 +362,8 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>fat</shadedClassifierName>
+                            <finalName>${final.name}</finalName>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <filters>
                                 <filter>
@@ -505,8 +392,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- maven.source.plugin.version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -520,26 +405,17 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- dependency.check.plugin.version (OWASP Dependency Check) -->
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>${dependency.check.maven.version}</version>
                 <configuration>
-                    <nvdApiKey>95ada876-88fe-4a9b-ae9c-43f3c37cc004</nvdApiKey>
-                    <skip>true</skip>
+                    <failBuildOnCVSS>8.0</failBuildOnCVSS>
+                    <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+                    <ossIndexAnalyzerEnabled>false</ossIndexAnalyzerEnabled>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
-            <!-- spotbugs.plugin.version -->
+            </plugin>
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
@@ -556,22 +432,16 @@
                     </plugins>
                 </configuration>
             </plugin>
-
-            <!-- versions.plugin.version -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${versions.maven.plugin.version}</version>
             </plugin>
-
-            <!-- (sin property definida) build-helper -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>${build.helper.maven.plugin}</version>
+                <version>${build.helper.maven.plugin.version}</version>
             </plugin>
-
-            <!-- (sin property definida) spotless -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
@@ -585,29 +455,53 @@
                     </java>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
     <profiles>
         <profile>
-            <id>local</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+            <id>malaga-local</id>
             <properties>
-                <mainClass>local.jarios.OpenDataLocal</mainClass>
+                <mainClass>local.jarios.variants.malaga.OpenDataMalagaLocal</mainClass>
                 <profile.suffix>local</profile.suffix>
+                <artifact.suffix>malaga</artifact.suffix>
             </properties>
         </profile>
-
         <profile>
-            <id>internet</id>
+            <id>malaga-internet</id>
             <properties>
-                <mainClass>local.jarios.OpenDataInternet</mainClass>
+                <mainClass>local.jarios.variants.malaga.OpenDataMalagaInternet</mainClass>
                 <profile.suffix>internet</profile.suffix>
+                <artifact.suffix>malaga</artifact.suffix>
             </properties>
         </profile>
-    </profiles>
+        <profile>
+            <id>pliegos-local</id>
+            <properties>
+                <mainClass>local.jarios.variants.pliegos.OpenDataPliegosLocal</mainClass>
+                <profile.suffix>local</profile.suffix>
+                <artifact.suffix>pliegos</artifact.suffix>
+            </properties>
+        </profile>
+        <profile>
+            <id>pliegos-internet</id>
+            <properties>
+                <mainClass>local.jarios.variants.pliegos.OpenDataPliegosInternet</mainClass>
+                <profile.suffix>internet</profile.suffix>
+                <artifact.suffix>pliegos</artifact.suffix>
+            </properties>
+        </profile>
 
+    </profiles>
 </project>
+
+
+
+
+
+
+
+
+
+
+

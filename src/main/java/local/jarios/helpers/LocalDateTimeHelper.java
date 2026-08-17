@@ -1,9 +1,5 @@
 package local.jarios.helpers;
 
-import local.jarios.common.util.Constantes;
-import lombok.extern.slf4j.Slf4j;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,28 +7,26 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
+import javax.xml.datatype.XMLGregorianCalendar;
+import local.jarios.common.util.Constantes;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Clase utilitaria para operaciones relacionadas con tiempo y fechas.
- * <p>
- * Proporciona métodos para obtener la fecha y hora actual en zonas horarias específicas.
- * </p>
- * <p>
- * Author: juan Date: 21/06/2025
+ *
+ * <p>Proporciona métodos para obtener la fecha y hora actual en zonas horarias específicas.
+ *
+ * <p>Author: juan Date: 21/06/2025
  */
 @Slf4j
 public final class LocalDateTimeHelper {
 
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
-      "yyyy-MM-dd'T'HH:mm:ss");
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-
-  /**
-   * Constructor privado para evitar instanciación.
-   */
-  private LocalDateTimeHelper() {
-  }
+  /** Constructor privado para evitar instanciación. */
+  private LocalDateTimeHelper() {}
 
   /**
    * Obtiene la fecha y hora local actual en la zona horaria de Madrid (Europe/Madrid).
@@ -49,7 +43,7 @@ public final class LocalDateTimeHelper {
    * duración en formato "Xh Ym Zs Wms".
    *
    * @param localDateTimeInicial Fecha y hora inicial.
-   * @param localDateTimeFinal   Fecha y hora final.
+   * @param localDateTimeFinal Fecha y hora final.
    * @return Cadena formateada con la duración entre las dos fechas.
    */
   public static String getDiferenciaLocalDateTime(
@@ -87,8 +81,10 @@ public final class LocalDateTimeHelper {
       log.debug("[parseFechaSiValida] - La fecha es válida: {}", fecha);
       return Optional.of(fecha);
     } catch (DateTimeParseException ex) {
-      log.debug("[parseFechaSiValida] - La fecha NO es válida: {}. Detalle: {}", fechaStr,
-                ex.getMessage());
+      log.debug(
+          "[parseFechaSiValida] - La fecha NO es válida: {}. Detalle: {}",
+          fechaStr,
+          ex.getMessage());
       return Optional.empty();
     }
   }
@@ -99,8 +95,7 @@ public final class LocalDateTimeHelper {
    * @return {@link LocalDateTime} con la fecha y hora actual en Madrid.
    */
   public static LocalDateTime getLocalDateTimeFromXmlGregorianCalendar(
-      XMLGregorianCalendar xmlGregorianCalendar
-  ) {
+      XMLGregorianCalendar xmlGregorianCalendar) {
     return xmlGregorianCalendar.toGregorianCalendar().toZonedDateTime().toLocalDateTime();
   }
 }

@@ -1,8 +1,6 @@
 package local.jarios.exceptions;
 
-/**
- * Description: Author: juan Date: 28/12/2024 Team:
- */
+/** Description: Author: juan Date: 28/12/2024 Team: */
 public class MiUrlException extends Exception {
 
   /**
@@ -10,10 +8,9 @@ public class MiUrlException extends Exception {
    * especificada.
    *
    * @param message Mensaje descriptivo del error ocurrido.
-   * @param cause   Causa original que produjo esta excepción.
+   * @param cause Causa original que produjo esta excepción.
    */
   public MiUrlException(String message, Throwable cause) {
-
 
     super(message, cause);
   }
@@ -25,7 +22,6 @@ public class MiUrlException extends Exception {
    * @param message Mensaje descriptivo del error.
    */
   public MiUrlException(String message) {
-
 
     super(message);
   }

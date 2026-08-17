@@ -2,9 +2,7 @@ package local.jarios.enums;
 
 import lombok.Getter;
 
-/**
- * Tipo de documento.
- */
+/** Tipo de documento. */
 @Getter
 public enum TipoDocumento {
 
@@ -23,9 +21,7 @@ public enum TipoDocumento {
   /** Documento UNKNOWN */
   UNKNOWN;
 
-  /**
-   * Constructor de la clase
-   */
+  /** Constructor de la clase */
   TipoDocumento() {
     // VACÍO
   }

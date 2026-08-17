@@ -2,23 +2,19 @@ package local.jarios.common.util;
 
 /**
  * Clase final que contiene constantes globales utilizadas en toda la aplicación.
- * <p>
- * Estas constantes incluyen configuraciones para encriptación, formatos de fecha, nombres de
+ *
+ * <p>Estas constantes incluyen configuraciones para encriptación, formatos de fecha, nombres de
  * archivos, tipos de enlaces, delimitadores, espacios de nombres JAXB, tamaños máximos de campos
  * para validaciones, identificadores específicos para el componente PARTY, y valores comunes usados
  * en diferentes contextos.
- * </p>
- * <p>
- * Esta clase no debe ser instanciada.
- * </p>
+ *
+ * <p>Esta clase no debe ser instanciada.
  *
  * @author Home
  */
 public final class Constantes {
 
-  /**
-   * Formato de fecha para logs y visualización.
-   */
+  /** Formato de fecha para logs y visualización. */
   public static final String JSON_VACIO = "{}";
 
   /**
@@ -39,9 +35,7 @@ public final class Constantes {
    */
   public static final String RETORNO_CARRO = "\r";
 
-  /**
-   * Caracter de salto de línea estándar (ASCII 10), usado para separar líneas de texto.
-   */
+  /** Caracter de salto de línea estándar (ASCII 10), usado para separar líneas de texto. */
   public static final String SALTO_LINEA = "\n";
 
   /**
@@ -49,6 +43,9 @@ public final class Constantes {
    * entornos web.
    */
   public static final String RETORNO_CARRO_HTML = "&#xD;";
+
+  public static final String PUNTO = ".";
+  public static final String GUION = "-";
 
   /**
    * Formato estándar para fecha y hora en la aplicación, compatible con la mayoría de parsers y
@@ -88,31 +85,21 @@ public final class Constantes {
 
   /* Tipos de LINKs usados en paginación o referencias en documentos */
 
-  /**
-   * Enlace que apunta a la primera página o recurso.
-   */
+  /** Enlace que apunta a la primera página o recurso. */
   public static final String LINK_FIRST = "first";
 
-  /**
-   * Enlace que apunta a la página o recurso siguiente.
-   */
+  /** Enlace que apunta a la página o recurso siguiente. */
   public static final String LINK_NEXT = "next";
 
-  /**
-   * Enlace que apunta al recurso actual (self-reference).
-   */
+  /** Enlace que apunta al recurso actual (self-reference). */
   public static final String LINK_SELF = "self";
 
-  /**
-   * Enlace que apunta a la página o recurso anterior.
-   */
+  /** Enlace que apunta a la página o recurso anterior. */
   public static final String LINK_PREV = "prev";
 
   /* Delimitadores usados en la generación de cadenas o logs */
 
-  /**
-   * Delimitador de salto de línea (nueva línea) estándar.
-   */
+  /** Delimitador de salto de línea (nueva línea) estándar. */
   public static final String CR = "\n";
 
   /* Formatos de fecha */
@@ -131,88 +118,51 @@ public final class Constantes {
 
   /* Espacios de nombres JAXB para parsing XML */
 
-  /**
-   * Espacio de nombres JAXB para documentos Atom 2005.
-   */
+  /** Espacio de nombres JAXB para documentos Atom 2005. */
   public static final String JAXB_ATOM = "org.w3._2005.atom";
 
-  /**
-   * Espacio de nombres JAXB para librería común CACLIB.
-   */
+  /** Espacio de nombres JAXB para librería común CACLIB. */
   public static final String JAXB_ORG_DGPE_CODICE_COMMON_CACLIB = "org.dgpe.codice.common.caclib";
 
-  /**
-   * Espacio de nombres JAXB para librería común CBCLIB.
-   */
+  /** Espacio de nombres JAXB para librería común CBCLIB. */
   public static final String JAXB_ORG_DGPE_CODICE_COMMON_CBCLIB = "org.dgpe.codice.common.cbclib";
 
-  /**
-   * Espacio de nombres JAXB para extensión PLACE CACLIB.
-   */
+  /** Espacio de nombres JAXB para extensión PLACE CACLIB. */
   public static final String JAXB_EXT_PLACE_CODICE_COMMON_CACLIB = "ext.place.codice.common.caclib";
 
-  /**
-   * Espacio de nombres JAXB para extensión PLACE CBCLIB.
-   */
+  /** Espacio de nombres JAXB para extensión PLACE CBCLIB. */
   public static final String JAXB_EXT_PLACE_CODICE_COMMON_CBCLIB = "ext.place.codice.common.cbclib";
 
-  /**
-   * Espacio de nombres JAXB para manejo de tombstones (recursos eliminados).
-   */
+  /** Espacio de nombres JAXB para manejo de tombstones (recursos eliminados). */
   public static final String JAXB_TOMBSTONES = "org.purl.atompub.tombstones._1";
-
-  /* Validaciones de tamaño máximo de campos para bases de datos */
-
-  /**
-   * Tamaño máximo permitido para campos con longitud 50 caracteres.
-   */
-  public static final int TAMANO_MAXIMO_CAMPO_50 = 50;
-
-  /**
-   * Tamaño máximo permitido para campos con longitud 500 caracteres.
-   */
-  public static final int TAMANO_MAXIMO_CAMPO_500 = 500;
-
-  /**
-   * Tamaño máximo permitido para campos con longitud 2500 caracteres.
-   */
-  public static final int TAMANO_MAXIMO_CAMPO_2500 = 2500;
 
   /* Identificadores específicos para el componente PARTY */
 
-  /**
-   * Identificador DIR3 usado para representar direcciones o entidades.
-   */
+  /** Identificador DIR3 usado para representar direcciones o entidades. */
   public static final String DIR3 = "DIR3";
 
-  /**
-   * Identificador de plataforma, usado para diferenciar plataformas en registros.
-   */
+  /** Identificador de plataforma, usado para diferenciar plataformas en registros. */
   public static final String IDPLATAFORMA = "ID_PLATAFORMA";
 
-  /**
-   * Identificador de orden de compra de plataforma.
-   */
+  /** Identificador de orden de compra de plataforma. */
   public static final String IDOCPLAT = "ID_OC_PLAT";
 
-  /**
-   * Identificador fiscal NIF (Número de Identificación Fiscal).
-   */
+  /** Identificador fiscal NIF (Número de Identificación Fiscal). */
   public static final String NIF = "NIF";
 
-  /**
-   * Identificador genérico para otros tipos no clasificados.
-   */
+  /** Identificador genérico para otros tipos no clasificados. */
   public static final String OTROS = "OTROS";
 
-  /**
-   * Valor utilizado para representar un valor nulo o no definido en cadenas.
-   */
+  /** Valor utilizado para representar un valor nulo o no definido en cadenas. */
   public static final String NULL = "NULL";
 
-  /**
-   * Constructor privado para evitar instanciación de esta clase utilitaria.
-   */
+  public static final String DIRECTORIO_MAY = "may\\";
+  public static final String DIRECTORIO_MEN = "men\\";
+  public static final String DIRECTORIO_EMP = "emp\\";
+  public static final String DIRECTORIO_CPM = "cpm\\";
+  public static final String DIRECTORIO_AGR = "agr\\";
+
+  /** Constructor privado para evitar instanciación de esta clase utilitaria. */
   private Constantes() {
     // Evita la creación de instancias
   }

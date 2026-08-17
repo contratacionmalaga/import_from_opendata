@@ -7,13 +7,11 @@ import org.hibernate.Transaction;
 
 /**
  * Clase utilitaria para la gestión de transacciones Hibernate.
- * <p>
- * Proporciona métodos estáticos para iniciar, confirmar y revertir transacciones en una sesión de
- * Hibernate, con logging de las acciones realizadas.
- * </p>
- * <p>
- * Esta clase es final y su constructor privado evita la instanciación.
- * </p>
+ *
+ * <p>Proporciona métodos estáticos para iniciar, confirmar y revertir transacciones en una sesión
+ * de Hibernate, con logging de las acciones realizadas.
+ *
+ * <p>Esta clase es final y su constructor privado evita la instanciación.
  *
  * @author juan
  * @since 28/12/2024
@@ -21,9 +19,7 @@ import org.hibernate.Transaction;
 @Slf4j
 public final class TransactionManager {
 
-  /**
-   * Constructor privado para evitar instanciación de la clase utilitaria.
-   */
+  /** Constructor privado para evitar instanciación de la clase utilitaria. */
   private TransactionManager() {
     // Evita instancias
   }
@@ -58,7 +54,8 @@ public final class TransactionManager {
    * @param transaction Transacción a revertir.
    * @throws MiTransactionManagerException Si ocurre un error durante el rollback.
    */
-  public static void rollbackTransaction(Transaction transaction) throws MiTransactionManagerException {
+  public static void rollbackTransaction(Transaction transaction)
+      throws MiTransactionManagerException {
     if (transaction != null) {
       try {
 
@@ -67,11 +64,10 @@ public final class TransactionManager {
 
       } catch (Exception ex) {
 
-        String msg = String.format("[rollbackTransaction] - Error haciendo rollback: %s",
-                                   ex.getMessage());
+        String msg =
+            String.format("[rollbackTransaction] - Error haciendo rollback: %s", ex.getMessage());
         log.error(msg, ex);
         throw new MiTransactionManagerException(msg, ex);
-
       }
     }
   }

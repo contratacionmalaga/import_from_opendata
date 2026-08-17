@@ -1,5 +1,16 @@
 package local.jarios.managers;
 
+import java.io.InputStream;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.Function;
 import local.jarios.common.util.Constantes;
 import local.jarios.common.util.ConstantesExcel;
 import local.jarios.entity.auxiliares.OrganoContratacion;
@@ -18,18 +29,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.InputStream;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.function.Function;
 
 @Getter
 @Slf4j
@@ -59,7 +58,8 @@ public class ManagerSpreeadSheet {
     return values;
   }
 
-  private static <T> List<T> getListaEntitysFromSheet(Sheet sheet, Function<String[], T> mapperFunction) {
+  private static <T> List<T> getListaEntitysFromSheet(
+      Sheet sheet, Function<String[], T> mapperFunction) {
     List<T> entityList = new ArrayList<>();
 
     int startRow = ConstantesExcel.EXCEL_OC_FILA_INICIODATOS;
@@ -82,9 +82,7 @@ public class ManagerSpreeadSheet {
     return entityList;
   }
 
-  /**
-   * Fila vacía = todas las celdas (hasta lastCellNum) son BLANK o null.
-   */
+  /** Fila vacía = todas las celdas (hasta lastCellNum) son BLANK o null. */
   private static boolean isRowEmpty(Row row) {
     short last = row.getLastCellNum(); // puede ser -1 si no hay celdas
     if (last <= 0) return true;
@@ -107,12 +105,10 @@ public class ManagerSpreeadSheet {
   }
 
   public static <T> ImportResult<T> importarDesdeExcel(
-      String url,
-      Function<Sheet, List<T>> sheetProcessor
-  ) throws MiIoException {
+      String url, Function<Sheet, List<T>> sheetProcessor) throws MiIoException {
 
     try (InputStream is = HttpClientHelper.downloadExcel(url);
-         Workbook workbook = openWorkbook(url, is)) {
+        Workbook workbook = openWorkbook(url, is)) {
 
       Sheet sheet = workbook.getSheetAt(0);
 

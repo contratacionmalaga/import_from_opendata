@@ -23,27 +23,17 @@ public enum EntryOpcion {
   // Aquellos Entry que NO CUMPLEN con los filtros
   RECHAZAR;
 
-  /**
-   * Mensaje insertar
-   */
-  public static final String MSG_ENTRYOPCION_REGISTRAR =
-      "El Entry no figura en Memoria.";
+  /** Mensaje insertar */
+  public static final String MSG_ENTRYOPCION_REGISTRAR = "El Entry no figura en Memoria.";
 
-  /**
-   * Mensaje insertar
-   */
-  public static final String MSG_ENTRYOPCION_INSERTAR =
-      "El Entry no figura en Memoria.";
+  /** Mensaje insertar */
+  public static final String MSG_ENTRYOPCION_INSERTAR = "El Entry no figura en Memoria.";
 
-  /**
-   * Mensaje actualizar
-   */
+  /** Mensaje actualizar */
   public static final String MSG_ENTRYOPCION_ACTUALIZAR =
       "El Entry ya figura en Memoria pero con un valor de UPDATED anterior.";
 
-  /**
-   * Mensaje actualizar
-   */
+  /** Mensaje actualizar */
   public static final String MSG_ENTRYOPCION_RECHAZAR =
       "El Entry NO CUMPLE con los filtros establecidos.";
 

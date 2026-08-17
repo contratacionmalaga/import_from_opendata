@@ -1,28 +1,23 @@
 package local.jarios.mappers.codice;
 
-import local.jarios.common.util.Constantes;
+import java.util.List;
+import java.util.Optional;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.codice.AwardingCriteria;
 import local.jarios.entity.codice.TenderingTerms;
-import local.jarios.helpers.ComunHelper;
+import local.jarios.helpers.StringHelper;
 import local.jarios.mappers.auxiliares.MapperStringFromList;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.AwardingCriteriaType;
 import org.dgpe.codice.common.cbclib.AwardingCriteriaSubTypeCodeType;
 import org.dgpe.codice.common.cbclib.AwardingCriteriaTypeCodeType;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
  * Mapper para transformar objetos {@link AwardingCriteriaType} del modelo Codice a entidades
  * internas {@link AwardingCriteria}.
  *
- * <p>Proporciona métodos para convertir listas de tipos Codice
- * a listas de entidades de dominio.</p>
- *
- * <b>Autor:</b> Juan Antonio
- * <b>Fecha:</b> 06/07/2024
- * <b>Equipo:</b> Juan Antonio
+ * <p>Proporciona métodos para convertir listas de tipos Codice a listas de entidades de dominio.
+ * <b>Autor:</b> Juan Antonio <b>Fecha:</b> 06/07/2024 <b>Equipo:</b> Juan Antonio
  */
 @Slf4j
 public final class MapperAwardingCriteria {
@@ -31,12 +26,9 @@ public final class MapperAwardingCriteria {
     // Constructor privado para evitar instanciación
   }
 
-  /**
-   * Conversión de awarding criteria type.
-   */
+  /** Conversión de awarding criteria type. */
   public static List<AwardingCriteria> getListAwardingCriteria(
-      TenderingTerms tenderingTerms,
-      List<AwardingCriteriaType> listAwardingCriteriaType) {
+      TenderingTerms tenderingTerms, List<AwardingCriteriaType> listAwardingCriteriaType) {
 
     // Java 16+. Si usas Java 8, reemplaza con .collect(Collectors.toList())
     return listAwardingCriteriaType.stream()
@@ -47,14 +39,12 @@ public final class MapperAwardingCriteria {
   /**
    * Transforma un objeto {@link AwardingCriteriaType} en una entidad {@link AwardingCriteria}.
    *
-   * @param tenderingTerms       Entidad padre {@link TenderingTerms} para asignar a la entidad
-   *                             resultado
+   * @param tenderingTerms Entidad padre {@link TenderingTerms} para asignar a la entidad resultado
    * @param awardingCriteriaType Objeto {@link AwardingCriteriaType} a transformar
    * @return Entidad {@link AwardingCriteria} resultante
    */
   private static AwardingCriteria getAwardingCriteria(
-      TenderingTerms tenderingTerms,
-      AwardingCriteriaType awardingCriteriaType) {
+      TenderingTerms tenderingTerms, AwardingCriteriaType awardingCriteriaType) {
 
     AwardingCriteria awardingCriteria = new AwardingCriteria();
 
@@ -63,13 +53,13 @@ public final class MapperAwardingCriteria {
     // Mapeo seguro y limitado de AwardingCriteriaTypeCode
     Optional.ofNullable(awardingCriteriaType.getAwardingCriteriaTypeCode())
         .map(AwardingCriteriaTypeCodeType::getValue)
-        .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
+        .map(value -> StringHelper.limit(value, TamanoCampos.TAMANO_50))
         .ifPresent(awardingCriteria::setAwardingCriteriaTypeCode);
 
     // Mapeo seguro y limitado de AwardingCriteriaSubTypeCode
     Optional.ofNullable(awardingCriteriaType.getAwardingCriteriaSubTypeCode())
         .map(AwardingCriteriaSubTypeCodeType::getValue)
-        .map(value -> ComunHelper.limitarRegistro(value, Constantes.TAMANO_MAXIMO_CAMPO_50))
+        .map(value -> StringHelper.limit(value, TamanoCampos.TAMANO_50))
         .ifPresent(awardingCriteria::setAwardingCriteriaSubTypeCode);
 
     // Mapeo del peso numérico
@@ -84,8 +74,7 @@ public final class MapperAwardingCriteria {
 
     // Mapeo de notas usando helper
     awardingCriteria.setNote(
-        MapperStringFromList.getStringFromListNoteType(
-            awardingCriteriaType.getNote()));
+        MapperStringFromList.getStringFromListNoteType(awardingCriteriaType.getNote()));
 
     return awardingCriteria;
   }

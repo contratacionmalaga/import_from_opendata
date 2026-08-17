@@ -3,8 +3,8 @@ package local.jarios.interfaces;
 /**
  * Interfaz para entidades que poseen un identificador específico de plataforma.
  *
- * <p>Esta interfaz garantiza que las clases que la implementen tengan un método
- * para obtener el identificador de plataforma, que generalmente es un String.</p>
+ * <p>Esta interfaz garantiza que las clases que la implementen tengan un método para obtener el
+ * identificador de plataforma, que generalmente es un String.
  *
  * @author juan
  * @since 01/03/2025

@@ -1,16 +1,13 @@
 package local.jarios.helpers;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import javax.xml.datatype.XMLGregorianCalendar;
 
-/**
- * Interfaz para acciones sobre objetos GregorianCalendar
- */
+/** Interfaz para acciones sobre objetos GregorianCalendar */
 public final class GregorianCalendarHelper {
 
-  private GregorianCalendarHelper() {
-  }
+  private GregorianCalendarHelper() {}
 
   /**
    * Devuelve un valor java.sql.Date a partir de un un XMLGregorianCalendar
@@ -18,14 +15,13 @@ public final class GregorianCalendarHelper {
    * @param xmlGregorianCalendar El valor que queremos convertir en java.sql.Date
    * @return java.time.LocalDate
    */
-  public static LocalDate getDateFromXMLGregorianCalendar(XMLGregorianCalendar xmlGregorianCalendar) {
+  public static LocalDate getDateFromXMLGregorianCalendar(
+      XMLGregorianCalendar xmlGregorianCalendar) {
 
     if (xmlGregorianCalendar == null) {
       return null;
     }
-    return xmlGregorianCalendar.toGregorianCalendar()
-        .toZonedDateTime()
-        .toLocalDate();
+    return xmlGregorianCalendar.toGregorianCalendar().toZonedDateTime().toLocalDate();
   }
 
   /**
@@ -34,13 +30,12 @@ public final class GregorianCalendarHelper {
    * @param xmlGregorianCalendar El valor que queremos convertir en java.sql.Time
    * @return java.time.LocalTime
    */
-  public static LocalTime getTimeFromXMLGregorianCalendar(XMLGregorianCalendar xmlGregorianCalendar) {
+  public static LocalTime getTimeFromXMLGregorianCalendar(
+      XMLGregorianCalendar xmlGregorianCalendar) {
 
     if (xmlGregorianCalendar == null) {
       return null;
     }
-    return xmlGregorianCalendar.toGregorianCalendar()
-        .toZonedDateTime()
-        .toLocalTime();
+    return xmlGregorianCalendar.toGregorianCalendar().toZonedDateTime().toLocalTime();
   }
 }

@@ -1,16 +1,15 @@
 package local.jarios.database;
 
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import local.jarios.enums.TipoConexion;
 import local.jarios.exceptions.MiSessionFactoryProvider;
 import local.jarios.properties.api.PropertiesManagerService;
 import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
-
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Registro de SessionFactory: una instancia por {@link TipoConexion}. Diseño: - Thread-safe sin
@@ -19,7 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public final class SessionFactoryRegistry {
 
-  private final ConcurrentHashMap<TipoConexion, SessionFactory> registry = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<TipoConexion, SessionFactory> registry =
+      new ConcurrentHashMap<>();
   private volatile SessionFactoryProvider provider;
 
   private SessionFactoryRegistry(SessionFactoryProvider provider) {
@@ -31,10 +31,9 @@ public final class SessionFactoryRegistry {
     return new SessionFactoryProvider(pm);
   }
 
-  /**
-   * API estática compatible con tu uso actual.
-   */
-  public static SessionFactory getSessionFactory(TipoConexion tipoConexion) throws MiSessionFactoryProvider {
+  /** API estática compatible con tu uso actual. */
+  public static SessionFactory getSessionFactory(TipoConexion tipoConexion)
+      throws MiSessionFactoryProvider {
     return Holder.INSTANCE.getOrCreate(tipoConexion);
   }
 
@@ -47,9 +46,7 @@ public final class SessionFactoryRegistry {
     Holder.INSTANCE.provider = provider;
   }
 
-  /**
-   * Cierra todas las SessionFactory abiertas y limpia el registro.
-   */
+  /** Cierra todas las SessionFactory abiertas y limpia el registro. */
   public static void closeAll() {
     Holder.INSTANCE.closeAndClear();
   }
@@ -58,15 +55,17 @@ public final class SessionFactoryRegistry {
     Objects.requireNonNull(tipoConexion, "tipoConexion");
 
     try {
-      return registry.computeIfAbsent(tipoConexion, tc -> {
-        try {
-          log.debug("Creando SessionFactory para {}", tc);
-          return provider.getSessionFactory(tc);
-        } catch (MiSessionFactoryProvider e) {
-          // computeIfAbsent no permite checked, y necesitamos propagarlo:
-          throw new SessionFactoryCreationRuntimeException(e);
-        }
-      });
+      return registry.computeIfAbsent(
+          tipoConexion,
+          tc -> {
+            try {
+              log.debug("Creando SessionFactory para {}", tc);
+              return provider.getSessionFactory(tc);
+            } catch (MiSessionFactoryProvider e) {
+              // computeIfAbsent no permite checked, y necesitamos propagarlo:
+              throw new SessionFactoryCreationRuntimeException(e);
+            }
+          });
 
     } catch (SessionFactoryCreationRuntimeException wrapper) {
       // No dejamos un valor inválido en caché
@@ -84,31 +83,28 @@ public final class SessionFactoryRegistry {
     Map<TipoConexion, SessionFactory> snapshot = new EnumMap<>(TipoConexion.class);
     snapshot.putAll(registry);
 
-    snapshot.forEach((tipo, factory) -> {
-      try {
-        if (factory != null && !factory.isClosed()) {
-          factory.close();
-          log.debug("Cerrada SessionFactory para tipo: {}", tipo);
-        }
-      } catch (Exception e) {
-        log.warn("No se pudo cerrar SessionFactory para tipo {}: {}", tipo, e.getMessage(), e);
-      } finally {
-        registry.remove(tipo);
-      }
-    });
+    snapshot.forEach(
+        (tipo, factory) -> {
+          try {
+            if (factory != null && !factory.isClosed()) {
+              factory.close();
+              log.debug("Cerrada SessionFactory para tipo: {}", tipo);
+            }
+          } catch (Exception e) {
+            log.warn("No se pudo cerrar SessionFactory para tipo {}: {}", tipo, e.getMessage(), e);
+          } finally {
+            registry.remove(tipo);
+          }
+        });
   }
 
-  /**
-   * Singleton Holder (lazy, thread-safe).
-   */
+  /** Singleton Holder (lazy, thread-safe). */
   private static final class Holder {
     private static final SessionFactoryRegistry INSTANCE =
         new SessionFactoryRegistry(defaultProvider());
   }
 
-  /**
-   * Wrapper runtime para poder re-lanzar MiSessionFactoryProvider fuera de computeIfAbsent.
-   */
+  /** Wrapper runtime para poder re-lanzar MiSessionFactoryProvider fuera de computeIfAbsent. */
   private static final class SessionFactoryCreationRuntimeException extends RuntimeException {
     private final MiSessionFactoryProvider cause;
 

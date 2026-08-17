@@ -1,5 +1,8 @@
 package local.jarios.mappers.atom;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.JAXBElement;
 import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
@@ -8,18 +11,14 @@ import org.purl.atompub.tombstones._1.DeletedEntryType;
 import org.w3._2005.atom.EntryType;
 import org.w3._2005.atom.FeedType;
 
-import javax.xml.bind.JAXBElement;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Mapper para convertir objetos del modelo Atom {@link FeedType} y {@link EntryType} a las
  * entidades internas {@link Feed} y {@link Entry} usadas en el proyecto.
- * <p>
- * Proporciona métodos para transformar listas de entradas Atom en listas de objetos {@link Entry}
- * vinculados a un {@link Feed} dado.
- * <p>
- * Se aplican límites de tamaño a los campos para asegurar compatibilidad con la base de datos y
+ *
+ * <p>Proporciona métodos para transformar listas de entradas Atom en listas de objetos {@link
+ * Entry} vinculados a un {@link Feed} dado.
+ *
+ * <p>Se aplican límites de tamaño a los campos para asegurar compatibilidad con la base de datos y
  * evitar errores por datos demasiado largos.
  *
  * @author juan
@@ -27,9 +26,7 @@ import java.util.List;
 @Slf4j
 public final class MapperDeletedEntry {
 
-  /**
-   * Constructor privado
-   */
+  /** Constructor privado */
   private MapperDeletedEntry() {
     //
   }
@@ -38,7 +35,7 @@ public final class MapperDeletedEntry {
    * Convierte un objeto {@link FeedType} y su lista de {@link EntryType} en una lista de objetos
    * {@link Entry} vinculados al {@link Feed} proporcionado.
    *
-   * @param feed     Entidad {@link Feed} a la que se asociarán las entradas.
+   * @param feed Entidad {@link Feed} a la que se asociarán las entradas.
    * @param feedType Objeto {@link FeedType} que contiene las entradas Atom.
    * @return Lista de objetos {@link DeletedEntry} convertidos desde {@link EntryType}.
    */
@@ -49,13 +46,12 @@ public final class MapperDeletedEntry {
     if (feedType.getAny() != null) {
       for (int indice = 0; indice < feedType.getAny().size(); indice++) {
         @SuppressWarnings("unchecked")
-        DeletedEntryType deletedEntryType = ((JAXBElement<DeletedEntryType>) feedType.getAny().get(
-            indice)).getValue();
+        DeletedEntryType deletedEntryType =
+            ((JAXBElement<DeletedEntryType>) feedType.getAny().get(indice)).getValue();
         DeletedEntry deletedEntry = getDeletedEntryFromFeedType(feed, deletedEntryType);
         listDeletedEntry.add(deletedEntry);
       }
     }
-
 
     return listDeletedEntry;
   }
@@ -64,11 +60,12 @@ public final class MapperDeletedEntry {
    * Convierte un objeto {@link EntryType} en una entidad {@link Entry} vinculada a un {@link Feed}
    * dado.
    *
-   * @param feed             Entidad {@link Feed} asociada.
+   * @param feed Entidad {@link Feed} asociada.
    * @param deletedEntryType Objeto {@link DeletedEntryType} a convertir.
    * @return Objeto {@link DeletedEntryType} construido a partir de {@code entryType}.
    */
-  private static DeletedEntry getDeletedEntryFromFeedType(Feed feed, DeletedEntryType deletedEntryType) {
+  private static DeletedEntry getDeletedEntryFromFeedType(
+      Feed feed, DeletedEntryType deletedEntryType) {
 
     //
     var deleltedEntry = new DeletedEntry();
@@ -86,7 +83,9 @@ public final class MapperDeletedEntry {
     }
 
     // Verifica que no sea null
-    if (deletedEntryType != null && deletedEntryType.getComment() != null && deletedEntryType.getComment().getType() != null) {
+    if (deletedEntryType != null
+        && deletedEntryType.getComment() != null
+        && deletedEntryType.getComment().getType() != null) {
       deleltedEntry.setComment(deletedEntryType.getComment().getType());
     }
 

@@ -14,12 +14,12 @@ Su principal objetivo es automatizar la ingesta de información relativa a licit
 
 | Tecnología             | Versión         | Descripción                                          |
 |------------------------|-----------------| ---------------------------------------------------- |
-| Java                   | 21.0.7          | Lenguaje principal del proyecto                      |
+| Java                   | 21.0.11         | Lenguaje principal del proyecto                      |
 | MariaDB                | 11.8            | Base de datos relacional con uso de esquemas         |
-| Hibernate Core         | 7.0.3           | Framework ORM para persistencia en base de datos     |
-| HikariCP               | 6.3.0           | Pool de conexiones eficiente para la base de datos   |
-| Lombok                 | 1.18.38         | Reducción de código boilerplate mediante anotaciones |
-| SLF4J + Log4J          | 2.0.16 / 2.24.3 | Sistema de registro de logs centralizado y flexible  |
+| Hibernate Core         | 7.3.0.Final     | Framework ORM para persistencia en base de datos     |
+| HikariCP               | 7.0.2           | Pool de conexiones eficiente para la base de datos   |
+| Lombok                 | 1.18.44         | Reducción de código boilerplate mediante anotaciones |
+| SLF4J + Log4J          | 2.0.17 / 2.25.4 | Sistema de registro de logs centralizado y flexible  |
 | JAXB                   | 2.3.x - 2.4.x   | Procesamiento y parseo de documentos XML             |
 | Jakarta Mail           | 2.1.3           | Envío de notificaciones por correo electrónico       |
 
@@ -42,7 +42,7 @@ Los formatos admitidos incluyen:
 
 ## 📂 Base de Datos
 
-Se utiliza PostgreSQL como motor de base de datos, con organización en esquemas lógicos para separar y estructurar la información importada, facilitando su posterior consulta y análisis.
+Se utiliza MariaDB como motor principal de base de datos, con esquemas separados para las variantes de importación y scripts SQL de índices para optimizar consultas e importaciones incrementales.
 
 ---
 
@@ -66,7 +66,7 @@ placsp-importador/
 1. Descarga o recepción de los ficheros XML desde el portal de Datos Abiertos.
 2. Validación y parseo de los documentos XML mediante JAXB.
 3. Transformación a objetos Java.
-4. Persistencia en PostgreSQL usando Hibernate.
+4. Persistencia en MariaDB usando Hibernate.
 5. Registro de eventos, advertencias y errores mediante Log4J.
 6. Envío automático de notificaciones por correo en caso de errores o finalización de procesos.
 
@@ -74,9 +74,9 @@ placsp-importador/
 
 ## 🔧 Requisitos Previos
 
-- Java JDK 21 o superior.
-- Maven instalado.
-- PostgreSQL 17.2 configurado.
+- Java JDK 21 o superior. En desarrollo local se usa `C:\java\software\jdk-21.0.11`.
+- Maven 3.9.16. En desarrollo local se usa `C:\java\software\apache-maven-3.9.16`.
+- Base de datos configurada según los properties externos del entorno.
 - Acceso a internet para la resolución de dependencias Maven.
 
 ---
@@ -85,13 +85,54 @@ placsp-importador/
 
 1. Clona el repositorio o descarga el código fuente.
 2. Configura el acceso a la base de datos en `application.properties`.
-3. Compila y empaqueta el proyecto:
+3. Prepara la sesión con Java 21.0.11 y Maven 3.9.16:
 
-```bash
-mvn clean install
+```powershell
+.\scripts\use-java21-maven3916.ps1
 ```
 
-4. Ejecuta la aplicación siguiendo las instrucciones internas del proyecto.
+4. Ejecuta las pruebas:
+
+```powershell
+.\scripts\use-java21-maven3916.ps1 test
+```
+
+5. Compila y empaqueta el proyecto:
+
+```powershell
+.\scripts\use-java21-maven3916.ps1 clean package
+```
+
+6. Ejecuta la aplicación siguiendo las instrucciones internas del proyecto.
+
+---
+
+
+## GitHub Actions
+
+El CI ejecutable está en `.github/workflows/maven-ci.yml` y lanza:
+
+```powershell
+mvn -B test
+mvn -B spotless:check
+mvn -B spotbugs:check
+```
+
+Para resolver `jarios-parent` y los helpers privados en GitHub Packages, configura el secret `PACKAGES_TOKEN` con permisos de lectura sobre paquetes. Si no existe, el workflow intentará usar `GITHUB_TOKEN`.
+
+El fichero antiguo `.github/workflow/maven-ci.yml` está en una carpeta no reconocida por GitHub Actions y queda obsoleto.
+
+---
+## Seguridad de dependencias
+
+OWASP Dependency Check se ejecuta de forma explicita, igual que en el resto de proyectos. Define `NVD_API_KEY` en la sesion o en CI y lanza el goal Maven:
+
+```powershell
+$env:NVD_API_KEY='<clave-nvd>'
+.\scripts\use-java21-maven3916.ps1 org.owasp:dependency-check-maven:check
+```
+
+El umbral configurado para fallar el build es CVSS 8.0 y `ossIndexAnalyzerEnabled` queda desactivado.
 
 ---
 
@@ -123,4 +164,7 @@ Para consultas, soporte o sugerencias, puede contactar a:
 ---
 
 *Desarrollado con el objetivo de facilitar el acceso y análisis de la información pública de forma eficiente y automatizada.*
+
+
+
 

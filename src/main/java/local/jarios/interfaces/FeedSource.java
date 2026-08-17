@@ -1,8 +1,7 @@
 package local.jarios.interfaces;
 
-import local.jarios.entity.atom.Feed;
-
 import java.io.BufferedReader;
+import local.jarios.entity.atom.Feed;
 
 /**
  * Interfaz genérica para definir la estructura común que deben implementar las clases que

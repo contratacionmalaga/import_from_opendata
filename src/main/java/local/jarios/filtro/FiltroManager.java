@@ -1,6 +1,7 @@
 package local.jarios.filtro;
 
-import local.jarios.common.util.VariablesGlobales;
+import java.util.List;
+import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.auxiliares.Historico;
 import local.jarios.enums.EntryOpcion;
@@ -15,63 +16,49 @@ import local.jarios.filtro.loader.FiltroNifsLoader;
 import local.jarios.properties.exception.PropertiesManagerException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
-/**
- * Description: Clase encargada de orquestar la carga y evaluación de filtros.
- */
+/** Description: Clase encargada de orquestar la carga y evaluación de filtros. */
 @Slf4j
 public class FiltroManager {
 
   private final List<FiltroLoader> loaders;
   private final List<FiltroEvaluator> evaluators;
 
-  /**
-   * Constructor de la clase.
-   */
+  /** Constructor de la clase. */
   public FiltroManager() {
     // Lista de los filtros a cargar
-    this.loaders = List.of(
-        new FiltroFechasLoader(),
-        new FiltroCodigosPostalesLoader(),
-        new FiltroNifsLoader()
-    );
+    this.loaders =
+        List.of(
+            new FiltroFechasLoader(), new FiltroCodigosPostalesLoader(), new FiltroNifsLoader());
 
     // Lista de los filtros a evaluar
-    this.evaluators = List.of(
-        new FiltroFechasEvaluator(),
-        new FiltroCodigosPostalesEvaluator(),
-        new FiltroNifsEvaluator()
-    );
+    this.evaluators =
+        List.of(
+            new FiltroFechasEvaluator(),
+            new FiltroCodigosPostalesEvaluator(),
+            new FiltroNifsEvaluator());
   }
 
-  /**
-   * Imprime la información de los filtros.
-   */
-  public static void imprimirFiltros() {
+  /** Imprime la información de los filtros. */
+  public static void imprimirFiltros(OpenDataExecutionContext context) {
 
     // Filtro de fechas
     log.info("Filtro de fechas:");
-    log.info("  Fecha inicial: {}", VariablesGlobales.getFiltroFechaInicial());
-    log.info("  Fecha final: {}", VariablesGlobales.getFiltroFechaFinal());
+    log.info("  Fecha inicial: {}", context.getFiltroFechaInicial());
+    log.info("  Fecha final: {}", context.getFiltroFechaFinal());
 
     // Filtro de órganos de contratación por código postal
-    log.info(
-        "Filtro por códigos postales: ({})",
-        VariablesGlobales.getFiltroCodigosPostales()
-    );
+    log.info("Filtro por códigos postales: ({})", context.getFiltroCodigosPostales());
 
     // Filtro por lista de nifs
+    log.info("Filtro nifs: ({})", context.getFiltroNifs());
     log.info(
-        "Filtro nifs: ({})",
-        VariablesGlobales.getFiltroNifs()
-    );
-    log.info("Registros en la lista de NIFs según el filtro: {} registros",
-             VariablesGlobales.getListNifs().size());
+        "Registros en la lista de NIFs según el filtro: {} registros",
+        context.getListNifs() != null ? context.getListNifs().size() : 0);
     log.info(
         "Registros en la lista de Organos de Contratación según el filtro: {} registros",
-        VariablesGlobales.getListOrganoContratacionFiltro().size()
-    );
+        context.getListOrganoContratacionFiltro() != null
+            ? context.getListOrganoContratacionFiltro().size()
+            : 0);
   }
 
   /**
@@ -79,9 +66,9 @@ public class FiltroManager {
    *
    * @throws PropertiesManagerException excepción lanzada
    */
-  public void cargarFiltros() throws PropertiesManagerException {
+  public void cargarFiltros(OpenDataExecutionContext context) throws PropertiesManagerException {
     for (FiltroLoader loader : loaders) {
-      loader.cargar();
+      loader.cargar(context);
     }
     log.debug("        • Filtros cargados correctamente");
   }
@@ -92,10 +79,10 @@ public class FiltroManager {
    * @param entry Entry sobre el que se evaluan los filtros
    * @return Valor devuelto
    */
-  public boolean evaluarFiltros(Entry entry) {
+  public boolean evaluarFiltros(OpenDataExecutionContext context, Entry entry) {
 
-    boolean aplicaFiltro = VariablesGlobales.getSetNifsFiltro() != null
-        && !VariablesGlobales.getSetNifsFiltro().isEmpty();
+    boolean aplicaFiltro =
+        context.getConjuntoNifsEnFiltro() != null && !context.getConjuntoNifsEnFiltro().isEmpty();
 
     boolean pasaAlternativos = false;
 
@@ -113,16 +100,15 @@ public class FiltroManager {
         // Si no hay filtros activos → se omite SOLO este tipo
         if (!aplicaFiltro) {
 
-          log.debug("    Filtro alternativo: {}. OMITIDO",
-                    evaluator.getClass().getSimpleName());
+          log.debug("    Filtro alternativo: {}. OMITIDO", evaluator.getClass().getSimpleName());
 
           continue;
         }
 
-        boolean ok = evaluator.evaluar(entry);
+        boolean ok = evaluator.evaluar(context, entry);
 
-        log.debug("    Filtro alternativo: {}. Resultado: {}",
-                  evaluator.getClass().getSimpleName(), ok);
+        log.debug(
+            "    Filtro alternativo: {}. Resultado: {}", evaluator.getClass().getSimpleName(), ok);
 
         if (ok) {
           pasaAlternativos = true;
@@ -134,18 +120,17 @@ public class FiltroManager {
       // ============================
       // 2) Filtros obligatorios
       // ============================
-      boolean ok = evaluator.evaluar(entry);
+      boolean ok = evaluator.evaluar(context, entry);
 
-      log.debug("    Filtro obligatorio: {}. Resultado: {}",
-                evaluator.getClass().getSimpleName(), ok);
+      log.debug(
+          "    Filtro obligatorio: {}. Resultado: {}", evaluator.getClass().getSimpleName(), ok);
 
       if (!ok) {
 
-        String msg = "Filtro no cumplido: "
-            + evaluator.getClass().getSimpleName();
+        String msg = "Filtro no cumplido: " + evaluator.getClass().getSimpleName();
 
-        VariablesGlobales.getListHistoricos()
-            .add(new Historico(entry, EntryOpcion.RECHAZAR, msg));
+        context.addHistorico(
+            new Historico(entry, EntryOpcion.RECHAZAR, msg, context.getTipoSindicacion()));
 
         return false;
       }
@@ -158,8 +143,8 @@ public class FiltroManager {
 
       String msg = "No cumple ningún filtro alternativo (CP/NIF)";
 
-      VariablesGlobales.getListHistoricos()
-          .add(new Historico(entry, EntryOpcion.RECHAZAR, msg));
+      context.addHistorico(
+          new Historico(entry, EntryOpcion.RECHAZAR, msg, context.getTipoSindicacion()));
 
       return false;
     }

@@ -1,0 +1,43 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    name: Build and quality checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: maven
+
+      - name: Set up private Maven packages
+        uses: ./.github/actions/setup-maven-private
+        with:
+          package-token: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Test
+        run: mvn -B test
+
+      - name: Spotless
+        run: mvn -B spotless:check
+
+      - name: SpotBugs security scan
+        run: mvn -B spotbugs:check

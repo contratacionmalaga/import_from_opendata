@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * Description: Author: juan Date: 20/03/2025 Team:
- */
+/** Description: Author: juan Date: 20/03/2025 Team: */
 
 // Importe de adjudicación.
 //  Importe ofertado por el licitador adjudicatario del contrato sin impuestos y con impuestos
@@ -25,9 +23,15 @@ public class LegalMonetaryTotal {
   @Override
   public String toString() {
 
-    return "LegalMonetaryTotal: " +
-        "[payableAmount='" + payableAmount + "', " +
-        "taxExclusiveAmount='" + taxExclusiveAmount + "', " +
-        "taxInclusiveAmount='" + taxInclusiveAmount + "']";
+    return "LegalMonetaryTotal: "
+        + "[payableAmount='"
+        + payableAmount
+        + "', "
+        + "taxExclusiveAmount='"
+        + taxExclusiveAmount
+        + "', "
+        + "taxInclusiveAmount='"
+        + taxInclusiveAmount
+        + "']";
   }
 }

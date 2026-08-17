@@ -1,6 +1,9 @@
 package local.jarios.services;
 
-import local.jarios.entity.atom.Entry;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
@@ -8,10 +11,7 @@ import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.exceptions.MiServiceException;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import local.jarios.repositories.EntrySnapshot;
 
 /**
  * Interfaz que define los métodos principales para la persistencia y recuperación de información
@@ -38,7 +38,8 @@ public interface ServicePrincipal {
    *
    * @param organoContratacionList el objeto de log que se desea almacenar.
    */
-  void persistirListaOcFiltro(Log miLog, List<OrganoContratacion> organoContratacionList) throws MiServiceException;
+  void persistirListaOcFiltro(Log miLog, List<OrganoContratacion> organoContratacionList)
+      throws MiServiceException;
 
   /**
    * Actualiza el objeto log junton con las estadísticas en el sistema.
@@ -69,9 +70,25 @@ public interface ServicePrincipal {
   void persistirSetFeeds(Log miLog, Set<Feed> feedSet) throws MiServiceException;
 
   /**
+   * Persiste una importacion completa en una unica transaccion.
+   *
+   * @param plan datos de importacion a persistir.
+   */
+  void persistirImportacion(ImportPersistencePlan plan) throws MiServiceException;
+
+  /**
    * Obtiene el feed más reciente correspondiente a un tipo específico de sindicación.
    *
    * @return el feed más reciente disponible para el tipo indicado.
    */
-  Map<String, Entry> getMapEntries() throws MiServiceException;
+  Map<String, EntrySnapshot> getEntrySnapshots(TipoSindicacion tipoSindicacion)
+      throws MiServiceException;
+
+  /**
+   * Cuenta las entradas existentes para un tipo de sindicacion.
+   *
+   * @param tipoSindicacion tipo de sindicacion a filtrar.
+   * @return numero de entradas existentes.
+   */
+  long countEntries(TipoSindicacion tipoSindicacion) throws MiServiceException;
 }

@@ -1,16 +1,8 @@
 package local.jarios.helpers;
 
-/**
- * Description: Author: juan Date: 29/01/2026 Team:
- */
+/** Description: Author: juan Date: 29/01/2026 Team: */
 public record HistoricoTotales(
-    long insertar,
-    long eliminar,
-    long actualizar,
-    long rechazar,
-    long deletedEntrys
-
-) {
+    long insertar, long eliminar, long actualizar, long rechazar, long deletedEntrys) {
 
   /**
    * Obtiene la suma de los valores
@@ -21,4 +13,3 @@ public record HistoricoTotales(
     return insertar + eliminar + actualizar + rechazar;
   }
 }
-

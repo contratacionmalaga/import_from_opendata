@@ -10,17 +10,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import local.jarios.common.util.Constantes;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import local.jarios.entity.auxiliares.Log;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -36,32 +35,31 @@ public class Feed extends AuditableCreatedAt {
   private UUID id;
 
   // Campos del Feed
-  @Column(name = "link_first", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  @Column(name = "link_first", length = TamanoCampos.TAMANO_2500)
   private String linkFirst;
 
-  @Column(name = "link_prev", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  @Column(name = "link_prev", length = TamanoCampos.TAMANO_2500)
   private String linkPrev;
 
-  @Column(name = "link_self", nullable = false, length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  @Column(name = "link_self", nullable = false, length = TamanoCampos.TAMANO_2500)
   private String linkSelf;
 
-  @Column(name = "link_next", length = Constantes.TAMANO_MAXIMO_CAMPO_2500)
+  @Column(name = "link_next", length = TamanoCampos.TAMANO_2500)
   private String linkNext;
 
   @Column(name = "updated")
   private LocalDateTime updated;
 
   // Relaciones
-  @ManyToOne(
-      fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "log_id",
       nullable = false,
       referencedColumnName = "id",
-      foreignKey = @ForeignKey(
-          name = "fk_feed_milog",
-          foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE")
-  )
+      foreignKey =
+          @ForeignKey(
+              name = "fk_feed_milog",
+              foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
   private Log miLog;
 
   @OneToMany(mappedBy = "feed", orphanRemoval = true, fetch = FetchType.LAZY)
@@ -69,10 +67,4 @@ public class Feed extends AuditableCreatedAt {
 
   @OneToMany(mappedBy = "feed", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<DeletedEntry> deletedEntryList = new ArrayList<>();
-
-  // Representaciones en texto
-  @Override
-  public String toString() {
-    return "Feed: [" + linkSelf + ", " + updated + "]";
-  }
 }

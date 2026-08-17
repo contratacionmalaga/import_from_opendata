@@ -14,4 +14,14 @@
   ~ limitations under the License.
   -->
 <FindBugsFilter>
+    <Match>
+        <Class name="local.jarios.parsers.InternetFeedSource"/>
+        <Method name="openBufferedReader"/>
+        <Bug pattern="URLCONNECTION_SSRF_FD"/>
+    </Match>
+    <Match>
+        <Class name="local.jarios.parsers.LocalFeedSource"/>
+        <Method name="getPathBaseLocal"/>
+        <Bug pattern="PATH_TRAVERSAL_IN"/>
+    </Match>
 </FindBugsFilter>

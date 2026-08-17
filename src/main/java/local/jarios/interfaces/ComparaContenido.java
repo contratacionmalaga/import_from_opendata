@@ -2,9 +2,7 @@ package local.jarios.interfaces;
 
 import local.jarios.entity.auxiliares.OrganoContratacion;
 
-/**
- * Interfaz que indica que una entidad puede ser comparada por su contenido (sin contar su ID).
- */
+/** Interfaz que indica que una entidad puede ser comparada por su contenido (sin contar su ID). */
 public interface ComparaContenido {
 
   /**

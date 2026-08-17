@@ -1,0 +1,83 @@
+name: Setup Maven private packages
+description: Configure Maven credentials for local.jarios private packages.
+
+inputs:
+  package-token:
+    description: Token with read access to GitHub Packages.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure package credentials
+      shell: bash
+      env:
+        MAVEN_PACKAGE_TOKEN: ${{ inputs.package-token }}
+      run: |
+        mkdir -p "$HOME/.m2"
+        cat > "$HOME/.m2/settings.xml" <<EOF
+        <settings>
+          <servers>
+            <server>
+              <id>github-releases</id>
+              <username>${GITHUB_ACTOR}</username>
+              <password>${MAVEN_PACKAGE_TOKEN}</password>
+            </server>
+            <server>
+              <id>github-jarios-parent</id>
+              <username>${GITHUB_ACTOR}</username>
+              <password>${MAVEN_PACKAGE_TOKEN}</password>
+            </server>
+            <server>
+              <id>github-email-helper</id>
+              <username>${GITHUB_ACTOR}</username>
+              <password>${MAVEN_PACKAGE_TOKEN}</password>
+            </server>
+            <server>
+              <id>github-properties-helper</id>
+              <username>${GITHUB_ACTOR}</username>
+              <password>${MAVEN_PACKAGE_TOKEN}</password>
+            </server>
+            <server>
+              <id>github-version-helper</id>
+              <username>${GITHUB_ACTOR}</username>
+              <password>${MAVEN_PACKAGE_TOKEN}</password>
+            </server>
+            <server>
+              <id>github-encrypt-helper</id>
+              <username>${GITHUB_ACTOR}</username>
+              <password>${MAVEN_PACKAGE_TOKEN}</password>
+            </server>
+          </servers>
+          <profiles>
+            <profile>
+              <id>github-private-packages</id>
+              <repositories>
+                <repository>
+                  <id>github-jarios-parent</id>
+                  <url>https://maven.pkg.github.com/contratacionmalaga/jarios-parent</url>
+                </repository>
+                <repository>
+                  <id>github-email-helper</id>
+                  <url>https://maven.pkg.github.com/contratacionmalaga/email-helper</url>
+                </repository>
+                <repository>
+                  <id>github-properties-helper</id>
+                  <url>https://maven.pkg.github.com/contratacionmalaga/properties-helper</url>
+                </repository>
+                <repository>
+                  <id>github-version-helper</id>
+                  <url>https://maven.pkg.github.com/contratacionmalaga/version-helper</url>
+                </repository>
+                <repository>
+                  <id>github-encrypt-helper</id>
+                  <url>https://maven.pkg.github.com/contratacionmalaga/encrypt-helper</url>
+                </repository>
+              </repositories>
+            </profile>
+          </profiles>
+          <activeProfiles>
+            <activeProfile>github-private-packages</activeProfile>
+          </activeProfiles>
+        </settings>
+        EOF

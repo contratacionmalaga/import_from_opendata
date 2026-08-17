@@ -1,9 +1,8 @@
 package local.jarios.codice;
 
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.LegalMonetaryTotalType;
-
-import java.util.Optional;
 
 /**
  * Mapper encargado de transformar objetos {@link LegalMonetaryTotalType} del modelo Codice en la
@@ -17,8 +16,8 @@ public final class LegalMonetaryTotalMapper {
   }
 
   /**
-   * Construye una entidad {@link LegalMonetaryTotal} a partir del objeto
-   * {@link LegalMonetaryTotalType} recibido y las entidades relacionadas indicadas.
+   * Construye una entidad {@link LegalMonetaryTotal} a partir del objeto {@link
+   * LegalMonetaryTotalType} recibido y las entidades relacionadas indicadas.
    *
    * @param legalMonetaryTotalType Objeto Codice con datos de totales monetarios legales.
    * @return {@link LegalMonetaryTotal} mapeado con los datos y asociaciones correspondientes.

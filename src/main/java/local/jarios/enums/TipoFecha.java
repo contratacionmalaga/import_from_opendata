@@ -8,6 +8,5 @@ public enum TipoFecha {
   INICIAL,
   FINAL;
 
-  TipoFecha() {
-  }
+  TipoFecha() {}
 }

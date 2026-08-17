@@ -11,18 +11,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import local.jarios.common.util.Constantes;
-import local.jarios.entity.atom.Feed;
-import local.jarios.enums.LugarImportacion;
-import local.jarios.enums.TipoSindicacion;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import local.jarios.common.util.TamanoCampos;
+import local.jarios.core.enums.LugarImportacion;
+import local.jarios.core.enums.TipoSindicacion;
+import local.jarios.entity.atom.Feed;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -39,11 +38,11 @@ public class Log extends AuditableCreatedAt {
 
   // Enums
   @Enumerated(EnumType.STRING)
-  @Column(name = "tipo_sindicacion", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "tipo_sindicacion", length = TamanoCampos.TAMANO_50)
   private TipoSindicacion tipoSindicacion;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "lugar_importacion", length = Constantes.TAMANO_MAXIMO_CAMPO_50)
+  @Column(name = "lugar_importacion", length = TamanoCampos.TAMANO_50)
   private LugarImportacion lugarImportacion;
 
   @Column(name = "n_registros")
@@ -81,11 +80,9 @@ public class Log extends AuditableCreatedAt {
     this.fechaGeneracion = fechaGeneracion;
   }
 
-  @Override
-  public String toString() {
-    return "Log: [" +
-        "tipoSindicacion='" + tipoSindicacion + "', " +
-        "lugarImportacion=" + lugarImportacion +
-        "]";
+  // Constructor principal
+  public Log(LugarImportacion lugarImportacion, TipoSindicacion tipoSindicacion) {
+    this.lugarImportacion = lugarImportacion;
+    this.tipoSindicacion = tipoSindicacion;
   }
 }
