@@ -79,7 +79,7 @@ Se ha ejecutado `scripts/use-java21-maven3916.ps1 test` usando `JAVA_HOME=C:\jav
 | H07 | En curso | Media | Modelo JPA medible | Indices y constraints principales versionados en SQL; `EXPLAIN` documentado | Indices de snapshots aplicados y `EXPLAIN` validado en Malaga/Pliegos; migracion Malaga documentada en `docs/auditorias/migracion_opendata_malaga_schema_2026-08-12.sql`; pendientes vistas completas |
 | H08 | Hecho | Media | Transaccion de importacion | Importacion no queda inconsistente ante fallo a mitad | 2026-08-17: H2 modo MariaDB cubre reemplazo `ACTUALIZAR` y rollback completo; Pliegos INTERNET `run-6` elimina 39.749 entries existentes y persiste todo en una unica transaccion; `mvn test`: 27 tests, 0 fallos |
 | H09 | Hecho | Media | Calidad en ciclo Maven | Spotless y SpotBugs ejecutables con comandos documentados y en verde | 2026-08-12: `spotless:apply` aplicado; `spotless:check` limpio; `spotbugs:check` limpio |
-| H11 | Hecho | Alta | Pliegos sin historicos persistidos | Pliegos LOCAL/INTERNET puede reemplazar entries existentes sin insertar filas en `historico` | 2026-08-17: `ImportPersistencePlan.replacementEntryIds`; `AbstractOpenDataPliegos` envia `historicoList` vacio; `mvn`: 28 tests, 0 fallos; SpotBugs: 0 bugs |
+| H11 | Hecho | Alta | Pliegos sin historicos persistidos | Pliegos LOCAL/INTERNET puede reemplazar entries existentes sin insertar filas en `historico` | 2026-08-17: `ImportPersistencePlan.replacementEntryIds`; `AbstractOpenDataPliegos` envia `historicoList` vacio; validacion aislada LOCAL+INTERNET en `opendata_pliegos_validation`: `historico=0`, `log=2`, `estadistica=2`; limpieza real `opendata-pliegos`: `historico 104867 -> 0`; validacion real INTERNET posterior: `historico=0`; `mvn`: 28 tests, 0 fallos; SpotBugs: 0 bugs |
 | H10 | En curso | Baja | Documentacion operativa | README actualizado con versiones, CI, configuracion y ejecucion; properties autocomentados con valores admitidos | README y `properties/*.properties` actualizados; pendiente evidencias reales de Dependency Check y metricas finales de indices/vistas |
 
 ## Revision de versiones
@@ -244,6 +244,9 @@ Alineado con `import-from-gc`:
 
 | Fecha | Cambio | Evidencia |
 |---|---|---|
+| 2026-08-17 | Revisada coherencia de `estadistica` en Pliegos tras la limpieza de `historico`. | `opendata-pliegos.estadistica` ya mantiene `total_historicos` y `n_registros_historicos_insertar/actualizar/eliminar/rechazar` a `NULL` en sus 3 registros; no se modifica `n_entries` porque representa entries procesadas/persistidas, no filas de `historico`. |
+| 2026-08-17 | Eliminados historicos antiguos de Pliegos y validada una carga INTERNET real posterior sin reinsertarlos. | `opendata-pliegos.historico` pasa de 104.867 a 0 filas mediante `TRUNCATE TABLE historico`; ejecucion Pliegos INTERNET real con `hibernate.hbm2ddl.auto=validate`: 857.201 entries existentes, 1 feed remoto, 0 entries nuevas, 2 deleted entries, `historicosGenerados=0`, `historicosPersistidos=0`; BD final: `historico=0`, `log=3`, `feed=6.344`, `entry=857.201`, `deleted_entry=67.014`, `estadistica=3`. |
+| 2026-08-17 | Validado Pliegos LOCAL e INTERNET de expedientes `MAYORES` tras eliminar historicos persistidos en Pliegos. | Esquema aislado `opendata_pliegos_validation` porque `opendata-pliegos` contiene datos reales; LOCAL con 2 feeds de muestra desde `D:\placsp\may`: 970 entries, 3 deleted entries, `historico=0`; INTERNET con `hibernate.hbm2ddl.auto=validate` y `-Djavax.net.ssl.trustStoreType=Windows-ROOT`: 1 feed remoto, 0 entries nuevas por `newestEntry`, 2 deleted entries, `historico=0`; BD final: `entry=970`, `feed=3`, `deleted_entry=5`, `historico=0`, `estadistica=2`, `log=2`; `scripts/use-java21-maven3916.ps1 test`: 28 tests, 0 fallos. |
 | 2026-08-17 | Rama `jarp/pliegos-persistencia-sin-historicos`: Pliegos deja de persistir historicos y conserva reemplazo de entries mediante `replacementEntryIds`. | `ImportPersistencePlan` separa `replacementEntryIds` de `historicoList`; `RepositoryImpl.persistirImportacion` borra entries existentes por ese conjunto explicito; `AbstractOpenDataPliegos` vacia historicos antes del plan. Validacion: `spotless:apply test spotbugs:check`, 28 tests, 0 fallos, SpotBugs 0. |
 | 2026-08-17 | Validada carga Pliegos INTERNET de expedientes `MAYORES` contra `opendata-pliegos`. | `run-6` con Java 21.0.11, Maven 3.9.16 y `-Djavax.net.ssl.trustStoreType=Windows-ROOT`: 519 feeds parseados, 258.828 entries leidas, 104.867 entries validas, 661 deleted entries; 39.749 `ACTUALIZAR` eliminados antes de insertar; final correcto sin `Duplicate entry`, `Request Rejected` ni PKIX. BD final: log=2, feed=6.343, entry=857.201, deleted_entry=67.012, historico=104.867, estadistica=2; nuevo log `2cba07f1-5e37-4b25-be76-6a55771ed51d`. |
 | 2026-08-17 | Validada carga Málaga INTERNET de expedientes `MAYORES` contra `opendata-malaga`. | Log `36b5718e-516d-4ec6-b62e-c56195064761`: final correcto; 538 feeds, 688 deleted entries, 267.689 históricos `RECHAZAR` omitidos de persistencia; BD final: 65.366 entries, 11.911 feeds, 5.520.920 históricos. |
@@ -275,22 +278,4 @@ Alineado con `import-from-gc`:
 | 2026-08-12 | Cerrados R11/R12: SQL DEBUG/TRACE desactivado por defecto y `System.exit` limitado a los `main`. | `logback.xml`; `AbstractOpenDataBase.procesar`; mains Malaga/Pliegos. |
 | 2026-08-12 | Añadida plantilla de validacion de indices para cuando las BD esten cargadas. | `docs/auditorias/plantilla_validacion_indices.md`. |
 | 2026-08-12 | Cerrado H08/R08 a nivel de codigo: persistencia de importacion completa mediante `ImportPersistencePlan` y una unica transaccion de repositorio. | `mvn test`: 17 tests, 0 failures, 0 errors; `spotless:check`: success; `spotbugs:check`: 0 bugs, 0 errors. |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
