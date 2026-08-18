@@ -72,11 +72,8 @@ jobs:
       - name: Make Maven Wrapper executable
         run: chmod +x ./mvnw
 
-      - name: Install local CODICE artifacts
-        run: |
-          ./mvnw -B -ntp install:install-file -Dfile=lib/atom-1.0.jar -DgroupId=org.w3._2005.atom -DartifactId=atom -Dversion=1.0 -Dpackaging=jar
-          ./mvnw -B -ntp install:install-file -Dfile=lib/codice-2.8.0.jar -DgroupId=place.codice -DartifactId=codice -Dversion=2.8.0 -Dpackaging=jar
-          ./mvnw -B -ntp install:install-file -Dfile=lib/codice-ext-1.5.0.jar -DgroupId=place.codice -DartifactId=codice-ext -Dversion=1.5.0 -Dpackaging=jar
+      - name: Set up project artifacts
+        uses: ./.github/actions/setup-project-artifacts
 
       - name: Verify release version
         shell: bash
@@ -105,8 +102,8 @@ jobs:
         run: |
           gh release view "${{ steps.release.outputs.tag }}" >/dev/null 2>&1 || \
           gh release create "${{ steps.release.outputs.tag }}" \
-            --title "import-from-opendata ${{ steps.release.outputs.version }}" \
-            --notes "Release import-from-opendata ${{ steps.release.outputs.version }}."
+            --title "${{ github.event.repository.name }} ${{ steps.release.outputs.version }}" \
+            --notes "Release ${{ github.event.repository.name }} ${{ steps.release.outputs.version }}."
 
       - name: Upload release artifacts
         env:
