@@ -11,6 +11,7 @@ import java.util.UUID;
 import local.jarios.core.enums.LugarImportacion;
 import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.database.EntityScanner;
+import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
@@ -100,6 +101,32 @@ class RepositoryImplPersistenceIntegrationTest {
           .isEqualTo("new-title");
       assertThat(count(sessionFactory, "SELECT COUNT(h) FROM Historico h")).isZero();
       assertThat(count(sessionFactory, "SELECT COUNT(e) FROM Estadistica e")).isEqualTo(1L);
+    }
+  }
+
+  @Test
+  void persists_deleted_entry_ref_corto_inside_import_transaction() throws Exception {
+    try (SessionFactory sessionFactory = newSessionFactory()) {
+      RepositoryImpl repository = new RepositoryImpl(sessionFactory);
+      Log importLog = new Log(LugarImportacion.INTERNET, TipoSindicacion.MAYORES);
+      Feed importFeed = feed("feed-with-deleted-entry");
+      importFeed
+          .getDeletedEntryList()
+          .add(deletedEntry("https://example.test/licitacion-123", "licitacion-123"));
+
+      repository.persistirImportacion(
+          new ImportPersistencePlan(
+              importLog,
+              null,
+              List.of(),
+              List.of(),
+              Set.of(importFeed),
+              List.of(),
+              new Estadistica(importLog)));
+
+      assertThat(count(sessionFactory, "SELECT COUNT(d) FROM DeletedEntry d")).isEqualTo(1L);
+      assertThat(singleString(sessionFactory, "SELECT d.refCorto FROM DeletedEntry d"))
+          .isEqualTo("licitacion-123");
     }
   }
 
@@ -199,6 +226,14 @@ class RepositoryImplPersistenceIntegrationTest {
     entry.setUpdated(LocalDateTime.parse("2026-01-02T10:00:00"));
     entry.getContractFolderStatusList().add(contractFolderStatus(entryIdCorto, nif));
     return entry;
+  }
+
+  private static DeletedEntry deletedEntry(String ref, String refCorto) {
+    DeletedEntry deletedEntry = new DeletedEntry();
+    deletedEntry.setRef(ref);
+    deletedEntry.setRefCorto(refCorto);
+    deletedEntry.setUpdated(LocalDateTime.parse("2026-01-03T10:00:00"));
+    return deletedEntry;
   }
 
   private static ContractFolderStatus contractFolderStatus(String suffix, String nif) {

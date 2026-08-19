@@ -253,6 +253,21 @@ public final class StringHelper {
     return result.length() <= max ? result : result.substring(0, max);
   }
 
+  /**
+   * Extrae el identificador situado tras el último '/' de una URL o identificador completo.
+   *
+   * @param id identificador completo
+   * @return identificador corto
+   */
+  public static String obtenerIdCorto(String id) {
+    if (id == null) {
+      return null;
+    }
+
+    int idx = id.lastIndexOf('/');
+    return idx >= 0 ? id.substring(idx + 1) : id;
+  }
+
   public static String normalizeText(String value) {
     String sanitized = trimToNull(eliminarCaracteres(value));
     if (sanitized == null) {

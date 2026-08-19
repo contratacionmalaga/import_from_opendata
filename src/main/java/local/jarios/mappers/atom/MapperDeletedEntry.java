@@ -3,9 +3,11 @@ package local.jarios.mappers.atom;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
+import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
+import local.jarios.helpers.StringHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.purl.atompub.tombstones._1.DeletedEntryType;
 import org.w3._2005.atom.EntryType;
@@ -73,7 +75,10 @@ public final class MapperDeletedEntry {
 
     // Verifica que no sea null
     if (deletedEntryType != null && deletedEntryType.getRef() != null) {
-      deleltedEntry.setRef(deletedEntryType.getRef());
+      String ref = deletedEntryType.getRef();
+      deleltedEntry.setRef(StringHelper.limit(ref, TamanoCampos.TAMANO_500));
+      deleltedEntry.setRefCorto(
+          StringHelper.limit(StringHelper.obtenerIdCorto(ref), TamanoCampos.TAMANO_50));
     }
 
     // Verifica que no sea null

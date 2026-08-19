@@ -37,6 +37,9 @@ public class DeletedEntry extends AuditableCreatedAt {
   @Column(name = "ref", length = TamanoCampos.TAMANO_500)
   private String ref;
 
+  @Column(name = "ref_corto", length = TamanoCampos.TAMANO_50)
+  private String refCorto;
+
   @Column(name = "comment", length = TamanoCampos.TAMANO_50)
   private String comment;
 

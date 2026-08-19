@@ -68,7 +68,8 @@ public final class MapperEntry {
 
     entry.setEntryId(StringHelper.limit(id, TamanoCampos.TAMANO_500));
 
-    entry.setEntryIdCorto(StringHelper.limit(obtenerIdCorto(id), TamanoCampos.TAMANO_50));
+    entry.setEntryIdCorto(
+        StringHelper.limit(StringHelper.obtenerIdCorto(id), TamanoCampos.TAMANO_50));
 
     entry.setLink(
         StringHelper.limit(
@@ -99,16 +100,5 @@ public final class MapperEntry {
             .getListPreliminaryMarketConsultationStatusFromListType(entry, entryType));
 
     return entry;
-  }
-
-  /**
-   * Extrae el identificador situado tras el último '/' de una URL.
-   *
-   * @param id largo del Entry
-   * @return string con el id corto
-   */
-  private static String obtenerIdCorto(String id) {
-    int idx = id.lastIndexOf('/');
-    return idx >= 0 ? id.substring(idx + 1) : id;
   }
 }
