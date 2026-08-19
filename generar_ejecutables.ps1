@@ -13,6 +13,7 @@ $repoRoot = $PSScriptRoot
 $mavenScript = Join-Path $repoRoot "scripts\use-java21-maven3916.ps1"
 $pomPath = Join-Path $repoRoot "pom.xml"
 $targetDir = Join-Path $repoRoot "target"
+$scriptFiles = @("importar_atoms.ps1", "importar_atom.sh")
 
 $profiles = @(
     @{ Name = "con-filtros-local"; Artifact = "opendata_con_filtros"; Mode = "local" },
@@ -69,10 +70,20 @@ try {
         Copy-Item -LiteralPath $jarPath -Destination $destination -Force
         Write-Host "Copiado $jarName -> $OutputDir" -ForegroundColor Green
     }
+
+    foreach ($scriptFile in $scriptFiles) {
+        $scriptPath = Join-Path $repoRoot $scriptFile
+        if (-not (Test-Path -LiteralPath $scriptPath)) {
+            throw "No se ha encontrado el script esperado: $scriptPath"
+        }
+
+        Copy-Item -LiteralPath $scriptPath -Destination (Join-Path $OutputDir $scriptFile) -Force
+        Write-Host "Copiado $scriptFile -> $OutputDir" -ForegroundColor Green
+    }
+
 }
 finally {
     Pop-Location
 }
 
 Write-Host "Ejecutables generados en $OutputDir" -ForegroundColor Green
-

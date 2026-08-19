@@ -138,13 +138,25 @@ El umbral configurado para fallar el build es CVSS 8.0 y `ossIndexAnalyzerEnable
 
 ## 🔄 Configuración
 
-El archivo de configuración principal se encuentra en:
+La configuración operativa se carga desde el directorio externo `properties` indicado al ejecutar los JAR mediante `--configDir`. Los ficheros principales son:
 
-```
-src/main/resources/application.properties
-```
+| Fichero | Uso |
+|---------|-----|
+| `properties/app.properties` | Parámetros funcionales de importación y orígenes de datos. |
+| `properties/filter.properties` | Filtros por NIF o código postal para importaciones con filtros. |
+| `properties/hibernate.properties` | Parámetros base de Hibernate y HikariCP. |
+| `properties/bd.properties` | Conexión JDBC principal a la base de datos. |
+| `properties/jakarta_filtro.properties` | Conexión JDBC usada para filtros SQL, cuando aplique. |
+| `properties/mail.properties` | Parámetros de correo y notificaciones. |
 
-Allí deberá especificar los parámetros de conexión a la base de datos, configuraciones de logs y direcciones de correo si se desea habilitar las notificaciones.
+`bd.properties` debe conservar las claves Jakarta JDBC existentes:
+
+```properties
+jakarta.persistence.jdbc.url=
+jakarta.persistence.jdbc.driver=
+jakarta.persistence.jdbc.user=
+jakarta.persistence.jdbc.password=
+```
 
 ---
 
@@ -164,7 +176,3 @@ Para consultas, soporte o sugerencias, puede contactar a:
 ---
 
 *Desarrollado con el objetivo de facilitar el acceso y análisis de la información pública de forma eficiente y automatizada.*
-
-
-
-

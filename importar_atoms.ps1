@@ -35,7 +35,7 @@ $PropertiesDir = Join-Path $BaseDir "properties"
 $PropertiesPath = Join-Path $PropertiesDir "app.properties"
 $FilterPropertiesPath = Join-Path $PropertiesDir "filter.properties"
 $HibernatePropertiesPath = Join-Path $PropertiesDir "hibernate.properties"
-$DatabasePropertiesPath = Join-Path $PropertiesDir "jakarta_principal.properties"
+$DatabasePropertiesPath = Join-Path $PropertiesDir "bd.properties"
 
 $AllowedGroups = @("con_filtros", "sin_filtros", "all")
 $AllowedModes = @("local", "internet", "all")

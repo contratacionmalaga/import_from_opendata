@@ -173,7 +173,7 @@ public final class SessionFactoryProvider {
   // =========================================================
 
   /**
-   * Conexión principal: - parte de HIBERNATE (base) - añade Jakarta JDBC desde JAKARTA_PRINCIPAL -
+   * Conexión principal: - parte de HIBERNATE (base) - añade Jakarta JDBC desde bd.properties -
    * escanea entidades
    */
   private final class PrincipalStrategy implements ConnectionStrategy {
@@ -185,7 +185,7 @@ public final class SessionFactoryProvider {
       props.putAll(pm.getProperties(PropertiesFiles.HIBERNATE));
 
       // Jakarta JDBC (principal)
-      applyJdbcProperties(props, pm, PropertiesFiles.JAKARTA_PRINCIPAL);
+      applyJdbcProperties(props, pm, PropertiesFiles.BD);
 
       safeLogProperties("PRINCIPAL", props);
       return new ResolvedConfig(props, true);
