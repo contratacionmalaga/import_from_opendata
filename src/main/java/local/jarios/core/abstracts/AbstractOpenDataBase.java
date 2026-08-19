@@ -15,6 +15,7 @@ import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.database.SessionFactoryRegistry;
+import local.jarios.email.ExecutionEmailReportBuilder;
 import local.jarios.email.api.EmailSenderImpl;
 import local.jarios.email.api.EmailService;
 import local.jarios.email.api.EmailServiceImpl;
@@ -307,11 +308,21 @@ public abstract class AbstractOpenDataBase {
 
   public void sendSuccessEmail(Estadistica estadistica)
       throws EmailException, MiUnknownHostException, PropertiesManagerException {
+    sendSuccessEmail(null, estadistica);
+  }
+
+  public void sendSuccessEmail(OpenDataExecutionContext context)
+      throws EmailException, MiUnknownHostException, PropertiesManagerException {
+    sendSuccessEmail(context, context == null ? null : context.getEstadistica());
+  }
+
+  private void sendSuccessEmail(OpenDataExecutionContext context, Estadistica estadistica)
+      throws EmailException, MiUnknownHostException, PropertiesManagerException {
 
     imprimirTitulo("ENVÍO DE EMAIL DE CONFIRMACIÓN");
 
     Properties props = getEmailProperties();
-    EmailData emailData = buildSuccessEmailData(estadistica);
+    EmailData emailData = buildSuccessEmailData(context, estadistica);
 
     emailService.sendEmail(props, emailData);
 
@@ -320,12 +331,24 @@ public abstract class AbstractOpenDataBase {
 
   protected EmailData buildSuccessEmailData(Estadistica estadistica)
       throws PropertiesManagerException, MiUnknownHostException {
+    return buildSuccessEmailData(null, estadistica);
+  }
 
-    String[][] datos = toStringMatrix(estadistica);
+  protected EmailData buildSuccessEmailData(
+      OpenDataExecutionContext context, Estadistica estadistica)
+      throws PropertiesManagerException, MiUnknownHostException {
 
-    String subject = EmailHelper.getAsunto(appName, appVersion, getEquipo(), true);
+    String subject =
+        ExecutionEmailReportBuilder.buildSuccessSubject(
+            getReportProcessType(),
+            estadistica != null && estadistica.getMiLog() != null
+                ? estadistica.getMiLog().getLugarImportacion()
+                : context == null ? null : context.getLugarImportacion(),
+            estadistica);
 
-    String body = EmailHelper.getCuerpoEstadistica(datos);
+    String body =
+        ExecutionEmailReportBuilder.buildSuccessBody(
+            appName, appVersion, getReportProcessType(), context, estadistica);
 
     return new EmailData(getEmailFrom(), getEmailTo(), subject, body);
   }
@@ -333,7 +356,9 @@ public abstract class AbstractOpenDataBase {
   protected EmailData buildErrorEmailData(Throwable ex, String tipoError)
       throws PropertiesManagerException, MiUnknownHostException {
 
-    String subject = "❌ ERROR " + EmailHelper.getAsunto(appName, appVersion, getEquipo(), false);
+    String subject =
+        ExecutionEmailReportBuilder.buildErrorSubject(
+            getReportProcessType(), getReportImportOrigin(), ex, tipoError);
 
     String[] stack = obtenerStackTraceComoArray(ex);
     String body = EmailHelper.getCuerpoExcepcion(stack);
@@ -381,6 +406,21 @@ public abstract class AbstractOpenDataBase {
 
   protected String getAppVersion() {
     return appVersion;
+  }
+
+  protected String getReportProcessType() {
+    return "opendata";
+  }
+
+  protected String getReportImportOrigin() {
+    String className = getClass().getSimpleName().toLowerCase();
+    if (className.contains("internet")) {
+      return "INTERNET";
+    }
+    if (className.contains("local")) {
+      return "LOCAL";
+    }
+    return "desconocido";
   }
 
   protected ExitStatus runWithPipeline(String configDir) {

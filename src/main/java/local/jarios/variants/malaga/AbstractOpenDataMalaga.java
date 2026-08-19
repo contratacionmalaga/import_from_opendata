@@ -49,6 +49,11 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
   }
 
   @Override
+  protected String getReportProcessType() {
+    return "con_filtros";
+  }
+
+  @Override
   protected void beforeParse(OpenDataExecutionContext context) throws PropertiesManagerException {
     ImportResult<OrganoContratacion> excelResult = loadOrganosContratacion(context);
     context.setExcelResult(excelResult);
