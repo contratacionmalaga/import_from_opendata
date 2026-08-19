@@ -15,7 +15,7 @@ class FiltroFechasEvaluatorTest {
   @Test
   void returnsTrueForEntryInsideNormalDateRange() {
     OpenDataExecutionContext context =
-        contextWithRange(LocalDateTime.of(2026, 1, 1, 0, 0), LocalDateTime.of(2026, 1, 31, 23, 59));
+        contextWithRange(LocalDateTime.of(2026, 1, 31, 23, 59), LocalDateTime.of(2026, 1, 1, 0, 0));
 
     Entry entry = entryWithUpdated(LocalDateTime.of(2026, 1, 15, 12, 0));
 
@@ -25,7 +25,7 @@ class FiltroFechasEvaluatorTest {
   @Test
   void returnsTrueForEntryAtRangeBoundaries() {
     OpenDataExecutionContext context =
-        contextWithRange(LocalDateTime.of(2026, 1, 1, 0, 0), LocalDateTime.of(2026, 1, 31, 23, 59));
+        contextWithRange(LocalDateTime.of(2026, 1, 31, 23, 59), LocalDateTime.of(2026, 1, 1, 0, 0));
 
     Entry entryAtStart = entryWithUpdated(LocalDateTime.of(2026, 1, 1, 0, 0));
     Entry entryAtEnd = entryWithUpdated(LocalDateTime.of(2026, 1, 31, 23, 59));
@@ -37,7 +37,7 @@ class FiltroFechasEvaluatorTest {
   @Test
   void returnsFalseForEntryOutsideNormalDateRange() {
     OpenDataExecutionContext context =
-        contextWithRange(LocalDateTime.of(2026, 1, 1, 0, 0), LocalDateTime.of(2026, 1, 31, 23, 59));
+        contextWithRange(LocalDateTime.of(2026, 1, 31, 23, 59), LocalDateTime.of(2026, 1, 1, 0, 0));
 
     Entry entryBeforeStart = entryWithUpdated(LocalDateTime.of(2025, 12, 31, 23, 59));
     Entry entryAfterEnd = entryWithUpdated(LocalDateTime.of(2026, 2, 1, 0, 0));
@@ -47,9 +47,9 @@ class FiltroFechasEvaluatorTest {
   }
 
   @Test
-  void returnsFalseForInvertedRange() {
+  void returnsFalseForAscendingRange() {
     OpenDataExecutionContext context =
-        contextWithRange(LocalDateTime.of(2026, 1, 31, 23, 59), LocalDateTime.of(2026, 1, 1, 0, 0));
+        contextWithRange(LocalDateTime.of(2026, 1, 1, 0, 0), LocalDateTime.of(2026, 1, 31, 23, 59));
 
     Entry entry = entryWithUpdated(LocalDateTime.of(2026, 1, 15, 12, 0));
 
@@ -59,7 +59,7 @@ class FiltroFechasEvaluatorTest {
   @Test
   void returnsFalseWhenEntryDateIsNull() {
     OpenDataExecutionContext context =
-        contextWithRange(LocalDateTime.of(2026, 1, 1, 0, 0), LocalDateTime.of(2026, 1, 31, 23, 59));
+        contextWithRange(LocalDateTime.of(2026, 1, 31, 23, 59), LocalDateTime.of(2026, 1, 1, 0, 0));
 
     Entry entry = new Entry();
 

@@ -1,5 +1,6 @@
 package local.jarios.variants.malaga;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.reflect.Field;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import local.jarios.core.abstracts.AbstractOpenDataBase;
+import local.jarios.core.enums.LugarImportacion;
 import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
@@ -71,6 +73,32 @@ class OpenDataMalagaLocalTest {
     invokeValidateRequiredTargetFilter(openData, context);
   }
 
+  @Test
+  void persistAllStoresPostalCodeFilterAsOrganosOnly() throws Exception {
+    CountingServicePrincipal servicePrincipal = new CountingServicePrincipal(0L);
+    OpenDataMalagaLocal openData = new OpenDataMalagaLocal();
+    injectServicePrincipal(openData, servicePrincipal);
+
+    OrganoContratacion organo = new OrganoContratacion();
+    organo.setIdPlataforma("oc-1");
+    organo.setNombreOc("Ayuntamiento de Malaga");
+    organo.setCodigoPostal("29001");
+    organo.setNif("P2900000G");
+
+    local.jarios.core.pipeline.context.OpenDataExecutionContext context =
+        new local.jarios.core.pipeline.context.OpenDataExecutionContext();
+    context.setLugarImportacion(LugarImportacion.LOCAL);
+    context.setTipoSindicacion(TipoSindicacion.MAYORES);
+    context.setFiltroCodigosPostales("29");
+    context.setConjuntoNifsEnFiltro(Set.of("P2900000G"));
+    context.setListOrganoContratacionFiltro(List.of(organo));
+
+    openData.persistAll(context);
+
+    assertThat(servicePrincipal.lastPlan.nifList()).isEmpty();
+    assertThat(servicePrincipal.lastPlan.organoContratacionList()).containsExactly(organo);
+  }
+
   private static void injectServicePrincipal(
       AbstractOpenDataBase openData, ServicePrincipal servicePrincipal) throws Exception {
     Field field = AbstractOpenDataBase.class.getDeclaredField("servicePrincipal");
@@ -117,6 +145,7 @@ class OpenDataMalagaLocalTest {
 
   private static final class CountingServicePrincipal implements ServicePrincipal {
     private final long entriesCount;
+    private ImportPersistencePlan lastPlan;
 
     private CountingServicePrincipal(long entriesCount) {
       this.entriesCount = entriesCount;
@@ -147,7 +176,9 @@ class OpenDataMalagaLocalTest {
     public void persistirSetFeeds(Log miLog, Set<Feed> feedSet) throws MiServiceException {}
 
     @Override
-    public void persistirImportacion(ImportPersistencePlan plan) throws MiServiceException {}
+    public void persistirImportacion(ImportPersistencePlan plan) throws MiServiceException {
+      this.lastPlan = plan;
+    }
 
     @Override
     public Map<String, EntrySnapshot> getEntrySnapshots(TipoSindicacion tipoSindicacion)

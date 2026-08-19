@@ -27,15 +27,12 @@ public class FiltroFechasEvaluator implements FiltroEvaluator {
     log.debug("        • Fecha inicio lectura: {}", fechaInicio);
     LocalDateTime fechaFin = context.getFiltroFechaFinal();
     log.debug("        • Fecha final lectura: {}", fechaFin);
-    // Devuelvo TRUE
-    //    si la fecha del entry NO ES NULL,
-    //    si la fecha del entry NO es ANTERIOR a la fecha de Inicio
-    //    si la fecha del entry NO es POSTERIOR a la fecha de Fin
-    return fechaEntry != null
-        && fechaInicio != null
-        && fechaFin != null
-        && !fechaEntry.isBefore(fechaInicio)
-        && !fechaEntry.isAfter(fechaFin);
+    if (fechaEntry == null || fechaInicio == null || fechaFin == null) {
+      return false;
+    }
+
+    // fechaInicio es el limite mas moderno y fechaFin el limite mas antiguo.
+    return !fechaEntry.isAfter(fechaInicio) && !fechaEntry.isBefore(fechaFin);
   }
 
   /**
