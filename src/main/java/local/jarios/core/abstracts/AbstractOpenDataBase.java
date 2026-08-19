@@ -397,6 +397,7 @@ public abstract class AbstractOpenDataBase {
           .addStep(new local.jarios.core.pipeline.steps.PreParseOpenDataStep(this))
           .addStep(new local.jarios.core.pipeline.steps.ParseOpenDataStep(this))
           .addStep(new local.jarios.core.pipeline.steps.ResolveEntriesOpenDataStep(this))
+          .addStep(new local.jarios.core.pipeline.steps.ResolveDeletedEntriesOpenDataStep(this))
           .addStep(new local.jarios.core.pipeline.steps.PreviewOpenDataStep(this))
           .addStep(new local.jarios.core.pipeline.steps.PersistOpenDataStep(this))
           .addStep(new local.jarios.core.pipeline.steps.NotifySuccessOpenDataStep(this));
