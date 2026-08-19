@@ -9,6 +9,8 @@ param(
 
     [switch]$ContinueOnError,
 
+    [switch]$CreateSchemaFirstRun,
+
     [string]$BaseDir = "C:\java\ejecutables\import-from-opendata-ejecutables"
 )
 
@@ -202,6 +204,13 @@ function Set-PropertyValue {
     return $updated
 }
 
+function Set-HibernateDdlMode {
+    param([string]$ModeValue)
+    $content = Get-Content -LiteralPath $HibernatePropertiesPath
+    $updated = Set-PropertyValue -Content $content -Key "hibernate.hbm2ddl.auto" -Value $ModeValue
+    $updated | Set-Content -LiteralPath $HibernatePropertiesPath -Encoding UTF8
+}
+
 function Set-TipoSindicacion {
     param([string]$Tipo)
     $content = Get-Content -LiteralPath $PropertiesPath
@@ -354,7 +363,10 @@ function Show-ImportPlanAndConfirm {
     Write-Host "- Usuario configurado: $($db.Usuario). La contrasena no se muestra."
     Write-Host "- Fichero de conexion: $DatabasePropertiesPath"
     Write-Host "`nConfiguracion de Hibernate" -ForegroundColor Yellow
-    Write-Host "- Modo de preparacion de tablas: $ddlMode. $(Get-HibernateModeMessage -ModeValue $ddlMode)"
+    Write-Host "- Modo de preparacion de tablas actual: $ddlMode. $(Get-HibernateModeMessage -ModeValue $ddlMode)"
+    if ($CreateSchemaFirstRun) {
+        Write-Host "- Secuencia solicitada: primera importacion con hibernate.hbm2ddl.auto=create; siguientes importaciones con hibernate.hbm2ddl.auto=none."
+    }
     Write-Host "- Trabajo por lotes: hasta $batchSize operaciones juntas para ir mas rapido."
     Write-Host "- Conexiones simultaneas maximas a la base de datos: $poolSize."
     Write-Host "- Estadisticas internas activadas: $statistics."
@@ -397,31 +409,47 @@ Log "Modo solicitado: $Mode"
 Log "Tipos solicitados: $(if ($TipoSindicacion) { $TipoSindicacion -join ', ' } else { 'por defecto del grupo' })"
 Log "DryRun: $DryRun"
 Log "ContinueOnError: $ContinueOnError"
+Log "CreateSchemaFirstRun: $CreateSchemaFirstRun"
 Log "Directorio operativo: $BaseDir"
 Log "Ruta de properties: $PropertiesPath"
 
 Write-Host "`n=== Importador OpenData ===" -ForegroundColor Cyan
-Write-Host "Grupo: $Grupo | Modo: $Mode | DryRun: $DryRun" -ForegroundColor Cyan
+Write-Host "Grupo: $Grupo | Modo: $Mode | DryRun: $DryRun | CreateSchemaFirstRun: $CreateSchemaFirstRun" -ForegroundColor Cyan
 Write-Host "Directorio operativo: $BaseDir" -ForegroundColor DarkCyan
 Write-Host "Properties: $PropertiesPath" -ForegroundColor DarkCyan
 
 Show-ImportPlanAndConfirm -Plan $plan
 
 $failed = @()
+$executionIndex = 0
 foreach ($item in $plan) {
     Log "Preparando importacion: grupo=$($item.Grupo) modo=$($item.Mode) tipo=$($item.Tipo) jar=$($item.JarPath)"
     Write-Host "`n=== Ejecutando $($item.Grupo) / $($item.Mode) / $($item.Tipo) ===" -ForegroundColor Yellow
     Write-Host "JAR: $($item.JarPath)" -ForegroundColor DarkYellow
+    $ddlModeForRun = $null
+    if ($CreateSchemaFirstRun) {
+        $ddlModeForRun = if ($executionIndex -eq 0) { "create" } else { "none" }
+    }
     if ($DryRun) {
         Write-Host "DryRun: se usaria app.tipo_sindicacion=$($item.Tipo)" -ForegroundColor Cyan
+        if ($ddlModeForRun) {
+            Write-Host "DryRun: se usaria hibernate.hbm2ddl.auto=$ddlModeForRun" -ForegroundColor Cyan
+        }
         Write-Host "DryRun: & $JavaExe $($JavaOpts -join ' ') -jar `"$($item.JarPath)`" --configDir=`"$PropertiesDir`"" -ForegroundColor Cyan
-        Log "DryRun: no se modifica app.properties ni se ejecuta Java."
+        Log "DryRun: no se modifica app.properties ni hibernate.properties ni se ejecuta Java."
+        $executionIndex++
         continue
+    }
+    if ($ddlModeForRun) {
+        Set-HibernateDdlMode -ModeValue $ddlModeForRun
+        Log "hibernate.hbm2ddl.auto actualizado a $ddlModeForRun"
+        Write-Host "hibernate.hbm2ddl.auto=$ddlModeForRun" -ForegroundColor DarkCyan
     }
     Set-TipoSindicacion -Tipo $item.Tipo
     Log "app.tipo_sindicacion actualizado a $($item.Tipo)"
     & $JavaExe @JavaOpts -jar $item.JarPath "--configDir=$PropertiesDir"
     $exitCode = $LASTEXITCODE
+    $executionIndex++
     if ($exitCode -eq 0) {
         Write-Host "Importacion completada: $($item.Grupo) / $($item.Mode) / $($item.Tipo)" -ForegroundColor Green
         Log "Importacion completada: grupo=$($item.Grupo) modo=$($item.Mode) tipo=$($item.Tipo)"
