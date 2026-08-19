@@ -15,6 +15,7 @@ import local.jarios.entity.auxiliares.Historico;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.exceptions.MiServiceException;
+import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.repositories.EntrySnapshot;
 import local.jarios.services.ImportPersistencePlan;
 import local.jarios.services.ServicePrincipal;
@@ -35,6 +36,41 @@ class OpenDataMalagaLocalTest {
         .hasMessageContaining("1 entries existentes");
   }
 
+  @Test
+  void filtered_import_requires_nifs_or_postal_codes() {
+    OpenDataMalagaLocal openData = new OpenDataMalagaLocal();
+
+    assertThatThrownBy(
+            () ->
+                invokeValidateRequiredTargetFilter(
+                    openData, new local.jarios.core.pipeline.context.OpenDataExecutionContext()))
+        .isInstanceOf(PropertiesManagerException.class)
+        .hasMessageContaining("requiere informar filter.nifs o filter.codigosPostales");
+  }
+
+  @Test
+  void filtered_import_rejects_filters_without_effective_targets() {
+    OpenDataMalagaLocal openData = new OpenDataMalagaLocal();
+    local.jarios.core.pipeline.context.OpenDataExecutionContext context =
+        new local.jarios.core.pipeline.context.OpenDataExecutionContext();
+    context.setFiltroCodigosPostales("29");
+
+    assertThatThrownBy(() -> invokeValidateRequiredTargetFilter(openData, context))
+        .isInstanceOf(PropertiesManagerException.class)
+        .hasMessageContaining("no ha encontrado ningun organo/NIF efectivo");
+  }
+
+  @Test
+  void filtered_import_accepts_effective_nif_filter() throws Exception {
+    OpenDataMalagaLocal openData = new OpenDataMalagaLocal();
+    local.jarios.core.pipeline.context.OpenDataExecutionContext context =
+        new local.jarios.core.pipeline.context.OpenDataExecutionContext();
+    context.setFiltroNifs("P2900000G");
+    context.setConjuntoNifsEnFiltro(Set.of("P2900000G"));
+
+    invokeValidateRequiredTargetFilter(openData, context);
+  }
+
   private static void injectServicePrincipal(
       AbstractOpenDataBase openData, ServicePrincipal servicePrincipal) throws Exception {
     Field field = AbstractOpenDataBase.class.getDeclaredField("servicePrincipal");
@@ -50,6 +86,26 @@ class OpenDataMalagaLocalTest {
     method.setAccessible(true);
     try {
       method.invoke(openData, tipoSindicacion);
+    } catch (java.lang.reflect.InvocationTargetException ex) {
+      Throwable cause = ex.getCause();
+      if (cause instanceof Exception exception) {
+        throw exception;
+      }
+      throw ex;
+    }
+  }
+
+  private static void invokeValidateRequiredTargetFilter(
+      OpenDataMalagaLocal openData,
+      local.jarios.core.pipeline.context.OpenDataExecutionContext context)
+      throws Exception {
+    var method =
+        AbstractOpenDataMalaga.class.getDeclaredMethod(
+            "validateRequiredTargetFilter",
+            local.jarios.core.pipeline.context.OpenDataExecutionContext.class);
+    method.setAccessible(true);
+    try {
+      method.invoke(openData, context);
     } catch (java.lang.reflect.InvocationTargetException ex) {
       Throwable cause = ex.getCause();
       if (cause instanceof Exception exception) {

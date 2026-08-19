@@ -84,11 +84,31 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
   protected void loadFilters(OpenDataExecutionContext context) throws PropertiesManagerException {
     FiltroManager filtroManager = new FiltroManager();
     filtroManager.cargarFiltros(context);
+    validateRequiredTargetFilter(context);
 
     StringHelper.generarTitulo(log, "FILTROS CARGADOS CORRECTAMENTE");
     FiltroManager.imprimirFiltros(context);
 
     context.setFiltrosCargados(true);
+  }
+
+  private void validateRequiredTargetFilter(OpenDataExecutionContext context)
+      throws PropertiesManagerException {
+    boolean hasNifs = context.getFiltroNifs() != null && !context.getFiltroNifs().isBlank();
+    boolean hasPostalCodes =
+        context.getFiltroCodigosPostales() != null && !context.getFiltroCodigosPostales().isBlank();
+    boolean hasEffectiveTargets =
+        context.getConjuntoNifsEnFiltro() != null && !context.getConjuntoNifsEnFiltro().isEmpty();
+
+    if (!hasNifs && !hasPostalCodes) {
+      throw new PropertiesManagerException(
+          "La importacion con filtros requiere informar filter.nifs o filter.codigosPostales en filter.properties.");
+    }
+
+    if (!hasEffectiveTargets) {
+      throw new PropertiesManagerException(
+          "La importacion con filtros no ha encontrado ningun organo/NIF efectivo. Revise filter.nifs o filter.codigosPostales en filter.properties.");
+    }
   }
 
   protected HistoricoTotales logToPersistPreview(OpenDataExecutionContext context) {
