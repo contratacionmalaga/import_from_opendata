@@ -163,7 +163,6 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
                     Collectors.counting()));
 
     long insertar = historicoCount.getOrDefault(EntryOpcion.INSERTAR, 0L);
-    long eliminar = historicoCount.getOrDefault(EntryOpcion.ELIMINAR, 0L);
     long actualizar = historicoCount.getOrDefault(EntryOpcion.ACTUALIZAR, 0L);
     long rechazar =
         historicoCount.getOrDefault(EntryOpcion.RECHAZAR, 0L)
@@ -171,8 +170,6 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
 
     log.info(
         "   Entry INSERTADOS: {}", StringHelper.getNumeroConFormato(Math.toIntExact(insertar)));
-    log.info(
-        "   Entry ELIMINADOS: {}", StringHelper.getNumeroConFormato(Math.toIntExact(eliminar)));
     log.info(
         "   Entry ACTUALIZADOS: {}", StringHelper.getNumeroConFormato(Math.toIntExact(actualizar)));
     log.info(
@@ -182,7 +179,7 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
         StringHelper.getNumeroConFormato(
             Math.toIntExact(context.getHistoricosRechazadosOmitidos())));
 
-    return new HistoricoTotales(insertar, eliminar, actualizar, rechazar, nDeletedEntry);
+    return new HistoricoTotales(insertar, actualizar, rechazar, nDeletedEntry);
   }
 
   @Override
@@ -231,14 +228,12 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
 
     if (totales != null) {
       estadistica.setNumRegistrosHistoricosInsertar(totales.insertar());
-      estadistica.setNumRegistrosHistoricosEliminar(totales.eliminar());
       estadistica.setNumRegistrosHistoricosActualizar(totales.actualizar());
       estadistica.setNumRegistrosHistoricosRechazar(totales.rechazar());
       estadistica.setNumDeletedEntries(totales.deletedEntrys());
       estadistica.setTotalHistoricos(totales.total());
     } else {
       estadistica.setNumRegistrosHistoricosInsertar(0L);
-      estadistica.setNumRegistrosHistoricosEliminar(0L);
       estadistica.setNumRegistrosHistoricosActualizar(0L);
       estadistica.setNumRegistrosHistoricosRechazar(0L);
       estadistica.setNumDeletedEntries((long) context.getMapDeletedEntriesFromAtoms().size());
@@ -252,6 +247,7 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
     estadistica.setDuracionParseo(context.getDuracionParseo());
     estadistica.setDuracionPersistencia(duracionPersistencia);
     estadistica.setNumFicherosAtoms((long) context.getConjuntoFeedsFromAtoms().size());
+    estadistica.setNumEntries((long) context.getMapEntriesToBaseDatos().size());
     estadistica.setNumOrganosContratacionFiltro(
         (long) context.getListOrganoContratacionFiltro().size());
     estadistica.setNumNifsFiltro((long) context.getListNifs().size());

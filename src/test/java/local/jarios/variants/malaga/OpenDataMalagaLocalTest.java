@@ -10,6 +10,7 @@ import java.util.Set;
 import local.jarios.core.abstracts.AbstractOpenDataBase;
 import local.jarios.core.enums.LugarImportacion;
 import local.jarios.core.enums.TipoSindicacion;
+import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
@@ -89,6 +90,7 @@ class OpenDataMalagaLocalTest {
         new local.jarios.core.pipeline.context.OpenDataExecutionContext();
     context.setLugarImportacion(LugarImportacion.LOCAL);
     context.setTipoSindicacion(TipoSindicacion.MAYORES);
+    context.setMapEntriesToBaseDatos(Map.of("entry-1", new Entry(), "entry-2", new Entry()));
     context.setFiltroCodigosPostales("29");
     context.setConjuntoNifsEnFiltro(Set.of("P2900000G"));
     context.setListOrganoContratacionFiltro(List.of(organo));
@@ -97,6 +99,7 @@ class OpenDataMalagaLocalTest {
 
     assertThat(servicePrincipal.lastPlan.nifList()).isEmpty();
     assertThat(servicePrincipal.lastPlan.organoContratacionList()).containsExactly(organo);
+    assertThat(servicePrincipal.lastPlan.estadistica().getNumEntries()).isEqualTo(2L);
   }
 
   private static void injectServicePrincipal(
