@@ -63,7 +63,10 @@ public class Log extends AuditableCreatedAt {
   private List<Feed> feedList = new ArrayList<>();
 
   @OneToMany(mappedBy = "miLog", orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<Historico> historicoList = new ArrayList<>();
+  private List<HistoricoEntry> historicoList = new ArrayList<>();
+
+  @OneToMany(mappedBy = "miLog", orphanRemoval = true, fetch = FetchType.LAZY)
+  private List<HistoricoDeletedEntry> historicoDeletedEntryList = new ArrayList<>();
 
   @OneToMany(mappedBy = "miLog", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<OrganoContratacion> organoContratacionList = new ArrayList<>();

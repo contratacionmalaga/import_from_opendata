@@ -2,7 +2,7 @@ package local.jarios.core.pipeline.context;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.enums.EntryOpcion;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ class OpenDataExecutionContextHistoricoTest {
   void omits_rejected_historico_by_default_but_counts_it() {
     OpenDataExecutionContext context = new OpenDataExecutionContext();
 
-    context.addHistorico(historico(EntryOpcion.RECHAZAR));
+    context.addHistorico(historicoEntry(EntryOpcion.RECHAZAR));
 
     assertThat(context.getListHistoricos()).isEmpty();
     assertThat(context.getHistoricosRechazadosOmitidos()).isEqualTo(1L);
@@ -24,7 +24,7 @@ class OpenDataExecutionContextHistoricoTest {
     OpenDataExecutionContext context = new OpenDataExecutionContext();
     context.setPersistirHistoricosRechazados(true);
 
-    context.addHistorico(historico(EntryOpcion.RECHAZAR));
+    context.addHistorico(historicoEntry(EntryOpcion.RECHAZAR));
 
     assertThat(context.getListHistoricos()).hasSize(1);
     assertThat(context.getHistoricosRechazadosOmitidos()).isZero();
@@ -35,16 +35,16 @@ class OpenDataExecutionContextHistoricoTest {
   void always_stores_non_rejected_historico() {
     OpenDataExecutionContext context = new OpenDataExecutionContext();
 
-    context.addHistorico(historico(EntryOpcion.INSERTAR));
+    context.addHistorico(historicoEntry(EntryOpcion.INSERTAR));
 
     assertThat(context.getListHistoricos()).hasSize(1);
     assertThat(context.getHistoricosRechazadosOmitidos()).isZero();
     assertThat(context.getTotalHistoricos()).isEqualTo(1L);
   }
 
-  private static Historico historico(EntryOpcion opcion) {
-    Historico historico = new Historico();
-    historico.setEntryOpcion(opcion);
-    return historico;
+  private static HistoricoEntry historicoEntry(EntryOpcion opcion) {
+    HistoricoEntry historicoEntry = new HistoricoEntry();
+    historicoEntry.setEntryOpcion(opcion);
+    return historicoEntry;
   }
 }

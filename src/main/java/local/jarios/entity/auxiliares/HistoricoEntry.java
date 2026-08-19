@@ -25,8 +25,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "historico")
-public class Historico extends AuditableCreatedAt {
+@Table(name = "historico_entry")
+public class HistoricoEntry extends AuditableCreatedAt {
 
   // Primary Key
   @Id
@@ -74,12 +74,12 @@ public class Historico extends AuditableCreatedAt {
       referencedColumnName = "id",
       foreignKey =
           @ForeignKey(
-              name = "fk_historico_milog",
+              name = "fk_historicoentry_milog",
               foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
   private Log miLog;
 
   // Constructor principal
-  public Historico(
+  public HistoricoEntry(
       Entry entry, EntryOpcion opcion, String motivo, TipoSindicacion tipoSindicacion) {
     this.feedLinkSelf = entry.getFeed().getLinkSelf();
     this.entryId = entry.getEntryId();

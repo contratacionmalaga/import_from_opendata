@@ -13,7 +13,7 @@ import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.codice.ContractFolderStatus;
 import local.jarios.enums.EntryOpcion;
@@ -30,9 +30,9 @@ class EntryProcessorSnapshotTest {
 
     assertThat(state.entries).containsEntry("entry-1", incoming);
     assertThat(state.historicos)
-        .extracting(Historico::getEntryOpcion)
+        .extracting(HistoricoEntry::getEntryOpcion)
         .containsExactly(EntryOpcion.INSERTAR);
-    assertThat(state.historicos).extracting(Historico::getMiLog).containsExactly((Log) null);
+    assertThat(state.historicos).extracting(HistoricoEntry::getMiLog).containsExactly((Log) null);
   }
 
   @Test
@@ -44,7 +44,7 @@ class EntryProcessorSnapshotTest {
 
     assertThat(state.entries).doesNotContainKey("entry-1");
     assertThat(state.historicos)
-        .extracting(Historico::getEntryOpcion)
+        .extracting(HistoricoEntry::getEntryOpcion)
         .containsExactly(EntryOpcion.RECHAZAR);
   }
 
@@ -57,7 +57,7 @@ class EntryProcessorSnapshotTest {
 
     assertThat(state.entries).containsEntry("entry-1", incoming);
     assertThat(state.historicos)
-        .extracting(Historico::getEntryOpcion)
+        .extracting(HistoricoEntry::getEntryOpcion)
         .containsExactly(EntryOpcion.ACTUALIZAR);
   }
 
@@ -74,7 +74,7 @@ class EntryProcessorSnapshotTest {
     assertThat(state.entries).containsEntry("entry-1", second);
     assertThat(state.entries).hasSize(1);
     assertThat(state.historicos)
-        .extracting(Historico::getEntryOpcion)
+        .extracting(HistoricoEntry::getEntryOpcion)
         .containsExactly(EntryOpcion.INSERTAR, EntryOpcion.ACTUALIZAR);
   }
 
@@ -91,7 +91,7 @@ class EntryProcessorSnapshotTest {
     assertThat(state.entries).containsEntry("entry-1", first);
     assertThat(state.entries).hasSize(1);
     assertThat(state.historicos)
-        .extracting(Historico::getEntryOpcion)
+        .extracting(HistoricoEntry::getEntryOpcion)
         .containsExactly(EntryOpcion.INSERTAR, EntryOpcion.RECHAZAR);
   }
 
@@ -127,7 +127,7 @@ class EntryProcessorSnapshotTest {
   private static final class FakeState implements EntryProcessor.EntryState {
     private final Map<String, LocalDateTime> snapshots;
     private final Map<String, Entry> entries = new HashMap<>();
-    private final List<Historico> historicos = new ArrayList<>();
+    private final List<HistoricoEntry> historicos = new ArrayList<>();
 
     private FakeState(Map<String, LocalDateTime> snapshots) {
       this.snapshots = snapshots;
@@ -163,8 +163,8 @@ class EntryProcessorSnapshotTest {
     }
 
     @Override
-    public void addHistorico(Historico historico) {
-      historicos.add(historico);
+    public void addHistorico(HistoricoEntry historicoEntry) {
+      historicos.add(historicoEntry);
     }
   }
 }

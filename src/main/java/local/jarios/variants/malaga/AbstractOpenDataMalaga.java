@@ -15,7 +15,7 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.EntryOpcion;
@@ -158,7 +158,7 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
         context.getListHistoricos().stream()
             .collect(
                 Collectors.groupingBy(
-                    Historico::getEntryOpcion,
+                    HistoricoEntry::getEntryOpcion,
                     () -> new EnumMap<>(EntryOpcion.class),
                     Collectors.counting()));
 

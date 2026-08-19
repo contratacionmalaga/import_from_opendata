@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.repositories.EntrySnapshot;
 
 public final class ContextEntryState implements EntryProcessor.EntryState {
@@ -43,8 +43,8 @@ public final class ContextEntryState implements EntryProcessor.EntryState {
   }
 
   @Override
-  public void addHistorico(Historico historico) {
-    context.addHistorico(historico);
+  public void addHistorico(HistoricoEntry historicoEntry) {
+    context.addHistorico(historicoEntry);
   }
 
   @Override

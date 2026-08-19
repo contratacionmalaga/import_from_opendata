@@ -15,7 +15,7 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.EntryOpcion;
@@ -40,7 +40,7 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     context.setTipoSindicacion(TipoSindicacion.MAYORES);
     context.setDuracionParseo("0s");
     context.setMapEntriesToBaseDatos(Map.of("entry-1", new Entry()));
-    context.addHistorico(historico("entry-1", EntryOpcion.ACTUALIZAR));
+    context.addHistorico(historicoEntry("entry-1", EntryOpcion.ACTUALIZAR));
     context.getConjuntoFeedsFromAtoms().add(feed("feed-1"));
 
     openData.persistAll(context);
@@ -89,12 +89,12 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     }
   }
 
-  private static Historico historico(String entryId, EntryOpcion opcion) {
-    Historico historico = new Historico();
-    historico.setEntryId(entryId);
-    historico.setEntryOpcion(opcion);
-    historico.setEntryMotivo("test");
-    return historico;
+  private static HistoricoEntry historicoEntry(String entryId, EntryOpcion opcion) {
+    HistoricoEntry historicoEntry = new HistoricoEntry();
+    historicoEntry.setEntryId(entryId);
+    historicoEntry.setEntryOpcion(opcion);
+    historicoEntry.setEntryMotivo("test");
+    return historicoEntry;
   }
 
   private static Feed feed(String linkSelf) {
@@ -140,7 +140,7 @@ class AbstractOpenDataPliegosPersistencePlanTest {
         throws MiServiceException {}
 
     @Override
-    public void persistirListaHistoricos(Log miLog, List<Historico> listHistorico)
+    public void persistirListaHistoricos(Log miLog, List<HistoricoEntry> listHistorico)
         throws MiServiceException {}
 
     @Override

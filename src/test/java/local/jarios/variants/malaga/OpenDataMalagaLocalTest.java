@@ -13,7 +13,7 @@ import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.exceptions.MiServiceException;
@@ -166,7 +166,7 @@ class OpenDataMalagaLocalTest {
         throws MiServiceException {}
 
     @Override
-    public void persistirListaHistoricos(Log miLog, List<Historico> listHistorico)
+    public void persistirListaHistoricos(Log miLog, List<HistoricoEntry> listHistorico)
         throws MiServiceException {}
 
     @Override
