@@ -3,7 +3,9 @@ package local.jarios.repositories;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -160,6 +162,61 @@ class RepositoryImplPersistenceIntegrationTest {
                   sessionFactory,
                   "SELECT c.nif FROM ContractFolderStatus c WHERE c.entry.entryId = 'duplicated-entry'"))
           .isEqualTo("nif-2");
+    }
+  }
+
+  @Test
+  void persists_entries_from_grouped_feed_plan_preserving_feed_relations_and_created_at()
+      throws Exception {
+    try (SessionFactory sessionFactory = newSessionFactory()) {
+      RepositoryImpl repository = new RepositoryImpl(sessionFactory);
+      seedExistingEntry(sessionFactory, "entry-1", "old-short", "old-title", "old-nif");
+      LocalDateTime originalCreatedAt =
+          singleDate(sessionFactory, "SELECT e.createdAt FROM Entry e WHERE e.entryId = 'entry-1'");
+
+      Log importLog = new Log(LugarImportacion.INTERNET, TipoSindicacion.MAYORES);
+      Feed firstFeed = feed("grouped-feed-1");
+      Feed secondFeed = feed("grouped-feed-2");
+      List<Entry> firstEntries =
+          new ArrayList<>(List.of(entry("entry-1", "old-short", "new-title", "new-nif")));
+      List<Entry> secondEntries =
+          new ArrayList<>(List.of(entry("entry-2", "short-2", "title-2", "nif-2")));
+
+      repository.persistirImportacion(
+          new ImportPersistencePlan(
+              importLog,
+              null,
+              List.of(),
+              List.of(),
+              Set.of(firstFeed, secondFeed),
+              Set.of("entry-1"),
+              List.of(),
+              Map.of(firstFeed, firstEntries, secondFeed, secondEntries),
+              new Estadistica(importLog)));
+
+      assertThat(count(sessionFactory, "SELECT COUNT(e) FROM Entry e")).isEqualTo(2L);
+      assertThat(
+              singleString(
+                  sessionFactory,
+                  "SELECT f.linkSelf FROM Entry e JOIN e.feed f WHERE e.entryId = 'entry-1'"))
+          .isEqualTo("grouped-feed-1");
+      assertThat(
+              singleString(
+                  sessionFactory,
+                  "SELECT f.linkSelf FROM Entry e JOIN e.feed f WHERE e.entryId = 'entry-2'"))
+          .isEqualTo("grouped-feed-2");
+      assertThat(
+              singleString(
+                  sessionFactory,
+                  "SELECT c.nif FROM ContractFolderStatus c WHERE c.entry.entryId = 'entry-1'"))
+          .isEqualTo("new-nif");
+      assertThat(
+              singleDate(
+                  sessionFactory, "SELECT e.createdAt FROM Entry e WHERE e.entryId = 'entry-1'"))
+          .isEqualTo(originalCreatedAt);
+      assertThat(count(sessionFactory, "SELECT COUNT(e) FROM Estadistica e")).isEqualTo(1L);
+      assertThat(firstEntries).isEmpty();
+      assertThat(secondEntries).isEmpty();
     }
   }
 

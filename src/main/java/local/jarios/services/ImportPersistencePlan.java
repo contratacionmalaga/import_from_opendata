@@ -2,7 +2,9 @@ package local.jarios.services;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
@@ -19,7 +21,29 @@ public record ImportPersistencePlan(
     Set<Feed> feedSet,
     Set<String> replacementEntryIds,
     List<HistoricoEntry> historicoList,
+    Map<Feed, List<Entry>> entriesByFeed,
     Estadistica estadistica) {
+
+  public ImportPersistencePlan(
+      Log miLog,
+      Configuracion configuracion,
+      List<String> nifList,
+      List<OrganoContratacion> organoContratacionList,
+      Set<Feed> feedSet,
+      Set<String> replacementEntryIds,
+      List<HistoricoEntry> historicoList,
+      Estadistica estadistica) {
+    this(
+        miLog,
+        configuracion,
+        nifList,
+        organoContratacionList,
+        feedSet,
+        replacementEntryIds,
+        historicoList,
+        null,
+        estadistica);
+  }
 
   public ImportPersistencePlan(
       Log miLog,
@@ -37,6 +61,7 @@ public record ImportPersistencePlan(
         feedSet,
         replacementEntryIdsFromHistoricos(historicoList),
         historicoList,
+        null,
         estadistica);
   }
 

@@ -110,6 +110,7 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
             context.getConjuntoFeedsFromAtoms(),
             replacementEntryIds,
             List.of(),
+            context.getMapFeedsToBaseDatos(),
             estadistica);
 
     getServicePrincipal().persistirImportacion(plan);

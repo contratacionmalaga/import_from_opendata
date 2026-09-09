@@ -148,6 +148,15 @@ La configuración operativa se carga desde el directorio externo `properties` in
 | `properties/bd.properties` | Conexión JDBC principal a la base de datos. |
 | `properties/jakarta_filtro.properties` | Conexión JDBC usada para filtros SQL, cuando aplique. |
 | `properties/mail.properties` | Parámetros de correo y notificaciones. |
+| `properties/runtime.properties` | Configuración opcional del lanzador, como `java.opts`. |
+
+`runtime.properties` es opcional. Si se informa `java.opts`, los scripts `importar_atoms.ps1` e `importar_atom.sh` usan ese valor como opciones del proceso Java. Si falta el fichero o la clave, usan `-Xms12g -Xmx12g`.
+
+Ejemplo:
+
+```properties
+java.opts=-Xms32g -Xmx32g
+```
 
 `bd.properties` debe conservar las claves Jakarta JDBC existentes:
 

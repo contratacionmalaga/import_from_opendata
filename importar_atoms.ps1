@@ -20,7 +20,8 @@ $ErrorActionPreference = "Stop"
 
 $PreferredJavaExe = "C:\java\software\jdk-21.0.11\bin\java.exe"
 $JavaExe = $PreferredJavaExe
-$JavaOpts = @("-Xms12g", "-Xmx12g")
+$DefaultJavaOpts = @("-Xms12g", "-Xmx12g")
+$JavaOpts = $DefaultJavaOpts
 
 if ((-not (Test-Path -LiteralPath $BaseDir)) -and (Test-Path -LiteralPath (Join-Path $PSScriptRoot "properties"))) {
     $BaseDir = $PSScriptRoot
@@ -38,6 +39,7 @@ $PropertiesPath = Join-Path $PropertiesDir "app.properties"
 $FilterPropertiesPath = Join-Path $PropertiesDir "filter.properties"
 $HibernatePropertiesPath = Join-Path $PropertiesDir "hibernate.properties"
 $DatabasePropertiesPath = Join-Path $PropertiesDir "bd.properties"
+$RuntimePropertiesPath = Join-Path $PropertiesDir "runtime.properties"
 
 $AllowedGroups = @("con_filtros", "sin_filtros", "all")
 $AllowedModes = @("local", "internet", "all")
@@ -229,8 +231,18 @@ function Resolve-JavaExe {
     return $PreferredJavaExe
 }
 
+function Resolve-JavaOpts {
+    $runtimeProperties = Read-PropertiesMap -Path $RuntimePropertiesPath
+    $configuredOpts = Get-PropertyOrDefault -Properties $runtimeProperties -Key "java.opts" -Default ""
+    if ([string]::IsNullOrWhiteSpace($configuredOpts)) {
+        return $DefaultJavaOpts
+    }
+    return @($configuredOpts -split "\s+" | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+}
+
 function Assert-Configuration {
     $script:JavaExe = Resolve-JavaExe
+    $script:JavaOpts = Resolve-JavaOpts
     if ((-not $DryRun) -and (-not (Test-Path -LiteralPath $JavaExe))) {
         Fail "ERROR: No se encuentra Java. Ruta preferida: $PreferredJavaExe"
     }
@@ -370,6 +382,7 @@ function Show-ImportPlanAndConfirm {
     Write-Host "- Trabajo por lotes: hasta $batchSize operaciones juntas para ir mas rapido."
     Write-Host "- Conexiones simultaneas maximas a la base de datos: $poolSize."
     Write-Host "- Estadisticas internas activadas: $statistics."
+    Write-Host "- Opciones Java: $($JavaOpts -join ' '). Fichero opcional: $RuntimePropertiesPath"
     Write-Host "`nFiltros configurados" -ForegroundColor Yellow
     Write-Host "- NIFs: $nifs"
     Write-Host "- Codigos postales: $postalCodes"
@@ -412,11 +425,14 @@ Log "ContinueOnError: $ContinueOnError"
 Log "CreateSchemaFirstRun: $CreateSchemaFirstRun"
 Log "Directorio operativo: $BaseDir"
 Log "Ruta de properties: $PropertiesPath"
+Log "Runtime properties: $RuntimePropertiesPath"
+Log "Java opts: $($JavaOpts -join ' ')"
 
 Write-Host "`n=== Importador OpenData ===" -ForegroundColor Cyan
 Write-Host "Grupo: $Grupo | Modo: $Mode | DryRun: $DryRun | CreateSchemaFirstRun: $CreateSchemaFirstRun" -ForegroundColor Cyan
 Write-Host "Directorio operativo: $BaseDir" -ForegroundColor DarkCyan
 Write-Host "Properties: $PropertiesPath" -ForegroundColor DarkCyan
+Write-Host "Java opts: $($JavaOpts -join ' ')" -ForegroundColor DarkCyan
 
 Show-ImportPlanAndConfirm -Plan $plan
 

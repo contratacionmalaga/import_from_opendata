@@ -39,15 +39,21 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     context.setLugarImportacion(LugarImportacion.INTERNET);
     context.setTipoSindicacion(TipoSindicacion.MAYORES);
     context.setDuracionParseo("0s");
-    context.setMapEntriesToBaseDatos(Map.of("entry-1", new Entry()));
+    Feed importFeed = feed("feed-1");
+    Entry entry = new Entry();
+    entry.setEntryId("entry-1");
+    entry.setFeed(importFeed);
+    context.setMapEntriesToBaseDatos(Map.of("entry-1", entry));
+    context.setMapFeedsToBaseDatos(Map.of(importFeed, List.of(entry)));
     context.addHistorico(historicoEntry("entry-1", EntryOpcion.ACTUALIZAR));
-    context.getConjuntoFeedsFromAtoms().add(feed("feed-1"));
+    context.getConjuntoFeedsFromAtoms().add(importFeed);
 
     openData.persistAll(context);
 
     assertThat(servicePrincipal.plan).isNotNull();
     assertThat(servicePrincipal.plan.historicoList()).isEmpty();
     assertThat(servicePrincipal.plan.replacementEntryIds()).containsExactly("entry-1");
+    assertThat(servicePrincipal.plan.entriesByFeed()).containsEntry(importFeed, List.of(entry));
     assertThat(context.getListHistoricos()).isEmpty();
   }
 

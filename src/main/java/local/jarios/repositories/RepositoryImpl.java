@@ -2,6 +2,7 @@ package local.jarios.repositories;
 
 import jakarta.persistence.TypedQuery;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -166,7 +167,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
 
     ejecutarEnTransaccion(
         session -> {
-          persistFeedsInCurrentTransaction(session, miLog, feedSet, Map.of());
+          persistFeedsInCurrentTransaction(session, miLog, feedSet, Map.of(), null);
           return null;
         },
         "persistirFeeds");
@@ -209,7 +210,8 @@ public class RepositoryImpl implements Repository, AutoCloseable {
           Map<String, LocalDateTime> createdAtByEntryId =
               getCreatedAtByEntryId(session, updatedEntryIds);
           deleteExistingEntriesForUpdates(session, updatedEntryIds);
-          persistFeedsInCurrentTransaction(session, miLog, plan.feedSet(), createdAtByEntryId);
+          persistFeedsInCurrentTransaction(
+              session, miLog, plan.feedSet(), createdAtByEntryId, plan.entriesByFeed());
           persistHistoricosEntry(session, miLog, safeList(plan.historicoList()));
 
           plan.estadistica().setMiLog(miLog);
@@ -276,14 +278,17 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       Session session,
       Log miLog,
       Set<Feed> feedSet,
-      Map<String, LocalDateTime> createdAtByEntryId) {
-    Map<String, Entry> entriesById = latestEntriesById(feedSet);
+      Map<String, LocalDateTime> createdAtByEntryId,
+      Map<Feed, List<Entry>> entriesByFeed) {
     Map<String, DeletedEntry> deletedEntriesByRef = latestDeletedEntriesByRef(feedSet);
+    boolean hasPreGroupedEntries = entriesByFeed != null && !entriesByFeed.isEmpty();
+    Map<String, Entry> entriesById = hasPreGroupedEntries ? Map.of() : latestEntriesById(feedSet);
+    int entryCount = hasPreGroupedEntries ? countEntries(entriesByFeed) : entriesById.size();
 
     log.info(
         "Persistiendo feeds en transaccion: feeds={}, entries={}, deletedEntries={}",
         feedSet.size(),
-        entriesById.size(),
+        entryCount,
         deletedEntriesByRef.size());
 
     for (Feed feed : feedSet) {
@@ -293,7 +298,11 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     }
 
     persistDeletedEntries(session, miLog, deletedEntriesByRef.values());
-    persistEntries(session, entriesById.values(), createdAtByEntryId);
+    if (hasPreGroupedEntries) {
+      persistEntriesByFeed(session, entriesByFeed, createdAtByEntryId);
+    } else {
+      persistEntries(session, entriesById.values(), createdAtByEntryId);
+    }
     session.flush();
     session.clear();
   }
@@ -335,6 +344,32 @@ public class RepositoryImpl implements Repository, AutoCloseable {
 
       persistedSinceFlush = flushAndClearIfBatchReached(session, persistedSinceFlush, batchSize);
     }
+  }
+
+  private void persistEntriesByFeed(
+      Session session,
+      Map<Feed, List<Entry>> entriesByFeed,
+      Map<String, LocalDateTime> createdAtByEntryId) {
+    for (Map.Entry<Feed, List<Entry>> feedEntries : entriesByFeed.entrySet()) {
+      Feed feed = feedEntries.getKey();
+      List<Entry> entries = safeList(feedEntries.getValue());
+      for (Entry entry : entries) {
+        entry.setFeed(feed);
+      }
+      persistEntries(session, entries, createdAtByEntryId);
+      feed.setEntryList(new ArrayList<>());
+      if (feedEntries.getValue() != null) {
+        feedEntries.getValue().clear();
+      }
+    }
+  }
+
+  private int countEntries(Map<Feed, List<Entry>> entriesByFeed) {
+    int count = 0;
+    for (List<Entry> entries : entriesByFeed.values()) {
+      count += safeList(entries).size();
+    }
+    return count;
   }
 
   private void persistDeletedEntries(

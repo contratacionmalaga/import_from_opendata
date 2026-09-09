@@ -8,7 +8,8 @@ DRY_RUN=false
 CONTINUE_ON_ERROR=false
 BASE_DIR="/home/contratacion/java/import-from-opendata-ejecutables"
 JAVA_EXE="/home/contratacion/java/jdk-21.0.11/bin/java"
-JAVA_OPTS=("-Xms12g" "-Xmx12g")
+DEFAULT_JAVA_OPTS=("-Xms12g" "-Xmx12g")
+JAVA_OPTS=("${DEFAULT_JAVA_OPTS[@]}")
 
 usage() {
   cat <<USAGE
@@ -56,6 +57,7 @@ APP_PROPERTIES="$PROPERTIES_DIR/app.properties"
 FILTER_PROPERTIES="$PROPERTIES_DIR/filter.properties"
 HIBERNATE_PROPERTIES="$PROPERTIES_DIR/hibernate.properties"
 DATABASE_PROPERTIES="$PROPERTIES_DIR/bd.properties"
+RUNTIME_PROPERTIES="$PROPERTIES_DIR/runtime.properties"
 TIMESTAMP="$(date '+%Y%m%d_%H%M%S')"
 LOG_FILE="$LOG_DIR/importacion_$TIMESTAMP.log"
 mkdir -p "$LOG_DIR"
@@ -81,6 +83,16 @@ property_value() {
   line="$(grep -E "^[[:space:]]*${key//./\.}[[:space:]]*=" "$file" | tail -n 1 || true)"
   [[ -n "$line" ]] || return 0
   printf '%s' "${line#*=}" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+resolve_java_opts() {
+  local configured_opts
+  configured_opts="$(property_value "$RUNTIME_PROPERTIES" "java.opts")"
+  if [[ -z "${configured_opts// }" ]]; then
+    JAVA_OPTS=("${DEFAULT_JAVA_OPTS[@]}")
+    return 0
+  fi
+  read -r -a JAVA_OPTS <<< "$configured_opts"
 }
 
 set_property_value() {
@@ -268,6 +280,7 @@ confirm_plan() {
   echo "- Trabajo por lotes: hasta $batch operaciones juntas para ir mas rapido."
   echo "- Conexiones simultaneas maximas a la base de datos: $pool."
   echo "- Estadisticas internas activadas: $stats."
+  echo "- Opciones Java: ${JAVA_OPTS[*]}. Fichero opcional: $RUNTIME_PROPERTIES"
   echo
   echo "Filtros configurados"
   echo "- NIFs: $nifs"
@@ -304,6 +317,7 @@ fi
 for file in "$APP_PROPERTIES" "$FILTER_PROPERTIES" "$HIBERNATE_PROPERTIES" "$DATABASE_PROPERTIES"; do
   require_file "$file"
 done
+resolve_java_opts
 
 build_plan
 assert_required_filters_for_filtered_run
@@ -314,11 +328,14 @@ log "Tipos solicitados: ${TIPOS:-por defecto del grupo}"
 log "DryRun: $DRY_RUN"
 log "ContinueOnError: $CONTINUE_ON_ERROR"
 log "Properties: $PROPERTIES_DIR"
+log "Runtime properties: $RUNTIME_PROPERTIES"
+log "Java opts: ${JAVA_OPTS[*]}"
 
 echo
 echo "=== Importador OpenData ==="
 echo "Grupo: $GRUPO | Modo: $MODE | DryRun: $DRY_RUN"
 echo "Properties: $PROPERTIES_DIR"
+echo "Java opts: ${JAVA_OPTS[*]}"
 
 confirm_plan
 
