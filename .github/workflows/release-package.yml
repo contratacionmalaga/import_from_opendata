@@ -89,29 +89,87 @@ jobs:
           fi
 
       - name: Build
-        run: ./mvnw -B -ntp clean verify
+        run: ./mvnw -B -ntp clean verify -Dartifact.suffix=release-check -Dprofile.suffix=ci
 
-      - name: Publish package
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./mvnw -B -ntp deploy
+      - name: Build release artifacts
+        shell: bash
+        run: |
+          VERSION="${{ steps.release.outputs.version }}"
+          profiles=(
+            "con-filtros-local:opendata_con_filtros-${VERSION}-local.jar"
+            "con-filtros-internet:opendata_con_filtros-${VERSION}-internet.jar"
+            "sin-filtros-local:opendata_sin_filtros-${VERSION}-local.jar"
+            "sin-filtros-internet:opendata_sin_filtros-${VERSION}-internet.jar"
+          )
 
-      - name: Create GitHub Release
+          for item in "${profiles[@]}"; do
+            profile="${item%%:*}"
+            expected="target/${item#*:}"
+            echo "Building release artifact with profile ${profile}"
+            ./mvnw -B -ntp package -P"${profile}" -DskipTests
+            if [[ ! -f "${expected}" ]]; then
+              echo "Expected artifact was not generated: ${expected}" >&2
+              exit 1
+            fi
+          done
+
+      - name: Validate release artifacts
+        shell: bash
+        run: |
+          VERSION="${{ steps.release.outputs.version }}"
+          expected=(
+            "target/opendata_con_filtros-${VERSION}-local.jar"
+            "target/opendata_con_filtros-${VERSION}-internet.jar"
+            "target/opendata_sin_filtros-${VERSION}-local.jar"
+            "target/opendata_sin_filtros-${VERSION}-internet.jar"
+          )
+
+          for artifact in "${expected[@]}"; do
+            if [[ ! -f "${artifact}" ]]; then
+              echo "Missing release artifact: ${artifact}" >&2
+              exit 1
+            fi
+          done
+
+          if compgen -G "target/artifact.suffix*.jar" > /dev/null || compgen -G "target/original-.artifact.suffix*.jar" > /dev/null; then
+            echo "Found unresolved artifact.suffix/profile.suffix artifact names in target." >&2
+            ls -la target/*.jar
+            exit 1
+          fi
+
+      - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
-          gh release view "${{ steps.release.outputs.tag }}" >/dev/null 2>&1 || \
-          gh release create "${{ steps.release.outputs.tag }}" \
-            --title "${{ github.event.repository.name }} ${{ steps.release.outputs.version }}" \
-            --notes "Release ${{ github.event.repository.name }} ${{ steps.release.outputs.version }}."
+          TAG="${{ steps.release.outputs.tag }}"
+          VERSION="${{ steps.release.outputs.version }}"
+          NOTES_FILE="docs/releases/${TAG}.md"
+          if [[ ! -f "${NOTES_FILE}" ]]; then
+            echo "Release notes file not found: ${NOTES_FILE}" >&2
+            exit 1
+          fi
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            gh release edit "${TAG}" \
+              --title "Release ${VERSION}" \
+              --notes-file "${NOTES_FILE}"
+          else
+            gh release create "${TAG}" \
+              --title "Release ${VERSION}" \
+              --notes-file "${NOTES_FILE}"
+          fi
 
       - name: Upload release artifacts
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          if compgen -G "target/*.jar" > /dev/null; then
-            gh release upload "${{ steps.release.outputs.tag }}" target/*.jar --clobber
-          else
-            echo "No JAR artifacts found to upload."
-          fi
+          VERSION="${{ steps.release.outputs.version }}"
+          artifacts=(
+            "target/opendata_con_filtros-${VERSION}-local.jar"
+            "target/opendata_con_filtros-${VERSION}-internet.jar"
+            "target/opendata_sin_filtros-${VERSION}-local.jar"
+            "target/opendata_sin_filtros-${VERSION}-internet.jar"
+          )
+          gh release upload "${{ steps.release.outputs.tag }}" "${artifacts[@]}" --clobber
