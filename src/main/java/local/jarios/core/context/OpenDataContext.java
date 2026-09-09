@@ -9,7 +9,7 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 
@@ -40,7 +40,7 @@ public class OpenDataContext {
   private final HashMap<String, DeletedEntry> mapDeletedEntriesFromAtoms = new HashMap<>();
 
   private final HashSet<Feed> setFeedsFromAtoms = new HashSet<>();
-  private final ArrayList<Historico> listHistoricos = new ArrayList<>();
+  private final ArrayList<HistoricoEntry> listHistoricos = new ArrayList<>();
   private final ArrayList<String> listNifs = new ArrayList<>();
   private final ArrayList<OrganoContratacion> listOrganosContratacionEnExcel = new ArrayList<>();
   private final ArrayList<OrganoContratacion> listOrganoContratacionFiltro = new ArrayList<>();
@@ -140,7 +140,7 @@ public class OpenDataContext {
     return setFeedsFromAtoms;
   }
 
-  public ArrayList<Historico> getListHistoricos() {
+  public ArrayList<HistoricoEntry> getListHistoricos() {
     return listHistoricos;
   }
 

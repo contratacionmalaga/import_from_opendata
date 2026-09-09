@@ -19,8 +19,8 @@ public final class PropertiesFiles {
   /** Nombre sin extensión del fichero jakarta_filtro.properties. */
   public static final String JAKARTA_FILTRO = "jakarta_filtro";
 
-  /** Nombre sin extensión del fichero jakarta_principal.properties. */
-  public static final String JAKARTA_PRINCIPAL = "jakarta_principal";
+  /** Nombre sin extensión del fichero bd.properties. */
+  public static final String BD = "bd";
 
   /** Nombre sin extensión del fichero mail.properties. */
   public static final String MAIL = "mail";

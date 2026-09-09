@@ -15,7 +15,7 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.EntryOpcion;
@@ -39,15 +39,21 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     context.setLugarImportacion(LugarImportacion.INTERNET);
     context.setTipoSindicacion(TipoSindicacion.MAYORES);
     context.setDuracionParseo("0s");
-    context.setMapEntriesToBaseDatos(Map.of("entry-1", new Entry()));
-    context.addHistorico(historico("entry-1", EntryOpcion.ACTUALIZAR));
-    context.getConjuntoFeedsFromAtoms().add(feed("feed-1"));
+    Feed importFeed = feed("feed-1");
+    Entry entry = new Entry();
+    entry.setEntryId("entry-1");
+    entry.setFeed(importFeed);
+    context.setMapEntriesToBaseDatos(Map.of("entry-1", entry));
+    context.setMapFeedsToBaseDatos(Map.of(importFeed, List.of(entry)));
+    context.addHistorico(historicoEntry("entry-1", EntryOpcion.ACTUALIZAR));
+    context.getConjuntoFeedsFromAtoms().add(importFeed);
 
     openData.persistAll(context);
 
     assertThat(servicePrincipal.plan).isNotNull();
     assertThat(servicePrincipal.plan.historicoList()).isEmpty();
     assertThat(servicePrincipal.plan.replacementEntryIds()).containsExactly("entry-1");
+    assertThat(servicePrincipal.plan.entriesByFeed()).containsEntry(importFeed, List.of(entry));
     assertThat(context.getListHistoricos()).isEmpty();
   }
 
@@ -89,12 +95,12 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     }
   }
 
-  private static Historico historico(String entryId, EntryOpcion opcion) {
-    Historico historico = new Historico();
-    historico.setEntryId(entryId);
-    historico.setEntryOpcion(opcion);
-    historico.setEntryMotivo("test");
-    return historico;
+  private static HistoricoEntry historicoEntry(String entryId, EntryOpcion opcion) {
+    HistoricoEntry historicoEntry = new HistoricoEntry();
+    historicoEntry.setEntryId(entryId);
+    historicoEntry.setEntryOpcion(opcion);
+    historicoEntry.setEntryMotivo("test");
+    return historicoEntry;
   }
 
   private static Feed feed(String linkSelf) {
@@ -140,7 +146,7 @@ class AbstractOpenDataPliegosPersistencePlanTest {
         throws MiServiceException {}
 
     @Override
-    public void persistirListaHistoricos(Log miLog, List<Historico> listHistorico)
+    public void persistirListaHistoricos(Log miLog, List<HistoricoEntry> listHistorico)
         throws MiServiceException {}
 
     @Override

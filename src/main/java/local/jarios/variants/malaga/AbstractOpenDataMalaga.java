@@ -15,7 +15,7 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.EntryOpcion;
@@ -46,6 +46,11 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
   @Override
   protected String getDefaultAppName() {
     return "import-from-opendata";
+  }
+
+  @Override
+  protected String getReportProcessType() {
+    return "con_filtros";
   }
 
   @Override
@@ -84,11 +89,31 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
   protected void loadFilters(OpenDataExecutionContext context) throws PropertiesManagerException {
     FiltroManager filtroManager = new FiltroManager();
     filtroManager.cargarFiltros(context);
+    validateRequiredTargetFilter(context);
 
     StringHelper.generarTitulo(log, "FILTROS CARGADOS CORRECTAMENTE");
     FiltroManager.imprimirFiltros(context);
 
     context.setFiltrosCargados(true);
+  }
+
+  private void validateRequiredTargetFilter(OpenDataExecutionContext context)
+      throws PropertiesManagerException {
+    boolean hasNifs = context.getFiltroNifs() != null && !context.getFiltroNifs().isBlank();
+    boolean hasPostalCodes =
+        context.getFiltroCodigosPostales() != null && !context.getFiltroCodigosPostales().isBlank();
+    boolean hasEffectiveTargets =
+        context.getConjuntoNifsEnFiltro() != null && !context.getConjuntoNifsEnFiltro().isEmpty();
+
+    if (!hasNifs && !hasPostalCodes) {
+      throw new PropertiesManagerException(
+          "La importacion con filtros requiere informar filter.nifs o filter.codigosPostales en filter.properties.");
+    }
+
+    if (!hasEffectiveTargets) {
+      throw new PropertiesManagerException(
+          "La importacion con filtros no ha encontrado ningun organo/NIF efectivo. Revise filter.nifs o filter.codigosPostales en filter.properties.");
+    }
   }
 
   protected HistoricoTotales logToPersistPreview(OpenDataExecutionContext context) {
@@ -138,12 +163,11 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
         context.getListHistoricos().stream()
             .collect(
                 Collectors.groupingBy(
-                    Historico::getEntryOpcion,
+                    HistoricoEntry::getEntryOpcion,
                     () -> new EnumMap<>(EntryOpcion.class),
                     Collectors.counting()));
 
     long insertar = historicoCount.getOrDefault(EntryOpcion.INSERTAR, 0L);
-    long eliminar = historicoCount.getOrDefault(EntryOpcion.ELIMINAR, 0L);
     long actualizar = historicoCount.getOrDefault(EntryOpcion.ACTUALIZAR, 0L);
     long rechazar =
         historicoCount.getOrDefault(EntryOpcion.RECHAZAR, 0L)
@@ -151,8 +175,6 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
 
     log.info(
         "   Entry INSERTADOS: {}", StringHelper.getNumeroConFormato(Math.toIntExact(insertar)));
-    log.info(
-        "   Entry ELIMINADOS: {}", StringHelper.getNumeroConFormato(Math.toIntExact(eliminar)));
     log.info(
         "   Entry ACTUALIZADOS: {}", StringHelper.getNumeroConFormato(Math.toIntExact(actualizar)));
     log.info(
@@ -162,7 +184,7 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
         StringHelper.getNumeroConFormato(
             Math.toIntExact(context.getHistoricosRechazadosOmitidos())));
 
-    return new HistoricoTotales(insertar, eliminar, actualizar, rechazar, nDeletedEntry);
+    return new HistoricoTotales(insertar, actualizar, rechazar, nDeletedEntry);
   }
 
   @Override
@@ -211,14 +233,12 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
 
     if (totales != null) {
       estadistica.setNumRegistrosHistoricosInsertar(totales.insertar());
-      estadistica.setNumRegistrosHistoricosEliminar(totales.eliminar());
       estadistica.setNumRegistrosHistoricosActualizar(totales.actualizar());
       estadistica.setNumRegistrosHistoricosRechazar(totales.rechazar());
       estadistica.setNumDeletedEntries(totales.deletedEntrys());
       estadistica.setTotalHistoricos(totales.total());
     } else {
       estadistica.setNumRegistrosHistoricosInsertar(0L);
-      estadistica.setNumRegistrosHistoricosEliminar(0L);
       estadistica.setNumRegistrosHistoricosActualizar(0L);
       estadistica.setNumRegistrosHistoricosRechazar(0L);
       estadistica.setNumDeletedEntries((long) context.getMapDeletedEntriesFromAtoms().size());
@@ -232,6 +252,7 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
     estadistica.setDuracionParseo(context.getDuracionParseo());
     estadistica.setDuracionPersistencia(duracionPersistencia);
     estadistica.setNumFicherosAtoms((long) context.getConjuntoFeedsFromAtoms().size());
+    estadistica.setNumEntries((long) context.getMapEntriesToBaseDatos().size());
     estadistica.setNumOrganosContratacionFiltro(
         (long) context.getListOrganoContratacionFiltro().size());
     estadistica.setNumNifsFiltro((long) context.getListNifs().size());

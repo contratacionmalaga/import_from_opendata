@@ -8,7 +8,7 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.exceptions.MiRepositoryException;
@@ -63,7 +63,7 @@ public interface Repository {
    * @param listHistoricos Instancia de
    * @throws MiRepositoryException Si ocurre un error durante la persistencia.
    */
-  void persistirListaHistoricos(Log miLog, List<Historico> listHistoricos)
+  void persistirListaHistoricos(Log miLog, List<HistoricoEntry> listHistoricos)
       throws MiRepositoryException;
 
   /**

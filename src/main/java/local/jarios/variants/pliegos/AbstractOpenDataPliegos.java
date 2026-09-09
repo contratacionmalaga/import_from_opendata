@@ -39,6 +39,11 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
   }
 
   @Override
+  protected String getReportProcessType() {
+    return "sin_filtros";
+  }
+
+  @Override
   public void previewPersistData(OpenDataExecutionContext context) {
     imprimirTitulo("LISTADO DE LOS OBJETOS OBTENIDOS EN EL PARSEO PARA SU PERSISTENCIA");
 
@@ -105,6 +110,7 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
             context.getConjuntoFeedsFromAtoms(),
             replacementEntryIds,
             List.of(),
+            context.getMapFeedsToBaseDatos(),
             estadistica);
 
     getServicePrincipal().persistirImportacion(plan);

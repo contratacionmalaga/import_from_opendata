@@ -7,7 +7,7 @@ import java.util.Optional;
 import local.jarios.common.util.Mensajes;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.filtro.FiltroManager;
 import lombok.extern.slf4j.Slf4j;
@@ -118,7 +118,7 @@ public final class EntryProcessor {
 
       state.putEntry(entryId, entry);
       state.addHistorico(
-          new Historico(
+          new HistoricoEntry(
               entry, EntryOpcion.INSERTAR, Mensajes.ENTRY_NUEVO, context.getTipoSindicacion()));
       return;
     }
@@ -141,7 +141,7 @@ public final class EntryProcessor {
               incomingUpdated, existingUpdated);
 
       state.addHistorico(
-          new Historico(incoming, EntryOpcion.RECHAZAR, motivo, context.getTipoSindicacion()));
+          new HistoricoEntry(incoming, EntryOpcion.RECHAZAR, motivo, context.getTipoSindicacion()));
       log.debug("{}", motivo);
       return;
     }
@@ -153,7 +153,7 @@ public final class EntryProcessor {
 
     state.putEntry(incoming.getEntryId(), incoming);
     state.addHistorico(
-        new Historico(incoming, EntryOpcion.ACTUALIZAR, motivo, context.getTipoSindicacion()));
+        new HistoricoEntry(incoming, EntryOpcion.ACTUALIZAR, motivo, context.getTipoSindicacion()));
     log.debug("{}", motivo);
   }
 
@@ -173,7 +173,7 @@ public final class EntryProcessor {
 
     void putEntry(String entryId, Entry entry);
 
-    void addHistorico(Historico historico);
+    void addHistorico(HistoricoEntry historicoEntry);
   }
 
   public static final class FiltroManagerEntryFilter implements EntryFilter {

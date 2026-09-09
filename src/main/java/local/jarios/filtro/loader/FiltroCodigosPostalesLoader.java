@@ -3,7 +3,6 @@ package local.jarios.filtro.loader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
@@ -63,8 +62,10 @@ public class FiltroCodigosPostalesLoader implements FiltroLoader {
       context.setFiltroCodigosPostales(filtroCodigosPostales);
       context.setListOrganoContratacionFiltro(listaOcsFiltro);
       context.setConjuntoNifsEnFiltro(
-          listaOcsFiltro.stream().map(OrganoContratacion::getNif).collect(Collectors.toSet()));
-      context.setListNifs(context.getConjuntoNifsEnFiltro().stream().toList());
+          listaOcsFiltro.stream()
+              .map(OrganoContratacion::getNif)
+              .filter(nif -> nif != null && !nif.isBlank())
+              .collect(java.util.stream.Collectors.toSet()));
 
     } else {
 

@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "organos_contratacion")
+@Table(name = "filtros_organos_contratacion")
 @Slf4j
 public class OrganoContratacion extends AuditableCreatedAt {
 
@@ -93,7 +93,7 @@ public class OrganoContratacion extends AuditableCreatedAt {
       referencedColumnName = "id",
       foreignKey =
           @ForeignKey(
-              name = "fk_organocontratacion_log",
+              name = "fk_filtros_organos_contratacion_log",
               foreignKeyDefinition = "FOREIGN KEY (log_id) REFERENCES log(id) ON DELETE CASCADE"))
   private Log miLog;
 

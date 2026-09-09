@@ -14,7 +14,7 @@ import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.helpers.HistoricoTotales;
@@ -65,19 +65,19 @@ public class OpenDataExecutionContext {
   private final Set<Feed> conjuntoFeedsFromAtoms = new HashSet<>();
   private final Map<String, DeletedEntry> mapDeletedEntriesFromAtoms = new HashMap<>();
   private final Map<String, EntrySnapshot> mapEntrySnapshotsFromBaseDatos = new HashMap<>();
-  private final List<Historico> listHistoricos = new ArrayList<>();
+  private final List<HistoricoEntry> listHistoricos = new ArrayList<>();
 
-  public void addHistorico(Historico historico) {
-    if (historico == null) {
+  public void addHistorico(HistoricoEntry historicoEntry) {
+    if (historicoEntry == null) {
       return;
     }
 
-    if (historico.getEntryOpcion() == EntryOpcion.RECHAZAR && !persistirHistoricosRechazados) {
+    if (historicoEntry.getEntryOpcion() == EntryOpcion.RECHAZAR && !persistirHistoricosRechazados) {
       historicosRechazadosOmitidos++;
       return;
     }
 
-    listHistoricos.add(historico);
+    listHistoricos.add(historicoEntry);
   }
 
   public long getTotalHistoricos() {

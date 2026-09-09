@@ -42,10 +42,6 @@ public class Estadistica extends AuditableCreatedAt {
   @Column(name = "n_registros_historicos_insertar")
   private Long numRegistrosHistoricosInsertar;
 
-  /** Número de registros históricos que se deben eliminar. */
-  @Column(name = "n_registros_historicos_eliminar")
-  private Long numRegistrosHistoricosEliminar;
-
   /** Número de registros históricos que se deben actualizar. */
   @Column(name = "n_registros_historicos_actualizar")
   private Long numRegistrosHistoricosActualizar;

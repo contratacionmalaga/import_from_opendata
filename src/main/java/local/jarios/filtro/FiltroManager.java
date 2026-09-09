@@ -3,7 +3,7 @@ package local.jarios.filtro;
 import java.util.List;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.filtro.evaluator.FiltroCodigosPostalesEvaluator;
 import local.jarios.filtro.evaluator.FiltroFechasEvaluator;
@@ -130,7 +130,7 @@ public class FiltroManager {
         String msg = "Filtro no cumplido: " + evaluator.getClass().getSimpleName();
 
         context.addHistorico(
-            new Historico(entry, EntryOpcion.RECHAZAR, msg, context.getTipoSindicacion()));
+            new HistoricoEntry(entry, EntryOpcion.RECHAZAR, msg, context.getTipoSindicacion()));
 
         return false;
       }
@@ -144,7 +144,7 @@ public class FiltroManager {
       String msg = "No cumple ningún filtro alternativo (CP/NIF)";
 
       context.addHistorico(
-          new Historico(entry, EntryOpcion.RECHAZAR, msg, context.getTipoSindicacion()));
+          new HistoricoEntry(entry, EntryOpcion.RECHAZAR, msg, context.getTipoSindicacion()));
 
       return false;
     }

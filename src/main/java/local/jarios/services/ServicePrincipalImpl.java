@@ -9,7 +9,7 @@ import local.jarios.database.SessionFactoryRegistry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.enums.TipoConexion;
@@ -83,7 +83,7 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
   }
 
   @Override
-  public void persistirListaHistoricos(Log miLog, List<Historico> listHistorico)
+  public void persistirListaHistoricos(Log miLog, List<HistoricoEntry> listHistorico)
       throws MiServiceException {
     requireNonNull(miLog, "miLog no puede ser null");
     requireNonNull(listHistorico, "listHistorico no puede ser null");

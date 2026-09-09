@@ -6,6 +6,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -21,26 +22,28 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "deleted_entry")
+@Table(
+    name = "deleted_entry",
+    indexes = {@Index(name = "uk_deleted_entry_ref", columnList = "ref", unique = true)})
 public class DeletedEntry extends AuditableCreatedAt {
 
-  // Primary Key
   @Id
   @GeneratedValue(generator = "UUID")
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
-  // Campos de entrada
   @Column(name = "updated")
   private LocalDateTime updated;
 
-  @Column(name = "ref", length = TamanoCampos.TAMANO_500)
+  @Column(name = "ref", nullable = false, length = TamanoCampos.TAMANO_500)
   private String ref;
+
+  @Column(name = "ref_corto", length = TamanoCampos.TAMANO_50)
+  private String refCorto;
 
   @Column(name = "comment", length = TamanoCampos.TAMANO_50)
   private String comment;
 
-  // Relaciones
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(
       name = "feed_id",

@@ -43,11 +43,20 @@ CREATE INDEX IF NOT EXISTS idx_mlg_feed_log_id
 CREATE INDEX IF NOT EXISTS idx_mlg_entry_feed_updated
   ON `entry` (`feed_id`, `updated`);
 
-CREATE INDEX IF NOT EXISTS idx_mlg_deleted_ref
+CREATE UNIQUE INDEX IF NOT EXISTS uk_mlg_deleted_ref
   ON `deleted_entry` (`ref`);
 
 CREATE INDEX IF NOT EXISTS idx_mlg_deleted_feed_ref
   ON `deleted_entry` (`feed_id`, `ref`);
+
+CREATE INDEX IF NOT EXISTS idx_mlg_hde_log
+  ON `historico_deleted_entry` (`log_id`);
+
+CREATE INDEX IF NOT EXISTS idx_mlg_hde_ref
+  ON `historico_deleted_entry` (`ref`);
+
+CREATE INDEX IF NOT EXISTS idx_mlg_hde_opcion
+  ON `historico_deleted_entry` (`opcion`);
 
 -- ============================================================
 -- Vistas principales de expedientes/adjudicaciones
@@ -141,6 +150,8 @@ ANALYZE TABLE
   `feed`,
   `entry`,
   `deleted_entry`,
+  `historico_entry`,
+  `historico_deleted_entry`,
   `contract_folder_status`,
   `procurement_project`,
   `procurement_project_lot`,

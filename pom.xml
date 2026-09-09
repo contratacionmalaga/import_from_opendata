@@ -8,7 +8,7 @@
     <relativePath>../jarios-parent/pom.xml</relativePath>
   </parent>
   <artifactId>import-from-opendata</artifactId>
-  <version>7.0.3</version>
+  <version>7.3.0</version>
   <packaging>jar</packaging>
   <name>Importador de CODICE</name>
   <description>Cliente que parsea los ficheros atoms con los datos abiertos expuestos por la Plataforma de Contratación del Sector Público</description>
@@ -30,7 +30,7 @@
   </distributionManagement>
   <properties>
     <version.trimmed>${project.version}</version.trimmed>
-    <final.name>${project.artifactId}-${version.trimmed}-${artifact.suffix}-${profile.suffix}</final.name>
+    <final.name>${artifact.suffix}-${version.trimmed}-${profile.suffix}</final.name>
     <jaxb.core.version>2.3.0.1</jaxb.core.version>
     <jaxb.impl.version>2.3.1</jaxb.impl.version>
     <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
@@ -377,39 +377,36 @@
   </build>
   <profiles>
     <profile>
-      <id>malaga-local</id>
+      <id>con-filtros-local</id>
       <properties>
         <mainClass>local.jarios.variants.malaga.OpenDataMalagaLocal</mainClass>
         <profile.suffix>local</profile.suffix>
-        <artifact.suffix>malaga</artifact.suffix>
+        <artifact.suffix>opendata_con_filtros</artifact.suffix>
       </properties>
     </profile>
     <profile>
-      <id>malaga-internet</id>
+      <id>con-filtros-internet</id>
       <properties>
         <mainClass>local.jarios.variants.malaga.OpenDataMalagaInternet</mainClass>
         <profile.suffix>internet</profile.suffix>
-        <artifact.suffix>malaga</artifact.suffix>
+        <artifact.suffix>opendata_con_filtros</artifact.suffix>
       </properties>
     </profile>
     <profile>
-      <id>pliegos-local</id>
+      <id>sin-filtros-local</id>
       <properties>
         <mainClass>local.jarios.variants.pliegos.OpenDataPliegosLocal</mainClass>
         <profile.suffix>local</profile.suffix>
-        <artifact.suffix>pliegos</artifact.suffix>
+        <artifact.suffix>opendata_sin_filtros</artifact.suffix>
       </properties>
     </profile>
     <profile>
-      <id>pliegos-internet</id>
+      <id>sin-filtros-internet</id>
       <properties>
         <mainClass>local.jarios.variants.pliegos.OpenDataPliegosInternet</mainClass>
         <profile.suffix>internet</profile.suffix>
-        <artifact.suffix>pliegos</artifact.suffix>
+        <artifact.suffix>opendata_sin_filtros</artifact.suffix>
       </properties>
     </profile>
   </profiles>
 </project>
-
-
-

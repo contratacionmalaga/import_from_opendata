@@ -27,7 +27,8 @@ WHERE table_schema = '<schema>'
     'feed',
     'entry',
     'deleted_entry',
-    'historico',
+    'historico_entry',
+    'historico_deleted_entry',
     'contract_folder_status',
     'document_reference'
   )

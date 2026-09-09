@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.time.LocalDateTime;
 import local.jarios.helpers.LocalDateTimeHelper;
 import lombok.Getter;
@@ -18,15 +19,25 @@ import lombok.Setter;
 @MappedSuperclass
 public class AuditableCreatedAt {
 
-  // Getters y Setters
   @JsonIgnore
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
+  @JsonIgnore
+  @Column(name = "updated_at", nullable = false)
+  private LocalDateTime updatedAt;
+
   @PrePersist
   protected void onCreate() {
+    LocalDateTime now = LocalDateTimeHelper.getLocalDateTimeNow();
+    if (createdAt == null) {
+      createdAt = now;
+    }
+    updatedAt = now;
+  }
 
-    //
-    createdAt = LocalDateTimeHelper.getLocalDateTimeNow();
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = LocalDateTimeHelper.getLocalDateTimeNow();
   }
 }

@@ -1,5 +1,6 @@
 package local.jarios.variants.malaga;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.reflect.Field;
@@ -7,14 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import local.jarios.core.abstracts.AbstractOpenDataBase;
+import local.jarios.core.enums.LugarImportacion;
 import local.jarios.core.enums.TipoSindicacion;
+import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.exceptions.MiServiceException;
+import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.repositories.EntrySnapshot;
 import local.jarios.services.ImportPersistencePlan;
 import local.jarios.services.ServicePrincipal;
@@ -33,6 +37,69 @@ class OpenDataMalagaLocalTest {
         .hasMessageContaining("La importacion LOCAL requiere una base de datos vacia")
         .hasMessageContaining("MAYORES")
         .hasMessageContaining("1 entries existentes");
+  }
+
+  @Test
+  void filtered_import_requires_nifs_or_postal_codes() {
+    OpenDataMalagaLocal openData = new OpenDataMalagaLocal();
+
+    assertThatThrownBy(
+            () ->
+                invokeValidateRequiredTargetFilter(
+                    openData, new local.jarios.core.pipeline.context.OpenDataExecutionContext()))
+        .isInstanceOf(PropertiesManagerException.class)
+        .hasMessageContaining("requiere informar filter.nifs o filter.codigosPostales");
+  }
+
+  @Test
+  void filtered_import_rejects_filters_without_effective_targets() {
+    OpenDataMalagaLocal openData = new OpenDataMalagaLocal();
+    local.jarios.core.pipeline.context.OpenDataExecutionContext context =
+        new local.jarios.core.pipeline.context.OpenDataExecutionContext();
+    context.setFiltroCodigosPostales("29");
+
+    assertThatThrownBy(() -> invokeValidateRequiredTargetFilter(openData, context))
+        .isInstanceOf(PropertiesManagerException.class)
+        .hasMessageContaining("no ha encontrado ningun organo/NIF efectivo");
+  }
+
+  @Test
+  void filtered_import_accepts_effective_nif_filter() throws Exception {
+    OpenDataMalagaLocal openData = new OpenDataMalagaLocal();
+    local.jarios.core.pipeline.context.OpenDataExecutionContext context =
+        new local.jarios.core.pipeline.context.OpenDataExecutionContext();
+    context.setFiltroNifs("P2900000G");
+    context.setConjuntoNifsEnFiltro(Set.of("P2900000G"));
+
+    invokeValidateRequiredTargetFilter(openData, context);
+  }
+
+  @Test
+  void persistAllStoresPostalCodeFilterAsOrganosOnly() throws Exception {
+    CountingServicePrincipal servicePrincipal = new CountingServicePrincipal(0L);
+    OpenDataMalagaLocal openData = new OpenDataMalagaLocal();
+    injectServicePrincipal(openData, servicePrincipal);
+
+    OrganoContratacion organo = new OrganoContratacion();
+    organo.setIdPlataforma("oc-1");
+    organo.setNombreOc("Ayuntamiento de Malaga");
+    organo.setCodigoPostal("29001");
+    organo.setNif("P2900000G");
+
+    local.jarios.core.pipeline.context.OpenDataExecutionContext context =
+        new local.jarios.core.pipeline.context.OpenDataExecutionContext();
+    context.setLugarImportacion(LugarImportacion.LOCAL);
+    context.setTipoSindicacion(TipoSindicacion.MAYORES);
+    context.setMapEntriesToBaseDatos(Map.of("entry-1", new Entry(), "entry-2", new Entry()));
+    context.setFiltroCodigosPostales("29");
+    context.setConjuntoNifsEnFiltro(Set.of("P2900000G"));
+    context.setListOrganoContratacionFiltro(List.of(organo));
+
+    openData.persistAll(context);
+
+    assertThat(servicePrincipal.lastPlan.nifList()).isEmpty();
+    assertThat(servicePrincipal.lastPlan.organoContratacionList()).containsExactly(organo);
+    assertThat(servicePrincipal.lastPlan.estadistica().getNumEntries()).isEqualTo(2L);
   }
 
   private static void injectServicePrincipal(
@@ -59,8 +126,29 @@ class OpenDataMalagaLocalTest {
     }
   }
 
+  private static void invokeValidateRequiredTargetFilter(
+      OpenDataMalagaLocal openData,
+      local.jarios.core.pipeline.context.OpenDataExecutionContext context)
+      throws Exception {
+    var method =
+        AbstractOpenDataMalaga.class.getDeclaredMethod(
+            "validateRequiredTargetFilter",
+            local.jarios.core.pipeline.context.OpenDataExecutionContext.class);
+    method.setAccessible(true);
+    try {
+      method.invoke(openData, context);
+    } catch (java.lang.reflect.InvocationTargetException ex) {
+      Throwable cause = ex.getCause();
+      if (cause instanceof Exception exception) {
+        throw exception;
+      }
+      throw ex;
+    }
+  }
+
   private static final class CountingServicePrincipal implements ServicePrincipal {
     private final long entriesCount;
+    private ImportPersistencePlan lastPlan;
 
     private CountingServicePrincipal(long entriesCount) {
       this.entriesCount = entriesCount;
@@ -81,7 +169,7 @@ class OpenDataMalagaLocalTest {
         throws MiServiceException {}
 
     @Override
-    public void persistirListaHistoricos(Log miLog, List<Historico> listHistorico)
+    public void persistirListaHistoricos(Log miLog, List<HistoricoEntry> listHistorico)
         throws MiServiceException {}
 
     @Override
@@ -91,7 +179,9 @@ class OpenDataMalagaLocalTest {
     public void persistirSetFeeds(Log miLog, Set<Feed> feedSet) throws MiServiceException {}
 
     @Override
-    public void persistirImportacion(ImportPersistencePlan plan) throws MiServiceException {}
+    public void persistirImportacion(ImportPersistencePlan plan) throws MiServiceException {
+      this.lastPlan = plan;
+    }
 
     @Override
     public Map<String, EntrySnapshot> getEntrySnapshots(TipoSindicacion tipoSindicacion)

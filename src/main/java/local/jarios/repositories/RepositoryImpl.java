@@ -1,8 +1,12 @@
 package local.jarios.repositories;
 
 import jakarta.persistence.TypedQuery;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -14,12 +18,14 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoDeletedEntry;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.Nif;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.entity.codice.ContractFolderStatus;
 import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
+import local.jarios.enums.DeletedEntryOpcion;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.services.ImportPersistencePlan;
@@ -35,6 +41,8 @@ import org.hibernate.Transaction;
  */
 @Slf4j
 public class RepositoryImpl implements Repository, AutoCloseable {
+
+  private static final int QUERY_CHUNK_SIZE = 500;
 
   private final SessionFactory sessionFactory;
 
@@ -114,19 +122,18 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         "persistirListaOcFiltro");
   }
 
-  public void persistirListaHistoricos(Log miLog, List<Historico> listHistoricos) {
+  public void persistirListaHistoricos(Log miLog, List<HistoricoEntry> listHistoricos) {
     Objects.requireNonNull(miLog, "miLog no puede ser null");
     Objects.requireNonNull(listHistoricos, "listHistoricos no puede ser null");
 
     ejecutarEnTransaccion(
         session -> {
           int batchSize = getBatchSize();
-
           int contador = 0;
 
-          for (Historico historico : listHistoricos) {
-            historico.setMiLog(miLog);
-            session.persist(historico);
+          for (HistoricoEntry historicoEntry : listHistoricos) {
+            historicoEntry.setMiLog(miLog);
+            session.persist(historicoEntry);
 
             if (++contador % batchSize == 0) {
               session.flush();
@@ -134,10 +141,8 @@ public class RepositoryImpl implements Repository, AutoCloseable {
             }
           }
 
-          // flush/clear final para los restos
           session.flush();
           session.clear();
-
           return null;
         },
         "persistirListaHistoricos");
@@ -162,82 +167,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
 
     ejecutarEnTransaccion(
         session -> {
-          int contadorEntry = 1;
-          int contadorDeletedEntry = 1;
-
-          long totalDeletedEntries =
-              feedSet.stream()
-                  .filter(feed -> feed.getDeletedEntryList() != null)
-                  .mapToLong(feed -> feed.getDeletedEntryList().size())
-                  .sum();
-
-          long totalEntries =
-              feedSet.stream()
-                  .filter(feed -> feed.getEntryList() != null)
-                  .mapToLong(feed -> feed.getEntryList().size())
-                  .sum();
-
-          log.info(
-              "Persistiendo feeds en transaccion: feeds={}, entries={}, deletedEntries={}",
-              feedSet.size(),
-              totalEntries,
-              totalDeletedEntries);
-          for (Feed feed : feedSet) {
-
-            List<Entry> entryList = feed.getEntryList();
-            if (entryList == null) {
-              entryList = List.of();
-            }
-
-            List<DeletedEntry> deletedEntryList = feed.getDeletedEntryList();
-            if (deletedEntryList == null) {
-              deletedEntryList = List.of();
-            }
-
-            feed.setMiLog(miLog);
-            session.persist(feed);
-
-            log.debug("Persistido Feed - {}", feed.getLinkSelf());
-
-            for (DeletedEntry deletedEntry : deletedEntryList) {
-              deletedEntry.setFeed(feed);
-              session.persist(deletedEntry);
-              log.debug(
-                  "  Persistido DeletedEntry - {} - {}",
-                  contadorDeletedEntry++ + "/" + totalDeletedEntries,
-                  deletedEntry.getRef());
-            }
-
-            flushAndClear(session);
-
-            for (Entry entry : entryList) {
-              entry.setFeed(feed);
-              session.persist(entry);
-              log.debug(
-                  "  Persistido Entry - {} - {}",
-                  contadorEntry++ + "/" + totalEntries,
-                  entry.getEntryId());
-
-              for (ContractFolderStatus cfs : entry.getContractFolderStatusList()) {
-                cfs.setEntry(entry);
-                session.persist(cfs);
-                log.debug("    Persistido ContractFolderStatus: {}", cfs.getContractFolderId());
-              }
-
-              for (PreliminaryMarketConsultationStatus pmcs :
-                  entry.getPreliminaryMarketConsultationStatusList()) {
-                pmcs.setEntry(entry);
-                session.persist(pmcs);
-                log.debug(
-                    "    Persistido PreliminaryMarketConsultationStatus: {}",
-                    pmcs.getConsultationName());
-              }
-            }
-
-            flushAndClear(session);
-          }
-
-          flushAndClear(session);
+          persistFeedsInCurrentTransaction(session, miLog, feedSet, Map.of(), null);
           return null;
         },
         "persistirFeeds");
@@ -277,19 +207,12 @@ public class RepositoryImpl implements Repository, AutoCloseable {
               plan.feedSet().size(),
               safeList(plan.historicoList()).size(),
               updatedEntryIds.size());
+          Map<String, LocalDateTime> createdAtByEntryId =
+              getCreatedAtByEntryId(session, updatedEntryIds);
           deleteExistingEntriesForUpdates(session, updatedEntryIds);
-          persistFeedsInCurrentTransaction(session, miLog, plan.feedSet());
-
-          int batchSize = getBatchSize();
-          int contador = 0;
-          for (Historico historico : safeList(plan.historicoList())) {
-            historico.setMiLog(miLog);
-            session.persist(historico);
-            if (++contador % batchSize == 0) {
-              session.flush();
-              session.clear();
-            }
-          }
+          persistFeedsInCurrentTransaction(
+              session, miLog, plan.feedSet(), createdAtByEntryId, plan.entriesByFeed());
+          persistHistoricosEntry(session, miLog, safeList(plan.historicoList()));
 
           plan.estadistica().setMiLog(miLog);
           session.persist(plan.estadistica());
@@ -330,10 +253,6 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         "getEntrySnapshots");
   }
 
-  // ------------------------------------
-  // MÉTODOS PRIVADOS
-  // ------------------------------------
-
   @Override
   public long countEntries(TipoSindicacion tipoSindicacion) throws MiRepositoryException {
     Objects.requireNonNull(tipoSindicacion, "tipoSindicacion no puede ser null");
@@ -355,87 +274,258 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         "countEntries");
   }
 
-  private void persistFeedsInCurrentTransaction(Session session, Log miLog, Set<Feed> feedSet) {
-    int contadorEntry = 1;
-    int contadorDeletedEntry = 1;
-
-    long totalDeletedEntries =
-        feedSet.stream()
-            .filter(feed -> feed.getDeletedEntryList() != null)
-            .mapToLong(feed -> feed.getDeletedEntryList().size())
-            .sum();
-
-    long totalEntries =
-        feedSet.stream()
-            .filter(feed -> feed.getEntryList() != null)
-            .mapToLong(feed -> feed.getEntryList().size())
-            .sum();
+  private void persistFeedsInCurrentTransaction(
+      Session session,
+      Log miLog,
+      Set<Feed> feedSet,
+      Map<String, LocalDateTime> createdAtByEntryId,
+      Map<Feed, List<Entry>> entriesByFeed) {
+    Map<String, DeletedEntry> deletedEntriesByRef = latestDeletedEntriesByRef(feedSet);
+    boolean hasPreGroupedEntries = entriesByFeed != null && !entriesByFeed.isEmpty();
+    Map<String, Entry> entriesById = hasPreGroupedEntries ? Map.of() : latestEntriesById(feedSet);
+    int entryCount = hasPreGroupedEntries ? countEntries(entriesByFeed) : entriesById.size();
 
     log.info(
         "Persistiendo feeds en transaccion: feeds={}, entries={}, deletedEntries={}",
         feedSet.size(),
-        totalEntries,
-        totalDeletedEntries);
-
-    int batchSize = getBatchSize();
-    int persistedSinceFlush = 0;
+        entryCount,
+        deletedEntriesByRef.size());
 
     for (Feed feed : feedSet) {
-      List<Entry> entryList = feed.getEntryList() == null ? List.of() : feed.getEntryList();
-      List<DeletedEntry> deletedEntryList =
-          feed.getDeletedEntryList() == null ? List.of() : feed.getDeletedEntryList();
-
       feed.setMiLog(miLog);
       session.persist(feed);
-      persistedSinceFlush++;
       log.debug("Persistido Feed - {}", feed.getLinkSelf());
-
-      for (DeletedEntry deletedEntry : deletedEntryList) {
-        deletedEntry.setFeed(feed);
-        session.persist(deletedEntry);
-        persistedSinceFlush++;
-        log.debug(
-            "  Persistido DeletedEntry - {} - {}",
-            contadorDeletedEntry++ + "/" + totalDeletedEntries,
-            deletedEntry.getRef());
-      }
-
-      for (Entry entry : entryList) {
-        entry.setFeed(feed);
-        session.persist(entry);
-        persistedSinceFlush++;
-        log.debug(
-            "  Persistido Entry - {} - {}",
-            contadorEntry++ + "/" + totalEntries,
-            entry.getEntryId());
-
-        for (ContractFolderStatus cfs : entry.getContractFolderStatusList()) {
-          cfs.setEntry(entry);
-          session.persist(cfs);
-          persistedSinceFlush++;
-          log.debug("    Persistido ContractFolderStatus: {}", cfs.getContractFolderId());
-        }
-
-        for (PreliminaryMarketConsultationStatus pmcs :
-            entry.getPreliminaryMarketConsultationStatusList()) {
-          pmcs.setEntry(entry);
-          session.persist(pmcs);
-          persistedSinceFlush++;
-          log.debug(
-              "    Persistido PreliminaryMarketConsultationStatus: {}", pmcs.getConsultationName());
-        }
-
-        persistedSinceFlush = flushAndClearIfBatchReached(session, persistedSinceFlush, batchSize);
-      }
-
-      persistedSinceFlush = flushAndClearIfBatchReached(session, persistedSinceFlush, batchSize);
     }
 
+    persistDeletedEntries(session, miLog, deletedEntriesByRef.values());
+    if (hasPreGroupedEntries) {
+      persistEntriesByFeed(session, entriesByFeed, createdAtByEntryId);
+    } else {
+      persistEntries(session, entriesById.values(), createdAtByEntryId);
+    }
     session.flush();
     session.clear();
   }
 
-  static Set<String> entryIdsForOption(List<Historico> historicos, EntryOpcion opcion) {
+  private void persistEntries(
+      Session session, Collection<Entry> entries, Map<String, LocalDateTime> createdAtByEntryId) {
+    int contadorEntry = 1;
+    int batchSize = getBatchSize();
+    int persistedSinceFlush = 0;
+
+    for (Entry entry : entries) {
+      LocalDateTime originalCreatedAt = createdAtByEntryId.get(entry.getEntryId());
+      if (originalCreatedAt != null) {
+        entry.setCreatedAt(originalCreatedAt);
+      }
+
+      session.persist(entry);
+      persistedSinceFlush++;
+      log.debug(
+          "  Persistido Entry - {} - {}",
+          contadorEntry++ + "/" + entries.size(),
+          entry.getEntryId());
+
+      for (ContractFolderStatus cfs : entry.getContractFolderStatusList()) {
+        cfs.setEntry(entry);
+        session.persist(cfs);
+        persistedSinceFlush++;
+        log.debug("    Persistido ContractFolderStatus: {}", cfs.getContractFolderId());
+      }
+
+      for (PreliminaryMarketConsultationStatus pmcs :
+          entry.getPreliminaryMarketConsultationStatusList()) {
+        pmcs.setEntry(entry);
+        session.persist(pmcs);
+        persistedSinceFlush++;
+        log.debug(
+            "    Persistido PreliminaryMarketConsultationStatus: {}", pmcs.getConsultationName());
+      }
+
+      persistedSinceFlush = flushAndClearIfBatchReached(session, persistedSinceFlush, batchSize);
+    }
+  }
+
+  private void persistEntriesByFeed(
+      Session session,
+      Map<Feed, List<Entry>> entriesByFeed,
+      Map<String, LocalDateTime> createdAtByEntryId) {
+    for (Map.Entry<Feed, List<Entry>> feedEntries : entriesByFeed.entrySet()) {
+      Feed feed = feedEntries.getKey();
+      List<Entry> entries = safeList(feedEntries.getValue());
+      for (Entry entry : entries) {
+        entry.setFeed(feed);
+      }
+      persistEntries(session, entries, createdAtByEntryId);
+      feed.setEntryList(new ArrayList<>());
+      if (feedEntries.getValue() != null) {
+        feedEntries.getValue().clear();
+      }
+    }
+  }
+
+  private int countEntries(Map<Feed, List<Entry>> entriesByFeed) {
+    int count = 0;
+    for (List<Entry> entries : entriesByFeed.values()) {
+      count += safeList(entries).size();
+    }
+    return count;
+  }
+
+  private void persistDeletedEntries(
+      Session session, Log miLog, Collection<DeletedEntry> incomingDeletedEntries) {
+    Map<String, DeletedEntry> existingByRef =
+        getDeletedEntriesByRef(session, refsFromDeletedEntries(incomingDeletedEntries));
+    int contadorDeletedEntry = 1;
+
+    for (DeletedEntry incoming : incomingDeletedEntries) {
+      DeletedEntry existing = existingByRef.get(incoming.getRef());
+      if (existing == null) {
+        session.persist(incoming);
+        persistHistoricoDeletedEntry(
+            session,
+            miLog,
+            new HistoricoDeletedEntry(
+                incoming, incoming, DeletedEntryOpcion.INSERTAR, "No existe deleted_entry previo"));
+        existingByRef.put(incoming.getRef(), incoming);
+      } else if (isIncomingNewer(incoming, existing)) {
+        HistoricoDeletedEntry historico =
+            new HistoricoDeletedEntry(
+                existing,
+                incoming,
+                DeletedEntryOpcion.ACTUALIZAR,
+                "Tombstone entrante mas reciente");
+        existing.setFeed(incoming.getFeed());
+        existing.setRefCorto(incoming.getRefCorto());
+        existing.setUpdated(incoming.getUpdated());
+        existing.setComment(incoming.getComment());
+        persistHistoricoDeletedEntry(session, miLog, historico);
+      } else {
+        persistHistoricoDeletedEntry(
+            session,
+            miLog,
+            new HistoricoDeletedEntry(
+                existing,
+                incoming,
+                DeletedEntryOpcion.IGNORAR,
+                "Tombstone entrante igual o anterior al existente"));
+      }
+
+      log.debug(
+          "  Procesado DeletedEntry - {} - {}",
+          contadorDeletedEntry++ + "/" + incomingDeletedEntries.size(),
+          incoming.getRef());
+    }
+  }
+
+  private void persistHistoricoDeletedEntry(
+      Session session, Log miLog, HistoricoDeletedEntry historicoDeletedEntry) {
+    historicoDeletedEntry.setMiLog(miLog);
+    session.persist(historicoDeletedEntry);
+  }
+
+  private void persistHistoricosEntry(
+      Session session, Log miLog, List<HistoricoEntry> historicoEntries) {
+    int batchSize = getBatchSize();
+    int contador = 0;
+    for (HistoricoEntry historicoEntry : historicoEntries) {
+      historicoEntry.setMiLog(miLog);
+      session.persist(historicoEntry);
+      if (++contador % batchSize == 0) {
+        session.flush();
+        session.clear();
+      }
+    }
+  }
+
+  private Map<String, Entry> latestEntriesById(Set<Feed> feedSet) {
+    Map<String, Entry> entriesById = new LinkedHashMap<>();
+    for (Feed feed : feedSet) {
+      for (Entry entry : safeList(feed.getEntryList())) {
+        if (entry == null || entry.getEntryId() == null || entry.getEntryId().isBlank()) {
+          continue;
+        }
+        entry.setFeed(feed);
+        entriesById.merge(entry.getEntryId(), entry, RepositoryImpl::latestEntry);
+      }
+    }
+    return entriesById;
+  }
+
+  private Map<String, DeletedEntry> latestDeletedEntriesByRef(Set<Feed> feedSet) {
+    Map<String, DeletedEntry> deletedEntriesByRef = new LinkedHashMap<>();
+    for (Feed feed : feedSet) {
+      for (DeletedEntry deletedEntry : safeList(feed.getDeletedEntryList())) {
+        if (deletedEntry == null
+            || deletedEntry.getRef() == null
+            || deletedEntry.getRef().isBlank()) {
+          continue;
+        }
+        deletedEntry.setFeed(feed);
+        deletedEntriesByRef.merge(
+            deletedEntry.getRef(), deletedEntry, RepositoryImpl::latestDeletedEntry);
+      }
+    }
+    return deletedEntriesByRef;
+  }
+
+  private static Entry latestEntry(Entry current, Entry candidate) {
+    if (isAfter(candidate.getUpdated(), current.getUpdated())) {
+      return candidate;
+    }
+    return current;
+  }
+
+  private static DeletedEntry latestDeletedEntry(DeletedEntry current, DeletedEntry candidate) {
+    if (isAfter(candidate.getUpdated(), current.getUpdated())) {
+      return candidate;
+    }
+    return current;
+  }
+
+  private static boolean isIncomingNewer(DeletedEntry incoming, DeletedEntry existing) {
+    return isAfter(incoming.getUpdated(), existing.getUpdated());
+  }
+
+  private static boolean isAfter(LocalDateTime candidate, LocalDateTime current) {
+    if (candidate == null) {
+      return false;
+    }
+    return current == null || candidate.isAfter(current);
+  }
+
+  private Set<String> refsFromDeletedEntries(Collection<DeletedEntry> deletedEntries) {
+    Set<String> refs = new HashSet<>();
+    for (DeletedEntry deletedEntry : deletedEntries) {
+      if (deletedEntry.getRef() != null && !deletedEntry.getRef().isBlank()) {
+        refs.add(deletedEntry.getRef());
+      }
+    }
+    return refs;
+  }
+
+  private Map<String, DeletedEntry> getDeletedEntriesByRef(Session session, Set<String> refs) {
+    Map<String, DeletedEntry> result = new HashMap<>();
+    if (refs == null || refs.isEmpty()) {
+      return result;
+    }
+
+    List<String> refList = List.copyOf(refs);
+    for (int from = 0; from < refList.size(); from += QUERY_CHUNK_SIZE) {
+      int to = Math.min(from + QUERY_CHUNK_SIZE, refList.size());
+      List<DeletedEntry> deletedEntries =
+          session
+              .createQuery("FROM DeletedEntry d WHERE d.ref IN :refs", DeletedEntry.class)
+              .setParameter("refs", refList.subList(from, to))
+              .getResultList();
+      for (DeletedEntry deletedEntry : deletedEntries) {
+        result.put(deletedEntry.getRef(), deletedEntry);
+      }
+    }
+    return result;
+  }
+
+  static Set<String> entryIdsForOption(List<HistoricoEntry> historicos, EntryOpcion opcion) {
     Objects.requireNonNull(opcion, "opcion no puede ser null");
 
     Set<String> entryIds = new HashSet<>();
@@ -443,18 +533,42 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       return entryIds;
     }
 
-    for (Historico historico : historicos) {
-      if (historico == null || historico.getEntryOpcion() != opcion) {
+    for (HistoricoEntry historicoEntry : historicos) {
+      if (historicoEntry == null || historicoEntry.getEntryOpcion() != opcion) {
         continue;
       }
 
-      String entryId = historico.getEntryId();
+      String entryId = historicoEntry.getEntryId();
       if (entryId != null && !entryId.isBlank()) {
         entryIds.add(entryId);
       }
     }
 
     return entryIds;
+  }
+
+  private Map<String, LocalDateTime> getCreatedAtByEntryId(
+      Session session, Set<String> updatedEntryIds) {
+    Map<String, LocalDateTime> result = new HashMap<>();
+    if (updatedEntryIds == null || updatedEntryIds.isEmpty()) {
+      return result;
+    }
+
+    List<String> entryIds = List.copyOf(updatedEntryIds);
+    for (int from = 0; from < entryIds.size(); from += QUERY_CHUNK_SIZE) {
+      int to = Math.min(from + QUERY_CHUNK_SIZE, entryIds.size());
+      List<Object[]> rows =
+          session
+              .createQuery(
+                  "SELECT e.entryId, e.createdAt FROM Entry e WHERE e.entryId IN :entryIds",
+                  Object[].class)
+              .setParameter("entryIds", entryIds.subList(from, to))
+              .getResultList();
+      for (Object[] row : rows) {
+        result.put((String) row[0], (LocalDateTime) row[1]);
+      }
+    }
+    return result;
   }
 
   private void deleteExistingEntriesForUpdates(Session session, Set<String> updatedEntryIds) {
@@ -464,10 +578,9 @@ public class RepositoryImpl implements Repository, AutoCloseable {
 
     List<String> entryIds = List.copyOf(updatedEntryIds);
     int deleted = 0;
-    int chunkSize = 500;
 
-    for (int from = 0; from < entryIds.size(); from += chunkSize) {
-      int to = Math.min(from + chunkSize, entryIds.size());
+    for (int from = 0; from < entryIds.size(); from += QUERY_CHUNK_SIZE) {
+      int to = Math.min(from + QUERY_CHUNK_SIZE, entryIds.size());
       deleted +=
           session
               .createMutationQuery("DELETE FROM Entry e WHERE e.entryId IN :entryIds")
@@ -508,7 +621,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   private int getBatchSize() {
     var batchSizeStr = (String) sessionFactory.getProperties().get("hibernate.jdbc.batch_size");
     if (batchSizeStr == null) {
-      return 50; // valor por defecto seguro
+      return 50;
     }
     return Integer.parseInt(batchSizeStr);
   }

@@ -13,7 +13,7 @@ Auditoria profunda de rendimiento, estabilidad y calidad de un backend Java 21 c
 # Alcance analizado
 
 - `pom.xml`: dependencias, plugins, perfiles y version Java.
-- `properties/hibernate.properties` y `properties/jakarta_principal.properties`: Hibernate, HikariCP, JDBC MariaDB.
+- `properties/hibernate.properties` y `properties/bd.properties`: Hibernate, HikariCP, JDBC MariaDB.
 - `src/main/resources/logback.xml`: SQL/logging.
 - `src/main/java/local/jarios/database`: `SessionFactoryProvider`, `SessionFactoryRegistry`, `HibernateConfigurer`, `EntityScanner`.
 - `src/main/java/local/jarios/repositories`: `Repository`, `RepositoryImpl`, `TransactionManager`.
@@ -27,7 +27,7 @@ No se pudo ejecutar `mvn test` porque `mvn` no esta disponible en PATH. Se revis
 # Riesgos criticos
 
 1. `properties/hibernate.properties:69` usa `hibernate.hbm2ddl.auto=create`. En produccion destruye y recrea esquema/datos al construir la `SessionFactory`.
-2. `properties/jakarta_principal.properties:11-12` contiene usuario `root` y password en claro. Riesgo operativo y de seguridad.
+2. `properties/bd.properties:11-12` contiene usuario `root` y password en claro. Riesgo operativo y de seguridad.
 3. `ServicePrincipalImpl.java:112-118` construye HQL por interpolacion de texto y `RepositoryImpl.java:218-223` acepta cualquier HQL externo. Aunque hoy el valor viene de enum, el contrato del repositorio permite inyeccion HQL si se reutiliza.
 4. `RepositoryImpl.java:221-229` carga todas las `Entry` de un tipo de sindicacion sin paginacion ni proyeccion. En produccion crecera linealmente con el historico y puede agotar memoria.
 5. Solo se detecta un `@Index` en 32 entidades (`Entry.entry_id`). Las FKs usadas en `JOIN`, `WHERE` y cascadas de borrado no estan indexadas de forma explicita.
@@ -343,7 +343,7 @@ Recomendaciones:
 
 - Riesgo principal: HQL interpolado y repositorio que acepta HQL libre (`ServicePrincipalImpl.java:112-118`, `RepositoryImpl.java:218-223`).
 - No se detectan `createNativeQuery` ni SQL nativo directo.
-- `jakarta_principal.properties:11-12` expone usuario/password; ademas se usa `root`.
+- `bd.properties:11-12` expone usuario/password; ademas se usa `root`.
 - `logback.xml:75-76` activa TRACE de tipos Hibernate, que puede exponer parametros/datos si la categoria aplica con Hibernate 7.
 - `AbstractOpenDataBase.java:213-216` marca claves sensibles como solo `"password"`, correcto pero incompleto si hay `token`, `secret`, `apiKey`.
 
@@ -437,7 +437,7 @@ No se aplicaron cambios en codigo fuente ni configuracion productiva. Motivo: lo
 | Prioridad | Descripcion | Archivo/componente | Impacto esperado | Riesgo de no hacerlo | Esfuerzo | Automatizable | Revision manual |
 |---|---|---|---|---|---|---|---|
 | Critica | Cambiar DDL productivo a `validate` | `properties/hibernate.properties:69` | Evitar destruccion de datos | Perdida total de datos | Bajo | Si | Si |
-| Critica | Externalizar credenciales y eliminar `root` | `properties/jakarta_principal.properties:11-12` | Menor riesgo de compromiso | Acceso total a BD expuesto | Medio | Parcial | Si |
+| Critica | Externalizar credenciales y eliminar `root` | `properties/bd.properties:11-12` | Menor riesgo de compromiso | Acceso total a BD expuesto | Medio | Parcial | Si |
 | Critica | Parametrizar query principal y cerrar HQL libre | `ServicePrincipalImpl`, `Repository` | Seguridad y estabilidad | Inyeccion HQL futura | Bajo/medio | Si | Si |
 | Critica | Anadir indices para query principal | `log`, `feed`, `entry` | Evitar scans y lentitud | Importaciones lentas/locks | Medio | Script SQL | Si |
 
@@ -476,4 +476,3 @@ No se aplicaron cambios en codigo fuente ni configuracion productiva. Motivo: lo
 | Aceptado temporal | No activar second-level cache | `hibernate.properties:28-29` | Simplicidad | Mas lecturas repetidas | N/A | N/A | Revisar tras medir |
 | Aceptado temporal | Mantener cascades actuales | entidades `codice` | Evita refactor de modelo | Borrados amplios si se usan mal | Alto | No | Si |
 | Aceptado temporal | Mantener Hibernate nativo sin Spring | arquitectura actual | Menos cambio | Mas boilerplate transaccional | Alto | No | Si |
-

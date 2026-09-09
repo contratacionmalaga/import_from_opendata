@@ -7,7 +7,7 @@ import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Configuracion;
 import local.jarios.entity.auxiliares.Estadistica;
-import local.jarios.entity.auxiliares.Historico;
+import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.auxiliares.OrganoContratacion;
 import local.jarios.exceptions.MiServiceException;
@@ -53,7 +53,8 @@ public interface ServicePrincipal {
    *
    * @param listHistorico el objeto de log que se desea almacenar.
    */
-  void persistirListaHistoricos(Log miLog, List<Historico> listHistorico) throws MiServiceException;
+  void persistirListaHistoricos(Log miLog, List<HistoricoEntry> listHistorico)
+      throws MiServiceException;
 
   /**
    * Actualiza el objeto log junton con las estadísticas en el sistema.
