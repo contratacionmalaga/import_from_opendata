@@ -138,17 +138,43 @@ El umbral configurado para fallar el build es CVSS 8.0 y `ossIndexAnalyzerEnable
 
 ## 🔄 Configuración
 
-La configuración operativa se carga desde el directorio externo `properties` indicado al ejecutar los JAR mediante `--configDir`. Los ficheros principales son:
+La configuración operativa se carga desde el directorio externo `properties` indicado al ejecutar los JAR mediante `--configDir`. El repositorio versiona plantillas `*.properties.example`; cada entorno debe copiarlas a `*.properties` y ajustar sus valores locales.
 
-| Fichero | Uso |
-|---------|-----|
-| `properties/app.properties` | Parámetros funcionales de importación y orígenes de datos. |
-| `properties/filter.properties` | Filtros por NIF o código postal para importaciones con filtros. |
-| `properties/hibernate.properties` | Parámetros base de Hibernate y HikariCP. |
-| `properties/bd.properties` | Conexión JDBC principal a la base de datos. |
-| `properties/jakarta_filtro.properties` | Conexión JDBC usada para filtros SQL, cuando aplique. |
-| `properties/mail.properties` | Parámetros de correo y notificaciones. |
-| `properties/runtime.properties` | Configuración opcional del lanzador, como `java.opts`. |
+Los ficheros reales `properties/*.properties` quedan ignorados por Git porque pueden contener rutas locales, credenciales de base de datos, credenciales SMTP y direcciones de correo.
+
+| Fichero real | Plantilla versionada | Uso |
+|--------------|----------------------|-----|
+| `properties/app.properties` | `properties/app.properties.example` | Parametros funcionales de importacion y origenes de datos. |
+| `properties/filter.properties` | `properties/filter.properties.example` | Filtros por NIF o codigo postal para importaciones con filtros. |
+| `properties/hibernate.properties` | `properties/hibernate.properties.example` | Parametros base de Hibernate y HikariCP. |
+| `properties/bd.properties` | `properties/bd.properties.example` | Conexion JDBC principal a la base de datos. |
+| `properties/jakarta_filtro.properties` | `properties/jakarta_filtro.properties.example` | Conexion JDBC opcional usada para filtros SQL, cuando aplique. |
+| `properties/mail.properties` | `properties/mail.properties.example` | Parametros SMTP y notificaciones por correo. |
+| `properties/runtime.properties` | `properties/runtime.properties.example` | Configuracion opcional del lanzador, como `java.opts`. |
+
+Preparacion inicial de un entorno Windows:
+
+```powershell
+Copy-Item properties\app.properties.example properties\app.properties
+Copy-Item properties\filter.properties.example properties\filter.properties
+Copy-Item properties\hibernate.properties.example properties\hibernate.properties
+Copy-Item properties\bd.properties.example properties\bd.properties
+Copy-Item properties\mail.properties.example properties\mail.properties
+Copy-Item properties\runtime.properties.example properties\runtime.properties
+```
+
+Preparacion inicial de un entorno Linux/macOS:
+
+```bash
+cp properties/app.properties.example properties/app.properties
+cp properties/filter.properties.example properties/filter.properties
+cp properties/hibernate.properties.example properties/hibernate.properties
+cp properties/bd.properties.example properties/bd.properties
+cp properties/mail.properties.example properties/mail.properties
+cp properties/runtime.properties.example properties/runtime.properties
+```
+
+`jakarta_filtro.properties` solo debe crearse si el flujo utilizado requiere una conexion de filtros SQL independiente.
 
 `runtime.properties` es opcional. Si se informa `java.opts`, los scripts `importar_atoms.ps1` e `importar_atom.sh` usan ese valor como opciones del proceso Java. Si falta el fichero o la clave, usan `-Xms12g -Xmx12g`.
 
@@ -158,7 +184,7 @@ Ejemplo:
 java.opts=-Xms32g -Xmx32g
 ```
 
-`bd.properties` debe conservar las claves Jakarta JDBC existentes:
+`bd.properties` y `jakarta_filtro.properties` deben conservar las claves Jakarta JDBC existentes:
 
 ```properties
 jakarta.persistence.jdbc.url=
@@ -166,6 +192,8 @@ jakarta.persistence.jdbc.driver=
 jakarta.persistence.jdbc.user=
 jakarta.persistence.jdbc.password=
 ```
+
+Antes de ejecutar una importacion real, sustituya todos los valores `CHANGE_ME_*` de las plantillas copiadas.
 
 ---
 

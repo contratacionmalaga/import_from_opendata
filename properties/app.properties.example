@@ -1,0 +1,42 @@
+# Configuracion general de la importacion.
+# Las rutas locales se resuelven como app.local.path + subdirectorio del tipo + fichero inicial.
+
+# Nombre y descripcion informativos de la aplicacion. Texto libre.
+app.name=import_from_opendata
+app.description=Aplicacion para la importacion los datos de los expedientes de contratacion mediante el modelo CODICE
+
+# Directorio base local. Debe terminar en barra invertida o barra: d:\placsp\
+# Subdirectorios esperados por tipo: may, men, emp, cpm, agr.
+app.local.path=d:\\placsp\\
+
+# Ficheros iniciales locales. Deben existir dentro del subdirectorio correspondiente.
+app.local.mayores=licitacionesPerfilesContratanteCompleto3.atom
+app.local.menores=contratosMenoresPerfilesContratantes.atom
+app.local.emps=EMP_SectorPublico.atom
+app.local.cpms=CPM_SectorPublico.atom
+app.local.agregadas=PlataformasAgregadasSinMenores.atom
+
+# URLs iniciales para ejecucion internet. Deben ser URLs http/https validas.
+app.internet.mayores=https://contrataciondelsectorpublico.gob.es/sindicacion/sindicacion_643/licitacionesPerfilesContratanteCompleto3.atom
+app.internet.menores=https://contrataciondelsectorpublico.gob.es/sindicacion/sindicacion_1143/contratosMenoresPerfilesContratantes.atom
+app.internet.emps=https://contrataciondelestado.es/sindicacion/sindicacion_1383/EMP_SectorPublico.atom
+app.internet.cpms=https://contrataciondelestado.es/sindicacion/sindicacion_1403/CPM_SectorPublico.atom
+app.internet.agregadas=https://contrataciondelsectorpublico.gob.es/sindicacion/sindicacion_1044/PlataformasAgregadasSinMenores.atom
+
+# Control HTTP para cargas INTERNET.
+# app.http.max_retries: entero >= 0. Numero de reintentos ante errores HTTP o respuestas no ATOM.
+# app.http.retry_delay_ms: entero >= 0. Pausa base entre reintentos; se multiplica por el numero de intento.
+# app.http.request_delay_ms: entero >= 0. Pausa antes de cada descarga para evitar rate limits del servidor.
+app.http.max_retries=3
+app.http.retry_delay_ms=60000
+app.http.request_delay_ms=0
+
+# Tipo de sindicacion a procesar.
+# Valores permitidos: MAYORES | MENORES | ENCARGOS | CONSULTAS | AGREGADAS
+app.tipo_sindicacion=CONSULTAS
+
+# Persistencia detallada de rechazos.
+# Valores permitidos: true | false
+# false: modo normal recomendado; cuenta rechazos en estadisticas pero no persiste un historico por cada Entry RECHAZAR.
+# true: modo diagnostico; persiste todos los RECHAZAR y puede generar millones de filas en historico.
+app.persistir_historicos_rechazados=false

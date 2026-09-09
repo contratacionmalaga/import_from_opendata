@@ -1,0 +1,44 @@
+# Configuracion de Hibernate.
+
+# Batch para operaciones masivas.
+hibernate.jdbc.batch_size=150
+hibernate.order_inserts=true
+hibernate.order_updates=true
+hibernate.jdbc.batch_versioned_data=true
+
+# Transacciones JDBC sin JTA.
+hibernate.transaction.coordinator_class=jdbc
+hibernate.transaction.jta.platform=org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform
+
+# Cache.
+hibernate.cache.use_second_level_cache=false
+hibernate.cache.use_query_cache=false
+
+# Estadisticas. Usar true solo para desarrollo/diagnostico.
+hibernate.generate_statistics=true
+
+# Pool HikariCP. Ajustar segun capacidad de la base de datos.
+hibernate.hikari=jarios
+hibernate.hikari.maximumPoolSize=30
+hibernate.hikari.minimumIdle=15
+hibernate.hikari.maxLifetime=1800000
+hibernate.hikari.leakDetectionThreshold=0
+hibernate.hikari.idleTimeout=30000
+hibernate.hikari.connectionTimeout=30000
+hibernate.hikari.validationTimeout=5000
+hibernate.hikari.initializationFailTimeout=1000
+hibernate.hikari.keepaliveTime=300000
+hibernate.hikari.poolName=import_from_opendata_hikari_pool
+hibernate.hikari.readOnly=false
+hibernate.hikari.isolateInternalQueries=true
+
+# Esquema.
+# Valores permitidos: validate | update | create | create-drop | none.
+# validate: recomendado con datos reales.
+# create/create-drop: destructivos; recrean esquema y pueden destruir datos.
+hibernate.hbm2ddl.auto=create
+
+# SQL logging. Recomendado false salvo diagnostico.
+hibernate.show_sql=false
+hibernate.format_sql=false
+hibernate.highlight_sql=false

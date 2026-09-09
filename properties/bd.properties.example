@@ -1,0 +1,12 @@
+# Conexion JDBC principal a la base de datos.
+# Copiar este fichero a bd.properties y sustituir CHANGE_ME_* por valores del entorno.
+
+jakarta.persistence.jdbc.url=jdbc:mariadb://localhost:3306/import_from_opendata?useUnicode=true\
+&characterEncoding=utf8mb4\
+&connectionCollation=utf8mb4_unicode_ci\
+&connectionCollationForce=true\
+&serverTimezone=Europe/Madrid\
+&rewriteBatchedStatements=true
+jakarta.persistence.jdbc.driver=org.mariadb.jdbc.Driver
+jakarta.persistence.jdbc.user=CHANGE_ME_DB_USER
+jakarta.persistence.jdbc.password=CHANGE_ME_DB_PASSWORD
