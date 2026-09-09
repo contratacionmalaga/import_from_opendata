@@ -1,0 +1,15 @@
+# Configuracion SMTP y destinatarios de notificaciones.
+# Copiar este fichero a mail.properties y sustituir CHANGE_ME_* por valores del entorno.
+
+mail.smtp.host=CHANGE_ME_SMTP_HOST
+mail.smtp.auth=true
+mail.smtp.port=587
+mail.smtp.socketFactory.port=
+mail.smtp.ssl.checkserveridentity=false
+mail.smtp.ssl.protocols=TLSv1.2
+mail.smtp.ssl.trust=CHANGE_ME_SMTP_HOST
+mail.smtp.starttls.enable=true
+mail.smtp.user=CHANGE_ME_SMTP_USER
+mail.smtp.password=CHANGE_ME_SMTP_PASSWORD
+mail.from=CHANGE_ME_FROM_EMAIL
+mail.to=CHANGE_ME_TO_EMAIL

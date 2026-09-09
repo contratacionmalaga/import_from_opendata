@@ -1,0 +1,19 @@
+# Configuracion de filtros de importacion.
+# Los filtros se aplican solo en variantes que tengan aplicarFiltros=true.
+
+# Rango temporal de lectura.
+# Formato permitido: yyyy-MM-dd. Valor vacio: sin limite por ese extremo.
+# fechaInicialLectura es el valor mas moderno; fechaFinalLectura es el valor mas antiguo.
+# Ejemplo: 2026-08-01
+filter.fechaInicialLectura=
+filter.fechaFinalLectura=
+
+# Codigos postales permitidos.
+# Formato permitido: lista separada por comas de prefijos de 2 digitos. Valor vacio: sin filtro.
+# Ejemplo: 29,11,41
+filter.codigosPostales=
+
+# NIFs permitidos.
+# Formato permitido: lista separada por comas, sin espacios obligatorios. Valor vacio: sin filtro.
+# Ejemplo: P2900000G,A29121993,B29800042
+filter.nifs=

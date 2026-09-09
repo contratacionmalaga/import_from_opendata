@@ -1,0 +1,4 @@
+# Opciones JVM usadas por importar_atom.sh e importar_atoms.ps1.
+# Copiar este fichero a runtime.properties y ajustar memoria segun el entorno.
+
+java.opts=-Xms12g -Xmx12g
