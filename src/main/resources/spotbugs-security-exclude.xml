@@ -34,4 +34,15 @@
         <Method name="sanitizeAndLimitStackTrace"/>
         <Bug pattern="INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE"/>
     </Match>
+    <!-- Los valores incorporados al HTML se codifican con escape antes de renderizarse. -->
+    <Match>
+        <Class name="local.jarios.email.ExecutionEmailReportBuilder"/>
+        <Method name="appendBar"/>
+        <Bug pattern="POTENTIAL_XML_INJECTION"/>
+    </Match>
+    <Match>
+        <Class name="local.jarios.email.ExecutionEmailReportBuilder"/>
+        <Method name="buildSuccessBody"/>
+        <Bug pattern="POTENTIAL_XML_INJECTION"/>
+    </Match>
 </FindBugsFilter>
