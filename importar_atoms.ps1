@@ -7,6 +7,8 @@ param(
 
     [switch]$DryRun,
 
+    [switch]$SkipConfirmation,
+
     [switch]$ContinueOnError,
 
     [switch]$CreateSchemaFirstRun,
@@ -429,6 +431,12 @@ function Show-ImportPlanAndConfirm {
         Write-Host "- Email: activado; se enviaran avisos de exito o error conforme a mail.properties."
     }
 
+    if ($SkipConfirmation) {
+        Log "Importacion autorizada sin confirmacion interactiva (-SkipConfirmation)."
+        Write-Host "`nConfirmacion omitida por -SkipConfirmation. Se iniciara la importacion." -ForegroundColor Cyan
+        return
+    }
+
     Write-Host "`nPara continuar escribe I y pulsa Enter. Cualquier otra respuesta cancela la importacion." -ForegroundColor Cyan
     $answer = Read-Host "Confirmacion"
     if ($answer -ne "I") {
@@ -447,6 +455,7 @@ Log "Grupo solicitado: $Grupo"
 Log "Modo solicitado: $Mode"
 Log "Tipos solicitados: $(if ($TipoSindicacion) { $TipoSindicacion -join ', ' } else { 'por defecto del grupo' })"
 Log "DryRun: $DryRun"
+Log "SkipConfirmation: $SkipConfirmation"
 Log "ContinueOnError: $ContinueOnError"
 Log "CreateSchemaFirstRun: $CreateSchemaFirstRun"
 Log "Directorio operativo: $BaseDir"
@@ -455,7 +464,7 @@ Log "Runtime properties: $RuntimePropertiesPath"
 Log "Java opts: $($JavaOpts -join ' ')"
 
 Write-Host "`n=== Importador OpenData ===" -ForegroundColor Cyan
-Write-Host "Grupo: $Grupo | Modo: $Mode | DryRun: $DryRun | CreateSchemaFirstRun: $CreateSchemaFirstRun" -ForegroundColor Cyan
+Write-Host "Grupo: $Grupo | Modo: $Mode | DryRun: $DryRun | SkipConfirmation: $SkipConfirmation | CreateSchemaFirstRun: $CreateSchemaFirstRun" -ForegroundColor Cyan
 
 Show-ImportPlanAndConfirm -Plan $plan
 

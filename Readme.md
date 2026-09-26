@@ -208,7 +208,7 @@ El lanzador Windows es `importar_atoms.ps1`.
   -TipoSindicacion MAYORES
 ```
 
-Antes de ejecutar, muestra el plan completo: bloques seleccionados, origen, JAR, destino de base de datos, esquema Hibernate, memoria, filtros, correo y comportamiento aplicable. La importación solo comienza al escribir `I`.
+Antes de ejecutar, muestra el plan completo: bloques seleccionados, origen, JAR, destino de base de datos, esquema Hibernate, memoria, filtros, correo y comportamiento aplicable. La importación solo comienza al escribir `I`, salvo que se indique expresamente `-SkipConfirmation` para una tarea programada o servicio.
 
 | Parámetro | Valores | Descripción |
 |---|---|---|
@@ -216,6 +216,7 @@ Antes de ejecutar, muestra el plan completo: bloques seleccionados, origen, JAR,
 | `-Mode` | `local`, `internet`, `all` | Origen de los feeds. Valor predeterminado: `local`. |
 | `-TipoSindicacion` | Uno o varios tipos | Limita los tipos ejecutados. Si se omite, ejecuta todos los permitidos para el grupo. |
 | `-DryRun` | Interruptor | Valida el plan y muestra los comandos Java sin modificar properties ni iniciar Java. |
+| `-SkipConfirmation` | Interruptor | Omite la confirmación interactiva. Solo para ejecuciones autónomas previamente configuradas. El plan y la activación quedan registrados en el log. |
 | `-ContinueOnError` | Interruptor | Continúa con el siguiente bloque si uno falla. |
 | `-CreateSchemaFirstRun` | Interruptor | Usa `create` solo en el primer bloque y `none` en los restantes. Solo para una base de datos nueva de pruebas. |
 | `-BaseDir` | Ruta | Directorio que contiene JAR, `properties` y `logs`. |
@@ -257,6 +258,20 @@ Usar una instalación operativa alternativa:
 ```powershell
 .\importar_atoms.ps1 -BaseDir D:\opendata\ejecutables -Grupo sin_filtros -Mode local -TipoSindicacion MAYORES
 ```
+
+### Ejecución autónoma en Windows
+
+Para el Programador de tareas o un servicio, añada `-SkipConfirmation` al script y ejecute PowerShell con `-NonInteractive`. La confirmación se mantiene para todas las invocaciones que no incluyan ese interruptor.
+
+```powershell
+powershell.exe -NoProfile -NonInteractive -File "C:\java\ejecutables\import-from-opendata-ejecutables\importar_atoms.ps1" `
+  -Grupo sin_filtros `
+  -Mode local `
+  -TipoSindicacion MAYORES `
+  -SkipConfirmation
+```
+
+Configure la tarea con una cuenta que tenga acceso de lectura a los ficheros ATOM y de escritura al directorio de `logs` y a la base de datos configurada. Revise el log de lanzador generado en `logs/importacion_yyyyMMdd_HHmmss.log` al finalizar.
 
 ## Ejecución en Linux y macOS
 
