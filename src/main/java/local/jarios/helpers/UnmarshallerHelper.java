@@ -8,8 +8,6 @@ import local.jarios.exceptions.MiUnmarshallerException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- *
- *
  * <h2>Helper para crear y obtener instancias de {@link Unmarshaller}</h2>
  *
  * <p>Esta clase se encarga de centralizar la lógica necesaria para la creación de un {@link
