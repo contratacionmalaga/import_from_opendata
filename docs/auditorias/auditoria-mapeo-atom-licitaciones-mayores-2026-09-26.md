@@ -74,7 +74,7 @@ corregido.
 - `TenderResult/SubcontractTerms` también conserva únicamente el primer elemento.
 - Los identificadores de una misma clase (`NIF`, `DIR3`, etc.) se asignan a columnas escalares. Si el origen proporcionase dos identificadores del mismo esquema, el último sobrescribiría al anterior.
 
-En este fichero no se ha detectado una segunda instancia conflictiva de los dos primeros casos; son límites del modelo que deben protegerse con pruebas antes de ampliar el alcance funcional.
+**Decisión funcional:** se mantiene el modelo actual. El origen aporta actualmente un único valor y una única descripción para los bloques de subcontratación, por lo que no se crearán colecciones ni tablas adicionales en esta fase. Si el origen incorpora más de un valor, esta decisión deberá revisarse antes de realizar una importación que pueda perder información.
 
 ## Atributos de origen no persistidos
 
@@ -108,7 +108,8 @@ Debe recibir `tenderingProcessType.getDocumentAvailabilityPeriod()`. Este cambio
 2. **Añadir los campos escalares de alta utilidad**: vía de ejecución, descripción de vigencia de opciones, descripción del plazo de oferta, idioma, endpoint y los dos datos de años de actividad. Incluir migración SQL versionada y pruebas de mapper. `ActivityCode`, país, código de país y fax quedan fuera de alcance por decisión funcional.
 3. **Modelar `ParentLocatedParty` como entidad jerárquica** asociada a `ContractFolderStatus`, con nombre, identificadores, padre y orden. No debe comprimirse en columnas fijas porque el fichero llega a ocho niveles.
 4. **Decidir la retención de atributos semánticos**. Para importación analítica, como mínimo conviene conservar `currencyID`; para trazabilidad completa, guardar también catálogo (`listURI`) y etiqueta (`name`) en las entidades de código o en una tabla de metadatos.
-5. **Añadir una prueba de cobertura de muestra**: cargar este ATOM en un test de integración y afirmar la presencia de cada ruta soportada y la ausencia explícitamente aceptada de las no soportadas. El inventario generado debe actualizarse cuando cambie la versión CÓDICE.
+5. **Decisión tomada — colecciones:** mantener un único valor y descripción en subcontratación e identificadores mientras el origen conserve esa cardinalidad efectiva. No se ampliará el modelo relacional en esta fase.
+6. **Añadir una prueba de cobertura de muestra**: cargar este ATOM en un test de integración y afirmar la presencia de cada ruta soportada y la ausencia explícitamente aceptada de las no soportadas. El inventario generado debe actualizarse cuando cambie la versión CÓDICE.
 
 ## Resultado de la auditoría
 
