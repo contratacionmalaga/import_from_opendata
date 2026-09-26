@@ -48,7 +48,6 @@ import local.jarios.version.api.VersionImpl;
 import local.jarios.version.exception.VersionException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 
 @Slf4j
 public abstract class AbstractOpenDataBase {
@@ -444,10 +443,8 @@ public abstract class AbstractOpenDataBase {
   }
 
   private void handleFailure(OpenDataExecutionContext context, Throwable ex, String tipoError) {
-    String incidentId = getIncidentId(context);
     log.error(
-        "ERROR [{}] {}. Consulte el log técnico asociado a esta ejecución.",
-        incidentId,
+        "ERROR {}. Consulte el log técnico asociado a esta ejecución.",
         getOperatorMessage(ex, tipoError),
         ex);
 
@@ -458,8 +455,7 @@ public abstract class AbstractOpenDataBase {
       }
     } catch (PropertiesManagerException propertiesEx) {
       log.error(
-          "ERROR [{}] No se pudo consultar la configuración de email de soporte. Consulte el log técnico asociado a esta ejecución.",
-          incidentId,
+          "ERROR No se pudo consultar la configuración de email de soporte. Consulte el log técnico asociado a esta ejecución.",
           propertiesEx);
       return;
     }
@@ -472,18 +468,15 @@ public abstract class AbstractOpenDataBase {
 
     } catch (Exception emailEx) {
       log.error(
-          "ERROR [{}] No se pudo enviar el correo de soporte. Consulte el log técnico asociado a esta ejecución.",
-          incidentId,
+          "ERROR No se pudo enviar el correo de soporte. Consulte el log técnico asociado a esta ejecución.",
           emailEx);
     }
   }
 
   /** Registra un fallo de notificación sin cambiar una importación ya confirmada. */
   public void handleSuccessNotificationFailure(OpenDataExecutionContext context, Throwable ex) {
-    String incidentId = getIncidentId(context);
     log.error(
-        "ERROR [{}] La importación ya fue confirmada, pero no se pudo enviar el correo de confirmación. Consulte el log técnico asociado a esta ejecución.",
-        incidentId,
+        "ERROR La importación ya fue confirmada, pero no se pudo enviar el correo de confirmación. Consulte el log técnico asociado a esta ejecución.",
         ex);
   }
 
@@ -588,8 +581,6 @@ public abstract class AbstractOpenDataBase {
   protected ExitStatus runWithPipeline(String configDir) {
     local.jarios.core.pipeline.context.OpenDataExecutionContext context =
         new local.jarios.core.pipeline.context.OpenDataExecutionContext(configDir);
-    String incidentId = getIncidentId(context);
-    MDC.put("incidentId", incidentId);
     try {
       local.jarios.core.pipeline.OpenDataPipeline<
               local.jarios.core.pipeline.context.OpenDataExecutionContext>
@@ -626,7 +617,6 @@ public abstract class AbstractOpenDataBase {
     } finally {
       liberarExclusionImportacion();
       SessionFactoryRegistry.closeAll();
-      MDC.remove("incidentId");
     }
 
     return ExitStatus.ERROR;

@@ -5,10 +5,10 @@
     <property name="LOG_PATH" value="logs"/>
     <timestamp key="DEFAULT_EXECUTION_ID" datePattern="yyyyMMdd_HHmmss_SSS" timeReference="contextBirth"/>
     <property name="EXECUTION_ID" value="${opendata.execution.id:-${DEFAULT_EXECUTION_ID}}"/>
-    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{incidentId}] %-40.40logger:%-4line - %msg%n%nopex"/>
-    <property name="ERROR_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{incidentId}] %-40.40logger:%-4line - %msg%n%ex{full}%n"/>
-    <property name="CONSOLE_PATTERN" value="%d{HH:mm:ss.SSS} %-5level [%X{incidentId}] %-30.30logger:%-4line - %msg%n%nopex"/>
-    <property name="CONSOLE_ERROR_PATTERN" value="%d{HH:mm:ss.SSS} ERROR [%X{incidentId}] - %msg%n%nopex"/>
+    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %-40.40logger:%-4line - %msg%n%nopex"/>
+    <property name="ERROR_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %-40.40logger:%-4line - %msg%n%ex{full}%n"/>
+    <property name="CONSOLE_PATTERN" value="%d{HH:mm:ss.SSS} %-5level %-30.30logger:%-4line - %msg%n%nopex"/>
+    <property name="CONSOLE_ERROR_PATTERN" value="%d{HH:mm:ss.SSS} ERROR - %msg%n%nopex"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/${APP_NAME}_${EXECUTION_ID}.log</file>

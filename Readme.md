@@ -373,7 +373,7 @@ Cada ejecución recibe un identificador único con formato `yyyyMMdd_HHmmss_<id>
 | `logs/import-from-opendata_error_<id>.log` | Diagnóstico técnico de errores, incluida la pila completa de excepciones. |
 | `logs/import-from-opendata_hibernate_<id>.log` | Eventos de Hibernate, JDBC y HikariCP. |
 
-La consola no muestra trazas Java. Cuando una importación falla, muestra un identificador de incidencia y pide consultar el log técnico de la ejecución. El correo de soporte incluye tanto ese identificador como el nombre exacto de su archivo de errores.
+La consola no muestra trazas Java. Cuando una importación falla, pide consultar el log técnico de la ejecución. El correo de soporte incorpora el identificador de incidencia y el nombre exacto de su archivo de errores.
 
 Los logs se rotan por fecha y tamaño. Los archivos archivados se comprimen automáticamente; los registros operativos se conservan 30 días y los de errores 90 días.
 
