@@ -43,6 +43,8 @@ jobs:
 
       - name: Set up project artifacts
         uses: ./.github/actions/setup-project-artifacts
+        with:
+          package-token: ${{ secrets.PACKAGES_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Run OWASP Dependency Check
         env:

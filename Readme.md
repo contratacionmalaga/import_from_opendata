@@ -1,251 +1,393 @@
 # Importador de Datos Abiertos de la PLACSP
 
-## 📦 Descripción General
+Aplicación Java para importar los feeds ATOM publicados por la Plataforma de Contratación del Sector Público (PLACSP), transformarlos al modelo CODICE y persistirlos en MariaDB.
 
-Este proyecto es una solución robusta para la importación, transformación y almacenamiento de datos abiertos publicados por la Plataforma de Contratación del Sector Público (PLACSP), dependiente del Ministerio de Hacienda de España.
+El proyecto admite importaciones desde ficheros locales y desde Internet, tanto con filtros como sin ellos. Está preparado para cargas de gran volumen, con métricas de parseo y persistencia, operaciones JDBC por lote y parámetros externos de memoria, Hibernate y conexiones.
 
-Su principal objetivo es automatizar la ingesta de información relativa a licitaciones, adjudicaciones y contrataciones públicas, garantizando su correcta validación, normalización y persistencia en una base de datos relacional.
+## Modalidades de importación
 
-🔗 [Portal de Datos Abiertos - Ministerio de Hacienda](https://www.hacienda.gob.es/es-ES/GobiernoAbierto/Datos%20Abiertos/Paginas/licitaciones_plataforma_contratacion.aspx)
+| Grupo | Modo | Finalidad |
+|---|---|---|
+| `con_filtros` | `local` | Importa un ATOM local y aplica filtros por NIF o código postal. |
+| `con_filtros` | `internet` | Lee feeds remotos de forma incremental y aplica filtros. |
+| `sin_filtros` | `local` | Importa un ATOM local completo sin filtros. |
+| `sin_filtros` | `internet` | Lee feeds remotos de forma incremental sin filtros. |
 
----
+## Requisitos
 
-## Versión 7.4.5
+Para compilar desde código fuente:
 
-Esta versión actualiza el proyecto a `jarios-parent` **1.0.14**, que vuelve a ser la única fuente de las versiones compartidas. Se eliminan las sobrescrituras locales de dependencias para que todos los proyectos que usan el parent se compilen con el mismo conjunto validado.
+- JDK 21.
+- Maven 3.9.16 o superior.
+- Acceso a los repositorios Maven configurados, incluidos los paquetes privados de `local.jarios`.
 
-Actualizaciones incluidas:
+Para ejecutar una importación:
 
-| Componente | Versión anterior | Versión nueva |
-|------------|------------------|---------------|
-| Logback | 1.6.3 | 1.6.4 |
-| Jackson | 2.22.2 | 2.22.3 |
-| Hibernate Core y `hibernate-hikaricp` | 7.4.5.Final | 7.4.10.Final |
-| jsoup | 1.23.1 | 1.23.2 |
-| Lombok | 1.18.46 | 1.18.48 |
-| SLF4J | 2.0.18 | 2.0.20 |
+- MariaDB accesible desde el equipo que ejecuta el proceso.
+- Ficheros de configuración preparados.
+- Un JAR de la variante seleccionada.
+- En modo `local`, el fichero ATOM configurado debe existir en disco.
+- En modo `internet`, conectividad HTTPS con los orígenes PLACSP.
 
-`hibernate-hikaricp` es el módulo de integración de Hibernate; no modifica la versión propia del pool `com.zaxxer:HikariCP` que gestione el parent. No se incluyen cambios funcionales ni de esquema de base de datos en esta versión.
+## Obtención de ejecutables
 
----
+Las releases publicadas incluyen los cuatro JAR operativos:
 
-## 🛠️ Tecnologías y Herramientas
+<https://github.com/contratacionmalaga/import_from_opendata/releases>
 
-| Tecnología             | Versión         | Descripción                                          |
-|------------------------|-----------------| ---------------------------------------------------- |
-| Java                   | 21.0.11         | Lenguaje principal del proyecto                      |
-| MariaDB                | 11.8            | Base de datos relacional con uso de esquemas         |
-| Hibernate Core         | 7.4.10.Final    | Framework ORM para persistencia en base de datos     |
-| HikariCP               | Gestionado por el parent | Pool de conexiones eficiente para la base de datos |
-| Lombok                 | 1.18.48         | Reducción de código boilerplate mediante anotaciones |
-| SLF4J + Logback        | 2.0.20 / 1.6.4  | Sistema de registro de logs centralizado y flexible  |
-| JAXB                   | 2.3.x - 2.4.x   | Procesamiento y parseo de documentos XML             |
-| Jakarta Mail           | 2.1.3           | Envío de notificaciones por correo electrónico       |
+| JAR | Uso |
+|---|---|
+| `opendata_con_filtros-<versión>-local.jar` | Carga local con filtros. |
+| `opendata_con_filtros-<versión>-internet.jar` | Carga incremental desde Internet con filtros. |
+| `opendata_sin_filtros-<versión>-local.jar` | Carga local completa sin filtros. |
+| `opendata_sin_filtros-<versión>-internet.jar` | Carga incremental desde Internet sin filtros. |
 
----
+Los lanzadores seleccionan el JAR con mayor versión disponible para cada combinación de grupo y modo.
 
-## 📊 Información Procesada
+## Estructura de una instalación operativa
 
-El sistema procesa archivos XML publicados por la PLACSP que contienen:
+Una instalación puede estar fuera del repositorio. El directorio debe contener los JAR, los scripts y la configuración local.
 
-- Datos de licitaciones públicas.
-- Información sobre adjudicaciones.
-- Detalles de procedimientos administrativos.
-
-Los formatos admitidos incluyen:
-
-- Ficheros XML conforme a los esquemas oficiales.
-- Archivos comprimidos (zip) que contienen múltiples XML.
-
----
-
-## 📂 Base de Datos
-
-Se utiliza MariaDB como motor principal de base de datos, con esquemas separados para las variantes de importación y scripts SQL de índices para optimizar consultas e importaciones incrementales.
-
----
-
-## 📚 Estructura del Proyecto
-
-```
-placsp-importador/
-├── README.md               # Documentación del proyecto
-├── pom.xml                 # Configuración de dependencias Maven
-├── logs/                   # Directorio para archivos de log
-└── src/
-    ├── main/
-    │   ├── java/           # Código fuente Java
-    │   └── resources/      # Recursos y configuración del proyecto
+```text
+import-from-opendata-ejecutables/
+├── importar_atoms.ps1
+├── importar_atom.sh
+├── opendata_con_filtros-<versión>-local.jar
+├── opendata_con_filtros-<versión>-internet.jar
+├── opendata_sin_filtros-<versión>-local.jar
+├── opendata_sin_filtros-<versión>-internet.jar
+├── logs/
+└── properties/
+    ├── app.properties
+    ├── bd.properties
+    ├── filter.properties
+    ├── hibernate.properties
+    ├── mail.properties
+    ├── runtime.properties
+    └── jakarta_filtro.properties
 ```
 
----
+En Windows, la ruta operativa predeterminada es `C:\java\ejecutables\import-from-opendata-ejecutables`. Si no existe y el script se ejecuta desde un directorio con `properties`, ese directorio se utiliza como directorio operativo.
 
-## ⚙️ Funcionamiento General
+## Configuración
 
-1. Descarga o recepción de los ficheros XML desde el portal de Datos Abiertos.
-2. Validación y parseo de los documentos XML mediante JAXB.
-3. Transformación a objetos Java.
-4. Persistencia en MariaDB usando Hibernate.
-5. Registro de eventos, advertencias y errores mediante Log4J.
-6. Envío automático de notificaciones por correo en caso de errores o finalización de procesos.
-
----
-
-## 🔧 Requisitos Previos
-
-- Java JDK 21 o superior. En desarrollo local se usa `C:\java\software\jdk-21.0.11`.
-- Maven 3.9.16. En desarrollo local se usa `C:\java\software\apache-maven-3.9.16`.
-- Base de datos configurada según los properties externos del entorno.
-- Acceso a internet para la resolución de dependencias Maven.
-
----
-
-## 📑 Instrucciones de Uso
-
-1. Clona el repositorio o descarga el código fuente.
-2. Configura el acceso a la base de datos en `application.properties`.
-3. Prepara la sesión con Java 21.0.11 y Maven 3.9.16:
+El repositorio incluye plantillas en `properties/*.properties.example`. Copie las necesarias y sustituya los valores de ejemplo.
 
 ```powershell
-.\scripts\use-java21-maven3916.ps1
+Copy-Item properties\app.properties.example properties\app.properties
+Copy-Item properties\bd.properties.example properties\bd.properties
+Copy-Item properties\filter.properties.example properties\filter.properties
+Copy-Item properties\hibernate.properties.example properties\hibernate.properties
+Copy-Item properties\mail.properties.example properties\mail.properties
+Copy-Item properties\runtime.properties.example properties\runtime.properties
 ```
 
-4. Ejecuta las pruebas:
+En Linux o macOS:
+
+```bash
+cp properties/app.properties.example properties/app.properties
+cp properties/bd.properties.example properties/bd.properties
+cp properties/filter.properties.example properties/filter.properties
+cp properties/hibernate.properties.example properties/hibernate.properties
+cp properties/mail.properties.example properties/mail.properties
+cp properties/runtime.properties.example properties/runtime.properties
+```
+
+Los ficheros reales de configuración están excluidos de Git porque pueden contener rutas, credenciales de base de datos y datos SMTP.
+
+### `app.properties`
+
+Define los orígenes locales y remotos, el tipo procesado, los reintentos HTTP y las notificaciones.
+
+```properties
+app.local.path=d:\\placsp\\
+app.local.mayores=licitacionesPerfilesContratanteCompleto3.atom
+app.internet.mayores=https://contrataciondelsectorpublico.gob.es/...
+
+app.http.max_retries=3
+app.http.retry_delay_ms=60000
+app.http.request_delay_ms=0
+
+app.tipo_sindicacion=MAYORES
+app.persistir_historicos_rechazados=false
+app.email.enabled=false
+```
+
+Mantenga `app.persistir_historicos_rechazados=false` durante la operación normal. Activarlo persiste un histórico por cada entrada rechazada y puede aumentar mucho el volumen almacenado.
+
+Para pruebas y benchmarks, desactive las notificaciones mediante `app.email.enabled=false`.
+
+### `bd.properties`
+
+Contiene la conexión principal a MariaDB.
+
+```properties
+jakarta.persistence.jdbc.url=jdbc:mariadb://localhost:3306/opendata_prueba
+jakarta.persistence.jdbc.driver=org.mariadb.jdbc.Driver
+jakarta.persistence.jdbc.user=USUARIO
+jakarta.persistence.jdbc.password=CONTRASENA
+```
+
+El lanzador muestra la base de datos, servidor, puerto y usuario antes de ejecutar; la contraseña nunca se muestra.
+
+### `filter.properties`
+
+Los filtros se aplican solamente a `con_filtros`.
+
+```properties
+filter.fechaInicialLectura=
+filter.fechaFinalLectura=
+filter.codigosPostales=
+filter.nifs=
+```
+
+- Las fechas usan formato `yyyy-MM-dd`.
+- Los códigos postales son prefijos de dos dígitos separados por comas: `29,11,41`.
+- Los NIF se separan por comas.
+- Para ejecutar `con_filtros`, debe informarse `filter.nifs` o `filter.codigosPostales`. Un filtro exclusivo por fecha no habilita la ejecución.
+
+### `hibernate.properties`
+
+Controla el esquema, Hibernate y el pool de conexiones.
+
+```properties
+hibernate.jdbc.batch_size=150
+hibernate.order_inserts=true
+hibernate.order_updates=true
+hibernate.jdbc.batch_versioned_data=true
+
+hibernate.hikari.maximumPoolSize=30
+hibernate.hikari.minimumIdle=15
+
+hibernate.generate_statistics=true
+hibernate.hbm2ddl.auto=validate
+```
+
+| Valor de `hibernate.hbm2ddl.auto` | Comportamiento |
+|---|---|
+| `validate` | Comprueba el esquema sin modificarlo. Recomendado con datos reales. |
+| `update` | Puede modificar el esquema al detectar diferencias. |
+| `create` | Recrea tablas y puede eliminar datos existentes. |
+| `create-drop` | Crea tablas y puede eliminarlas al finalizar. No usar con datos reales. |
+| `none` | No valida ni modifica el esquema. |
+
+### `runtime.properties`
+
+Define las opciones JVM empleadas por los lanzadores.
+
+```properties
+java.opts=-Xms12g -Xmx12g
+```
+
+Para cargas de gran volumen, ajuste el valor a los recursos realmente disponibles:
+
+```properties
+java.opts=-Xms48g -Xmx48g
+```
+
+## Tipos de sindicación
+
+| Valor técnico | Contenido |
+|---|---|
+| `MAYORES` | Licitaciones y contratos mayores. |
+| `MENORES` | Contratos menores. |
+| `ENCARGOS` | Encargos a medios propios. |
+| `CONSULTAS` | Consultas preliminares de mercado. |
+| `AGREGRADAS` | Plataformas agregadas. |
+
+Actualmente, `sin_filtros` solo admite `MAYORES`.
+
+## Ejecución en Windows
+
+El lanzador Windows es `importar_atoms.ps1`.
+
+```powershell
+.\importar_atoms.ps1 `
+  -Grupo sin_filtros `
+  -Mode local `
+  -TipoSindicacion MAYORES
+```
+
+Antes de ejecutar, muestra el plan completo: bloques seleccionados, origen, JAR, destino de base de datos, esquema Hibernate, memoria, filtros, correo y comportamiento aplicable. La importación solo comienza al escribir `I`.
+
+| Parámetro | Valores | Descripción |
+|---|---|---|
+| `-Grupo` | `con_filtros`, `sin_filtros`, `all` | Grupo que se ejecutará. Valor predeterminado: `con_filtros`. |
+| `-Mode` | `local`, `internet`, `all` | Origen de los feeds. Valor predeterminado: `local`. |
+| `-TipoSindicacion` | Uno o varios tipos | Limita los tipos ejecutados. Si se omite, ejecuta todos los permitidos para el grupo. |
+| `-DryRun` | Interruptor | Valida el plan y muestra los comandos Java sin modificar properties ni iniciar Java. |
+| `-ContinueOnError` | Interruptor | Continúa con el siguiente bloque si uno falla. |
+| `-CreateSchemaFirstRun` | Interruptor | Usa `create` solo en el primer bloque y `none` en los restantes. Solo para una base de datos nueva de pruebas. |
+| `-BaseDir` | Ruta | Directorio que contiene JAR, `properties` y `logs`. |
+
+### Ejemplos de Windows
+
+Carga local completa de contratos mayores:
+
+```powershell
+.\importar_atoms.ps1 -Grupo sin_filtros -Mode local -TipoSindicacion MAYORES
+```
+
+Carga incremental desde Internet:
+
+```powershell
+.\importar_atoms.ps1 -Grupo sin_filtros -Mode internet -TipoSindicacion MAYORES
+```
+
+Carga con filtros por NIF o código postal:
+
+```powershell
+.\importar_atoms.ps1 -Grupo con_filtros -Mode internet -TipoSindicacion MAYORES
+```
+
+Validar una ejecución sin modificar configuración ni datos:
+
+```powershell
+.\importar_atoms.ps1 -Grupo sin_filtros -Mode local -TipoSindicacion MAYORES -DryRun
+```
+
+Ejecutar todos los grupos, modos y tipos permitidos:
+
+```powershell
+.\importar_atoms.ps1 -Grupo all -Mode all
+```
+
+Usar una instalación operativa alternativa:
+
+```powershell
+.\importar_atoms.ps1 -BaseDir D:\opendata\ejecutables -Grupo sin_filtros -Mode local -TipoSindicacion MAYORES
+```
+
+## Ejecución en Linux y macOS
+
+El lanzador es `importar_atom.sh`.
+
+```bash
+chmod +x importar_atom.sh
+
+./importar_atom.sh \
+  --grupo sin_filtros \
+  --mode local \
+  --tipo MAYORES
+```
+
+| Parámetro | Valores | Descripción |
+|---|---|---|
+| `--grupo` | `con_filtros`, `sin_filtros`, `all` | Grupo funcional. |
+| `--mode` | `local`, `internet`, `all` | Origen de los feeds. |
+| `--tipo` | Tipos separados por comas | Tipo o tipos a ejecutar. |
+| `--base-dir` | Ruta | Directorio operativo. |
+| `--java` | Ruta | Ejecutable Java que se utilizará. |
+| `--dry-run` | — | Muestra el plan sin ejecutar Java ni modificar properties. |
+| `--continue-on-error` | — | Continúa con los bloques siguientes tras un error. |
+| `--help` | — | Muestra la ayuda del script. |
+
+Ejemplos:
+
+```bash
+./importar_atom.sh --grupo sin_filtros --mode local --tipo MAYORES
+
+./importar_atom.sh --grupo con_filtros --mode internet --tipo MAYORES,MENORES
+
+./importar_atom.sh \
+  --base-dir /srv/opendata \
+  --java /usr/lib/jvm/java-21/bin/java \
+  --grupo sin_filtros \
+  --mode internet \
+  --tipo MAYORES
+```
+
+## Reglas de importación
+
+### Modo local
+
+- Lee el ATOM configurado en `app.local.path`.
+- Requiere que no existan entradas previas del tipo seleccionado.
+- Si encuentra datos existentes para ese tipo, detiene la importación.
+- Se utiliza para cargas iniciales o reconstrucciones sobre una base de datos vacía.
+
+### Modo Internet
+
+- Obtiene el feed inicial configurado en `app.internet.*`.
+- Continúa la navegación por los enlaces `next`.
+- Detecta ciclos y enlaces `next` inválidos.
+- Compara con los datos existentes para decidir inserciones y actualizaciones.
+- Aplica los reintentos y pausas definidos en `app.properties`.
+
+## Logs y observabilidad
+
+Cada ejecución crea un log de lanzador en `logs/importacion_yyyyMMdd_HHmmss.log`.
+
+La aplicación registra feeds, entradas y tombstones procesados; tiempos de lectura, JAXB, mapeo, filtrado y persistencia; duración de preparación, borrado, `flush` y `commit`; tamaño de la ventana ORM y métricas Hibernate cuando están activadas.
+
+Para operación habitual, desactive las estadísticas y el SQL detallado si no están siendo utilizados para diagnóstico:
+
+```properties
+hibernate.generate_statistics=false
+hibernate.show_sql=false
+hibernate.format_sql=false
+```
+
+## Compilación desde código fuente
+
+En el entorno de desarrollo Windows se incluye un script para seleccionar Java y Maven:
 
 ```powershell
 .\scripts\use-java21-maven3916.ps1 test
 ```
 
-5. Compila y empaqueta el proyecto:
+Comprobar formato y ejecutar pruebas:
 
 ```powershell
-.\scripts\use-java21-maven3916.ps1 clean package
+.\mvnw.cmd spotless:check test
 ```
 
-6. Ejecuta la aplicación siguiendo las instrucciones internas del proyecto.
-
----
-
-
-## GitHub Actions
-
-El CI ejecutable está en `.github/workflows/maven-ci.yml` y lanza:
+Generar los cuatro artefactos y copiarlos al directorio operativo:
 
 ```powershell
-mvn -B test
-mvn -B spotless:check
-mvn -B spotbugs:check
+.\generar_ejecutables.ps1
 ```
 
-Para resolver `jarios-parent` y los helpers privados en GitHub Packages, configura el secret `PACKAGES_TOKEN` con permisos de lectura sobre paquetes. Si no existe, el workflow intentará usar `GITHUB_TOKEN`.
-
-El fichero antiguo `.github/workflow/maven-ci.yml` está en una carpeta no reconocida por GitHub Actions y queda obsoleto.
-
----
-## Seguridad de dependencias
-
-OWASP Dependency Check se ejecuta de forma explicita, igual que en el resto de proyectos. Define `NVD_API_KEY` en la sesion o en CI y lanza el goal Maven:
+El script omite las pruebas de forma predeterminada. Para ejecutarlas durante el empaquetado:
 
 ```powershell
-$env:NVD_API_KEY='<clave-nvd>'
-.\scripts\use-java21-maven3916.ps1 org.owasp:dependency-check-maven:check
+.\generar_ejecutables.ps1 -SkipTests $false
 ```
 
-El umbral configurado para fallar el build es CVSS 8.0 y `ossIndexAnalyzerEnabled` queda desactivado.
-
----
-
-## 🔄 Configuración
-
-La configuración operativa se carga desde el directorio externo `properties` indicado al ejecutar los JAR mediante `--configDir`. El repositorio versiona plantillas `*.properties.example`; cada entorno debe copiarlas a `*.properties` y ajustar sus valores locales.
-
-Los ficheros reales `properties/*.properties` quedan ignorados por Git porque pueden contener rutas locales, credenciales de base de datos, credenciales SMTP y direcciones de correo.
-
-| Fichero real | Plantilla versionada | Uso |
-|--------------|----------------------|-----|
-| `properties/app.properties` | `properties/app.properties.example` | Parametros funcionales de importacion y origenes de datos. |
-| `properties/filter.properties` | `properties/filter.properties.example` | Filtros por NIF o codigo postal para importaciones con filtros. |
-| `properties/hibernate.properties` | `properties/hibernate.properties.example` | Parametros base de Hibernate y HikariCP. |
-| `properties/bd.properties` | `properties/bd.properties.example` | Conexion JDBC principal a la base de datos. |
-| `properties/jakarta_filtro.properties` | `properties/jakarta_filtro.properties.example` | Conexion JDBC opcional usada para filtros SQL, cuando aplique. |
-| `properties/mail.properties` | `properties/mail.properties.example` | Parametros SMTP y notificaciones por correo. |
-| `properties/runtime.properties` | `properties/runtime.properties.example` | Configuracion opcional del lanzador, como `java.opts`. |
-
-Preparacion inicial de un entorno Windows:
+Empaquetado manual por perfil:
 
 ```powershell
-Copy-Item properties\app.properties.example properties\app.properties
-Copy-Item properties\filter.properties.example properties\filter.properties
-Copy-Item properties\hibernate.properties.example properties\hibernate.properties
-Copy-Item properties\bd.properties.example properties\bd.properties
-Copy-Item properties\mail.properties.example properties\mail.properties
-Copy-Item properties\runtime.properties.example properties\runtime.properties
+.\mvnw.cmd clean package -Pcon-filtros-local -DskipTests
+.\mvnw.cmd package -Pcon-filtros-internet -DskipTests
+.\mvnw.cmd package -Psin-filtros-local -DskipTests
+.\mvnw.cmd package -Psin-filtros-internet -DskipTests
 ```
 
-Preparacion inicial de un entorno Linux/macOS:
+## Ejecución directa de un JAR
 
-```bash
-cp properties/app.properties.example properties/app.properties
-cp properties/filter.properties.example properties/filter.properties
-cp properties/hibernate.properties.example properties/hibernate.properties
-cp properties/bd.properties.example properties/bd.properties
-cp properties/mail.properties.example properties/mail.properties
-cp properties/runtime.properties.example properties/runtime.properties
+Los lanzadores son la forma recomendada porque validan la configuración, seleccionan el JAR adecuado y establecen temporalmente `app.tipo_sindicacion`.
+
+Para ejecutar directamente un JAR, indique siempre el directorio de configuración:
+
+```powershell
+java -Xms12g -Xmx12g `
+  -jar opendata_sin_filtros-7.4.6-local.jar `
+  --configDir=C:\java\ejecutables\import-from-opendata-ejecutables\properties
 ```
 
-`jakarta_filtro.properties` solo debe crearse si el flujo utilizado requiere una conexion de filtros SQL independiente.
+En una ejecución directa, `app.tipo_sindicacion` debe tener ya el valor correcto en `app.properties`.
 
-`runtime.properties` es opcional. Si se informa `java.opts`, los scripts `importar_atoms.ps1` e `importar_atom.sh` usan ese valor como opciones del proceso Java. Si falta el fichero o la clave, usan `-Xms12g -Xmx12g`.
+## Calidad, seguridad y documentación
 
-### Email durante pruebas
+El proyecto dispone de pruebas unitarias, pruebas de integración configurables, comprobación de formato con Spotless y análisis de seguridad.
 
-La clave `app.email.enabled` de `app.properties` controla los mensajes de éxito y de error. En operación puede mantenerse en `true`; para corpus, desarrollo y pruebas de rendimiento usar:
+La documentación técnica se organiza en:
 
-```properties
-app.email.enabled=false
-```
+- [`docs/auditorias/`](docs/auditorias/)
+- [`docs/plan_inicial_implementacion_2026-09-26.md`](docs/plan_inicial_implementacion_2026-09-26.md)
+- [`docs/releases/`](docs/releases/)
+- [`docs/migraciones/`](docs/migraciones/)
 
-Al desactivarla, la importación y sus métricas continúan normalmente y el log indica que el envío fue omitido.
-### Resumen previo de una importación
+## Licencia
 
-Antes de pedir confirmación, `importar_atoms.ps1` muestra el destino de base de datos, cada bloque que se ejecutará (tipo, grupo, modo, origen y JAR), y los parámetros efectivos de persistencia.
-
-El bloque **Comportamiento aplicable a esta ejecución** se adapta a la línea de comandos: una ejecución `local` solo informa de la lectura del ATOM local; una ejecución `internet` informa de su carácter incremental y de los reintentos HTTP. Del mismo modo, solo se muestran los filtros cuando se ha seleccionado `con_filtros`; para `sin_filtros` se confirma expresamente que no se aplicarán.
-
-La pantalla también expone el modo efectivo de creación de esquema, tamaño de lote, conexiones, opciones Java, persistencia de rechazos y estado del email, para que la confirmación se tome con todos los datos operativos reales.
-
-Ejemplo:
-
-```properties
-java.opts=-Xms32g -Xmx32g
-```
-
-`bd.properties` y `jakarta_filtro.properties` deben conservar las claves Jakarta JDBC existentes:
-
-```properties
-jakarta.persistence.jdbc.url=
-jakarta.persistence.jdbc.driver=
-jakarta.persistence.jdbc.user=
-jakarta.persistence.jdbc.password=
-```
-
-Antes de ejecutar una importacion real, sustituya todos los valores `CHANGE_ME_*` de las plantillas copiadas.
-
----
-
-## 📚 Licencia
-
-Este proyecto está distribuido bajo los términos de la licencia MIT. Consulte el archivo `LICENSE` para más detalles.
-
----
-
-## 📧 Contacto
-
-Para consultas, soporte o sugerencias, puede contactar a:
-
-- **Autor:** Juan Antonio
-- **Correo:** [introducir correo aquí]
-
----
-
-*Desarrollado con el objetivo de facilitar el acceso y análisis de la información pública de forma eficiente y automatizada.*
+Este proyecto se distribuye bajo licencia MIT. Consulte [`LICENSE`](LICENSE).

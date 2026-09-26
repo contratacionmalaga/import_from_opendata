@@ -1,9 +1,29 @@
 name: Setup project artifacts
 description: Prepare project-specific local artifacts.
 
+inputs:
+  package-token:
+    description: Token with read access to the jarios-parent repository.
+    required: true
+
 runs:
   using: composite
   steps:
+    - name: Check out jarios-parent
+      uses: actions/checkout@v7.0.1
+      with:
+        repository: contratacionmalaga/jarios-parent
+        ref: v1.0.14
+        path: .ci/jarios-parent
+        token: ${{ inputs.package-token }}
+
+    - name: Install jarios-parent
+      shell: bash
+      working-directory: .ci/jarios-parent
+      run: |
+        chmod +x ./mvnw
+        ./mvnw -B -ntp install
+
     - name: Install local CODICE artifacts
       shell: bash
       run: |
