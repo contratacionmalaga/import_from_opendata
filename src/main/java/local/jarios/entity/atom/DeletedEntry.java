@@ -13,7 +13,6 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,7 +24,7 @@ import lombok.Setter;
 @Table(
     name = "deleted_entry",
     indexes = {@Index(name = "uk_deleted_entry_ref", columnList = "ref", unique = true)})
-public class DeletedEntry extends AuditableCreatedAt {
+public class DeletedEntry {
 
   @Id
   @GeneratedValue(generator = "UUID")

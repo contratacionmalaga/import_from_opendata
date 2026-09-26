@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,7 +37,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "additional_publication_status")
-public class AdditionalPublicationStatus extends AuditableCreatedAt {
+public class AdditionalPublicationStatus {
 
   /** Identificador único universal (UUID) del estado de publicación. */
   @Id

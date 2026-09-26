@@ -106,10 +106,8 @@ class ExecutionEmailReportBuilderTest {
             TipoSindicacion.MAYORES,
             420,
             Date.valueOf(LocalDate.parse("2026-08-14")));
-    log.setCreatedAt(LocalDateTime.parse("2026-08-19T02:14:00"));
 
     Estadistica estadistica = new Estadistica(log);
-    estadistica.setCreatedAt(LocalDateTime.parse("2026-08-19T02:14:10"));
     estadistica.setEquipo("DESKTOP-JARIOS");
     estadistica.setDuracionParseo("0h 6m 58s 0ms");
     estadistica.setDuracionPersistencia("0h 1m 44s 0ms");

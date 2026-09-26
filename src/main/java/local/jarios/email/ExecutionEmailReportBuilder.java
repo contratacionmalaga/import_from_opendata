@@ -215,11 +215,6 @@ public final class ExecutionEmailReportBuilder {
     html.append("</tbody></table></td>");
 
     html.append("<td class=\"section\"><h2>Datos técnicos</h2><table class=\"kv\"><tbody>");
-    appendTableRow(html, "Log creado", formatDateTime(log == null ? null : log.getCreatedAt()));
-    appendTableRow(
-        html,
-        "Estadistica creada",
-        formatDateTime(estadistica == null ? null : estadistica.getCreatedAt()));
     appendTableRow(html, "Registros log", formatNumber(log == null ? 0L : log.getNRegistros()));
     appendTableRow(html, "Version", appVersion);
     html.append("</tbody></table></td></tr></table>");

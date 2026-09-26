@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,7 +32,7 @@ import lombok.Setter;
 // 4.30 Requisitos de participación
 // Capacidades requeridas a los licitadores durante el proceso de licitación.
 // Puede aparecer tanto a nivel de lote como para toda la licitación
-public class TendererQualificationRequest extends AuditableCreatedAt {
+public class TendererQualificationRequest {
 
   @Id
   @GeneratedValue(generator = "UUID")

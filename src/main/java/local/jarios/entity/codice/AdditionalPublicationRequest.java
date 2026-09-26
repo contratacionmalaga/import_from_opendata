@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "additional_publication_request")
-public class AdditionalPublicationRequest extends AuditableCreatedAt {
+public class AdditionalPublicationRequest {
 
   /** Identificador único generado automáticamente como UUID. */
   @Id

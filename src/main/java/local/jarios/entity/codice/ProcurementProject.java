@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,7 +30,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "procurement_project")
-public class ProcurementProject extends AuditableCreatedAt {
+public class ProcurementProject {
 
   //
   // PROPIEDADES DEL MODELO

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "notice_info")
-public class NoticeInfo extends AuditableCreatedAt {
+public class NoticeInfo {
 
   @Id
   @GeneratedValue(generator = "UUID")

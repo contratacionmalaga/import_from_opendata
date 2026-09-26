@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Table(name = "filtros_nifs")
 @Slf4j
-public class Nif extends AuditableCreatedAt {
+public class Nif {
 
   /** Identificador único del órgano de contratación. */
   @Id

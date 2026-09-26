@@ -28,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "log")
-public class Log extends AuditableCreatedAt {
+public class Log {
 
   // Primary Key
   @Id

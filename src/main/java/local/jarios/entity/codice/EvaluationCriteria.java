@@ -13,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import local.jarios.enums.TipoSolvencia;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,7 +41,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "evaluation_criteria")
-public class EvaluationCriteria extends AuditableCreatedAt {
+public class EvaluationCriteria {
 
   /**
    * Identificador único del criterio de evaluación en formato UUID. Se genera automáticamente al

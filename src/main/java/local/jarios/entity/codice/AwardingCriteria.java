@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 import local.jarios.codice.AwardingTerms;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,7 +38,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "awarding_criteria")
-public class AwardingCriteria extends AuditableCreatedAt {
+public class AwardingCriteria {
 
   /** Identificador único universal (UUID) del estado de publicación. */
   @Id

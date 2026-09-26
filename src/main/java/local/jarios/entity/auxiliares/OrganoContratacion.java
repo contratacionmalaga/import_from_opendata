@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Table(name = "filtros_organos_contratacion")
 @Slf4j
-public class OrganoContratacion extends AuditableCreatedAt {
+public class OrganoContratacion {
 
   /** Identificador único del órgano de contratación. */
   @Id

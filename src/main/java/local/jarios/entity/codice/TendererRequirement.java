@@ -11,7 +11,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,7 +28,7 @@ import lombok.Setter;
 // 4.30 Requisitos de participación
 // Condiciones de admisión (pueden ser más de una): Requerimientos específicos que deben cumplir los
 // licitadores como por ejemplo los criterios de admisión y exclusión
-public class TendererRequirement extends AuditableCreatedAt {
+public class TendererRequirement {
 
   @Id
   @GeneratedValue(generator = "UUID")

@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,7 +27,7 @@ import lombok.Setter;
 @Table(name = "tender_result")
 
 //
-public class TenderResult extends AuditableCreatedAt {
+public class TenderResult {
 
   @Id
   @GeneratedValue(generator = "UUID")

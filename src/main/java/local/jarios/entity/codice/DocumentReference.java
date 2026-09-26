@@ -14,7 +14,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import local.jarios.enums.TipoDocumento;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,7 +38,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "document_reference")
-public class DocumentReference extends AuditableCreatedAt {
+public class DocumentReference {
 
   /**
    * Identificador único de la entidad en formato UUID. Se genera automáticamente al persistir la

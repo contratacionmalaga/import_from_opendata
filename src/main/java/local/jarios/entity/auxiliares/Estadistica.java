@@ -26,7 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "estadistica")
-public class Estadistica extends AuditableCreatedAt {
+public class Estadistica {
 
   /** Identificador. */
   @Id

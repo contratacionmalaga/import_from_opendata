@@ -11,7 +11,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +26,7 @@ import lombok.Setter;
 @Table(name = "uuid")
 
 //
-public class Uuid extends AuditableCreatedAt {
+public class Uuid {
 
   @Id
   @GeneratedValue(generator = "UUID")

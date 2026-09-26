@@ -305,9 +305,6 @@ class RepositoryImplPersistenceIntegrationTest {
     try (SessionFactory sessionFactory = newSessionFactory()) {
       RepositoryImpl repository = new RepositoryImpl(sessionFactory);
       seedExistingDeletedEntry(sessionFactory, "https://example.test/licitacion-123");
-      LocalDateTime originalCreatedAt =
-          singleDate(
-              sessionFactory, "SELECT d.createdAt FROM DeletedEntry d WHERE d.ref LIKE '%123'");
 
       Log importLog = new Log(LugarImportacion.INTERNET, TipoSindicacion.MAYORES);
       Feed importFeed = feed("new-deleted-feed");
@@ -338,10 +335,6 @@ class RepositoryImplPersistenceIntegrationTest {
                   sessionFactory,
                   "SELECT f.linkSelf FROM DeletedEntry d JOIN d.feed f WHERE d.ref LIKE '%123'"))
           .isEqualTo("new-deleted-feed");
-      assertThat(
-              singleDate(
-                  sessionFactory, "SELECT d.createdAt FROM DeletedEntry d WHERE d.ref LIKE '%123'"))
-          .isEqualTo(originalCreatedAt);
       assertThat(singleDeletedEntryOpcion(sessionFactory)).isEqualTo(DeletedEntryOpcion.ACTUALIZAR);
     }
   }

@@ -11,7 +11,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,7 +28,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "contract_execution_requirement")
-public class ContractExecutionRequirement extends AuditableCreatedAt {
+public class ContractExecutionRequirement {
 
   /**
    * Identificador único de la condición especial de ejecución. Generado automáticamente como UUID.

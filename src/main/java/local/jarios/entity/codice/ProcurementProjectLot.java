@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,7 +30,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "procurement_project_lot")
 // 4.11 Lotes
-public class ProcurementProjectLot extends AuditableCreatedAt {
+public class ProcurementProjectLot {
 
   @Id
   @GeneratedValue(generator = "UUID")

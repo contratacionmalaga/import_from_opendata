@@ -25,7 +25,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "historico_deleted_entry")
-public class HistoricoDeletedEntry extends AuditableCreatedAt {
+public class HistoricoDeletedEntry {
 
   @Id
   @GeneratedValue(generator = "UUID")

@@ -11,7 +11,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,7 +36,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "classification_category")
-public class ClassificationCategory extends AuditableCreatedAt {
+public class ClassificationCategory {
 
   /**
    * Identificador único universal (UUID) de la categoría de clasificación.

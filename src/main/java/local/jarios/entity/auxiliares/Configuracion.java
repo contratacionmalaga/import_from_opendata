@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Table(name = "configuracion")
 @Slf4j
-public class Configuracion extends AuditableCreatedAt {
+public class Configuracion {
 
   /** Identificador. */
   @Id

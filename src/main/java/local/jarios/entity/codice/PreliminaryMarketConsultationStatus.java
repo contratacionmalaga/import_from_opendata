@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.atom.Entry;
-import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,7 +31,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "preliminary_market_consultation_status")
-public class PreliminaryMarketConsultationStatus extends AuditableCreatedAt {
+public class PreliminaryMarketConsultationStatus {
 
   @Id
   @GeneratedValue(generator = "UUID")
