@@ -414,6 +414,7 @@ public final class ExecutionEmailReportBuilder {
     return root.getClass().getName() + ": " + sanitizeSensitiveText(value(root.getMessage()));
   }
 
+  @SuppressWarnings("INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE")
   private static String sanitizeAndLimitStackTrace(Throwable exception, int maxChars) {
     if (exception == null) {
       return "No se recibió una excepción técnica.";
