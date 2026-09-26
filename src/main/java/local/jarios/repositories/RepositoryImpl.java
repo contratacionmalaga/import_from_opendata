@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import local.jarios.common.util.PropertiesFiles;
 import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
@@ -29,8 +28,6 @@ import local.jarios.enums.DeletedEntryOpcion;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.helpers.LocalDateTimeHelper;
-import local.jarios.properties.api.PropertiesManagerServiceImpl;
-import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.services.ImportPersistencePlan;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
@@ -408,6 +405,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         entry.setFeed(feed);
       }
       persistEntries(session, entries, createdAtByEntryId);
+      entries.clear();
     }
   }
 
@@ -674,23 +672,16 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   }
 
   private int getEntryFlushWindow() {
-    String configuredWindow;
-    try {
-      configuredWindow =
-          PropertiesManagerServiceImpl.getInstance()
-              .getProperty(PropertiesFiles.HIBERNATE, "hibernate.persistence.entry_flush_window");
-    } catch (PropertiesManagerException ex) {
-      throw new IllegalStateException(
-          "No se pudo leer la ventana ORM de hibernate.properties.", ex);
-    }
-    if (configuredWindow == null || configuredWindow.isBlank()) {
+    Object configuredWindow =
+        sessionFactory.getProperties().get("hibernate.persistence.entry_flush_window");
+    if (configuredWindow == null || configuredWindow.toString().isBlank()) {
       return 0;
     }
 
-    int window = Integer.parseInt(configuredWindow);
-    if (window <= 0) {
+    int window = Integer.parseInt(configuredWindow.toString());
+    if (window < 0) {
       throw new IllegalArgumentException(
-          "hibernate.persistence.entry_flush_window debe ser positivo.");
+          "hibernate.persistence.entry_flush_window no puede ser negativo.");
     }
     return window;
   }
