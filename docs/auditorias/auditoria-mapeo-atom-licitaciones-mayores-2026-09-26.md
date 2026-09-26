@@ -32,6 +32,17 @@ Una aparición indica que el campo está presente en ese número de nodos del fi
 
 Los cuatro campos de sistema de contratación original añadidos recientemente ya están mapeados en `MapperTenderingProcess`. No aparecen en este fichero concreto, por lo que su presencia en origen no se ha podido validar aquí.
 
+## Estado de remediación
+
+| Fase | Estado | Validación |
+|---|---|---|
+| Fase 1 — plazos de licitación | **Realizada en código** | `MapperTenderingProcessTest` comprueba que los tres plazos reciben valores distintos; las pruebas de cobertura y consistencia de entidades también son correctas. |
+
+La migración pendiente de aplicar en cada base de datos está en
+`docs/migrations/v7.5.3/01_add_participation_request_reception_period.sql`. El dato histórico
+de `document_availability_period` requiere recargar los ATOM afectados tras desplegar el mapper
+corregido.
+
 ## Campos y bloques que no se incorporan
 
 ### Prioridad alta
@@ -39,8 +50,8 @@ Los cuatro campos de sistema de contratación original añadidos recientemente y
 | Ruta ATOM | Apariciones | Situación actual | Consecuencia |
 |---|---:|---|---|
 | `LocatedContractingParty/ParentLocatedParty` y toda su jerarquía | 493 entradas; profundidad de hasta 8 padres | No existe ninguna llamada a `getParentLocatedParty()` ni entidad relacional que la reciba. | Se pierde la cadena de organismos superiores, sus nombres e identificadores. |
-| `TenderingProcess/DocumentAvailabilityPeriod` | 277 | Existe una columna de destino, pero `MapperTenderingProcess` invoca su mapeo con `getTenderSubmissionDeadlinePeriod()` en lugar de `getDocumentAvailabilityPeriod()`. | `document_availability_period` se llena con el plazo de presentación de ofertas; el plazo real no se guarda. |
-| `TenderingProcess/ParticipationRequestReceptionPeriod` | 16 | No se lee ni existe un destino en `TenderingProcess`. | Se pierde el plazo de recepción de solicitudes de participación. |
+| `TenderingProcess/DocumentAvailabilityPeriod` | 277 | **Corregido en Fase 1.** Se alimenta desde `getDocumentAvailabilityPeriod()`. | La columna existente ya recibe el plazo correcto en importaciones nuevas. |
+| `TenderingProcess/ParticipationRequestReceptionPeriod` | 16 | **Corregido en Fase 1.** Campo y mapeo incorporados; requiere aplicar la migración de la versión siguiente. | Se conserva en importaciones nuevas una vez aplicada la migración. |
 
 ### Prioridad media
 
@@ -93,12 +104,12 @@ Debe recibir `tenderingProcessType.getDocumentAvailabilityPeriod()`. Este cambio
 
 ## Propuesta de corrección por fases
 
-1. **Corregir el plazo de disponibilidad** y añadir una prueba unitaria con dos periodos distintos. Es un error de integridad de datos ya existentes.
-2. **Añadir los campos escalares de alta utilidad**: actividad, fax, país de órgano contratante, vía de ejecución, idioma, endpoint, plazo de solicitudes y los dos datos de años de actividad. Incluir migración SQL versionada y pruebas de mapper.
+1. **Completada — Fase 1:** corregir el plazo de disponibilidad, incorporar el plazo de solicitudes de participación y añadir una prueba con periodos distintos.
+2. **Añadir los campos escalares de alta utilidad**: actividad, fax, país de órgano contratante, vía de ejecución, idioma, endpoint y los dos datos de años de actividad. Incluir migración SQL versionada y pruebas de mapper.
 3. **Modelar `ParentLocatedParty` como entidad jerárquica** asociada a `ContractFolderStatus`, con nombre, identificadores, padre y orden. No debe comprimirse en columnas fijas porque el fichero llega a ocho niveles.
 4. **Decidir la retención de atributos semánticos**. Para importación analítica, como mínimo conviene conservar `currencyID`; para trazabilidad completa, guardar también catálogo (`listURI`) y etiqueta (`name`) en las entidades de código o en una tabla de metadatos.
 5. **Añadir una prueba de cobertura de muestra**: cargar este ATOM en un test de integración y afirmar la presencia de cada ruta soportada y la ausencia explícitamente aceptada de las no soportadas. El inventario generado debe actualizarse cuando cambie la versión CÓDICE.
 
 ## Resultado de la auditoría
 
-El mapeo actual es funcional para el núcleo del expediente, pero **no es una copia completa de la estructura de cada `entry`**. Antes de afirmar cobertura total deben corregirse, como mínimo, el error de `DocumentAvailabilityPeriod`, la jerarquía `ParentLocatedParty` y los campos de prioridad media enumerados.
+El mapeo actual es funcional para el núcleo del expediente, pero **no es una copia completa de la estructura de cada `entry`**. La Fase 1 está resuelta en código. Antes de afirmar cobertura total deben corregirse la jerarquía `ParentLocatedParty` y los campos de prioridad media enumerados.

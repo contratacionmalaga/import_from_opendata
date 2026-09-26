@@ -98,6 +98,10 @@ public class TenderingProcess {
   @Column(name = "tender_submission_deadline_period")
   private LocalDateTime tenderSubmissionDeadlinePeriod;
 
+  // Fecha y hora límite para la recepción de solicitudes de participación.
+  @Column(name = "participation_request_reception_period")
+  private LocalDateTime participationRequestReceptionPeriod;
+
   // Indicador de subasta electrónica.
   @Column(name = "auction_constraint_indicator")
   private Boolean auctionConstraintIndicator;

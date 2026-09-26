@@ -130,7 +130,9 @@ public final class MapperTenderingProcess {
     mapTenderSubmissionDeadlinePeriod(
         tenderingProcess, tenderingProcessType.getTenderSubmissionDeadlinePeriod());
     mapDocumentAvailabilityPeriod(
-        tenderingProcess, tenderingProcessType.getTenderSubmissionDeadlinePeriod());
+        tenderingProcess, tenderingProcessType.getDocumentAvailabilityPeriod());
+    mapParticipationRequestReceptionPeriod(
+        tenderingProcess, tenderingProcessType.getParticipationRequestReceptionPeriod());
     mapEconomicOperatorShortList(
         tenderingProcess, tenderingProcessType.getEconomicOperatorShortList());
 
@@ -184,6 +186,13 @@ public final class MapperTenderingProcess {
     LocalDateTime value = getLocalDateTimeFromPeriodType(type);
     if (value != null) {
       tp.setDocumentAvailabilityPeriod(value);
+    }
+  }
+
+  private static void mapParticipationRequestReceptionPeriod(TenderingProcess tp, PeriodType type) {
+    LocalDateTime value = getLocalDateTimeFromPeriodType(type);
+    if (value != null) {
+      tp.setParticipationRequestReceptionPeriod(value);
     }
   }
 
