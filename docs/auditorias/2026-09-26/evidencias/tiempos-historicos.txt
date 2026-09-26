@@ -1,0 +1,4 @@
+1589:2026-08-17 17:43:07.830 INFO  [main] variants.pliegos.OpenDataPliegosInternet:74   - Final del parseo. Duración: 0h 46m 32s 894ms
+1602:2026-08-17 17:43:07.883 INFO  [main] rios.core.abstracts.AbstractOpenDataBase:239  - PERSISTENCIA EN LA BASE DE DATOS
+1605:2026-08-17 17:43:48.424 INFO  [main] local.jarios.repositories.RepositoryImpl:370  - Persistiendo feeds en transaccion: feeds=519, entries=104867, deletedEntries=661
+1606:2026-08-17 17:56:11.437 INFO  [main] variants.pliegos.AbstractOpenDataPliegos:104  - Persistida la importacion completa en una unica transaccion.

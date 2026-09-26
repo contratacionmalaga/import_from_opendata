@@ -1,3 +1,5 @@
+> Revisión 2026-09-26 — HISTÓRICO / PARCIAL: sustituido como diagnóstico actual por auditorias/2026-09-26. No todas sus recomendaciones están cerradas.
+
 # Resumen ejecutivo
 
 Auditoria realizada sobre el estado actual del workspace el 2026-05-09. El proyecto es Java 21 con Hibernate nativo, JPA annotations, MariaDB, HikariCP y un repositorio propio basado en `SessionFactory`; no se detecta Spring Data ni controladores REST en `src/main/java`.

@@ -35,6 +35,7 @@ public final class PropertiesKeys {
   public static final String APP_TIPO_SINDICACION = "app.tipo_sindicacion";
   public static final String APP_PERSISTIR_HISTORICOS_RECHAZADOS =
       "app.persistir_historicos_rechazados";
+  public static final String APP_EMAIL_ENABLED = "app.email.enabled";
   public static final String APP_HTTP_MAX_RETRIES = "app.http.max_retries";
   public static final String APP_HTTP_RETRY_DELAY_MS = "app.http.retry_delay_ms";
   public static final String APP_HTTP_REQUEST_DELAY_MS = "app.http.request_delay_ms";

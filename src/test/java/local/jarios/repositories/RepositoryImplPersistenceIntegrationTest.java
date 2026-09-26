@@ -1,6 +1,7 @@
 package local.jarios.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,8 +20,10 @@ import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.entity.codice.ContractFolderStatus;
+import local.jarios.entity.codice.TenderingProcess;
 import local.jarios.enums.DeletedEntryOpcion;
 import local.jarios.enums.EntryOpcion;
+import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.services.ImportPersistencePlan;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -79,6 +82,54 @@ class RepositoryImplPersistenceIntegrationTest {
           .isAfterOrEqualTo(originalCreatedAt);
       assertThat(count(sessionFactory, "SELECT COUNT(h) FROM HistoricoEntry h")).isEqualTo(1L);
       assertThat(count(sessionFactory, "SELECT COUNT(e) FROM Estadistica e")).isEqualTo(1L);
+    }
+  }
+
+  @Test
+  void persists_original_contracting_system_fields_with_the_tendering_process_graph()
+      throws Exception {
+    try (SessionFactory sessionFactory = newSessionFactory()) {
+      RepositoryImpl repository = new RepositoryImpl(sessionFactory);
+      Log importLog = new Log(LugarImportacion.LOCAL, TipoSindicacion.MAYORES);
+      Feed importFeed = feed("feed-with-original-contracting-system");
+      Entry entry = entry("entry-1", "short-1", "title", "nif");
+      ContractFolderStatus status = entry.getContractFolderStatusList().getFirst();
+      TenderingProcess tenderingProcess = new TenderingProcess();
+      tenderingProcess.setContractFolderStatus(status);
+      tenderingProcess.setOriginalContractingSystemId("SYSTEM-42");
+      tenderingProcess.setOriginalContractingSystemDescription("Sistema original");
+      tenderingProcess.setOriginalContractingSystemLotId("LOT-7");
+      tenderingProcess.setOriginalContractingSystemLotDescription("Lote principal");
+      status.setTenderingProcess(tenderingProcess);
+      importFeed.getEntryList().add(entry);
+
+      repository.persistirImportacion(
+          new ImportPersistencePlan(
+              importLog,
+              null,
+              List.of(),
+              List.of(),
+              Set.of(importFeed),
+              List.of(),
+              new Estadistica(importLog)));
+
+      Object[] row =
+          sessionFactory.fromTransaction(
+              session ->
+                  session
+                      .createQuery(
+                          """
+                          SELECT t.originalContractingSystemId,
+                                 t.originalContractingSystemDescription,
+                                 t.originalContractingSystemLotId,
+                                 t.originalContractingSystemLotDescription
+                          FROM TenderingProcess t
+                          WHERE t.contractFolderStatus.entry.entryId = 'entry-1'
+                          """,
+                          Object[].class)
+                      .getSingleResult());
+
+      assertThat(row).containsExactly("SYSTEM-42", "Sistema original", "LOT-7", "Lote principal");
     }
   }
 
@@ -362,6 +413,47 @@ class RepositoryImplPersistenceIntegrationTest {
               singleString(
                   sessionFactory, "SELECT d.comment FROM DeletedEntry d WHERE d.ref LIKE '%123'"))
           .isEqualTo("newer");
+    }
+  }
+
+  @Test
+  void rolls_back_everything_when_a_late_flush_fails() {
+    try (SessionFactory sessionFactory = newSessionFactory()) {
+      RepositoryImpl repository = new RepositoryImpl(sessionFactory);
+      Log importLog = new Log(LugarImportacion.LOCAL, TipoSindicacion.MAYORES);
+      Feed importFeed = feed("rollback-feed");
+      importFeed
+          .getDeletedEntryList()
+          .add(deletedEntry("https://example.test/rollback", "rollback"));
+
+      List<Entry> entries = new ArrayList<>();
+      for (int index = 0; index < 20; index++) {
+        entries.add(entry("entry-" + index, "short-" + index, "title", "nif-" + index));
+      }
+      entries.add(entry("entry-invalid", "short-invalid", "x".repeat(2501), "nif-invalid"));
+
+      assertThatThrownBy(
+              () ->
+                  repository.persistirImportacion(
+                      new ImportPersistencePlan(
+                          importLog,
+                          null,
+                          List.of(),
+                          List.of(),
+                          Set.of(importFeed),
+                          Set.of(),
+                          List.of(),
+                          Map.of(importFeed, entries),
+                          new Estadistica(importLog))))
+          .isInstanceOf(MiRepositoryException.class);
+
+      assertThat(count(sessionFactory, "SELECT COUNT(l) FROM Log l")).isZero();
+      assertThat(count(sessionFactory, "SELECT COUNT(f) FROM Feed f")).isZero();
+      assertThat(count(sessionFactory, "SELECT COUNT(e) FROM Entry e")).isZero();
+      assertThat(count(sessionFactory, "SELECT COUNT(c) FROM ContractFolderStatus c")).isZero();
+      assertThat(count(sessionFactory, "SELECT COUNT(d) FROM DeletedEntry d")).isZero();
+      assertThat(count(sessionFactory, "SELECT COUNT(h) FROM HistoricoDeletedEntry h")).isZero();
+      assertThat(count(sessionFactory, "SELECT COUNT(e) FROM Estadistica e")).isZero();
     }
   }
 

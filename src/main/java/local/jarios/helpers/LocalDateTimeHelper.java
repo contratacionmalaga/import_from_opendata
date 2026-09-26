@@ -48,9 +48,22 @@ public final class LocalDateTimeHelper {
    */
   public static String getDiferenciaLocalDateTime(
       LocalDateTime localDateTimeInicial, LocalDateTime localDateTimeFinal) {
+    return formatDuration(Duration.between(localDateTimeInicial, localDateTimeFinal));
+  }
 
-    //
-    Duration duracion = Duration.between(localDateTimeInicial, localDateTimeFinal);
+  /**
+   * Formatea un intervalo medido con {@link System#nanoTime()}, que no se ve afectado por cambios
+   * en el reloj del sistema.
+   *
+   * @param inicioNanos lectura inicial de {@code System.nanoTime()}.
+   * @param finNanos lectura final de {@code System.nanoTime()}.
+   * @return Duración en formato "Xh Ym Zs Wms".
+   */
+  public static String getDiferenciaNanos(long inicioNanos, long finNanos) {
+    return formatDuration(Duration.ofNanos(Math.max(0L, finNanos - inicioNanos)));
+  }
+
+  private static String formatDuration(Duration duracion) {
     long horas = duracion.toHours();
     long minutos = duracion.toMinutesPart();
     long segundos = duracion.toSecondsPart();

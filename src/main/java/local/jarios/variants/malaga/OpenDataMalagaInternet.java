@@ -1,6 +1,5 @@
 package local.jarios.variants.malaga;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import local.jarios.common.util.Mensajes;
 import local.jarios.core.bootstrap.OpenDataBootstrapHelper;
@@ -36,6 +35,7 @@ public class OpenDataMalagaInternet extends AbstractOpenDataMalaga {
 
     context.setLugarImportacion(LugarImportacion.INTERNET);
     context.setTipoSindicacion(tipo);
+    adquirirExclusionImportacion(context);
 
     log.info("Lugar de Importación: {}.", LugarImportacion.INTERNET);
     log.info("Tipo de Sindicación: {}.", tipo);
@@ -66,11 +66,10 @@ public class OpenDataMalagaInternet extends AbstractOpenDataMalaga {
 
     imprimirTitulo("INICIO DEL PARSEO DE LOS FICHEROS ATOMS");
 
-    LocalDateTime inicio = LocalDateTimeHelper.getLocalDateTimeNow();
+    long inicio = System.nanoTime();
     FeedHelper.parsearFeedsDesdeInternet(context);
-    LocalDateTime fin = LocalDateTimeHelper.getLocalDateTimeNow();
 
-    String duracion = LocalDateTimeHelper.getDiferenciaLocalDateTime(inicio, fin);
+    String duracion = LocalDateTimeHelper.getDiferenciaNanos(inicio, System.nanoTime());
     log.info("Final del parseo. Duración: {}", duracion);
 
     log.info(

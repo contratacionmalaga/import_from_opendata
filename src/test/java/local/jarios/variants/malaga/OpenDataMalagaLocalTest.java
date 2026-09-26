@@ -100,6 +100,9 @@ class OpenDataMalagaLocalTest {
     assertThat(servicePrincipal.lastPlan.nifList()).isEmpty();
     assertThat(servicePrincipal.lastPlan.organoContratacionList()).containsExactly(organo);
     assertThat(servicePrincipal.lastPlan.estadistica().getNumEntries()).isEqualTo(2L);
+    assertThat(servicePrincipal.persistedEstadistica)
+        .isSameAs(servicePrincipal.lastPlan.estadistica());
+    assertThat(servicePrincipal.persistedEstadistica.getDuracionPersistencia()).isNotBlank();
   }
 
   private static void injectServicePrincipal(
@@ -149,6 +152,7 @@ class OpenDataMalagaLocalTest {
   private static final class CountingServicePrincipal implements ServicePrincipal {
     private final long entriesCount;
     private ImportPersistencePlan lastPlan;
+    private Estadistica persistedEstadistica;
 
     private CountingServicePrincipal(long entriesCount) {
       this.entriesCount = entriesCount;
@@ -173,7 +177,9 @@ class OpenDataMalagaLocalTest {
         throws MiServiceException {}
 
     @Override
-    public void persistirEstadistica(Estadistica estadistica) throws MiServiceException {}
+    public void persistirEstadistica(Estadistica estadistica) throws MiServiceException {
+      this.persistedEstadistica = estadistica;
+    }
 
     @Override
     public void persistirSetFeeds(Log miLog, Set<Feed> feedSet) throws MiServiceException {}

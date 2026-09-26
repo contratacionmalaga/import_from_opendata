@@ -2,7 +2,6 @@ package local.jarios.repositories;
 
 import jakarta.persistence.TypedQuery;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import local.jarios.common.util.PropertiesFiles;
 import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
@@ -28,12 +28,16 @@ import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
 import local.jarios.enums.DeletedEntryOpcion;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.exceptions.MiRepositoryException;
+import local.jarios.helpers.LocalDateTimeHelper;
+import local.jarios.properties.api.PropertiesManagerServiceImpl;
+import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.services.ImportPersistencePlan;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.stat.Statistics;
 
 /**
  * Implementación del repositorio que gestiona la persistencia y recuperación de datos mediante
@@ -180,8 +184,13 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     Objects.requireNonNull(plan.feedSet(), "plan.feedSet no puede ser null");
     Objects.requireNonNull(plan.estadistica(), "plan.estadistica no puede ser null");
 
+    HibernateStatisticsSnapshot statisticsBefore =
+        HibernateStatisticsSnapshot.capture(sessionFactory);
+    long heapBefore = usedHeapBytes();
+
     ejecutarEnTransaccion(
         session -> {
+          long inicioPreparacion = System.nanoTime();
           Log miLog = plan.miLog();
           session.persist(miLog);
 
@@ -200,6 +209,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
             oc.setMiLog(miLog);
             session.persist(oc);
           }
+          long finPreparacion = System.nanoTime();
 
           Set<String> updatedEntryIds = safeSet(plan.replacementEntryIds());
           log.info(
@@ -207,9 +217,16 @@ public class RepositoryImpl implements Repository, AutoCloseable {
               plan.feedSet().size(),
               safeList(plan.historicoList()).size(),
               updatedEntryIds.size());
+          long inicioConsultaReemplazos = System.nanoTime();
           Map<String, LocalDateTime> createdAtByEntryId =
               getCreatedAtByEntryId(session, updatedEntryIds);
+          long finConsultaReemplazos = System.nanoTime();
+
+          long inicioBorradoReemplazos = System.nanoTime();
           deleteExistingEntriesForUpdates(session, updatedEntryIds);
+          long finBorradoReemplazos = System.nanoTime();
+
+          long inicioPersistenciaGrafo = System.nanoTime();
           persistFeedsInCurrentTransaction(
               session, miLog, plan.feedSet(), createdAtByEntryId, plan.entriesByFeed());
           persistHistoricosEntry(session, miLog, safeList(plan.historicoList()));
@@ -217,9 +234,21 @@ public class RepositoryImpl implements Repository, AutoCloseable {
           plan.estadistica().setMiLog(miLog);
           session.persist(plan.estadistica());
           flushAndClear(session);
+          long finPersistenciaGrafo = System.nanoTime();
+
+          log.info(
+              "Fases de persistencia: preparacion={}, consultaReemplazos={}, borradoReemplazos={}, grafoYFlush={}",
+              LocalDateTimeHelper.getDiferenciaNanos(inicioPreparacion, finPreparacion),
+              LocalDateTimeHelper.getDiferenciaNanos(
+                  inicioConsultaReemplazos, finConsultaReemplazos),
+              LocalDateTimeHelper.getDiferenciaNanos(inicioBorradoReemplazos, finBorradoReemplazos),
+              LocalDateTimeHelper.getDiferenciaNanos(
+                  inicioPersistenciaGrafo, finPersistenciaGrafo));
           return null;
         },
         "persistirImportacion");
+
+    logImportPersistenceProfile(statisticsBefore, heapBefore);
   }
 
   @Override
@@ -227,30 +256,38 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       throws MiRepositoryException {
     Objects.requireNonNull(tipoSindicacion, "tipoSindicacion no puede ser null");
 
-    return ejecutarEnTransaccion(
-        session -> {
-          TypedQuery<EntrySnapshot> query =
-              session.createQuery(
-                  """
+    long inicioConsulta = System.nanoTime();
+    Map<String, EntrySnapshot> snapshots =
+        ejecutarEnTransaccion(
+            session -> {
+              TypedQuery<EntrySnapshot> query =
+                  session.createQuery(
+                      """
           SELECT new local.jarios.repositories.EntrySnapshot(e.entryId, e.updated)
           FROM Entry e
           JOIN e.feed f
           JOIN f.miLog l
           WHERE l.tipoSindicacion = :tipoSindicacion
           """,
-                  EntrySnapshot.class);
-          query.setParameter("tipoSindicacion", tipoSindicacion);
-          List<EntrySnapshot> snapshots = query.getResultList();
+                      EntrySnapshot.class);
+              query.setParameter("tipoSindicacion", tipoSindicacion);
+              List<EntrySnapshot> snapshotRows = query.getResultList();
 
-          Map<String, EntrySnapshot> mapSnapshots = new HashMap<>();
-          if (snapshots != null) {
-            for (EntrySnapshot snapshot : snapshots) {
-              mapSnapshots.put(snapshot.entryId(), snapshot);
-            }
-          }
-          return mapSnapshots;
-        },
-        "getEntrySnapshots");
+              Map<String, EntrySnapshot> mapSnapshots = new HashMap<>();
+              if (snapshotRows != null) {
+                for (EntrySnapshot snapshot : snapshotRows) {
+                  mapSnapshots.put(snapshot.entryId(), snapshot);
+                }
+              }
+              return mapSnapshots;
+            },
+            "getEntrySnapshots");
+    log.info(
+        "Snapshots cargados: tipo={}, entries={}, duracion={}",
+        tipoSindicacion,
+        snapshots.size(),
+        LocalDateTimeHelper.getDiferenciaNanos(inicioConsulta, System.nanoTime()));
+    return snapshots;
   }
 
   @Override
@@ -310,8 +347,10 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   private void persistEntries(
       Session session, Collection<Entry> entries, Map<String, LocalDateTime> createdAtByEntryId) {
     int contadorEntry = 1;
-    int batchSize = getBatchSize();
-    int persistedSinceFlush = 0;
+    int entryFlushWindow = getEntryFlushWindow();
+    log.info("Ventana ORM de entries antes de flush/clear: {}", entryFlushWindow);
+    int entriesSinceFlush = 0;
+    int persistedRootsSinceFlush = 0;
 
     for (Entry entry : entries) {
       LocalDateTime originalCreatedAt = createdAtByEntryId.get(entry.getEntryId());
@@ -320,7 +359,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       }
 
       session.persist(entry);
-      persistedSinceFlush++;
+      persistedRootsSinceFlush++;
       log.debug(
           "  Persistido Entry - {} - {}",
           contadorEntry++ + "/" + entries.size(),
@@ -329,7 +368,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       for (ContractFolderStatus cfs : entry.getContractFolderStatusList()) {
         cfs.setEntry(entry);
         session.persist(cfs);
-        persistedSinceFlush++;
+        persistedRootsSinceFlush++;
         log.debug("    Persistido ContractFolderStatus: {}", cfs.getContractFolderId());
       }
 
@@ -337,12 +376,24 @@ public class RepositoryImpl implements Repository, AutoCloseable {
           entry.getPreliminaryMarketConsultationStatusList()) {
         pmcs.setEntry(entry);
         session.persist(pmcs);
-        persistedSinceFlush++;
+        persistedRootsSinceFlush++;
         log.debug(
             "    Persistido PreliminaryMarketConsultationStatus: {}", pmcs.getConsultationName());
       }
 
-      persistedSinceFlush = flushAndClearIfBatchReached(session, persistedSinceFlush, batchSize);
+      if (entryFlushWindow > 0) {
+        entriesSinceFlush =
+            flushAndClearIfBatchReached(session, entriesSinceFlush + 1, entryFlushWindow);
+        if (entriesSinceFlush == 0) {
+          persistedRootsSinceFlush = 0;
+        }
+      } else {
+        persistedRootsSinceFlush =
+            flushAndClearIfBatchReached(session, persistedRootsSinceFlush, getBatchSize());
+        if (persistedRootsSinceFlush == 0) {
+          entriesSinceFlush = 0;
+        }
+      }
     }
   }
 
@@ -357,10 +408,6 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         entry.setFeed(feed);
       }
       persistEntries(session, entries, createdAtByEntryId);
-      feed.setEntryList(new ArrayList<>());
-      if (feedEntries.getValue() != null) {
-        feedEntries.getValue().clear();
-      }
     }
   }
 
@@ -626,6 +673,101 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     return Integer.parseInt(batchSizeStr);
   }
 
+  private int getEntryFlushWindow() {
+    String configuredWindow;
+    try {
+      configuredWindow =
+          PropertiesManagerServiceImpl.getInstance()
+              .getProperty(PropertiesFiles.HIBERNATE, "hibernate.persistence.entry_flush_window");
+    } catch (PropertiesManagerException ex) {
+      throw new IllegalStateException(
+          "No se pudo leer la ventana ORM de hibernate.properties.", ex);
+    }
+    if (configuredWindow == null || configuredWindow.isBlank()) {
+      return 0;
+    }
+
+    int window = Integer.parseInt(configuredWindow);
+    if (window <= 0) {
+      throw new IllegalArgumentException(
+          "hibernate.persistence.entry_flush_window debe ser positivo.");
+    }
+    return window;
+  }
+
+  private void logImportPersistenceProfile(
+      HibernateStatisticsSnapshot statisticsBefore, long heapBefore) {
+    HibernateStatisticsSnapshot statisticsAfter =
+        HibernateStatisticsSnapshot.capture(sessionFactory);
+    if (statisticsBefore == null || statisticsAfter == null) {
+      log.info("Perfil Hibernate de persistencia no disponible: generate_statistics=false.");
+      return;
+    }
+
+    HibernateStatisticsSnapshot delta = statisticsAfter.subtract(statisticsBefore);
+    log.info(
+        "Perfil Hibernate persistencia: inserts={}, updates={}, deletes={}, flushes={}, preparedStatements={}, collections(recreate/update/remove)={}/{}/{}, heapAntesMiB={}, heapDespuesMiB={}",
+        delta.entityInserts(),
+        delta.entityUpdates(),
+        delta.entityDeletes(),
+        delta.flushes(),
+        delta.preparedStatements(),
+        delta.collectionRecreates(),
+        delta.collectionUpdates(),
+        delta.collectionRemoves(),
+        bytesToMebibytes(heapBefore),
+        bytesToMebibytes(usedHeapBytes()));
+  }
+
+  private static long usedHeapBytes() {
+    Runtime runtime = Runtime.getRuntime();
+    return runtime.totalMemory() - runtime.freeMemory();
+  }
+
+  private static long bytesToMebibytes(long bytes) {
+    return bytes / (1024 * 1024);
+  }
+
+  private record HibernateStatisticsSnapshot(
+      long entityInserts,
+      long entityUpdates,
+      long entityDeletes,
+      long flushes,
+      long preparedStatements,
+      long collectionRecreates,
+      long collectionUpdates,
+      long collectionRemoves) {
+
+    static HibernateStatisticsSnapshot capture(SessionFactory sessionFactory) {
+      Statistics statistics = sessionFactory.getStatistics();
+      if (statistics == null || !statistics.isStatisticsEnabled()) {
+        return null;
+      }
+
+      return new HibernateStatisticsSnapshot(
+          statistics.getEntityInsertCount(),
+          statistics.getEntityUpdateCount(),
+          statistics.getEntityDeleteCount(),
+          statistics.getFlushCount(),
+          statistics.getPrepareStatementCount(),
+          statistics.getCollectionRecreateCount(),
+          statistics.getCollectionUpdateCount(),
+          statistics.getCollectionRemoveCount());
+    }
+
+    HibernateStatisticsSnapshot subtract(HibernateStatisticsSnapshot before) {
+      return new HibernateStatisticsSnapshot(
+          entityInserts - before.entityInserts,
+          entityUpdates - before.entityUpdates,
+          entityDeletes - before.entityDeletes,
+          flushes - before.flushes,
+          preparedStatements - before.preparedStatements,
+          collectionRecreates - before.collectionRecreates,
+          collectionUpdates - before.collectionUpdates,
+          collectionRemoves - before.collectionRemoves);
+    }
+  }
+
   private <T> T ejecutarEnTransaccion(Function<Session, T> function, String metodo)
       throws MiRepositoryException {
 
@@ -633,8 +775,17 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       Transaction transaction = session.beginTransaction();
 
       try {
+        long inicioTrabajo = System.nanoTime();
         T result = function.apply(session);
+        long inicioCommit = System.nanoTime();
         transaction.commit();
+        if ("persistirImportacion".equals(metodo)) {
+          log.info(
+              "Transaccion de importacion confirmada: trabajo={}, commit={}, total={}",
+              LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, inicioCommit),
+              LocalDateTimeHelper.getDiferenciaNanos(inicioCommit, System.nanoTime()),
+              LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, System.nanoTime()));
+        }
         return result;
 
       } catch (Exception ex) {

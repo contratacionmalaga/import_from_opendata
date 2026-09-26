@@ -40,3 +40,6 @@ app.tipo_sindicacion=CONSULTAS
 # false: modo normal recomendado; cuenta rechazos en estadisticas pero no persiste un historico por cada Entry RECHAZAR.
 # true: modo diagnostico; persiste todos los RECHAZAR y puede generar millones de filas en historico.
 app.persistir_historicos_rechazados=false
+
+# Notificaciones por email. true en operacion; false para corpus y pruebas de rendimiento.
+app.email.enabled=true

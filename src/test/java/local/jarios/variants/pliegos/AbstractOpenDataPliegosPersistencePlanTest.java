@@ -54,6 +54,9 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     assertThat(servicePrincipal.plan.historicoList()).isEmpty();
     assertThat(servicePrincipal.plan.replacementEntryIds()).containsExactly("entry-1");
     assertThat(servicePrincipal.plan.entriesByFeed()).containsEntry(importFeed, List.of(entry));
+    assertThat(servicePrincipal.persistedEstadistica).isSameAs(servicePrincipal.plan.estadistica());
+    assertThat(servicePrincipal.persistedEstadistica.getDuracionPersistencia()).isNotBlank();
+    assertThat(servicePrincipal.callOrder).containsExactly("importacion", "estadistica");
     assertThat(context.getListHistoricos()).isEmpty();
   }
 
@@ -69,6 +72,25 @@ class AbstractOpenDataPliegosPersistencePlanTest {
         .hasMessageContaining("La importacion LOCAL requiere una base de datos vacia")
         .hasMessageContaining("MAYORES")
         .hasMessageContaining("1 entries existentes");
+  }
+
+  @Test
+  void metric_update_failure_does_not_report_the_committed_import_as_failed() throws Exception {
+    CapturingServicePrincipal servicePrincipal = new CapturingServicePrincipal();
+    servicePrincipal.failStatisticsUpdate = true;
+    TestOpenDataPliegos openData = new TestOpenDataPliegos();
+    injectServicePrincipal(openData, servicePrincipal);
+
+    OpenDataExecutionContext context = new OpenDataExecutionContext();
+    context.setLugarImportacion(LugarImportacion.INTERNET);
+    context.setTipoSindicacion(TipoSindicacion.MAYORES);
+    context.getConjuntoFeedsFromAtoms().add(feed("feed-1"));
+
+    Estadistica estadistica = openData.persistAll(context);
+
+    assertThat(servicePrincipal.plan).isNotNull();
+    assertThat(estadistica.getDuracionPersistencia()).isNotBlank();
+    assertThat(servicePrincipal.callOrder).containsExactly("importacion", "estadistica");
   }
 
   private static void injectServicePrincipal(
@@ -129,7 +151,10 @@ class AbstractOpenDataPliegosPersistencePlanTest {
 
   private static final class CapturingServicePrincipal implements ServicePrincipal {
     private ImportPersistencePlan plan;
+    private Estadistica persistedEstadistica;
     private long entriesCount;
+    private boolean failStatisticsUpdate;
+    private final List<String> callOrder = new java.util.ArrayList<>();
 
     @Override
     public void persistirLog(Log miLog) throws MiServiceException {}
@@ -150,7 +175,13 @@ class AbstractOpenDataPliegosPersistencePlanTest {
         throws MiServiceException {}
 
     @Override
-    public void persistirEstadistica(Estadistica estadistica) throws MiServiceException {}
+    public void persistirEstadistica(Estadistica estadistica) throws MiServiceException {
+      callOrder.add("estadistica");
+      if (failStatisticsUpdate) {
+        throw new MiServiceException("fallo simulado de metricas");
+      }
+      this.persistedEstadistica = estadistica;
+    }
 
     @Override
     public void persistirSetFeeds(Log miLog, Set<Feed> feedSet) throws MiServiceException {}
@@ -158,6 +189,7 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     @Override
     public void persistirImportacion(ImportPersistencePlan plan) throws MiServiceException {
       this.plan = plan;
+      callOrder.add("importacion");
     }
 
     @Override

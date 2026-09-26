@@ -1,3 +1,4 @@
+-- Revisión 2026-09-26: SCRIPT IMPLEMENTADO; aplicación por entorno no verificada en esta revisión.
 -- Migracion para alinear deleted_entry con el nuevo campo DeletedEntry.refCorto.
 -- Ejecutar en cada esquema existente antes de arrancar con hibernate.hbm2ddl.auto=validate.
 

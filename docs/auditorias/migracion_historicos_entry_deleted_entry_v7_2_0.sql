@@ -1,3 +1,4 @@
+-- Revisión 2026-09-26: PARCIAL: script no acredita despliegue. Revisar duplicados antes de UNIQUE, rename comentado y migración completa de fechas técnicas.
 -- Cambios de esquema v7.2.0 para nueva carga completa.
 -- Recomendado: recrear el esquema y arrancar con hibernate.hbm2ddl.auto=create o update controlado,
 -- validar despues con hibernate.hbm2ddl.auto=validate.

@@ -2,6 +2,9 @@
 
 # Batch para operaciones masivas.
 hibernate.jdbc.batch_size=150
+# Número de expedientes completos retenidos en la sesión antes de flush/clear.
+# Si se omite, conserva el criterio anterior basado en entidades raíz persistidas.
+# hibernate.persistence.entry_flush_window=300
 hibernate.order_inserts=true
 hibernate.order_updates=true
 hibernate.jdbc.batch_versioned_data=true

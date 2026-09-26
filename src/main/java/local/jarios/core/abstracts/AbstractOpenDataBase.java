@@ -14,6 +14,7 @@ import local.jarios.common.util.Mensajes;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
+import local.jarios.database.MariaDbImportLock;
 import local.jarios.database.SessionFactoryRegistry;
 import local.jarios.email.ExecutionEmailReportBuilder;
 import local.jarios.email.api.EmailSenderImpl;
@@ -26,15 +27,18 @@ import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.auxiliares.Log;
+import local.jarios.enums.TipoConexion;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.exceptions.MiServiceException;
 import local.jarios.exceptions.MiUnknownHostException;
 import local.jarios.helpers.ComunHelper;
+import local.jarios.helpers.LocalDateTimeHelper;
 import local.jarios.helpers.StringHelper;
 import local.jarios.properties.api.PropertiesManagerService;
 import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.repositories.EntrySnapshot;
+import local.jarios.services.ImportPersistencePlan;
 import local.jarios.services.ServicePrincipal;
 import local.jarios.services.ServicePrincipalImpl;
 import local.jarios.version.api.Version;
@@ -55,6 +59,7 @@ public abstract class AbstractOpenDataBase {
 
   private String appName;
   private String appVersion;
+  private MariaDbImportLock importLock;
 
   protected Properties getEmailProperties() throws PropertiesManagerException {
     if (cachedMailProperties != null) {
@@ -217,6 +222,34 @@ public abstract class AbstractOpenDataBase {
     configurePersistirHistoricosRechazados(context);
   }
 
+  protected void adquirirExclusionImportacion(OpenDataExecutionContext context)
+      throws MiServiceException {
+    if (importLock != null) {
+      throw new MiServiceException("La exclusión de importación ya está adquirida");
+    }
+    String lockName = "opendata:" + context.getTipoSindicacion();
+    try {
+      importLock =
+          MariaDbImportLock.acquire(
+              SessionFactoryRegistry.getSessionFactory(TipoConexion.PRINCIPAL), lockName);
+      log.info("Exclusión distribuida adquirida: {}", lockName);
+    } catch (RuntimeException ex) {
+      throw new MiServiceException("No se pudo adquirir la exclusión distribuida: " + lockName, ex);
+    }
+  }
+
+  private void liberarExclusionImportacion() {
+    if (importLock == null) return;
+    try {
+      importLock.close();
+      log.info("Exclusión distribuida liberada.");
+    } catch (RuntimeException ex) {
+      log.warn("No se pudo liberar la exclusión distribuida: {}", ex.getMessage());
+    } finally {
+      importLock = null;
+    }
+  }
+
   private void configurePersistirHistoricosRechazados(OpenDataExecutionContext context) {
     String value =
         propertiesManager.getProperty(
@@ -266,6 +299,25 @@ public abstract class AbstractOpenDataBase {
   protected abstract String parsearAtomsFeeds(OpenDataExecutionContext context)
       throws MiParseException, MiServiceException;
 
+  /** Persiste la importación y registra su duración una vez confirmado el commit principal. */
+  protected String persistirImportacionYRegistrarDuracion(
+      ImportPersistencePlan plan, Estadistica estadistica) throws MiServiceException {
+    long inicioPersistencia = System.nanoTime();
+    getServicePrincipal().persistirImportacion(plan);
+
+    String duracion = LocalDateTimeHelper.getDiferenciaNanos(inicioPersistencia, System.nanoTime());
+    estadistica.setDuracionPersistencia(duracion);
+
+    try {
+      getServicePrincipal().persistirEstadistica(estadistica);
+    } catch (MiServiceException ex) {
+      log.warn(
+          "La importacion ya fue confirmada, pero no se pudo actualizar su duracion en Estadistica: {}",
+          ex.getMessage());
+    }
+    return duracion;
+  }
+
   public abstract Map<String, Entry> resolveEntriesToPersist(OpenDataExecutionContext context);
 
   public abstract void previewPersistData(OpenDataExecutionContext context)
@@ -308,11 +360,19 @@ public abstract class AbstractOpenDataBase {
 
   public void sendSuccessEmail(Estadistica estadistica)
       throws EmailException, MiUnknownHostException, PropertiesManagerException {
+    if (!isEmailNotificationEnabled()) {
+      log.info("Envío de email desactivado por configuración.");
+      return;
+    }
     sendSuccessEmail(null, estadistica);
   }
 
   public void sendSuccessEmail(OpenDataExecutionContext context)
       throws EmailException, MiUnknownHostException, PropertiesManagerException {
+    if (!isEmailNotificationEnabled()) {
+      log.info("Envío de email desactivado por configuración.");
+      return;
+    }
     sendSuccessEmail(context, context == null ? null : context.getEstadistica());
   }
 
@@ -370,6 +430,16 @@ public abstract class AbstractOpenDataBase {
     log.error("{} - {}", tipoError, ex.getMessage(), ex);
 
     try {
+      if (!isEmailNotificationEnabled()) {
+        log.info("Envío de email de error desactivado por configuración.");
+        return;
+      }
+    } catch (PropertiesManagerException propertiesEx) {
+      log.error("No se pudo consultar la configuración de email: {}", propertiesEx.getMessage());
+      return;
+    }
+
+    try {
       Properties props = getEmailProperties();
       EmailData emailData = buildErrorEmailData(ex, tipoError);
 
@@ -378,6 +448,15 @@ public abstract class AbstractOpenDataBase {
     } catch (Exception emailEx) {
       log.error("No se pudo enviar el email de error: {}", emailEx.getMessage(), emailEx);
     }
+  }
+
+  static boolean isEmailNotificationEnabled(String value) {
+    return value == null || value.isBlank() || !"false".equalsIgnoreCase(value.trim());
+  }
+
+  private boolean isEmailNotificationEnabled() throws PropertiesManagerException {
+    return isEmailNotificationEnabled(
+        propertiesManager.getProperty(PropertiesFiles.APP, PropertiesKeys.APP_EMAIL_ENABLED));
   }
 
   protected void imprimirTitulo(String titulo) {
@@ -461,6 +540,7 @@ public abstract class AbstractOpenDataBase {
     } catch (Exception ex) {
       handleFailure(ex, "[Exception]");
     } finally {
+      liberarExclusionImportacion();
       SessionFactoryRegistry.closeAll();
     }
 

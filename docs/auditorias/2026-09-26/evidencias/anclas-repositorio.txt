@@ -1,0 +1,20 @@
+131:          int batchSize = getBatchSize();
+177:  public void persistirImportacion(ImportPersistencePlan plan) throws MiRepositoryException {
+212:          deleteExistingEntriesForUpdates(session, updatedEntryIds);
+222:        "persistirImportacion");
+226:  public Map<String, EntrySnapshot> getEntrySnapshots(TipoSindicacion tipoSindicacion)
+253:        "getEntrySnapshots");
+300:    persistDeletedEntries(session, miLog, deletedEntriesByRef.values());
+302:      persistEntriesByFeed(session, entriesByFeed, createdAtByEntryId);
+304:      persistEntries(session, entriesById.values(), createdAtByEntryId);
+310:  private void persistEntries(
+313:    int batchSize = getBatchSize();
+345:      persistedSinceFlush = flushAndClearIfBatchReached(session, persistedSinceFlush, batchSize);
+349:  private void persistEntriesByFeed(
+359:      persistEntries(session, entries, createdAtByEntryId);
+375:  private void persistDeletedEntries(
+429:    int batchSize = getBatchSize();
+574:  private void deleteExistingEntriesForUpdates(Session session, Set<String> updatedEntryIds) {
+598:  private int flushAndClearIfBatchReached(Session session, int persistedSinceFlush, int batchSize) {
+621:  private int getBatchSize() {
+637:        transaction.commit();

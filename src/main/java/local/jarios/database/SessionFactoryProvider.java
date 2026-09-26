@@ -141,23 +141,11 @@ public final class SessionFactoryProvider {
         pm.getProperty(file, PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD));
   }
 
-  /** Log seguro: imprime properties pero enmascara password. */
+  /** Log seguro: expone solo los nombres de las propiedades, nunca sus valores. */
   private void safeLogProperties(String tag, Properties props) {
     if (!log.isDebugEnabled()) return;
 
-    log.debug("[{}] Hibernate/JDBC properties:", tag);
-
-    for (String key : props.stringPropertyNames()) {
-      String value = props.getProperty(key);
-
-      // No mostrar password
-      if (JdbcSettings.JAKARTA_JDBC_PASSWORD.equals(key)
-          || PropertiesKeys.JAKARTA_PERSISTENCE_JDBC_PASSWORD.equalsIgnoreCase(key)) {
-        log.debug("  {} = {}", key, "********");
-      } else {
-        log.debug("  {} = {}", key, value);
-      }
-    }
+    log.debug("[{}] Propiedades Hibernate/JDBC configuradas: {}", tag, props.stringPropertyNames());
   }
 
   /** Estrategia para resolver configuración por tipo de conexión. */

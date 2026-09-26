@@ -1,6 +1,5 @@
 package local.jarios.variants.malaga;
 
-import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import local.jarios.exceptions.MiServiceException;
 import local.jarios.exceptions.MiUnknownHostException;
 import local.jarios.filtro.FiltroManager;
 import local.jarios.helpers.HistoricoTotales;
-import local.jarios.helpers.LocalDateTimeHelper;
 import local.jarios.helpers.OcHelper;
 import local.jarios.helpers.StringHelper;
 import local.jarios.imports.ImportResult;
@@ -192,8 +190,6 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
       throws MiServiceException, MiUnknownHostException {
 
     imprimirTitulo("PERSISTENCIA EN LA BASE DE DATOS");
-    LocalDateTime inicio = LocalDateTimeHelper.getLocalDateTimeNow();
-
     ImportResult<OrganoContratacion> excelResult = context.getExcelResult();
     HistoricoTotales historicoTotales = context.getHistoricoTotales();
 
@@ -204,7 +200,7 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
             excelResult == null ? 0 : excelResult.lista().size(),
             excelResult == null ? null : excelResult.fechaGeneracion());
     Configuracion configuracion = new Configuracion(miLog, context);
-    Estadistica estadistica = buildEstadistica(context, miLog, historicoTotales, inicio);
+    Estadistica estadistica = buildEstadistica(context, miLog, historicoTotales);
 
     ImportPersistencePlan plan =
         new ImportPersistencePlan(
@@ -216,17 +212,16 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
             context.getListHistoricos(),
             estadistica);
 
-    getServicePrincipal().persistirImportacion(plan);
-    log.info("Persistida la importacion completa en una unica transaccion.");
+    String duracionPersistencia = persistirImportacionYRegistrarDuracion(plan, estadistica);
+    log.info(
+        "Persistida la importacion completa en una unica transaccion: duracion={}",
+        duracionPersistencia);
     imprimirTitulo("PRESISTENCIA FINALIZADA CORRECTAMENTE");
     return estadistica;
   }
 
   protected Estadistica buildEstadistica(
-      OpenDataExecutionContext context,
-      Log miLog,
-      HistoricoTotales totales,
-      LocalDateTime inicioPersistencia)
+      OpenDataExecutionContext context, Log miLog, HistoricoTotales totales)
       throws MiUnknownHostException {
 
     Estadistica estadistica = new Estadistica(miLog);
@@ -245,12 +240,7 @@ public abstract class AbstractOpenDataMalaga extends AbstractOpenDataBase {
       estadistica.setTotalHistoricos(0L);
     }
 
-    String duracionPersistencia =
-        LocalDateTimeHelper.getDiferenciaLocalDateTime(
-            inicioPersistencia, LocalDateTimeHelper.getLocalDateTimeNow());
-
     estadistica.setDuracionParseo(context.getDuracionParseo());
-    estadistica.setDuracionPersistencia(duracionPersistencia);
     estadistica.setNumFicherosAtoms((long) context.getConjuntoFeedsFromAtoms().size());
     estadistica.setNumEntries((long) context.getMapEntriesToBaseDatos().size());
     estadistica.setNumOrganosContratacionFiltro(

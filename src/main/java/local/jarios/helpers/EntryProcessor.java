@@ -27,7 +27,7 @@ public final class EntryProcessor {
 
   /**
    * Procesa una lista de Entry (posiblemente inmutable), ordenada por updated DESC. Devuelve true
-   * si se “supera” newestEntry (es decir, se encuentra un entry MENOR O IGUAL newestEntry).
+   * si se “supera” newestEntry (es decir, se encuentra un entry estrictamente anterior).
    */
   public boolean processEntries(List<Entry> entries) {
 
@@ -60,7 +60,7 @@ public final class EntryProcessor {
     for (Entry entry : ordered) {
       readCount++;
 
-      if (isNotNewerThanNewest(entry, newestEntry)) {
+      if (isOlderThanNewest(entry, newestEntry)) {
         log.info(
             "SUPERADO newestEntry. Fin del Parseo. Entries leídos de este Feed: {}.",
             readCount - 1);
@@ -73,7 +73,7 @@ public final class EntryProcessor {
     return false;
   }
 
-  private boolean isNotNewerThanNewest(Entry entry, Entry newestEntry) {
+  private boolean isOlderThanNewest(Entry entry, Entry newestEntry) {
     if (!state.shouldCompareWithExisting()) {
       return false;
     }
@@ -89,7 +89,7 @@ public final class EntryProcessor {
       return false;
     }
 
-    return !updated.isAfter(newestUpdated);
+    return updated.isBefore(newestUpdated);
   }
 
   public void processEntry(Entry entry) {

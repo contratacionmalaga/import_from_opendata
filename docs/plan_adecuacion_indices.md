@@ -1,3 +1,5 @@
+> Revisión 2026-09-26 — PARCIAL: snapshots implementados; vistas, semántica de cancelaciones y validación por entorno pendientes.
+
 # Plan de adecuacion de indices y codigo Java
 
 Fecha: 2026-05-09

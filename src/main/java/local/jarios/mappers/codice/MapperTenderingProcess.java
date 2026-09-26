@@ -3,7 +3,11 @@ package local.jarios.mappers.codice;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.codice.ContractFolderStatus;
 import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
@@ -20,6 +24,10 @@ import org.dgpe.codice.common.cbclib.ContractingSystemCodeType;
 import org.dgpe.codice.common.cbclib.ExpectedQuantityType;
 import org.dgpe.codice.common.cbclib.MaximumQuantityType;
 import org.dgpe.codice.common.cbclib.MinimumQuantityType;
+import org.dgpe.codice.common.cbclib.OriginalContractingSystemDescriptionType;
+import org.dgpe.codice.common.cbclib.OriginalContractingSystemIDType;
+import org.dgpe.codice.common.cbclib.OriginalContractingSystemLotDescriptionType;
+import org.dgpe.codice.common.cbclib.OriginalContractingSystemLotIDType;
 import org.dgpe.codice.common.cbclib.PartPresentationCodeType;
 import org.dgpe.codice.common.cbclib.ProcedureCodeType;
 import org.dgpe.codice.common.cbclib.SubmissionMethodCodeType;
@@ -59,6 +67,21 @@ public final class MapperTenderingProcess {
         .map(ContractingSystemCodeType::getValue)
         .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_50))
         .ifPresent(tenderingProcess::setContractingSystemCode);
+
+    Optional.ofNullable(tenderingProcessType.getOriginalContractingSystemID())
+        .map(OriginalContractingSystemIDType::getValue)
+        .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_50))
+        .ifPresent(tenderingProcess::setOriginalContractingSystemId);
+
+    mapOriginalContractingSystemDescriptions(
+        tenderingProcess,
+        tenderingProcessType.getOriginalContractingSystemDescription(),
+        tenderingProcessType.getOriginalContractingSystemLotDescription());
+
+    Optional.ofNullable(tenderingProcessType.getOriginalContractingSystemLotID())
+        .map(OriginalContractingSystemLotIDType::getValue)
+        .map(v -> StringHelper.limit(v, TamanoCampos.TAMANO_50))
+        .ifPresent(tenderingProcess::setOriginalContractingSystemLotId);
 
     Optional.ofNullable(tenderingProcessType.getUrgencyCode())
         .map(UrgencyCodeType::getValue)
@@ -119,6 +142,42 @@ public final class MapperTenderingProcess {
     if (value != null) {
       tp.setTenderSubmissionDeadlinePeriod(value);
     }
+  }
+
+  private static void mapOriginalContractingSystemDescriptions(
+      TenderingProcess tenderingProcess,
+      List<OriginalContractingSystemDescriptionType> descriptions,
+      List<OriginalContractingSystemLotDescriptionType> lotDescriptions) {
+    joinOriginalContractingSystemDescriptions(descriptions)
+        .ifPresent(tenderingProcess::setOriginalContractingSystemDescription);
+    joinOriginalContractingSystemLotDescriptions(lotDescriptions)
+        .ifPresent(tenderingProcess::setOriginalContractingSystemLotDescription);
+  }
+
+  private static Optional<String> joinOriginalContractingSystemDescriptions(
+      List<OriginalContractingSystemDescriptionType> descriptions) {
+    return joinTextValues(descriptions, OriginalContractingSystemDescriptionType::getValue);
+  }
+
+  private static Optional<String> joinOriginalContractingSystemLotDescriptions(
+      List<OriginalContractingSystemLotDescriptionType> descriptions) {
+    return joinTextValues(descriptions, OriginalContractingSystemLotDescriptionType::getValue);
+  }
+
+  private static <T> Optional<String> joinTextValues(
+      List<T> values, Function<T, String> valueMapper) {
+    if (values == null) {
+      return Optional.empty();
+    }
+
+    return Optional.ofNullable(
+            values.stream()
+                .filter(Objects::nonNull)
+                .map(valueMapper)
+                .map(StringHelper::trimToNull)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining("\n")))
+        .map(StringHelper::trimToNull);
   }
 
   private static void mapDocumentAvailabilityPeriod(TenderingProcess tp, PeriodType type) {

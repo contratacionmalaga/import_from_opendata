@@ -1,6 +1,5 @@
 package local.jarios.variants.pliegos;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import local.jarios.common.util.PropertiesFiles;
@@ -15,7 +14,6 @@ import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.auxiliares.Log;
 import local.jarios.exceptions.MiServiceException;
 import local.jarios.exceptions.MiUnknownHostException;
-import local.jarios.helpers.LocalDateTimeHelper;
 import local.jarios.helpers.StringHelper;
 import local.jarios.properties.exception.PropertiesManagerException;
 import local.jarios.services.ImportPersistencePlan;
@@ -45,8 +43,6 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
 
   @Override
   public void previewPersistData(OpenDataExecutionContext context) {
-    imprimirTitulo("LISTADO DE LOS OBJETOS OBTENIDOS EN EL PARSEO PARA SU PERSISTENCIA");
-
     int nEntry = 0;
     int nDeletedEntry = 0;
 
@@ -90,11 +86,9 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
       throws MiServiceException, MiUnknownHostException {
 
     imprimirTitulo("PERSISTENCIA EN LA BASE DE DATOS");
-    LocalDateTime inicio = LocalDateTimeHelper.getLocalDateTimeNow();
-
     Log miLog = new Log(context.getLugarImportacion(), context.getTipoSindicacion());
     Configuracion configuracion = new Configuracion(miLog, context);
-    Estadistica estadistica = buildEstadistica(context, miLog, inicio);
+    Estadistica estadistica = buildEstadistica(context, miLog);
 
     Set<String> replacementEntryIds =
         ImportPersistencePlan.replacementEntryIdsFromHistoricos(context.getListHistoricos());
@@ -113,27 +107,22 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
             context.getMapFeedsToBaseDatos(),
             estadistica);
 
-    getServicePrincipal().persistirImportacion(plan);
+    String duracionPersistencia = persistirImportacionYRegistrarDuracion(plan, estadistica);
     log.info(
-        "Persistida importacion Pliegos en una unica transaccion: historicosGenerados={}, historicosPersistidos=0, reemplazos={}",
+        "Persistida importacion Pliegos en una unica transaccion: historicosGenerados={}, historicosPersistidos=0, reemplazos={}, duracion={}",
         StringHelper.getNumeroConFormato(historicosGenerados),
-        StringHelper.getNumeroConFormato(replacementEntryIds.size()));
+        StringHelper.getNumeroConFormato(replacementEntryIds.size()),
+        duracionPersistencia);
     imprimirTitulo("PRESISTENCIA FINALIZADA CORRECTAMENTE");
     return estadistica;
   }
 
-  protected Estadistica buildEstadistica(
-      OpenDataExecutionContext context, Log miLog, LocalDateTime inicioPersistencia)
+  protected Estadistica buildEstadistica(OpenDataExecutionContext context, Log miLog)
       throws MiUnknownHostException {
 
     Estadistica estadistica = new Estadistica(miLog);
 
-    String duracionPersistencia =
-        LocalDateTimeHelper.getDiferenciaLocalDateTime(
-            inicioPersistencia, LocalDateTimeHelper.getLocalDateTimeNow());
-
     estadistica.setDuracionParseo(context.getDuracionParseo());
-    estadistica.setDuracionPersistencia(duracionPersistencia);
     estadistica.setNumFicherosAtoms((long) context.getConjuntoFeedsFromAtoms().size());
     estadistica.setNumEntries((long) context.getMapEntriesToBaseDatos().size());
     estadistica.setNumDeletedEntries((long) context.getMapDeletedEntriesFromAtoms().size());

@@ -138,6 +138,10 @@ public final class StringHelper {
   }
 
   public static String getNumeroConFormato(int numero) throws IllegalArgumentException {
+    return getNumeroConFormato((long) numero);
+  }
+
+  public static String getNumeroConFormato(long numero) throws IllegalArgumentException {
 
     // Crear símbolos decimales personalizados
     DecimalFormatSymbols symbols = new DecimalFormatSymbols();

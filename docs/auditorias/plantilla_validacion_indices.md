@@ -1,3 +1,5 @@
+> Revisión 2026-09-26 — PLANTILLA VIGENTE: no acredita una ejecución de validación; completar por entorno.
+
 # Plantilla de validacion de indices
 
 Fecha:

@@ -95,6 +95,21 @@ class EntryProcessorSnapshotTest {
         .containsExactly(EntryOpcion.INSERTAR, EntryOpcion.RECHAZAR);
   }
 
+  @Test
+  void processes_unknown_entry_with_the_same_updated_as_the_incremental_cursor() {
+    LocalDateTime cursorUpdated = LocalDateTime.parse("2026-01-02T10:00:00");
+    FakeState state = new FakeState(Map.of(), entry("cursor", cursorUpdated));
+    Entry unknownAtCursorTime = entry("entry-unknown", cursorUpdated);
+
+    boolean reachedOlderEntry = processor(state).processEntries(List.of(unknownAtCursorTime));
+
+    assertThat(reachedOlderEntry).isFalse();
+    assertThat(state.entries).containsEntry("entry-unknown", unknownAtCursorTime);
+    assertThat(state.historicos)
+        .extracting(HistoricoEntry::getEntryOpcion)
+        .containsExactly(EntryOpcion.INSERTAR);
+  }
+
   private static EntryProcessor processor(FakeState state) {
     OpenDataExecutionContext context = new OpenDataExecutionContext();
     context.setTipoSindicacion(TipoSindicacion.MAYORES);
@@ -126,16 +141,22 @@ class EntryProcessorSnapshotTest {
 
   private static final class FakeState implements EntryProcessor.EntryState {
     private final Map<String, LocalDateTime> snapshots;
+    private final Entry newestEntry;
     private final Map<String, Entry> entries = new HashMap<>();
     private final List<HistoricoEntry> historicos = new ArrayList<>();
 
     private FakeState(Map<String, LocalDateTime> snapshots) {
+      this(snapshots, null);
+    }
+
+    private FakeState(Map<String, LocalDateTime> snapshots, Entry newestEntry) {
       this.snapshots = snapshots;
+      this.newestEntry = newestEntry;
     }
 
     @Override
     public Entry getNewestEntry() {
-      return null;
+      return newestEntry;
     }
 
     @Override

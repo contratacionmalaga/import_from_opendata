@@ -1,3 +1,5 @@
+> Revisión 2026-09-26 — PARCIAL: consultar la conciliación de hitos en 2026-09-26/04-estado-docs.md. El contenido inferior conserva la fotografía e historial originales.
+
 # Auditoria viva del proyecto
 
 Fecha de creacion: 2026-08-12  
@@ -76,7 +78,7 @@ Se ha ejecutado `scripts/use-java21-maven3916.ps1 test` usando `JAVA_HOME=C:\jav
 | H04 | Hecho | Alta | Query historica segura | `getMapEntries` parametrizado y sin HQL libre en la interfaz publica | 2026-08-12: `mvn test`: 13 tests, 0 failures, 0 errors |
 | H05 | En curso | Alta | Menor consumo de memoria | Carga historica por proyeccion/paginacion/lotes; prueba con volumen representativo | 2026-08-17: Pliegos INTERNET `run-6` finaliza correctamente con 519 feeds y 104.867 entries; `flush/clear` por lote evita el bloqueo observado en `PersistentBag.equalsSnapshot`; Pliegos ya no envia historicos a persistencia y conserva reemplazos mediante `replacementEntryIds`. |
 | H06 | Hecho | Alta | Filtros fiables | Tests del filtro de fechas y correccion validada | 2026-08-12: corregido rango inclusivo; `mvn test`: 13 tests, 0 failures, 0 errors |
-| H07 | En curso | Media | Modelo JPA medible | Indices y constraints principales versionados en SQL; `EXPLAIN` documentado | Indices de snapshots aplicados y `EXPLAIN` validado en Malaga/Pliegos; migracion Malaga documentada en `docs/auditorias/migracion_opendata_malaga_schema_2026-08-12.sql`; pendientes vistas completas |
+| H07 | En curso | Media | Modelo JPA medible | Indices y constraints principales versionados en SQL; `EXPLAIN` documentado | Indices de snapshots aplicados y `EXPLAIN` validado en Malaga/Pliegos; migracion Malaga documentada en `docs/done/migraciones/migracion_opendata_malaga_schema_2026-08-12.sql`; pendientes vistas completas |
 | H08 | Hecho | Media | Transaccion de importacion | Importacion no queda inconsistente ante fallo a mitad | 2026-08-17: H2 modo MariaDB cubre reemplazo `ACTUALIZAR` y rollback completo; Pliegos INTERNET `run-6` elimina 39.749 entries existentes y persiste todo en una unica transaccion; `mvn test`: 27 tests, 0 fallos |
 | H09 | Hecho | Media | Calidad en ciclo Maven | Spotless y SpotBugs ejecutables con comandos documentados y en verde | 2026-08-12: `spotless:apply` aplicado; `spotless:check` limpio; `spotbugs:check` limpio |
 | H11 | Hecho | Alta | Pliegos sin historicos persistidos | Pliegos LOCAL/INTERNET puede reemplazar entries existentes sin insertar filas en `historico` | 2026-08-17: `ImportPersistencePlan.replacementEntryIds`; `AbstractOpenDataPliegos` envia `historicoList` vacio; validacion aislada LOCAL+INTERNET en `opendata_pliegos_validation`: `historico=0`, `log=2`, `estadistica=2`; limpieza real `opendata-pliegos`: `historico 104867 -> 0`; validacion real INTERNET posterior: `historico=0`; `mvn`: 28 tests, 0 fallos; SpotBugs: 0 bugs |

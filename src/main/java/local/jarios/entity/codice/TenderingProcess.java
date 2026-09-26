@@ -41,6 +41,20 @@ public class TenderingProcess extends AuditableCreatedAt {
   @Column(name = "contracting_system_code", length = TamanoCampos.TAMANO_50)
   private String contractingSystemCode;
 
+  // Sistema de contratación original
+  @Column(name = "original_contracting_system_id", length = TamanoCampos.TAMANO_50)
+  private String originalContractingSystemId;
+
+  @Column(name = "original_contracting_system_description", columnDefinition = "TEXT")
+  private String originalContractingSystemDescription;
+
+  // Lote del sistema de contratación original
+  @Column(name = "original_contracting_system_lot_id", length = TamanoCampos.TAMANO_50)
+  private String originalContractingSystemLotId;
+
+  @Column(name = "original_contracting_system_lot_description", columnDefinition = "TEXT")
+  private String originalContractingSystemLotDescription;
+
   // 4.14 Tipo de tramitación
   @Column(name = "urgency_code", length = TamanoCampos.TAMANO_50)
   private String urgencyCode;
