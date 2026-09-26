@@ -3,7 +3,9 @@ param(
 
     [bool]$SkipTests = $true,
 
-    [switch]$SkipClean
+    [switch]$SkipClean,
+
+    [switch]$NoDeploy
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,7 +15,7 @@ $repoRoot = $PSScriptRoot
 $mavenScript = Join-Path $repoRoot "scripts\use-java21-maven3916.ps1"
 $pomPath = Join-Path $repoRoot "pom.xml"
 $targetDir = Join-Path $repoRoot "target"
-$scriptFiles = @("importar_atoms.ps1", "importar_atom.sh")
+$publisherScript = Join-Path $repoRoot "publicar_ejecutables.ps1"
 
 $profiles = @(
     @{ Name = "con-filtros-local"; Artifact = "opendata_con_filtros"; Mode = "local" },
@@ -30,23 +32,24 @@ if (-not (Test-Path -LiteralPath $pomPath)) {
     throw "No se encuentra pom.xml en $pomPath"
 }
 
+if (-not (Test-Path -LiteralPath $publisherScript)) {
+    throw "No se encuentra el publicador de ejecutables: $publisherScript"
+}
+
 [xml]$pom = Get-Content -Raw -LiteralPath $pomPath
 $projectVersion = [string]$pom.project.version
 if ([string]::IsNullOrWhiteSpace($projectVersion)) {
     throw "No se ha podido resolver la version del proyecto desde $pomPath"
 }
 
-if (-not (Test-Path -LiteralPath $OutputDir)) {
-    New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
-}
-
 Push-Location $repoRoot
 try {
+    $profileIndex = 0
     foreach ($profile in $profiles) {
         Write-Host "Compilando perfil $($profile.Name)" -ForegroundColor Cyan
 
         $mavenArgs = @()
-        if (-not $SkipClean) {
+        if ((-not $SkipClean) -and $profileIndex -eq 0) {
             $mavenArgs += "clean"
         }
         $mavenArgs += "package"
@@ -66,19 +69,18 @@ try {
             throw "No se ha encontrado el JAR esperado para el perfil $($profile.Name): $jarPath"
         }
 
-        $destination = Join-Path $OutputDir $jarName
-        Copy-Item -LiteralPath $jarPath -Destination $destination -Force
-        Write-Host "Copiado $jarName -> $OutputDir" -ForegroundColor Green
+        $profileIndex++
+
     }
 
-    foreach ($scriptFile in $scriptFiles) {
-        $scriptPath = Join-Path $repoRoot $scriptFile
-        if (-not (Test-Path -LiteralPath $scriptPath)) {
-            throw "No se ha encontrado el script esperado: $scriptPath"
+    if ($NoDeploy) {
+        Write-Host "JAR generados en $targetDir. Publicacion omitida por -NoDeploy." -ForegroundColor Yellow
+    }
+    else {
+        & $publisherScript -SourceDir $repoRoot -OutputDir $OutputDir -Version $projectVersion
+        if ($LASTEXITCODE -ne 0) {
+            throw "Fallo al publicar los ejecutables con codigo $LASTEXITCODE"
         }
-
-        Copy-Item -LiteralPath $scriptPath -Destination (Join-Path $OutputDir $scriptFile) -Force
-        Write-Host "Copiado $scriptFile -> $OutputDir" -ForegroundColor Green
     }
 
 }
@@ -86,4 +88,6 @@ finally {
     Pop-Location
 }
 
-Write-Host "Ejecutables generados en $OutputDir" -ForegroundColor Green
+if (-not $NoDeploy) {
+    Write-Host "Ejecutables generados, archivados y activados en $OutputDir" -ForegroundColor Green
+}

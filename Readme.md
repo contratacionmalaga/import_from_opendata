@@ -52,6 +52,31 @@ migración [`01_add_participation_request_reception_period.sql`](docs/migrations
 
 Las notas completas están en [`docs/releases/v7.6.0.md`](docs/releases/v7.6.0.md).
 
+## Generación y publicación local de ejecutables
+
+`generar_ejecutables.ps1` compila los cuatro perfiles y, salvo que se indique `-NoDeploy`, publica
+automáticamente la versión generada en la instalación operativa. La publicación crea una copia
+inmutable en `versions/<versión>`, sincroniza los properties activos, conserva una copia de los
+properties anteriores en `backups/properties/` y activa la versión mediante
+`active-release.properties`.
+
+```powershell
+# Compilar, archivar y activar la versión indicada en pom.xml.
+.\generar_ejecutables.ps1
+
+# Compilar sin modificar la instalación operativa.
+.\generar_ejecutables.ps1 -NoDeploy
+
+# Simular una publicación ya generada.
+.\publicar_ejecutables.ps1 -WhatIf
+
+# Restaurar una versión archivada.
+.\publicar_ejecutables.ps1 -RollbackVersion 7.6.0
+```
+
+El publicador se instala también en el directorio operativo. Para publicar manualmente desde esa
+ubicación debe indicarse el directorio de desarrollo mediante `-SourceDir`.
+
 ## Estructura de una instalación operativa
 
 Una instalación puede estar fuera del repositorio. El directorio debe contener los JAR, los scripts y la configuración local.

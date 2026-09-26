@@ -42,6 +42,7 @@ $FilterPropertiesPath = Join-Path $PropertiesDir "filter.properties"
 $HibernatePropertiesPath = Join-Path $PropertiesDir "hibernate.properties"
 $DatabasePropertiesPath = Join-Path $PropertiesDir "bd.properties"
 $RuntimePropertiesPath = Join-Path $PropertiesDir "runtime.properties"
+$JarDir = $BaseDir
 
 $AllowedGroups = @("con_filtros", "sin_filtros", "all")
 $AllowedModes = @("local", "internet", "all")
@@ -179,14 +180,35 @@ function Resolve-JarPath {
 
     $artifact = $ArtifactPorGrupo[$GrupoImportacion]
     $pattern = "$artifact-*-$ModoImportacion.jar"
-    $candidates = Get-ChildItem -LiteralPath $BaseDir -Filter $pattern -File |
+    $candidates = Get-ChildItem -LiteralPath $JarDir -Filter $pattern -File |
         Where-Object { $_.Name -notmatch '-(sources|javadoc)\.jar$' } |
         Sort-Object @{ Expression = { Get-VersionFromJarName $_ }; Descending = $true }, LastWriteTime -Descending
 
     if (-not $candidates) {
-        Fail "No se ha encontrado el ejecutable para '$GrupoImportacion' en modo '$ModoImportacion'." "Patron buscado: $pattern. Directorio revisado: $BaseDir"
+        Fail "No se ha encontrado el ejecutable para '$GrupoImportacion' en modo '$ModoImportacion'." "Patron buscado: $pattern. Directorio revisado: $JarDir"
     }
     return $candidates[0].FullName
+}
+
+function Resolve-ActiveJarDirectory {
+    $activeReleasePath = Join-Path $BaseDir "active-release.properties"
+    if (-not (Test-Path -LiteralPath $activeReleasePath)) {
+        return $BaseDir
+    }
+
+    $versionLine = Get-Content -LiteralPath $activeReleasePath |
+        Where-Object { $_ -match '^\s*version\s*=' } |
+        Select-Object -First 1
+    if (-not $versionLine) {
+        Fail "El fichero de version activa no contiene la clave version." "Revise $activeReleasePath"
+    }
+
+    $version = ($versionLine -split '=', 2)[1].Trim()
+    $candidate = Join-Path $BaseDir "versions\$version"
+    if (-not (Test-Path -LiteralPath $candidate)) {
+        Fail "La version activa '$version' no esta disponible." "Directorio esperado: $candidate"
+    }
+    return $candidate
 }
 
 function Set-PropertyValue {
@@ -447,6 +469,7 @@ function Show-ImportPlanAndConfirm {
     Log "Importacion confirmada por el usuario."
 }
 Assert-ParameterValues
+$JarDir = Resolve-ActiveJarDirectory
 Assert-Configuration
 $plan = Build-ImportPlan
 Assert-RequiredFiltersForFilteredRun -Plan $plan
@@ -459,6 +482,7 @@ Log "SkipConfirmation: $SkipConfirmation"
 Log "ContinueOnError: $ContinueOnError"
 Log "CreateSchemaFirstRun: $CreateSchemaFirstRun"
 Log "Directorio operativo: $BaseDir"
+Log "Directorio de JAR activo: $JarDir"
 Log "Ruta de properties: $PropertiesPath"
 Log "Runtime properties: $RuntimePropertiesPath"
 Log "Java opts: $($JavaOpts -join ' ')"

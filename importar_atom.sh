@@ -58,6 +58,7 @@ FILTER_PROPERTIES="$PROPERTIES_DIR/filter.properties"
 HIBERNATE_PROPERTIES="$PROPERTIES_DIR/hibernate.properties"
 DATABASE_PROPERTIES="$PROPERTIES_DIR/bd.properties"
 RUNTIME_PROPERTIES="$PROPERTIES_DIR/runtime.properties"
+JAR_DIR="$BASE_DIR"
 TIMESTAMP="$(date '+%Y%m%d_%H%M%S')"
 LOG_FILE="$LOG_DIR/importacion_$TIMESTAMP.log"
 mkdir -p "$LOG_DIR"
@@ -129,7 +130,7 @@ resolve_jar() {
   local best=""
   local best_version="0.0.0"
   shopt -s nullglob
-  for jar in "$BASE_DIR"/${artifact}-*-"$mode".jar; do
+  for jar in "$JAR_DIR"/${artifact}-*-"$mode".jar; do
     [[ "$jar" =~ -(sources|javadoc)\.jar$ ]] && continue
     local version
     version="$(version_from_jar "$jar")"
@@ -140,8 +141,19 @@ resolve_jar() {
   done
   shopt -u nullglob
 
-  [[ -n "$best" ]] || fail "ERROR: No se encuentra ningun JAR para '$group' y modo '$mode' en $BASE_DIR."
+  [[ -n "$best" ]] || fail "ERROR: No se encuentra ningun JAR para '$group' y modo '$mode' en $JAR_DIR."
   printf '%s' "$best"
+}
+
+resolve_active_jar_directory() {
+  local active_release="$BASE_DIR/active-release.properties"
+  [[ -f "$active_release" ]] || return 0
+  local version
+  version="$(property_value "$active_release" "version")"
+  [[ -n "$version" ]] || fail "ERROR: $active_release no contiene la version activa."
+  local candidate="$BASE_DIR/versions/$version"
+  [[ -d "$candidate" ]] || fail "ERROR: La version activa '$version' no esta disponible en $candidate."
+  JAR_DIR="$candidate"
 }
 
 tipos_por_grupo() {
@@ -317,6 +329,7 @@ fi
 for file in "$APP_PROPERTIES" "$FILTER_PROPERTIES" "$HIBERNATE_PROPERTIES" "$DATABASE_PROPERTIES"; do
   require_file "$file"
 done
+resolve_active_jar_directory
 resolve_java_opts
 
 build_plan
