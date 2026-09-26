@@ -8,7 +8,7 @@
     <relativePath>../jarios-parent/pom.xml</relativePath>
   </parent>
   <artifactId>import_from_opendata</artifactId>
-  <version>7.4.3</version>
+  <version>7.4.4</version>
   <packaging>jar</packaging>
   <name>Importador de CODICE</name>
   <description>Cliente que parsea los ficheros atoms con los datos abiertos expuestos por la Plataforma de Contratación del Sector Público</description>

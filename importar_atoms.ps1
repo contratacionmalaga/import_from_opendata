@@ -456,9 +456,6 @@ Log "Java opts: $($JavaOpts -join ' ')"
 
 Write-Host "`n=== Importador OpenData ===" -ForegroundColor Cyan
 Write-Host "Grupo: $Grupo | Modo: $Mode | DryRun: $DryRun | CreateSchemaFirstRun: $CreateSchemaFirstRun" -ForegroundColor Cyan
-Write-Host "Directorio operativo: $BaseDir" -ForegroundColor DarkCyan
-Write-Host "Properties: $PropertiesPath" -ForegroundColor DarkCyan
-Write-Host "Java opts: $($JavaOpts -join ' ')" -ForegroundColor DarkCyan
 
 Show-ImportPlanAndConfirm -Plan $plan
 
