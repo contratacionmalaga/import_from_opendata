@@ -187,6 +187,13 @@ app.email.enabled=false
 ```
 
 Al desactivarla, la importación y sus métricas continúan normalmente y el log indica que el envío fue omitido.
+### Resumen previo de una importación
+
+Antes de pedir confirmación, `importar_atoms.ps1` muestra el destino de base de datos, cada bloque que se ejecutará (tipo, grupo, modo, origen y JAR), y los parámetros efectivos de persistencia.
+
+El bloque **Comportamiento aplicable a esta ejecución** se adapta a la línea de comandos: una ejecución `local` solo informa de la lectura del ATOM local; una ejecución `internet` informa de su carácter incremental y de los reintentos HTTP. Del mismo modo, solo se muestran los filtros cuando se ha seleccionado `con_filtros`; para `sin_filtros` se confirma expresamente que no se aplicarán.
+
+La pantalla también expone el modo efectivo de creación de esquema, tamaño de lote, conexiones, opciones Java, persistencia de rechazos y estado del email, para que la confirmación se tome con todos los datos operativos reales.
 
 Ejemplo:
 

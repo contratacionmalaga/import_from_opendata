@@ -363,45 +363,72 @@ function Show-ImportPlanAndConfirm {
     $poolSize = Get-PropertyOrDefault -Properties $hibernateProperties -Key "hibernate.hikari.maximumPoolSize"
     $statistics = Get-PropertyOrDefault -Properties $hibernateProperties -Key "hibernate.generate_statistics"
     $persistRejected = Get-PropertyOrDefault -Properties $appProperties -Key "app.persistir_historicos_rechazados"
+    $emailEnabled = Get-PropertyOrDefault -Properties $appProperties -Key "app.email.enabled" -Default "true"
     $httpRetries = Get-PropertyOrDefault -Properties $appProperties -Key "app.http.max_retries"
     $httpDelay = Get-PropertyOrDefault -Properties $appProperties -Key "app.http.retry_delay_ms"
     $nifs = Get-PropertyOrDefault -Properties $filterProperties -Key "filter.nifs" -Default "sin filtro"
     $postalCodes = Get-PropertyOrDefault -Properties $filterProperties -Key "filter.codigosPostales" -Default "sin filtro"
+    $hasFilteredPlan = @($Plan | Where-Object { $_.Grupo -eq "con_filtros" }).Count -gt 0
+    $hasUnfilteredPlan = @($Plan | Where-Object { $_.Grupo -eq "sin_filtros" }).Count -gt 0
+    $hasLocalPlan = @($Plan | Where-Object { $_.Mode -eq "local" }).Count -gt 0
+    $hasInternetPlan = @($Plan | Where-Object { $_.Mode -eq "internet" }).Count -gt 0
 
-    Write-Host "`n=== Revision antes de importar ===" -ForegroundColor Cyan
-    Write-Host "Se ha validado que los parametros indicados son coherentes y que existe el ejecutable correspondiente." -ForegroundColor Gray
+    Write-Host "`n=== Ejecucion seleccionada ===" -ForegroundColor Cyan
+    Write-Host "Se ha validado el grupo, modo, tipos y ejecutables solicitados." -ForegroundColor Gray
+    Write-Host "- Bloques a ejecutar: $($Plan.Count)."
+    Write-Host "- Directorio operativo: $BaseDir"
+    Write-Host "- Ficheros de configuracion: $PropertiesDir"
+
     Write-Host "`nDestino de los datos" -ForegroundColor Yellow
-    Write-Host "- Se escribira en la base de datos '$($db.BaseDeDatos)' de $($db.Motor), servidor $($db.Servidor), puerto $($db.Puerto)."
-    Write-Host "- Usuario configurado: $($db.Usuario). La contrasena no se muestra."
-    Write-Host "- Fichero de conexion: $DatabasePropertiesPath"
-    Write-Host "`nConfiguracion de Hibernate" -ForegroundColor Yellow
-    Write-Host "- Modo de preparacion de tablas actual: $ddlMode. $(Get-HibernateModeMessage -ModeValue $ddlMode)"
-    if ($CreateSchemaFirstRun) {
-        Write-Host "- Secuencia solicitada: primera importacion con hibernate.hbm2ddl.auto=create; siguientes importaciones con hibernate.hbm2ddl.auto=none."
-    }
-    Write-Host "- Trabajo por lotes: hasta $batchSize operaciones juntas para ir mas rapido."
-    Write-Host "- Conexiones simultaneas maximas a la base de datos: $poolSize."
-    Write-Host "- Estadisticas internas activadas: $statistics."
-    Write-Host "- Opciones Java: $($JavaOpts -join ' '). Fichero opcional: $RuntimePropertiesPath"
-    Write-Host "`nFiltros configurados" -ForegroundColor Yellow
-    Write-Host "- NIFs: $nifs"
-    Write-Host "- Codigos postales: $postalCodes"
-    Write-Host "`nOrigen e importaciones previstas" -ForegroundColor Yellow
+    Write-Host "- Base de datos: '$($db.BaseDeDatos)' en $($db.Motor), servidor $($db.Servidor), puerto $($db.Puerto)."
+    Write-Host "- Usuario: $($db.Usuario). La contrasena no se muestra. Conexion: $DatabasePropertiesPath"
+
+    Write-Host "`nEjecucion planificada" -ForegroundColor Yellow
+    $position = 0
     foreach ($item in $Plan) {
+        $position++
         $origin = Get-OriginDescription -AppProperties $appProperties -ModeValue $item.Mode -Tipo $item.Tipo
         $tipoNombre = $TipoInfo[$item.Tipo].Nombre
-        Write-Host "- $($item.Grupo) / $($item.Mode) / $($item.Tipo): $tipoNombre. Origen: $origin"
-        Write-Host "  Ejecutable: $($item.JarPath)" -ForegroundColor DarkGray
+        Write-Host "- Bloque $position/$($Plan.Count): $tipoNombre ($($item.Tipo)); grupo $($item.Grupo); modo $($item.Mode)."
+        Write-Host "  Origen: $origin"
+        Write-Host "  Ejecutable: $($item.JarPath)"
+        Write-Host "  Antes de iniciar se establecera app.tipo_sindicacion=$($item.Tipo)."
     }
-    Write-Host "`nConsecuencias" -ForegroundColor Yellow
-    Write-Host "- El script cambiara app.tipo_sindicacion antes de cada bloque de importacion."
-    Write-Host "- opendata_con_filtros solo continua si hay NIFs o codigos postales definidos."
-    Write-Host "- opendata_sin_filtros no limita por NIF ni por codigo postal."
-    Write-Host "- La importacion LOCAL exige que no haya datos previos para ese tipo; si los hay, la aplicacion deberia detenerse."
-    Write-Host "- La importacion INTERNET es incremental: compara con lo existente y puede insertar o actualizar registros."
-    Write-Host "- Si Hibernate esta en modo 'create' o 'create-drop', hay riesgo de recrear tablas y perder datos existentes."
-    Write-Host "- Historicos de rechazados persistidos: $persistRejected. Si estuviera en true, podria generar muchos registros."
-    Write-Host "- Reintentos HTTP para modo internet: $httpRetries; espera base entre reintentos: $httpDelay ms."
+
+    Write-Host "`nComportamiento aplicable a esta ejecucion" -ForegroundColor Yellow
+    if ($hasLocalPlan) {
+        Write-Host "- LOCAL: se leera el fichero ATOM indicado para cada bloque. La aplicacion detiene la importacion si ya existen datos del tipo solicitado."
+    }
+    if ($hasInternetPlan) {
+        Write-Host "- INTERNET: la carga es incremental; compara el origen con los datos existentes y puede insertar o actualizar registros."
+        Write-Host "- Reintentos HTTP: $httpRetries; espera base entre reintentos: $httpDelay ms."
+    }
+    if ($hasFilteredPlan) {
+        Write-Host "- con_filtros: se aplicaran estos filtros: NIFs = $nifs; codigos postales = $postalCodes."
+    }
+    if ($hasUnfilteredPlan) {
+        Write-Host "- sin_filtros: no se aplicaran filtros por NIF ni por codigo postal."
+    }
+
+    Write-Host "`nPersistencia y recursos aplicados" -ForegroundColor Yellow
+    if ($CreateSchemaFirstRun) {
+        Write-Host "- Esquema: la primera importacion usara hibernate.hbm2ddl.auto=create; las restantes usaran none. Esto puede recrear las tablas antes del primer bloque."
+    } else {
+        Write-Host "- Esquema: hibernate.hbm2ddl.auto=$ddlMode. $(Get-HibernateModeMessage -ModeValue $ddlMode)"
+    }
+    Write-Host "- Trabajo por lotes: hasta $batchSize operaciones; conexiones simultaneas maximas: $poolSize; estadisticas internas: $statistics."
+    Write-Host "- Java: $($JavaOpts -join ' '). Configuracion: $RuntimePropertiesPath"
+    if ($persistRejected -eq "true") {
+        Write-Host "- Rechazos: se persistira un historico detallado por cada Entry rechazada; puede generar muchos registros."
+    } else {
+        Write-Host "- Rechazos: no se persistira historico detallado; solo se incluiran en las estadisticas."
+    }
+    if ($emailEnabled -eq "false") {
+        Write-Host "- Email: desactivado; no se enviaran avisos de exito ni de error."
+    } else {
+        Write-Host "- Email: activado; se enviaran avisos de exito o error conforme a mail.properties."
+    }
+
     Write-Host "`nPara continuar escribe I y pulsa Enter. Cualquier otra respuesta cancela la importacion." -ForegroundColor Cyan
     $answer = Read-Host "Confirmacion"
     if ($answer -ne "I") {
@@ -411,7 +438,6 @@ function Show-ImportPlanAndConfirm {
     }
     Log "Importacion confirmada por el usuario."
 }
-
 Assert-ParameterValues
 Assert-Configuration
 $plan = Build-ImportPlan
