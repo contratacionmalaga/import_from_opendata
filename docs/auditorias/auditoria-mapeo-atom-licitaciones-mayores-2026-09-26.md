@@ -39,7 +39,7 @@ Los cuatro campos de sistema de contratación original añadidos recientemente y
 | Fase 1 — plazos de licitación | **Realizada en código** | `MapperTenderingProcessTest` comprueba que los tres plazos reciben valores distintos; las pruebas de cobertura y consistencia de entidades también son correctas. |
 
 La migración pendiente de aplicar en cada base de datos está en
-`docs/migrations/v7.5.3/01_add_participation_request_reception_period.sql`. El dato histórico
+`docs/migrations/v7.6.0/01_add_participation_request_reception_period.sql`. El dato histórico
 de `document_availability_period` requiere recargar los ATOM afectados tras desplegar el mapper
 corregido.
 
