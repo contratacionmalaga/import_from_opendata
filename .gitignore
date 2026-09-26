@@ -9,3 +9,4 @@ settings.xml
 dependency-reduced-pom.xml
 dep.txt
 *.iml
+\,uptime,level,tags*

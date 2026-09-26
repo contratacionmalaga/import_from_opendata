@@ -178,6 +178,16 @@ cp properties/runtime.properties.example properties/runtime.properties
 
 `runtime.properties` es opcional. Si se informa `java.opts`, los scripts `importar_atoms.ps1` e `importar_atom.sh` usan ese valor como opciones del proceso Java. Si falta el fichero o la clave, usan `-Xms12g -Xmx12g`.
 
+### Email durante pruebas
+
+La clave `app.email.enabled` de `app.properties` controla los mensajes de éxito y de error. En operación puede mantenerse en `true`; para corpus, desarrollo y pruebas de rendimiento usar:
+
+```properties
+app.email.enabled=false
+```
+
+Al desactivarla, la importación y sus métricas continúan normalmente y el log indica que el envío fue omitido.
+
 Ejemplo:
 
 ```properties
