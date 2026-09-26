@@ -43,3 +43,7 @@ app.persistir_historicos_rechazados=false
 
 # Notificaciones por email. true en operacion; false para corpus y pruebas de rendimiento.
 app.email.enabled=true
+# Diagnóstico enviado al equipo de soporte cuando la importación falla.
+# La pila se depura antes de incluirse en el correo.
+app.email.error.include_stacktrace=true
+app.email.error.max_stacktrace_chars=50000

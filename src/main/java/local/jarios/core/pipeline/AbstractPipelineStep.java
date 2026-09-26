@@ -20,7 +20,7 @@ public abstract class AbstractPipelineStep<C> implements PipelineStep<C> {
   }
 
   @Override
-  public final void execute(C context) throws Exception {
+  public void execute(C context) throws Exception {
     Objects.requireNonNull(context, "context no puede ser null");
     doExecute(context);
   }

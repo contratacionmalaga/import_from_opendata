@@ -1,6 +1,8 @@
 package local.jarios.core.abstracts;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import local.jarios.common.util.Mensajes;
 import local.jarios.common.util.PropertiesFiles;
@@ -21,7 +24,6 @@ import local.jarios.email.api.EmailSenderImpl;
 import local.jarios.email.api.EmailService;
 import local.jarios.email.api.EmailServiceImpl;
 import local.jarios.email.exception.EmailException;
-import local.jarios.email.helper.EmailHelper;
 import local.jarios.email.model.EmailData;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
@@ -46,9 +48,13 @@ import local.jarios.version.api.VersionImpl;
 import local.jarios.version.exception.VersionException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 
 @Slf4j
 public abstract class AbstractOpenDataBase {
+
+  private static final DateTimeFormatter INCIDENT_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
   private final Version versionService;
   private final PropertiesManagerService propertiesManager;
@@ -413,21 +419,37 @@ public abstract class AbstractOpenDataBase {
     return new EmailData(getEmailFrom(), getEmailTo(), subject, body);
   }
 
-  protected EmailData buildErrorEmailData(Throwable ex, String tipoError)
+  protected EmailData buildErrorEmailData(
+      OpenDataExecutionContext context, Throwable ex, String tipoError)
       throws PropertiesManagerException, MiUnknownHostException {
 
     String subject =
         ExecutionEmailReportBuilder.buildErrorSubject(
             getReportProcessType(), getReportImportOrigin(), ex, tipoError);
 
-    String[] stack = obtenerStackTraceComoArray(ex);
-    String body = EmailHelper.getCuerpoExcepcion(stack);
+    String body =
+        ExecutionEmailReportBuilder.buildErrorBody(
+            appName,
+            appVersion,
+            getReportProcessType(),
+            getReportImportOrigin(),
+            context,
+            ex,
+            tipoError,
+            getIncidentId(context),
+            isErrorStackTraceIncluded(),
+            getErrorStackTraceMaxChars());
 
     return new EmailData(getEmailFrom(), getEmailTo(), subject, body);
   }
 
-  protected void handleFailure(Throwable ex, String tipoError) {
-    log.error("{} - {}", tipoError, ex.getMessage(), ex);
+  private void handleFailure(OpenDataExecutionContext context, Throwable ex, String tipoError) {
+    String incidentId = getIncidentId(context);
+    log.error(
+        "ERROR [{}] {}. Consulte logs/import-from-opendata_error.log para el diagnóstico técnico.",
+        incidentId,
+        getOperatorMessage(ex, tipoError),
+        ex);
 
     try {
       if (!isEmailNotificationEnabled()) {
@@ -435,19 +457,80 @@ public abstract class AbstractOpenDataBase {
         return;
       }
     } catch (PropertiesManagerException propertiesEx) {
-      log.error("No se pudo consultar la configuración de email: {}", propertiesEx.getMessage());
+      log.error(
+          "ERROR [{}] No se pudo consultar la configuración de email de soporte. Consulte logs/import-from-opendata_error.log.",
+          incidentId,
+          propertiesEx);
       return;
     }
 
     try {
       Properties props = getEmailProperties();
-      EmailData emailData = buildErrorEmailData(ex, tipoError);
+      EmailData emailData = buildErrorEmailData(context, ex, tipoError);
 
       emailService.sendEmail(props, emailData);
 
     } catch (Exception emailEx) {
-      log.error("No se pudo enviar el email de error: {}", emailEx.getMessage(), emailEx);
+      log.error(
+          "ERROR [{}] No se pudo enviar el correo de soporte. Consulte logs/import-from-opendata_error.log.",
+          incidentId,
+          emailEx);
     }
+  }
+
+  /** Registra un fallo de notificación sin cambiar una importación ya confirmada. */
+  public void handleSuccessNotificationFailure(OpenDataExecutionContext context, Throwable ex) {
+    String incidentId = getIncidentId(context);
+    log.error(
+        "ERROR [{}] La importación ya fue confirmada, pero no se pudo enviar el correo de confirmación. Consulte logs/import-from-opendata_error.log.",
+        incidentId,
+        ex);
+  }
+
+  private boolean isErrorStackTraceIncluded() throws PropertiesManagerException {
+    String value =
+        propertiesManager.getProperty(
+            PropertiesFiles.APP, PropertiesKeys.APP_EMAIL_ERROR_INCLUDE_STACKTRACE);
+    return value == null || value.isBlank() || !"false".equalsIgnoreCase(value.trim());
+  }
+
+  private int getErrorStackTraceMaxChars() throws PropertiesManagerException {
+    String value =
+        propertiesManager.getProperty(
+            PropertiesFiles.APP, PropertiesKeys.APP_EMAIL_ERROR_MAX_STACKTRACE_CHARS);
+    if (value == null || value.isBlank()) {
+      return 50_000;
+    }
+    try {
+      int parsed = Integer.parseInt(value.trim());
+      return parsed > 0 ? parsed : 50_000;
+    } catch (NumberFormatException ex) {
+      return 50_000;
+    }
+  }
+
+  private static String getOperatorMessage(Throwable ex, String tipoError) {
+    String type = tipoError == null || tipoError.isBlank() ? "Error de importación" : tipoError;
+    String message =
+        ex == null || ex.getMessage() == null || ex.getMessage().isBlank()
+            ? "sin detalle"
+            : ex.getMessage();
+    return type + ": " + message;
+  }
+
+  private static String getIncidentId(OpenDataExecutionContext context) {
+    if (context != null && context.getIncidentId() != null && !context.getIncidentId().isBlank()) {
+      return context.getIncidentId();
+    }
+    String incidentId =
+        "IMP-"
+            + INCIDENT_TIME_FORMATTER.format(LocalDateTime.now())
+            + "-"
+            + UUID.randomUUID().toString().substring(0, 8);
+    if (context != null) {
+      context.setIncidentId(incidentId);
+    }
+    return incidentId;
   }
 
   static boolean isEmailNotificationEnabled(String value) {
@@ -503,13 +586,14 @@ public abstract class AbstractOpenDataBase {
   }
 
   protected ExitStatus runWithPipeline(String configDir) {
+    local.jarios.core.pipeline.context.OpenDataExecutionContext context =
+        new local.jarios.core.pipeline.context.OpenDataExecutionContext(configDir);
+    String incidentId = getIncidentId(context);
+    MDC.put("incidentId", incidentId);
     try {
       local.jarios.core.pipeline.OpenDataPipeline<
               local.jarios.core.pipeline.context.OpenDataExecutionContext>
           pipeline = new local.jarios.core.pipeline.OpenDataPipeline<>();
-
-      local.jarios.core.pipeline.context.OpenDataExecutionContext context =
-          new local.jarios.core.pipeline.context.OpenDataExecutionContext(configDir);
 
       pipeline
           .addStep(new local.jarios.core.pipeline.steps.InitOpenDataStep(this))
@@ -526,22 +610,23 @@ public abstract class AbstractOpenDataBase {
       return ExitStatus.OK;
 
     } catch (MiUnknownHostException ex) {
-      handleFailure(ex, "[MiUnknownHostException]");
+      handleFailure(context, ex, "[MiUnknownHostException]");
     } catch (MiServiceException ex) {
-      handleFailure(ex, "[MiServiceException]");
+      handleFailure(context, ex, "[MiServiceException]");
     } catch (EmailException ex) {
-      handleFailure(ex, "[EmailException]");
+      handleFailure(context, ex, "[EmailException]");
     } catch (PropertiesManagerException ex) {
-      handleFailure(ex, "[PropertiesManagerException]");
+      handleFailure(context, ex, "[PropertiesManagerException]");
     } catch (VersionException ex) {
-      handleFailure(ex, "[VersionException]");
+      handleFailure(context, ex, "[VersionException]");
     } catch (RuntimeException ex) {
-      handleFailure(ex, "[RuntimeException]");
+      handleFailure(context, ex, "[RuntimeException]");
     } catch (Exception ex) {
-      handleFailure(ex, "[Exception]");
+      handleFailure(context, ex, "[Exception]");
     } finally {
       liberarExclusionImportacion();
       SessionFactoryRegistry.closeAll();
+      MDC.remove("incidentId");
     }
 
     return ExitStatus.ERROR;

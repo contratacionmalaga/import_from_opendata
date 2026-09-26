@@ -11,7 +11,11 @@ public class NotifySuccessOpenDataStep extends AbstractOpenDataStep {
   }
 
   @Override
-  protected void doExecute(OpenDataExecutionContext context) throws Exception {
-    getOpenData().sendSuccessEmail(context);
+  protected void doExecute(OpenDataExecutionContext context) {
+    try {
+      getOpenData().sendSuccessEmail(context);
+    } catch (Exception ex) {
+      getOpenData().handleSuccessNotificationFailure(context, ex);
+    }
   }
 }

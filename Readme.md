@@ -314,9 +314,30 @@ Ejemplos:
 - Compara con los datos existentes para decidir inserciones y actualizaciones.
 - Aplica los reintentos y pausas definidos en `app.properties`.
 
-## Logs y observabilidad
+## Logs, incidencias y observabilidad
 
-Cada ejecución crea un log de lanzador en `logs/importacion_yyyyMMdd_HHmmss.log`.
+Cada ejecución crea un log de lanzador en `logs/importacion_yyyyMMdd_HHmmss.log`. La aplicación separa los registros en los siguientes ficheros:
+
+| Fichero | Contenido |
+|---|---|
+| `logs/import-from-opendata.log` | Progreso de la importación, métricas y avisos operativos. |
+| `logs/import-from-opendata_error.log` | Diagnóstico técnico de errores, incluida la pila completa de excepciones. |
+| `logs/import-from-opendata_hibernate.log` | Eventos de Hibernate, JDBC y HikariCP. |
+
+La consola no muestra trazas Java. Cuando una importación falla, muestra un identificador con formato `IMP-<fecha>-<hora>-<id>` y pide consultar `logs/import-from-opendata_error.log`. Ese identificador permite relacionar la consola, el correo de soporte y el log técnico.
+
+Los logs se rotan por fecha y tamaño. Los archivos archivados se comprimen automáticamente; los registros operativos se conservan 30 días y los de errores 90 días.
+
+### Correo de soporte
+
+Si `app.email.enabled=true`, el correo de incidencia incluye el identificador, versión, grupo, origen, tipo de sindicación, fase del pipeline, excepción raíz y pila técnica depurada. Nunca incorpora contraseñas JDBC o SMTP, tokens ni valores de autenticación.
+
+```properties
+app.email.error.include_stacktrace=true
+app.email.error.max_stacktrace_chars=50000
+```
+
+Si la importación ya se confirmó y falla solamente el correo de éxito, la carga mantiene el resultado correcto y se registra una incidencia técnica. Si el propio SMTP no está disponible, el diagnóstico queda en el log de errores.
 
 La aplicación registra feeds, entradas y tombstones procesados; tiempos de lectura, JAXB, mapeo, filtrado y persistencia; duración de preparación, borrado, `flush` y `commit`; tamaño de la ventana ORM y métricas Hibernate cuando están activadas.
 
@@ -371,7 +392,7 @@ Para ejecutar directamente un JAR, indique siempre el directorio de configuraci�
 
 ```powershell
 java -Xms12g -Xmx12g `
-  -jar opendata_sin_filtros-7.4.6-local.jar `
+  -jar opendata_sin_filtros-7.5.0-local.jar `
   --configDir=C:\java\ejecutables\import-from-opendata-ejecutables\properties
 ```
 

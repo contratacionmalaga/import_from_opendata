@@ -15,6 +15,12 @@ public abstract class AbstractOpenDataStep extends AbstractPipelineStep<OpenData
     this.openData = Objects.requireNonNull(openData, "openData no puede ser null");
   }
 
+  @Override
+  public void execute(OpenDataExecutionContext context) throws Exception {
+    context.setCurrentPhase(getName());
+    super.execute(context);
+  }
+
   protected AbstractOpenDataBase getOpenData() {
     return openData;
   }

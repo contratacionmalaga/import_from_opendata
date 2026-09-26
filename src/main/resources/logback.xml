@@ -1,102 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <!-- Quita esto cuando ya no estés depurando logback -->
-    <!-- <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/> -->
-
     <property name="APP_NAME" value="import-from-opendata"/>
     <property name="LOG_PATH" value="logs"/>
-    <timestamp key="ts" datePattern="yyyy-MM-dd_HH-mm-ss"/>
+    <property name="FILE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{incidentId}] %-40.40logger:%-4line - %msg%n%nopex"/>
+    <property name="ERROR_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{incidentId}] %-40.40logger:%-4line - %msg%n%ex{full}%n"/>
+    <property name="CONSOLE_PATTERN" value="%d{HH:mm:ss.SSS} %-5level [%X{incidentId}] %-30.30logger:%-4line - %msg%n%nopex"/>
+    <property name="CONSOLE_ERROR_PATTERN" value="%d{HH:mm:ss.SSS} ERROR [%X{incidentId}] - %msg%n%nopex"/>
 
-    <!-- Patrón fichero (más completo) -->
-    <property name="FILE_PATTERN"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %-40.40logger:%-4line - %msg%n"/>
-
-    <!-- Consola: limpio, con logger fijo y línea -->
-    <property name="CONSOLE_PATTERN"
-              value="%d{HH:mm:ss.SSS} %-5level %-30.30logger:%-4line - %msg%n"/>
-
-    <!-- ===================== -->
-    <!-- APPENDER FICHERO (TODO) -->
-    <!-- ===================== -->
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${LOG_PATH}/${APP_NAME}_${ts}.log</file>
-        <append>true</append>
-        <encoder>
-            <pattern>${FILE_PATTERN}</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/archive/${APP_NAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>25MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <encoder><pattern>${FILE_PATTERN}</pattern><charset>UTF-8</charset></encoder>
     </appender>
 
-    <!-- ===================== -->
-    <!-- APPENDER HIBERNATE -->
-    <!-- ===================== -->
-    <appender name="HIBERNATE_FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${LOG_PATH}/${APP_NAME}_hibernate_${ts}.log</file>
-        <append>true</append>
-        <encoder>
-            <pattern>${FILE_PATTERN}</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}_error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/archive/${APP_NAME}_error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>25MB</maxFileSize>
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter"><level>ERROR</level></filter>
+        <encoder><pattern>${ERROR_PATTERN}</pattern><charset>UTF-8</charset></encoder>
     </appender>
 
-    <!-- ===================== -->
-    <!-- APPENDER CONSOLA (SOLO TU APP) -->
-    <!-- ===================== -->
+    <appender name="HIBERNATE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}_hibernate.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/archive/${APP_NAME}_hibernate.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>25MB</maxFileSize>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder><pattern>${FILE_PATTERN}</pattern><charset>UTF-8</charset></encoder>
+    </appender>
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>${CONSOLE_PATTERN}</pattern>
-            <charset>UTF-8</charset>
-        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>NEUTRAL</onMismatch>
+        </filter>
+        <encoder><pattern>${CONSOLE_PATTERN}</pattern><charset>UTF-8</charset></encoder>
     </appender>
 
-    <!-- ===================== -->
-    <!-- TU CÓDIGO A CONSOLA + A FICHERO -->
-    <!-- additivity=false => evita duplicar en consola por el root -->
-    <!-- ===================== -->
+    <appender name="CONSOLE_ERROR" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter"><level>ERROR</level></filter>
+        <encoder><pattern>${CONSOLE_ERROR_PATTERN}</pattern><charset>UTF-8</charset></encoder>
+    </appender>
+
+    <!-- El detalle SMTP se registra por la clase coordinadora, sin exponer host ni usuario en consola. -->
+    <logger name="local.jarios.email.api" level="OFF" additivity="false"/>
+
+    <!-- Flujo general: progreso y avisos en consola; errores solo en el log técnico. -->
     <logger name="local.jarios" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </logger>
 
-    <!-- ===================== -->
-    <!-- STACK PERSISTENCIA / JPA -->
-    <!-- ===================== -->
+    <!-- Único punto que presenta errores de importación al operador. -->
+    <logger name="local.jarios.core.abstracts.AbstractOpenDataBase" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="CONSOLE_ERROR"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </logger>
 
-    <!-- Hibernate -->
     <logger name="org.hibernate" level="INFO" additivity="false">
         <appender-ref ref="HIBERNATE_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </logger>
-
     <logger name="org.hibernate.SQL" level="WARN" additivity="false">
         <appender-ref ref="HIBERNATE_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </logger>
-
     <logger name="org.hibernate.type.descriptor.sql" level="WARN" additivity="false">
         <appender-ref ref="HIBERNATE_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </logger>
-
-    <!-- HikariCP -->
     <logger name="com.zaxxer.hikari" level="INFO" additivity="false">
         <appender-ref ref="HIBERNATE_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </logger>
-
-    <!-- MariaDB / JDBC -->
     <logger name="org.mariadb.jdbc" level="WARN" additivity="false">
         <appender-ref ref="HIBERNATE_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </logger>
-
-    <!-- Reflections (escaneo de entidades, etc.) -->
     <logger name="org.reflections" level="INFO" additivity="false">
         <appender-ref ref="HIBERNATE_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </logger>
 
-    <!-- ===================== -->
-    <!-- ROOT: TODO LO DEMÁS SOLO A FICHERO -->
-    <!-- ===================== -->
     <root level="INFO">
         <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
     </root>
-
 </configuration>
-

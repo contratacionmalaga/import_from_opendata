@@ -1,5 +1,7 @@
 package local.jarios.email;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -46,6 +48,66 @@ public final class ExecutionEmailReportBuilder {
         + normalize(importOrigin)
         + " · "
         + normalize(errorType);
+  }
+
+  /** Construye un informe HTML para soporte, sin credenciales ni secretos de configuración. */
+  public static String buildErrorBody(
+      String appName,
+      String appVersion,
+      String processType,
+      String importOrigin,
+      OpenDataExecutionContext context,
+      Throwable exception,
+      String errorType,
+      String incidentId,
+      boolean includeStackTrace,
+      int maxStackTraceChars) {
+    StringBuilder html = new StringBuilder(16_000);
+    appendHeader(html);
+    html.append(
+            "<div class=\"hero\"><h1>Incidencia en la importación</h1><p>"
+                + "La ejecución se ha interrumpido. El identificador <strong>")
+        .append(escape(incidentId))
+        .append("</strong> permite relacionar este correo con el log técnico local.</p></div>");
+
+    html.append(
+        "<table class=\"grid\"><tr><td class=\"section\"><h2>Contexto de ejecución</h2><table class=\"kv\"><tbody>");
+    appendTableRow(html, "Incidencia", incidentId);
+    appendTableRow(html, "Aplicación", value(appName) + " " + value(appVersion));
+    appendTableRow(html, "Proceso", processType);
+    appendTableRow(html, "Origen", importOrigin);
+    appendTableRow(html, "Fase", context == null ? null : context.getCurrentPhase());
+    appendTableRow(
+        html,
+        "Sindicacion",
+        context == null || context.getTipoSindicacion() == null
+            ? null
+            : context.getTipoSindicacion().toString());
+    appendTableRow(html, "Configuración", context == null ? null : context.getConfigDir());
+    html.append(
+        "</tbody></table></td><td class=\"section\"><h2>Diagnóstico</h2><table class=\"kv\"><tbody>");
+    appendTableRow(html, "Código", cleanErrorType(errorType));
+    appendTableRow(html, "Excepción", exception == null ? null : exception.getClass().getName());
+    appendTableRow(
+        html, "Mensaje", sanitizeSensitiveText(exception == null ? null : exception.getMessage()));
+    appendTableRow(html, "Causa raíz", rootCauseDescription(exception));
+    appendTableRow(html, "Log técnico", "logs/import-from-opendata_error.log");
+    html.append("</tbody></table></td></tr></table>");
+
+    html.append("<div class=\"section\"><h2>Pila técnica</h2>");
+    if (includeStackTrace) {
+      html.append("<pre class=\"stack\">")
+          .append(escape(sanitizeAndLimitStackTrace(exception, maxStackTraceChars)))
+          .append("</pre>");
+    } else {
+      html.append(
+          "<p>La pila técnica se ha desactivado mediante app.email.error.include_stacktrace.</p>");
+    }
+    html.append("</div><div class=\"footer\">Generado automáticamente por ")
+        .append(escape(appName))
+        .append(
+            ". No incluye contraseñas, tokens ni valores de autenticación.</div></div></body></html>");
+    return html.toString();
   }
 
   public static String buildSuccessBody(
@@ -188,6 +250,7 @@ public final class ExecutionEmailReportBuilder {
             + "p{font-size:13px;line-height:1.5;margin:0;color:#667085}.summary{width:100%;border-spacing:10px;margin:4px -10px}.metric{padding:12px;vertical-align:top;width:25%}"
             + ".label{font-size:12px;color:#667085;margin-bottom:4px}.value{font-size:22px;font-weight:600;line-height:1.1}.note{font-size:12px;color:#667085;margin-top:6px}"
             + ".grid{width:100%;border-spacing:14px;margin:0 -14px}.section{padding:14px;vertical-align:top;width:50%}.kv{width:100%;border-collapse:collapse;font-size:12px}"
+            + ".stack{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;background:#101828;color:#f8fafc;padding:12px;border-radius:6px;font-size:11px;line-height:1.45}"
             + ".kv th,.kv td{padding:8px 0;border-bottom:1px solid #d8e0ea;text-align:left;vertical-align:top}.kv th{color:#667085;font-weight:600}.kv td:last-child,.kv th:last-child{text-align:right;font-variant-numeric:tabular-nums}"
             + ".bar-row{font-size:12px;margin:10px 0}.track{height:8px;border-radius:99px;background:#edf2f7;overflow:hidden}.fill{height:8px;border-radius:99px}.good{background:#168a55}.info{background:#2563a8}.warn{background:#b25e09}.danger{background:#b42318}"
             + ".notice{padding:14px;font-size:13px;line-height:1.45;margin-top:14px}.footer{font-size:12px;color:#667085;text-align:center;margin-top:12px}"
@@ -338,6 +401,44 @@ public final class ExecutionEmailReportBuilder {
       return "Error";
     }
     return tipoError.replace("[", "").replace("]", "");
+  }
+
+  private static String rootCauseDescription(Throwable exception) {
+    if (exception == null) {
+      return "No informado";
+    }
+    Throwable root = exception;
+    while (root.getCause() != null && root.getCause() != root) {
+      root = root.getCause();
+    }
+    return root.getClass().getName() + ": " + sanitizeSensitiveText(value(root.getMessage()));
+  }
+
+  private static String sanitizeAndLimitStackTrace(Throwable exception, int maxChars) {
+    if (exception == null) {
+      return "No se recibió una excepción técnica.";
+    }
+    StringWriter writer = new StringWriter();
+    exception.printStackTrace(new PrintWriter(writer));
+    String sanitized = sanitizeSensitiveText(writer.toString());
+    int limit = maxChars > 0 ? maxChars : 50_000;
+    if (sanitized.length() <= limit) {
+      return sanitized;
+    }
+    return sanitized.substring(0, limit) + "\n[TRAZA TRUNCADA POR CONFIGURACIÓN]";
+  }
+
+  private static String sanitizeSensitiveText(String source) {
+    if (source == null) {
+      return null;
+    }
+    return source
+        .replaceAll(
+            "(?i)((?:password|passwd|pwd|token|authorization|secret)\\s*[=:]\\s*)([^\\s,;]+)",
+            "$1[REDACTED]")
+        .replaceAll(
+            "(?i)([?&](?:password|passwd|pwd|token|authorization|secret)=)[^&\\s]*",
+            "$1[REDACTED]");
   }
 
   private static String value(Object value) {

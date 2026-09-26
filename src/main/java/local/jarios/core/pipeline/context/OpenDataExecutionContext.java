@@ -29,6 +29,8 @@ public class OpenDataExecutionContext {
   @Setter @Getter private ImportResult<OrganoContratacion> excelResult;
   @Setter @Getter private HistoricoTotales historicoTotales;
   @Setter private String configDir;
+  @Setter private String incidentId;
+  @Setter private String currentPhase;
   @Setter private String duracionParseo;
   @Setter private LugarImportacion lugarImportacion;
   @Setter private TipoSindicacion tipoSindicacion;

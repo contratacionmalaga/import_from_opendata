@@ -66,6 +66,39 @@ class ExecutionEmailReportBuilderTest {
         .contains("8m 42s");
   }
 
+  @Test
+  void builds_detailed_support_error_body_without_exposing_secrets() {
+    OpenDataExecutionContext context = new OpenDataExecutionContext("C:/operacion/properties");
+    context.setIncidentId("IMP-20260926-120000-12345678");
+    context.setCurrentPhase("persist-open-data");
+    context.setTipoSindicacion(TipoSindicacion.MAYORES);
+    Throwable exception =
+        new IllegalStateException(
+            "No se pudo conectar: password=super-secret",
+            new IllegalArgumentException("token=private-token"));
+
+    String body =
+        ExecutionEmailReportBuilder.buildErrorBody(
+            "import-from-opendata",
+            "7.5.0",
+            "sin_filtros",
+            "LOCAL",
+            context,
+            exception,
+            "[MiServiceException]",
+            context.getIncidentId(),
+            true,
+            50_000);
+
+    assertThat(body)
+        .contains("IMP-20260926-120000-12345678")
+        .contains("persist-open-data")
+        .contains("Pila técnica")
+        .contains("[REDACTED]")
+        .doesNotContain("super-secret")
+        .doesNotContain("private-token");
+  }
+
   private static Estadistica estadistica() throws Exception {
     Log log =
         new Log(
