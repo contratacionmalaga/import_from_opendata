@@ -24,4 +24,14 @@
         <Method name="getPathBaseLocal"/>
         <Bug pattern="PATH_TRAVERSAL_IN"/>
     </Match>
+    <!--
+      La traza del correo se construye para soporte y se depura mediante
+      sanitizeSensitiveText antes de devolverla. La prueba de correo de
+      soporte verifica la ocultación de contraseñas y tokens.
+    -->
+    <Match>
+        <Class name="local.jarios.email.ExecutionEmailReportBuilder"/>
+        <Method name="sanitizeAndLimitStackTrace"/>
+        <Bug pattern="INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE"/>
+    </Match>
 </FindBugsFilter>

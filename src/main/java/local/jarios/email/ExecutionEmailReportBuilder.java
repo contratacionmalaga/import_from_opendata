@@ -1,12 +1,11 @@
 package local.jarios.email;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.IdentityHashMap;
 import java.util.Locale;
 import local.jarios.core.enums.LugarImportacion;
 import local.jarios.core.enums.TipoSindicacion;
@@ -414,19 +413,55 @@ public final class ExecutionEmailReportBuilder {
     return root.getClass().getName() + ": " + sanitizeSensitiveText(value(root.getMessage()));
   }
 
-  @SuppressWarnings("INFORMATION_EXPOSURE_THROUGH_AN_ERROR_MESSAGE")
   private static String sanitizeAndLimitStackTrace(Throwable exception, int maxChars) {
     if (exception == null) {
       return "No se recibió una excepción técnica.";
     }
-    StringWriter writer = new StringWriter();
-    exception.printStackTrace(new PrintWriter(writer));
-    String sanitized = sanitizeSensitiveText(writer.toString());
+    String sanitized = sanitizeSensitiveText(renderStackTrace(exception));
     int limit = maxChars > 0 ? maxChars : 50_000;
     if (sanitized.length() <= limit) {
       return sanitized;
     }
     return sanitized.substring(0, limit) + "\n[TRAZA TRUNCADA POR CONFIGURACIÓN]";
+  }
+
+  private static String renderStackTrace(Throwable exception) {
+    StringBuilder trace = new StringBuilder();
+    appendThrowable(trace, exception, "", null, new IdentityHashMap<>());
+    return trace.toString();
+  }
+
+  private static void appendThrowable(
+      StringBuilder trace,
+      Throwable exception,
+      String prefix,
+      String caption,
+      IdentityHashMap<Throwable, Boolean> visited) {
+    if (visited.put(exception, Boolean.TRUE) != null) {
+      trace
+          .append(prefix)
+          .append("[REFERENCIA CÍCLICA A EXCEPCIÓN]")
+          .append(System.lineSeparator());
+      return;
+    }
+    trace.append(prefix);
+    if (caption != null) {
+      trace.append(caption);
+    }
+    trace.append(exception.getClass().getName());
+    if (exception.getMessage() != null) {
+      trace.append(": ").append(exception.getMessage());
+    }
+    trace.append(System.lineSeparator());
+    for (StackTraceElement element : exception.getStackTrace()) {
+      trace.append(prefix).append("\tat ").append(element).append(System.lineSeparator());
+    }
+    for (Throwable suppressed : exception.getSuppressed()) {
+      appendThrowable(trace, suppressed, prefix + "\t", "Suppressed: ", visited);
+    }
+    if (exception.getCause() != null) {
+      appendThrowable(trace, exception.getCause(), prefix, "Caused by: ", visited);
+    }
   }
 
   private static String sanitizeSensitiveText(String source) {
