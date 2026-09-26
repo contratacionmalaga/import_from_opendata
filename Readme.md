@@ -10,16 +10,35 @@ Su principal objetivo es automatizar la ingesta de información relativa a licit
 
 ---
 
+## Versión 7.4.5
+
+Esta versión actualiza el proyecto a `jarios-parent` **1.0.14**, que vuelve a ser la única fuente de las versiones compartidas. Se eliminan las sobrescrituras locales de dependencias para que todos los proyectos que usan el parent se compilen con el mismo conjunto validado.
+
+Actualizaciones incluidas:
+
+| Componente | Versión anterior | Versión nueva |
+|------------|------------------|---------------|
+| Logback | 1.6.3 | 1.6.4 |
+| Jackson | 2.22.2 | 2.22.3 |
+| Hibernate Core y `hibernate-hikaricp` | 7.4.5.Final | 7.4.10.Final |
+| jsoup | 1.23.1 | 1.23.2 |
+| Lombok | 1.18.46 | 1.18.48 |
+| SLF4J | 2.0.18 | 2.0.20 |
+
+`hibernate-hikaricp` es el módulo de integración de Hibernate; no modifica la versión propia del pool `com.zaxxer:HikariCP` que gestione el parent. No se incluyen cambios funcionales ni de esquema de base de datos en esta versión.
+
+---
+
 ## 🛠️ Tecnologías y Herramientas
 
 | Tecnología             | Versión         | Descripción                                          |
 |------------------------|-----------------| ---------------------------------------------------- |
 | Java                   | 21.0.11         | Lenguaje principal del proyecto                      |
 | MariaDB                | 11.8            | Base de datos relacional con uso de esquemas         |
-| Hibernate Core         | 7.3.0.Final     | Framework ORM para persistencia en base de datos     |
-| HikariCP               | 7.0.2           | Pool de conexiones eficiente para la base de datos   |
-| Lombok                 | 1.18.44         | Reducción de código boilerplate mediante anotaciones |
-| SLF4J + Log4J          | 2.0.17 / 2.25.4 | Sistema de registro de logs centralizado y flexible  |
+| Hibernate Core         | 7.4.10.Final    | Framework ORM para persistencia en base de datos     |
+| HikariCP               | Gestionado por el parent | Pool de conexiones eficiente para la base de datos |
+| Lombok                 | 1.18.48         | Reducción de código boilerplate mediante anotaciones |
+| SLF4J + Logback        | 2.0.20 / 1.6.4  | Sistema de registro de logs centralizado y flexible  |
 | JAXB                   | 2.3.x - 2.4.x   | Procesamiento y parseo de documentos XML             |
 | Jakarta Mail           | 2.1.3           | Envío de notificaciones por correo electrónico       |
 
