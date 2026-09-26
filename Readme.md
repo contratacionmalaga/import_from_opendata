@@ -44,6 +44,14 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 
 Los lanzadores seleccionan el JAR con mayor versión disponible para cada combinación de grupo y modo.
 
+## Actualización a 7.6.0
+
+La versión 7.6.0 corrige el mapeo de plazos de licitación e incorpora el plazo de recepción de
+solicitudes de participación. Antes de utilizarla con una base de datos existente, aplique la
+migración [`01_add_participation_request_reception_period.sql`](docs/migrations/v7.6.0/01_add_participation_request_reception_period.sql).
+
+Las notas completas están en [`docs/releases/v7.6.0.md`](docs/releases/v7.6.0.md).
+
 ## Estructura de una instalación operativa
 
 Una instalación puede estar fuera del repositorio. El directorio debe contener los JAR, los scripts y la configuración local.
