@@ -35,7 +35,8 @@ if (-not (Test-Path -LiteralPath $logPath)) {
 }
 
 $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-$logFile = Join-Path $logPath "importacion_$timestamp.log"
+$executionId = "{0}_{1}" -f $timestamp, ([guid]::NewGuid().ToString("N").Substring(0, 8))
+$logFile = Join-Path $logPath "importacion_$executionId.log"
 $PropertiesDir = Join-Path $BaseDir "properties"
 $PropertiesPath = Join-Path $PropertiesDir "app.properties"
 $FilterPropertiesPath = Join-Path $PropertiesDir "filter.properties"
@@ -475,6 +476,7 @@ $plan = Build-ImportPlan
 Assert-RequiredFiltersForFilteredRun -Plan $plan
 
 Log "Grupo solicitado: $Grupo"
+Log "Identificador de ejecucion: $executionId"
 Log "Modo solicitado: $Mode"
 Log "Tipos solicitados: $(if ($TipoSindicacion) { $TipoSindicacion -join ', ' } else { 'por defecto del grupo' })"
 Log "DryRun: $DryRun"
@@ -489,6 +491,7 @@ Log "Java opts: $($JavaOpts -join ' ')"
 
 Write-Host "`n=== Importador OpenData ===" -ForegroundColor Cyan
 Write-Host "Grupo: $Grupo | Modo: $Mode | DryRun: $DryRun | SkipConfirmation: $SkipConfirmation | CreateSchemaFirstRun: $CreateSchemaFirstRun" -ForegroundColor Cyan
+Write-Host "Identificador de ejecucion: $executionId" -ForegroundColor Cyan
 
 Show-ImportPlanAndConfirm -Plan $plan
 
@@ -507,7 +510,7 @@ foreach ($item in $plan) {
         if ($ddlModeForRun) {
             Write-Host "DryRun: se usaria hibernate.hbm2ddl.auto=$ddlModeForRun" -ForegroundColor Cyan
         }
-        Write-Host "DryRun: & $JavaExe $($JavaOpts -join ' ') -jar `"$($item.JarPath)`" --configDir=`"$PropertiesDir`"" -ForegroundColor Cyan
+        Write-Host "DryRun: & $JavaExe $($JavaOpts -join ' ') -Dopendata.execution.id=$executionId -Dlog.path=`"$logPath`" -jar `"$($item.JarPath)`" --configDir=`"$PropertiesDir`"" -ForegroundColor Cyan
         Log "DryRun: no se modifica app.properties ni hibernate.properties ni se ejecuta Java."
         $executionIndex++
         continue
@@ -519,7 +522,7 @@ foreach ($item in $plan) {
     }
     Set-TipoSindicacion -Tipo $item.Tipo
     Log "app.tipo_sindicacion actualizado a $($item.Tipo)"
-    & $JavaExe @JavaOpts -jar $item.JarPath "--configDir=$PropertiesDir"
+    & $JavaExe @JavaOpts "-Dopendata.execution.id=$executionId" "-Dlog.path=$logPath" -jar $item.JarPath "--configDir=$PropertiesDir"
     $exitCode = $LASTEXITCODE
     $executionIndex++
     if ($exitCode -eq 0) {

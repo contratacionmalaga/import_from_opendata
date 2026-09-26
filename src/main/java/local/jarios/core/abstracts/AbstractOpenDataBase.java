@@ -446,7 +446,7 @@ public abstract class AbstractOpenDataBase {
   private void handleFailure(OpenDataExecutionContext context, Throwable ex, String tipoError) {
     String incidentId = getIncidentId(context);
     log.error(
-        "ERROR [{}] {}. Consulte logs/import-from-opendata_error.log para el diagnóstico técnico.",
+        "ERROR [{}] {}. Consulte el log técnico asociado a esta ejecución.",
         incidentId,
         getOperatorMessage(ex, tipoError),
         ex);
@@ -458,7 +458,7 @@ public abstract class AbstractOpenDataBase {
       }
     } catch (PropertiesManagerException propertiesEx) {
       log.error(
-          "ERROR [{}] No se pudo consultar la configuración de email de soporte. Consulte logs/import-from-opendata_error.log.",
+          "ERROR [{}] No se pudo consultar la configuración de email de soporte. Consulte el log técnico asociado a esta ejecución.",
           incidentId,
           propertiesEx);
       return;
@@ -472,7 +472,7 @@ public abstract class AbstractOpenDataBase {
 
     } catch (Exception emailEx) {
       log.error(
-          "ERROR [{}] No se pudo enviar el correo de soporte. Consulte logs/import-from-opendata_error.log.",
+          "ERROR [{}] No se pudo enviar el correo de soporte. Consulte el log técnico asociado a esta ejecución.",
           incidentId,
           emailEx);
     }
@@ -482,7 +482,7 @@ public abstract class AbstractOpenDataBase {
   public void handleSuccessNotificationFailure(OpenDataExecutionContext context, Throwable ex) {
     String incidentId = getIncidentId(context);
     log.error(
-        "ERROR [{}] La importación ya fue confirmada, pero no se pudo enviar el correo de confirmación. Consulte logs/import-from-opendata_error.log.",
+        "ERROR [{}] La importación ya fue confirmada, pero no se pudo enviar el correo de confirmación. Consulte el log técnico asociado a esta ejecución.",
         incidentId,
         ex);
   }

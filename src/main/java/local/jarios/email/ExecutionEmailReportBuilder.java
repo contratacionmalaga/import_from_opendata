@@ -90,7 +90,7 @@ public final class ExecutionEmailReportBuilder {
     appendTableRow(
         html, "Mensaje", sanitizeSensitiveText(exception == null ? null : exception.getMessage()));
     appendTableRow(html, "Causa raíz", rootCauseDescription(exception));
-    appendTableRow(html, "Log técnico", "logs/import-from-opendata_error.log");
+    appendTableRow(html, "Log técnico", technicalErrorLogPath());
     html.append("</tbody></table></td></tr></table>");
 
     html.append("<div class=\"section\"><h2>Pila técnica</h2>");
@@ -107,6 +107,14 @@ public final class ExecutionEmailReportBuilder {
         .append(
             ". No incluye contraseñas, tokens ni valores de autenticación.</div></div></body></html>");
     return html.toString();
+  }
+
+  private static String technicalErrorLogPath() {
+    String executionId = System.getProperty("opendata.execution.id");
+    if (executionId == null || !executionId.matches("[A-Za-z0-9_-]+")) {
+      return "logs/import-from-opendata_error_<identificador-ejecucion>.log";
+    }
+    return "logs/import-from-opendata_error_" + executionId + ".log";
   }
 
   public static String buildSuccessBody(

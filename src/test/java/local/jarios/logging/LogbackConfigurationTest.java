@@ -16,7 +16,8 @@ class LogbackConfigurationTest {
 
       assertThat(xml)
           .contains("name=\"ERROR_FILE\"")
-          .contains("${APP_NAME}_error.log")
+          .contains("${APP_NAME}_error_${EXECUTION_ID}.log")
+          .contains("opendata.execution.id")
           .contains("%ex{full}")
           .contains("%nopex")
           .contains("name=\"CONSOLE_ERROR\"")

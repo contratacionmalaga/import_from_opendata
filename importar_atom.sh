@@ -60,7 +60,13 @@ DATABASE_PROPERTIES="$PROPERTIES_DIR/bd.properties"
 RUNTIME_PROPERTIES="$PROPERTIES_DIR/runtime.properties"
 JAR_DIR="$BASE_DIR"
 TIMESTAMP="$(date '+%Y%m%d_%H%M%S')"
-LOG_FILE="$LOG_DIR/importacion_$TIMESTAMP.log"
+if command -v uuidgen >/dev/null 2>&1; then
+  EXECUTION_SUFFIX="$(uuidgen | tr -d '-' | cut -c1-8)"
+else
+  EXECUTION_SUFFIX="$(printf '%08x' "$(( (RANDOM << 16) | RANDOM ))")"
+fi
+EXECUTION_ID="${TIMESTAMP}_${EXECUTION_SUFFIX}"
+LOG_FILE="$LOG_DIR/importacion_${EXECUTION_ID}.log"
 mkdir -p "$LOG_DIR"
 
 log() {
@@ -336,6 +342,7 @@ build_plan
 assert_required_filters_for_filtered_run
 
 log "Grupo solicitado: $GRUPO"
+log "Identificador de ejecucion: $EXECUTION_ID"
 log "Modo solicitado: $MODE"
 log "Tipos solicitados: ${TIPOS:-por defecto del grupo}"
 log "DryRun: $DRY_RUN"
@@ -347,6 +354,7 @@ log "Java opts: ${JAVA_OPTS[*]}"
 echo
 echo "=== Importador OpenData ==="
 echo "Grupo: $GRUPO | Modo: $MODE | DryRun: $DRY_RUN"
+echo "Identificador de ejecucion: $EXECUTION_ID"
 echo "Properties: $PROPERTIES_DIR"
 echo "Java opts: ${JAVA_OPTS[*]}"
 
@@ -361,7 +369,7 @@ for i in "${!PLAN_GROUPS[@]}"; do
   echo "JAR: $jar"
   if [[ "$DRY_RUN" == true ]]; then
     echo "DryRun: se usaria app.tipo_sindicacion=$tipo"
-    echo "DryRun: $JAVA_EXE ${JAVA_OPTS[*]} -jar \"$jar\" --configDir=\"$PROPERTIES_DIR\""
+    echo "DryRun: $JAVA_EXE ${JAVA_OPTS[*]} -Dopendata.execution.id=$EXECUTION_ID -Dlog.path=\"$LOG_DIR\" -jar \"$jar\" --configDir=\"$PROPERTIES_DIR\""
     log "DryRun: no se modifica app.properties ni se ejecuta Java."
     continue
   fi
@@ -370,7 +378,7 @@ for i in "${!PLAN_GROUPS[@]}"; do
   log "app.tipo_sindicacion actualizado a $tipo"
 
   set +e
-  "$JAVA_EXE" "${JAVA_OPTS[@]}" -jar "$jar" "--configDir=$PROPERTIES_DIR"
+  "$JAVA_EXE" "${JAVA_OPTS[@]}" "-Dopendata.execution.id=$EXECUTION_ID" "-Dlog.path=$LOG_DIR" -jar "$jar" "--configDir=$PROPERTIES_DIR"
   exit_code=$?
   set -e
 

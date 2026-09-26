@@ -77,23 +77,35 @@ class ExecutionEmailReportBuilderTest {
             "No se pudo conectar: password=super-secret",
             new IllegalArgumentException("token=private-token"));
 
-    String body =
-        ExecutionEmailReportBuilder.buildErrorBody(
-            "import-from-opendata",
-            "7.5.0",
-            "sin_filtros",
-            "LOCAL",
-            context,
-            exception,
-            "[MiServiceException]",
-            context.getIncidentId(),
-            true,
-            50_000);
+    String previousExecutionId = System.getProperty("opendata.execution.id");
+    System.setProperty("opendata.execution.id", "20260926_120000_12345678");
+    String body;
+    try {
+      body =
+          ExecutionEmailReportBuilder.buildErrorBody(
+              "import-from-opendata",
+              "7.5.0",
+              "sin_filtros",
+              "LOCAL",
+              context,
+              exception,
+              "[MiServiceException]",
+              context.getIncidentId(),
+              true,
+              50_000);
+    } finally {
+      if (previousExecutionId == null) {
+        System.clearProperty("opendata.execution.id");
+      } else {
+        System.setProperty("opendata.execution.id", previousExecutionId);
+      }
+    }
 
     assertThat(body)
         .contains("IMP-20260926-120000-12345678")
         .contains("persist-open-data")
         .contains("Pila técnica")
+        .contains("logs/import-from-opendata_error_20260926_120000_12345678.log")
         .contains("[REDACTED]")
         .doesNotContain("super-secret")
         .doesNotContain("private-token");

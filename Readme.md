@@ -304,7 +304,7 @@ powershell.exe -NoProfile -NonInteractive -File "C:\java\ejecutables\import-from
   -SkipConfirmation
 ```
 
-Configure la tarea con una cuenta que tenga acceso de lectura a los ficheros ATOM y de escritura al directorio de `logs` y a la base de datos configurada. Revise el log de lanzador generado en `logs/importacion_yyyyMMdd_HHmmss.log` al finalizar.
+Configure la tarea con una cuenta que tenga acceso de lectura a los ficheros ATOM y de escritura al directorio de `logs` y a la base de datos configurada. Revise el log de lanzador generado en `logs/importacion_yyyyMMdd_HHmmss_<id>.log` al finalizar.
 
 ## Ejecución en Linux y macOS
 
@@ -364,15 +364,16 @@ Ejemplos:
 
 ## Logs, incidencias y observabilidad
 
-Cada ejecución crea un log de lanzador en `logs/importacion_yyyyMMdd_HHmmss.log`. La aplicación separa los registros en los siguientes ficheros:
+Cada ejecución recibe un identificador único con formato `yyyyMMdd_HHmmss_<id>`. El mismo identificador se utiliza en todos sus logs, de forma que importaciones simultáneas o iniciadas en el mismo segundo no comparten archivos. La aplicación separa los registros en los siguientes ficheros:
 
 | Fichero | Contenido |
 |---|---|
-| `logs/import-from-opendata.log` | Progreso de la importación, métricas y avisos operativos. |
-| `logs/import-from-opendata_error.log` | Diagnóstico técnico de errores, incluida la pila completa de excepciones. |
-| `logs/import-from-opendata_hibernate.log` | Eventos de Hibernate, JDBC y HikariCP. |
+| `logs/importacion_<id>.log` | Plan y resultado del lanzador. |
+| `logs/import-from-opendata_<id>.log` | Progreso de la importación, métricas y avisos operativos. |
+| `logs/import-from-opendata_error_<id>.log` | Diagnóstico técnico de errores, incluida la pila completa de excepciones. |
+| `logs/import-from-opendata_hibernate_<id>.log` | Eventos de Hibernate, JDBC y HikariCP. |
 
-La consola no muestra trazas Java. Cuando una importación falla, muestra un identificador con formato `IMP-<fecha>-<hora>-<id>` y pide consultar `logs/import-from-opendata_error.log`. Ese identificador permite relacionar la consola, el correo de soporte y el log técnico.
+La consola no muestra trazas Java. Cuando una importación falla, muestra un identificador de incidencia y pide consultar el log técnico de la ejecución. El correo de soporte incluye tanto ese identificador como el nombre exacto de su archivo de errores.
 
 Los logs se rotan por fecha y tamaño. Los archivos archivados se comprimen automáticamente; los registros operativos se conservan 30 días y los de errores 90 días.
 
