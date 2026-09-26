@@ -57,9 +57,9 @@ corregido.
 
 | Ruta ATOM | Apariciones | Situación actual | Consecuencia |
 |---|---:|---|---|
-| `LocatedContractingParty/ActivityCode` | 701 | No se lee. | Se pierde la clasificación de actividad del poder adjudicador. |
-| `LocatedContractingParty/Party/PostalAddress/Country/IdentificationCode` y `Name` | 493 cada uno | El mapper de la entidad contratante solo conserva línea, municipio y código postal. | Se pierde país de la dirección del órgano de contratación. |
-| `LocatedContractingParty/Party/Contact/Telefax` | 208 | No se lee. | Se pierde el fax de contacto. |
+| `LocatedContractingParty/ActivityCode` | 701 | Fuera de alcance por decisión funcional. | No se incorporará la clasificación de actividad del poder adjudicador. |
+| `LocatedContractingParty/Party/PostalAddress/Country/IdentificationCode` y `Name` | 493 cada uno | Fuera de alcance por decisión funcional. | No se incorporará el país de la dirección del órgano de contratación. |
+| `LocatedContractingParty/Party/Contact/Telefax` | 208 | Fuera de alcance por decisión funcional. | No se incorporará el fax de contacto. |
 | `ProcurementProject[/Lot]/RealizedLocation/Address/StreetName` | 13 | No se lee. | Se pierde la vía concreta del lugar de ejecución. |
 | `ProcurementProject/ContractExtension/OptionValidityPeriod/Description` | 157 | Solo se mapea `OptionsDescription`; este subbloque no se procesa. | Se pierde la descripción de la duración o vigencia de las opciones. |
 | `TenderingProcess/TenderSubmissionDeadlinePeriod/Description` | 121 | Solo se guarda fecha y hora. | Se pierde la explicación textual del plazo. |
@@ -105,7 +105,7 @@ Debe recibir `tenderingProcessType.getDocumentAvailabilityPeriod()`. Este cambio
 ## Propuesta de corrección por fases
 
 1. **Completada — Fase 1:** corregir el plazo de disponibilidad, incorporar el plazo de solicitudes de participación y añadir una prueba con periodos distintos.
-2. **Añadir los campos escalares de alta utilidad**: actividad, fax, país de órgano contratante, vía de ejecución, idioma, endpoint y los dos datos de años de actividad. Incluir migración SQL versionada y pruebas de mapper.
+2. **Añadir los campos escalares de alta utilidad**: vía de ejecución, descripción de vigencia de opciones, descripción del plazo de oferta, idioma, endpoint y los dos datos de años de actividad. Incluir migración SQL versionada y pruebas de mapper. `ActivityCode`, país, código de país y fax quedan fuera de alcance por decisión funcional.
 3. **Modelar `ParentLocatedParty` como entidad jerárquica** asociada a `ContractFolderStatus`, con nombre, identificadores, padre y orden. No debe comprimirse en columnas fijas porque el fichero llega a ocho niveles.
 4. **Decidir la retención de atributos semánticos**. Para importación analítica, como mínimo conviene conservar `currencyID`; para trazabilidad completa, guardar también catálogo (`listURI`) y etiqueta (`name`) en las entidades de código o en una tabla de metadatos.
 5. **Añadir una prueba de cobertura de muestra**: cargar este ATOM en un test de integración y afirmar la presencia de cada ruta soportada y la ausencia explícitamente aceptada de las no soportadas. El inventario generado debe actualizarse cuando cambie la versión CÓDICE.
