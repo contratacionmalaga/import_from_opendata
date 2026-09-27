@@ -28,6 +28,7 @@ import local.jarios.enums.DeletedEntryOpcion;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.exceptions.MiRepositoryException;
 import local.jarios.helpers.LocalDateTimeHelper;
+import local.jarios.helpers.StringHelper;
 import local.jarios.services.ImportPersistencePlan;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
@@ -209,11 +210,14 @@ public class RepositoryImpl implements Repository, AutoCloseable {
           long finPreparacion = System.nanoTime();
 
           Set<String> updatedEntryIds = safeSet(plan.replacementEntryIds());
+          log.info("Persistencia preparada:");
+          log.info("  Feeds: {}", StringHelper.getNumeroConFormato(plan.feedSet().size()));
           log.info(
-              "Persistencia importacion: feeds={}, historicos={}, reemplazos={}",
-              plan.feedSet().size(),
-              safeList(plan.historicoList()).size(),
-              updatedEntryIds.size());
+              "  Históricos a persistir: {}",
+              StringHelper.getNumeroConFormato(safeList(plan.historicoList()).size()));
+          log.info(
+              "  Entries a reemplazar: {}",
+              StringHelper.getNumeroConFormato(updatedEntryIds.size()));
           long inicioConsultaReemplazos = System.nanoTime();
           Map<String, LocalDateTime> createdAtByEntryId =
               getCreatedAtByEntryId(session, updatedEntryIds);
@@ -233,12 +237,19 @@ public class RepositoryImpl implements Repository, AutoCloseable {
           flushAndClear(session);
           long finPersistenciaGrafo = System.nanoTime();
 
+          log.info("  Duración por fase:");
           log.info(
-              "Fases de persistencia: preparacion={}, consultaReemplazos={}, borradoReemplazos={}, grafoYFlush={}",
-              LocalDateTimeHelper.getDiferenciaNanos(inicioPreparacion, finPreparacion),
+              "    Preparación: {}",
+              LocalDateTimeHelper.getDiferenciaNanos(inicioPreparacion, finPreparacion));
+          log.info(
+              "    Consulta de reemplazos: {}",
               LocalDateTimeHelper.getDiferenciaNanos(
-                  inicioConsultaReemplazos, finConsultaReemplazos),
-              LocalDateTimeHelper.getDiferenciaNanos(inicioBorradoReemplazos, finBorradoReemplazos),
+                  inicioConsultaReemplazos, finConsultaReemplazos));
+          log.info(
+              "    Borrado de reemplazos: {}",
+              LocalDateTimeHelper.getDiferenciaNanos(inicioBorradoReemplazos, finBorradoReemplazos));
+          log.info(
+              "    Persistencia y flush: {}",
               LocalDateTimeHelper.getDiferenciaNanos(
                   inicioPersistenciaGrafo, finPersistenciaGrafo));
           return null;
@@ -319,11 +330,11 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     Map<String, Entry> entriesById = hasPreGroupedEntries ? Map.of() : latestEntriesById(feedSet);
     int entryCount = hasPreGroupedEntries ? countEntries(entriesByFeed) : entriesById.size();
 
+    log.info("  Datos a persistir:");
+    log.info("    Feeds: {}", StringHelper.getNumeroConFormato(feedSet.size()));
+    log.info("    Entries: {}", StringHelper.getNumeroConFormato(entryCount));
     log.info(
-        "Persistiendo feeds en transaccion: feeds={}, entries={}, deletedEntries={}",
-        feedSet.size(),
-        entryCount,
-        deletedEntriesByRef.size());
+        "    Deleted entries: {}", StringHelper.getNumeroConFormato(deletedEntriesByRef.size()));
 
     for (Feed feed : feedSet) {
       feed.setMiLog(miLog);
@@ -345,7 +356,9 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       Session session, Collection<Entry> entries, Map<String, LocalDateTime> createdAtByEntryId) {
     int contadorEntry = 1;
     int entryFlushWindow = getEntryFlushWindow();
-    log.info("Ventana ORM de entries antes de flush/clear: {}", entryFlushWindow);
+    log.info(
+        "    Ventana ORM antes de flush/clear: {} entries",
+        StringHelper.getNumeroConFormato(entryFlushWindow));
     int entriesSinceFlush = 0;
     int persistedRootsSinceFlush = 0;
 
@@ -634,10 +647,9 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     }
 
     session.flush();
-    log.info(
-        "Entries existentes eliminados antes de ACTUALIZAR: solicitados={}, eliminados={}",
-        updatedEntryIds.size(),
-        deleted);
+    log.info("  Entries existentes eliminadas antes de actualizar:");
+    log.info("    Solicitadas: {}", StringHelper.getNumeroConFormato(updatedEntryIds.size()));
+    log.info("    Eliminadas: {}", StringHelper.getNumeroConFormato(deleted));
   }
 
   private int flushAndClearIfBatchReached(Session session, int persistedSinceFlush, int batchSize) {
@@ -696,18 +708,23 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     }
 
     HibernateStatisticsSnapshot delta = statisticsAfter.subtract(statisticsBefore);
+    log.info("  Perfil Hibernate de persistencia:");
+    log.info("    Inserciones: {}", StringHelper.getNumeroConFormato(delta.entityInserts()));
+    log.info("    Actualizaciones: {}", StringHelper.getNumeroConFormato(delta.entityUpdates()));
+    log.info("    Eliminaciones: {}", StringHelper.getNumeroConFormato(delta.entityDeletes()));
+    log.info("    Flushes: {}", StringHelper.getNumeroConFormato(delta.flushes()));
     log.info(
-        "Perfil Hibernate persistencia: inserts={}, updates={}, deletes={}, flushes={}, preparedStatements={}, collections(recreate/update/remove)={}/{}/{}, heapAntesMiB={}, heapDespuesMiB={}",
-        delta.entityInserts(),
-        delta.entityUpdates(),
-        delta.entityDeletes(),
-        delta.flushes(),
-        delta.preparedStatements(),
-        delta.collectionRecreates(),
-        delta.collectionUpdates(),
-        delta.collectionRemoves(),
-        bytesToMebibytes(heapBefore),
-        bytesToMebibytes(usedHeapBytes()));
+        "    Sentencias preparadas: {}",
+        StringHelper.getNumeroConFormato(delta.preparedStatements()));
+    log.info(
+        "    Colecciones recreadas/actualizadas/eliminadas: {}/{}/{}",
+        StringHelper.getNumeroConFormato(delta.collectionRecreates()),
+        StringHelper.getNumeroConFormato(delta.collectionUpdates()),
+        StringHelper.getNumeroConFormato(delta.collectionRemoves()));
+    log.info(
+        "    Heap antes/después (MiB): {}/{}",
+        StringHelper.getNumeroConFormato(bytesToMebibytes(heapBefore)),
+        StringHelper.getNumeroConFormato(bytesToMebibytes(usedHeapBytes())));
   }
 
   private static long usedHeapBytes() {
@@ -771,11 +788,14 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         long inicioCommit = System.nanoTime();
         transaction.commit();
         if ("persistirImportacion".equals(metodo)) {
+          long finTransaccion = System.nanoTime();
+          log.info("  Transacción de importación confirmada:");
           log.info(
-              "Transaccion de importacion confirmada: trabajo={}, commit={}, total={}",
-              LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, inicioCommit),
-              LocalDateTimeHelper.getDiferenciaNanos(inicioCommit, System.nanoTime()),
-              LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, System.nanoTime()));
+              "    Trabajo: {}", LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, inicioCommit));
+          log.info(
+              "    Commit: {}", LocalDateTimeHelper.getDiferenciaNanos(inicioCommit, finTransaccion));
+          log.info(
+              "    Total: {}", LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, finTransaccion));
         }
         return result;
 

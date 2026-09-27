@@ -75,7 +75,7 @@ public final class FeedHelper {
           String feedName = getFeedDisplayName(nextLink);
           context.setCurrentFeedNumber(feedNumber);
           context.setCurrentFeedName(feedName);
-          log.info("Feed {}: {}", feedNumber, feedName);
+          log.info("Feed {}: {}", StringHelper.getNumeroConFormato(feedNumber), feedName);
 
           long inicioDeserializacionYMapeo = System.nanoTime();
           FeedType feedType = getFeedType(unmarshaller, reader);
@@ -90,7 +90,10 @@ public final class FeedHelper {
           List<DeletedEntry> listDeletedEntry = feed.getDeletedEntryList();
           totalDeletedEntries += listDeletedEntry.size();
           log.debug("  * Lista de DeletedEntry: {} elementos.", listDeletedEntry.size());
-          log.info("  Entradas: {} | Deleted entries: {}", listEntry.size(), listDeletedEntry.size());
+          log.info(
+              "  Entradas: {} | Deleted entries: {}",
+              StringHelper.getNumeroConFormato(listEntry.size()),
+              StringHelper.getNumeroConFormato(listDeletedEntry.size()));
 
           feed.setEntryList(new ArrayList<>());
           context.getConjuntoFeedsFromAtoms().add(feed);
@@ -126,12 +129,12 @@ public final class FeedHelper {
           }
 
           nextLink = source.getNextLink(feed);
+          if (source.isMissingNextLinkTerminal(nextLink)) {
+            log.info(
+                "Fin del parseo local: el siguiente feed no está disponible en el directorio configurado.");
+            break;
+          }
           if (!source.isNextLinkValid(nextLink)) {
-            if (source.isMissingNextLinkTerminal(nextLink)) {
-              log.info(
-                  "Fin del parseo local: el siguiente feed no está disponible en el directorio configurado.");
-              break;
-            }
             throw new IllegalStateException("Enlace next informado pero no válido: " + nextLink);
           }
 
@@ -139,14 +142,19 @@ public final class FeedHelper {
         }
       }
 
+      log.info("Parseo de feeds finalizado:");
+      log.info("  Feeds procesados: {}", StringHelper.getNumeroConFormato(feedsParseados));
+      log.info("  Entries obtenidos: {}", StringHelper.getNumeroConFormato(totalEntries));
       log.info(
-          "Parseo de feeds finalizado: feeds={}, entries={}, deletedEntries={}, corteIncremental={}, apertura={}, JAXB+mapeo={}, filtrado={}",
-          StringHelper.getNumeroConFormato(feedsParseados),
-          StringHelper.getNumeroConFormato(totalEntries),
-          StringHelper.getNumeroConFormato(totalDeletedEntries),
-          alcanzadoCorteIncremental,
-          LocalDateTimeHelper.getDiferenciaNanos(0, aperturaNanos),
-          LocalDateTimeHelper.getDiferenciaNanos(0, deserializacionYMapeoNanos),
+          "  Deleted entries obtenidos: {}",
+          StringHelper.getNumeroConFormato(totalDeletedEntries));
+      log.info("  Corte incremental alcanzado: {}", alcanzadoCorteIncremental);
+      log.info("  Duración de lectura: {}", LocalDateTimeHelper.getDiferenciaNanos(0, aperturaNanos));
+      log.info(
+          "  Duración de deserialización y mapeo: {}",
+          LocalDateTimeHelper.getDiferenciaNanos(0, deserializacionYMapeoNanos));
+      log.info(
+          "  Duración de filtrado: {}",
           LocalDateTimeHelper.getDiferenciaNanos(0, filtradoNanos));
     } catch (Exception ex) {
       throw new MiParseException(ex);

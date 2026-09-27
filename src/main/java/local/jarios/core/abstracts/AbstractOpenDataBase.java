@@ -189,7 +189,7 @@ public abstract class AbstractOpenDataBase {
   protected int procesar(String configDir) {
     ExitStatus status = runWithPipeline(configDir);
     if (status == ExitStatus.OK) {
-      log.info(Mensajes.FINAL_CORRECTO);
+      imprimirTitulo(Mensajes.FINAL_CORRECTO);
     }
     return status.code;
   }

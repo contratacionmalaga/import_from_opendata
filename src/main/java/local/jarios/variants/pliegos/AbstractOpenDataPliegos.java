@@ -108,11 +108,14 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
             estadistica);
 
     String duracionPersistencia = persistirImportacionYRegistrarDuracion(plan, estadistica);
+    log.info("Resumen de persistencia:");
     log.info(
-        "Persistida importacion Pliegos en una unica transaccion: historicosGenerados={}, historicosPersistidos=0, reemplazos={}, duracion={}",
-        StringHelper.getNumeroConFormato(historicosGenerados),
-        StringHelper.getNumeroConFormato(replacementEntryIds.size()),
-        duracionPersistencia);
+        "  Históricos generados: {}", StringHelper.getNumeroConFormato(historicosGenerados));
+    log.info("  Históricos persistidos: {}", StringHelper.getNumeroConFormato(0));
+    log.info(
+        "  Entries reemplazadas: {}",
+        StringHelper.getNumeroConFormato(replacementEntryIds.size()));
+    log.info("  Duración total: {}", duracionPersistencia);
     imprimirTitulo("PRESISTENCIA FINALIZADA CORRECTAMENTE");
     return estadistica;
   }

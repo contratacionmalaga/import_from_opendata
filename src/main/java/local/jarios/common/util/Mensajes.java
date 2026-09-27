@@ -15,7 +15,7 @@ public final class Mensajes {
       "**** INICIO DE LA EJECUCIÓN DEL PROGRAMA -- LOCAL  ****";
   public static final String INICIO_INTERNET =
       "**** INICIO DE LA EJECUCIÓN DEL PROGRAMA -- INTERNET  ****";
-  public static final String FINAL_CORRECTO = "**** La ejecución ha finalizado CORRECTAMENTE ****";
+  public static final String FINAL_CORRECTO = "EJECUCIÓN FINALIZADA CORRECTAMENTE";
   public static final String ENTIDADES = "{}Se han encontrado {} entidades dentro del paquete {}.";
   public static final String ENTRY_NUEVO = "El Entry no figura en la base de datos.";
   public static final String ENTRY_NO_FILTRO_ORGANOS_CONTRATACION =

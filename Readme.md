@@ -44,22 +44,20 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 
 Los lanzadores seleccionan el JAR con mayor versión disponible para cada combinación de grupo y modo.
 
-## Versión 8.0.1
+## Versión 8.0.2
 
-La versión 8.0.1 profesionaliza la operación de importaciones: la consola presenta solo el
-estado útil para quien ejecuta el proceso, mientras que el detalle de soporte queda en el log de
-error individual de la ejecución y en el correo de incidencia configurado.
+La versión 8.0.2 mejora la lectura de la consola durante el parseo y la persistencia. Los
+contadores usan formato de miles, las métricas se presentan en líneas agrupadas y las fases de
+lectura, deserialización, filtrado, transacción y perfil Hibernate quedan claramente separadas.
 
-Los errores se clasifican por tipo de excepción, SQLState de MariaDB y fase del pipeline. Esto
-evita depender de textos cambiantes de Hibernate, MariaDB o Java. Cada fallo de importación deja
-una única traza técnica completa; un error de rollback se conserva como un segundo incidente.
+El resultado global se muestra con un bloque final uniforme de tres líneas. La información de
+persistencia mantiene su propio bloque, evitando repetir mensajes con significados distintos.
 
-En modo local, un enlace `next` que apunta a un fichero posterior ausente termina correctamente el
-parseo del corpus disponible. El fichero inicial, enlaces inválidos, ciclos, ficheros ilegibles y
-XML inválido siguen deteniendo la importación. El modo Internet mantiene su validación estricta y
-sus reintentos.
+Los registros de importación de la tabla `log` recuperan `created_at`, que refleja el momento
+técnico de creación. `fecha_generacion` conserva el valor funcional del origen. Para bases ya
+existentes debe aplicarse la migración disponible en `docs/migrations/v8.0.2/`.
 
-Las notas completas están en [`docs/releases/v8.0.1.md`](docs/releases/v8.0.1.md).
+Las notas completas están en [`docs/releases/v8.0.2.md`](docs/releases/v8.0.2.md).
 
 ## Generación y publicación local de ejecutables
 

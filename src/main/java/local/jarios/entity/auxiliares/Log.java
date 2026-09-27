@@ -1,5 +1,6 @@
 package local.jarios.entity.auxiliares;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +11,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +22,7 @@ import local.jarios.common.util.TamanoCampos;
 import local.jarios.core.enums.LugarImportacion;
 import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.atom.Feed;
+import local.jarios.helpers.LocalDateTimeHelper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -50,6 +54,11 @@ public class Log {
 
   @Column(name = "fecha_generacion")
   private Date fechaGeneracion;
+
+  /** Fecha técnica en la que se persiste este registro de importación. */
+  @JsonIgnore
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
   // Relaciones uno a uno
   @OneToOne(mappedBy = "miLog", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -87,5 +96,12 @@ public class Log {
   public Log(LugarImportacion lugarImportacion, TipoSindicacion tipoSindicacion) {
     this.lugarImportacion = lugarImportacion;
     this.tipoSindicacion = tipoSindicacion;
+  }
+
+  @PrePersist
+  protected void onCreate() {
+    if (createdAt == null) {
+      createdAt = LocalDateTimeHelper.getLocalDateTimeNow();
+    }
   }
 }
