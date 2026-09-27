@@ -127,6 +127,11 @@ public final class FeedHelper {
 
           nextLink = source.getNextLink(feed);
           if (!source.isNextLinkValid(nextLink)) {
+            if (source.isMissingNextLinkTerminal(nextLink)) {
+              log.info(
+                  "Fin del parseo local: el siguiente feed no está disponible en el directorio configurado.");
+              break;
+            }
             throw new IllegalStateException("Enlace next informado pero no válido: " + nextLink);
           }
 

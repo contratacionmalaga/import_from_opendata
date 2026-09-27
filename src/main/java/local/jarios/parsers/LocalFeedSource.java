@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Objects;
 import local.jarios.common.util.Constantes;
@@ -72,6 +73,18 @@ public class LocalFeedSource implements FeedSource {
   @Override
   public boolean isNextLinkValid(String link) {
     return FileHelper.esFileValido(link);
+  }
+
+  @Override
+  public boolean isMissingNextLinkTerminal(String link) {
+    if (link == null || link.isBlank()) {
+      return false;
+    }
+    try {
+      return !Files.exists(Path.of(link));
+    } catch (InvalidPathException ex) {
+      return false;
+    }
   }
 
   /**

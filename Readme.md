@@ -44,9 +44,9 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 
 Los lanzadores seleccionan el JAR con mayor versión disponible para cada combinación de grupo y modo.
 
-## Versión 8.0.0
+## Versión 8.0.1
 
-La versión 8.0.0 profesionaliza la operación de importaciones: la consola presenta solo el
+La versión 8.0.1 profesionaliza la operación de importaciones: la consola presenta solo el
 estado útil para quien ejecuta el proceso, mientras que el detalle de soporte queda en el log de
 error individual de la ejecución y en el correo de incidencia configurado.
 
@@ -54,7 +54,12 @@ Los errores se clasifican por tipo de excepción, SQLState de MariaDB y fase del
 evita depender de textos cambiantes de Hibernate, MariaDB o Java. Cada fallo de importación deja
 una única traza técnica completa; un error de rollback se conserva como un segundo incidente.
 
-Las notas completas están en [`docs/releases/v8.0.0.md`](docs/releases/v8.0.0.md).
+En modo local, un enlace `next` que apunta a un fichero posterior ausente termina correctamente el
+parseo del corpus disponible. El fichero inicial, enlaces inválidos, ciclos, ficheros ilegibles y
+XML inválido siguen deteniendo la importación. El modo Internet mantiene su validación estricta y
+sus reintentos.
+
+Las notas completas están en [`docs/releases/v8.0.1.md`](docs/releases/v8.0.1.md).
 
 ## Generación y publicación local de ejecutables
 

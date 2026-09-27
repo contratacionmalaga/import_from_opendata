@@ -37,6 +37,16 @@ class FeedHelperNavigationTest {
   }
 
   @Test
+  void completes_a_local_corpus_when_a_valid_next_file_is_not_available() throws Exception {
+    OpenDataExecutionContext context = new OpenDataExecutionContext();
+
+    FeedHelper.parsearFeeds(
+        new TerminalMissingFeedSource("first", Map.of("first", atomFeed("missing"))), context);
+
+    assertThat(context.getConjuntoFeedsFromAtoms()).hasSize(1);
+  }
+
+  @Test
   void rejects_a_cycle_in_the_feed_chain() {
     assertThatThrownBy(
             () ->
@@ -163,6 +173,35 @@ class FeedHelperNavigationTest {
     @Override
     public boolean isNextLinkValid(String link) {
       return feeds.containsKey(link);
+    }
+
+    @Override
+    public String getNextLink(Feed feed) {
+      return feed.getLinkNext();
+    }
+
+    @Override
+    public BufferedReader openBufferedReader(String path) {
+      return new BufferedReader(new StringReader(feeds.get(path)));
+    }
+  }
+
+  private record TerminalMissingFeedSource(String initialLink, Map<String, String> feeds)
+      implements FeedSource {
+
+    @Override
+    public String getInitialLink() {
+      return initialLink;
+    }
+
+    @Override
+    public boolean isNextLinkValid(String link) {
+      return feeds.containsKey(link);
+    }
+
+    @Override
+    public boolean isMissingNextLinkTerminal(String link) {
+      return "missing".equals(link);
     }
 
     @Override

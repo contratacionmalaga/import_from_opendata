@@ -31,6 +31,20 @@ public interface FeedSource {
   boolean isNextLinkValid(String link) throws Exception;
 
   /**
+   * Indica si un enlace siguiente no disponible constituye el final normal de una fuente.
+   *
+   * <p>El valor predeterminado es {@code false}: una fuente remota o una ruta inválida debe
+   * seguir tratándose como error. La fuente local puede aceptar un fichero siguiente ausente como
+   * límite del corpus disponible.
+   *
+   * @param link enlace siguiente ya resuelto
+   * @return {@code true} cuando debe finalizarse el parseo correctamente
+   */
+  default boolean isMissingNextLinkTerminal(String link) {
+    return false;
+  }
+
+  /**
    * Obtiene el enlace siguiente a partir del {@link Feed} actual para continuar la lectura o
    * procesamiento.
    *
