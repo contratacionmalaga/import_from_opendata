@@ -97,15 +97,12 @@ public final class SessionFactoryProvider {
       return sf;
 
     } catch (PropertiesManagerException ex) {
-      // CLAVE: ahora capturamos la excepción real del servicio de properties
       String msg =
           "Error leyendo configuración de properties para " + tipoConexion + ": " + ex.getMessage();
-      log.error(msg, ex);
       throw new MiSessionFactoryProvider(msg, ex);
 
     } catch (HibernateException | IllegalArgumentException ex) {
       String msg = "Error creando SessionFactory para " + tipoConexion + ": " + ex.getMessage();
-      log.error(msg, ex);
       throw new MiSessionFactoryProvider(msg, ex);
     }
   }

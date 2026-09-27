@@ -78,6 +78,12 @@ public final class ExecutionEmailReportBuilder {
     appendTableRow(html, "Fase", context == null ? null : context.getCurrentPhase());
     appendTableRow(
         html,
+        "Feed",
+        context == null || context.getCurrentFeedNumber() == null
+            ? null
+            : context.getCurrentFeedNumber() + " · " + value(context.getCurrentFeedName()));
+    appendTableRow(
+        html,
         "Sindicacion",
         context == null || context.getTipoSindicacion() == null
             ? null

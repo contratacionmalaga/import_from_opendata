@@ -44,13 +44,17 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 
 Los lanzadores seleccionan el JAR con mayor versión disponible para cada combinación de grupo y modo.
 
-## Actualización a 7.6.0
+## Versión 8.0.0
 
-La versión 7.6.0 corrige el mapeo de plazos de licitación e incorpora el plazo de recepción de
-solicitudes de participación. Antes de utilizarla con una base de datos existente, aplique la
-migración [`01_add_participation_request_reception_period.sql`](docs/migrations/v7.6.0/01_add_participation_request_reception_period.sql).
+La versión 8.0.0 profesionaliza la operación de importaciones: la consola presenta solo el
+estado útil para quien ejecuta el proceso, mientras que el detalle de soporte queda en el log de
+error individual de la ejecución y en el correo de incidencia configurado.
 
-Las notas completas están en [`docs/releases/v7.6.0.md`](docs/releases/v7.6.0.md).
+Los errores se clasifican por tipo de excepción, SQLState de MariaDB y fase del pipeline. Esto
+evita depender de textos cambiantes de Hibernate, MariaDB o Java. Cada fallo de importación deja
+una única traza técnica completa; un error de rollback se conserva como un segundo incidente.
+
+Las notas completas están en [`docs/releases/v8.0.0.md`](docs/releases/v8.0.0.md).
 
 ## Generación y publicación local de ejecutables
 
@@ -373,15 +377,15 @@ Cada ejecución recibe un identificador único con formato `yyyyMMdd_HHmmss_<id>
 | `logs/import-from-opendata_error_<id>.log` | Diagnóstico técnico de errores, incluida la pila completa de excepciones. |
 | `logs/import-from-opendata_hibernate_<id>.log` | Eventos de Hibernate, JDBC y HikariCP. |
 
-La consola no muestra trazas Java. Cuando una importación falla, pide consultar el log técnico de la ejecución. El correo de soporte incorpora el identificador de incidencia y el nombre exacto de su archivo de errores.
+La consola no muestra trazas Java. Cuando una importación falla, muestra una explicación operativa y pide consultar el log técnico de la ejecución. La clasificación usa tipos de excepción, SQLState de MariaDB y fase de pipeline; el análisis de texto solo es un mecanismo de compatibilidad. El correo de soporte incorpora el identificador de incidencia, su categoría y el nombre exacto de su archivo de errores.
 
 Durante el parseo, la consola muestra cada feed por su nombre y, en la línea siguiente, sus contadores de entradas y bajas. La preparación de la importación se presenta en una única línea de contexto; las clases Java, números de línea, bloqueos internos y pilas de errores se reservan para los logs técnicos.
 
-Los logs se rotan por fecha y tamaño. Los archivos archivados se comprimen automáticamente; los registros operativos se conservan 30 días y los de errores 90 días.
+Los logs se rotan por fecha y tamaño, y los archivos archivados se comprimen automáticamente. Los ficheros base de ejecuciones ya finalizadas deben revisarse y eliminarse o archivarse conforme a la política manual del entorno.
 
 ### Correo de soporte
 
-Si `app.email.enabled=true`, el correo de incidencia incluye el identificador, versión, grupo, origen, tipo de sindicación, fase del pipeline, excepción raíz y pila técnica depurada. Nunca incorpora contraseñas JDBC o SMTP, tokens ni valores de autenticación.
+Si `app.email.enabled=true`, el correo de incidencia incluye el identificador, categoría, versión, grupo, origen, tipo de sindicación, fase del pipeline, número y nombre del feed, excepción raíz y pila técnica depurada. Nunca incorpora contraseñas JDBC o SMTP, tokens ni valores de autenticación, rutas locales ni URLs completas.
 
 ```properties
 app.email.error.include_stacktrace=true

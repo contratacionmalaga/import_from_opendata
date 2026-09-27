@@ -34,7 +34,6 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
       this.repository = new RepositoryImpl(sessionFactory);
     } catch (HibernateException ex) {
       String msg = "Error al obtener la SessionFactory para la conexión MARIADB";
-      log.error(msg, ex);
       throw new MiServiceException(msg, ex);
     }
   }
@@ -148,7 +147,6 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
     try {
       return supplier.get();
     } catch (RuntimeException ex) {
-      log.error("{} - {}", errorMsg, ex.getMessage(), ex);
       throw new MiServiceException(errorMsg, ex);
     }
   }
@@ -158,7 +156,6 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
     try {
       runnable.run();
     } catch (RuntimeException ex) {
-      log.error("{} - {}", errorMsg, ex.getMessage(), ex);
       throw new MiServiceException(errorMsg, ex);
     }
   }
@@ -169,7 +166,7 @@ public class ServicePrincipalImpl implements ServicePrincipal, AutoCloseable {
       try {
         ac.close();
       } catch (Exception ex) {
-        log.warn("Error cerrando repository", ex);
+        log.warn("No se pudo cerrar el repositorio: {}", ex.getMessage());
       }
     }
   }

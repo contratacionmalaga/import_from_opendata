@@ -35,7 +35,7 @@ public final class LinkInfo {
                 case Constantes.LINK_SELF -> linkInfo.setLinkSelf(linkType.getHref());
                 case Constantes.LINK_NEXT -> linkInfo.setLinkNext(linkType.getHref());
                 default ->
-                    log.error(
+                    log.warn(
                         Mensajes.MENSAJE_VALOR_SWITCH_INCORRECTO,
                         "linkType.getRel()",
                         linkType.getRel());

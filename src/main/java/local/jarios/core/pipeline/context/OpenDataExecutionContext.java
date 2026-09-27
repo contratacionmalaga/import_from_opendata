@@ -31,6 +31,8 @@ public class OpenDataExecutionContext {
   @Setter private String configDir;
   @Setter private String incidentId;
   @Setter private String currentPhase;
+  @Setter private Integer currentFeedNumber;
+  @Setter private String currentFeedName;
   @Setter private String duracionParseo;
   @Setter private LugarImportacion lugarImportacion;
   @Setter private TipoSindicacion tipoSindicacion;

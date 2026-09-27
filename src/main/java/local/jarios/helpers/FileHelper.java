@@ -34,7 +34,7 @@ public final class FileHelper {
 
   private static Path resolveReadableFile(String strPathFichero) {
     if (strPathFichero == null || strPathFichero.isBlank()) {
-      log.warn(Mensajes.FILE_NOT_EXIST, strPathFichero);
+      log.warn(Mensajes.FILE_NOT_EXIST, getFileDisplayName(strPathFichero));
       return null;
     }
 
@@ -42,26 +42,35 @@ public final class FileHelper {
       Path filePathFichero = Path.of(strPathFichero).toAbsolutePath().normalize();
 
       if (!Files.exists(filePathFichero)) {
-        log.warn(Mensajes.FILE_NOT_EXIST, strPathFichero);
+        log.warn(Mensajes.FILE_NOT_EXIST, getFileDisplayName(strPathFichero));
         return null;
       }
 
       Path realPath = filePathFichero.toRealPath();
 
       if (!Files.isRegularFile(realPath)) {
-        log.warn(Mensajes.NOT_FILE, strPathFichero);
+        log.warn(Mensajes.NOT_FILE, getFileDisplayName(strPathFichero));
         return null;
       }
 
       if (!Files.isReadable(realPath)) {
-        log.warn(Mensajes.FILE_NOT_READ, strPathFichero);
+        log.warn(Mensajes.FILE_NOT_READ, getFileDisplayName(strPathFichero));
         return null;
       }
 
       return realPath;
     } catch (InvalidPathException | IOException ex) {
-      log.warn(Mensajes.FILE_NOT_EXIST, strPathFichero);
+      log.warn(Mensajes.FILE_NOT_EXIST, getFileDisplayName(strPathFichero));
       return null;
     }
+  }
+
+  private static String getFileDisplayName(String path) {
+    if (path == null || path.isBlank()) {
+      return "sin nombre";
+    }
+    String normalized = path.replace('\\', '/');
+    int lastSeparator = normalized.lastIndexOf('/');
+    return lastSeparator >= 0 ? normalized.substring(lastSeparator + 1) : normalized;
   }
 }

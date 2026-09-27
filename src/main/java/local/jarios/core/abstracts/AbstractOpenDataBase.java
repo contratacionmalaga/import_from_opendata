@@ -17,6 +17,7 @@ import local.jarios.common.util.Mensajes;
 import local.jarios.common.util.PropertiesFiles;
 import local.jarios.common.util.PropertiesKeys;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
+import local.jarios.core.error.ImportFailureClassifier;
 import local.jarios.database.MariaDbImportLock;
 import local.jarios.database.SessionFactoryRegistry;
 import local.jarios.email.ExecutionEmailReportBuilder;
@@ -194,18 +195,16 @@ public abstract class AbstractOpenDataBase {
   }
 
   public final void pipelineInitAppVersion() throws VersionException {
-    imprimirTitulo("VERSIÓN DE LA APLICACIÓN");
     this.appVersion = versionService.getVersion(getClass());
-    log.info("AppVersion: {}.", appVersion);
+    log.info("Versión de la aplicación: {}.", appVersion);
   }
 
   public final void pipelineInitProperties(String configDir) throws PropertiesManagerException {
     imprimirTitulo("ACCESO A LOS FICHEROS properties");
 
     propertiesManager.setConfigDir(configDir);
-    log.info("configDir (param) = {}", configDir);
-    log.info("configDir (resolved) = {}", propertiesManager.getConfigDir());
-    log.info("java user.dir = {}", System.getProperty("user.dir"));
+    log.info("configDir = {}", propertiesManager.getConfigDir());
+    log.info("userDir = {}", System.getProperty("user.dir"));
 
     Set<String> clavesSensibles = Set.of("password");
     propertiesManager.setSensitiveKeys(clavesSensibles);
@@ -213,7 +212,9 @@ public abstract class AbstractOpenDataBase {
 
     propertiesManager.loadAllProperties();
     log.info("Cargadas todas las propiedades correctamente.");
-    log.info("Ficheros leídos: {}", propertiesManager.getListFiles());
+    log.info(
+        "Ficheros leídos: {}",
+        propertiesManager.getListFiles().stream().sorted(Comparator.naturalOrder()).toList());
 
     if (this.servicePrincipal == null) {
       this.servicePrincipal = new ServicePrincipalImpl();
@@ -451,8 +452,11 @@ public abstract class AbstractOpenDataBase {
   }
 
   private void handleFailure(OpenDataExecutionContext context, Throwable ex, String tipoError) {
+    var errorCategory = ImportFailureClassifier.classify(ex, context);
+    String operatorMessage = errorCategory.getOperatorMessage();
     log.error(
-        "La importación se ha interrumpido. Consulte el log técnico asociado a esta ejecución.",
+        "{} Consulte el log técnico asociado a esta ejecución.",
+        operatorMessage,
         ex);
 
     try {
@@ -462,29 +466,28 @@ public abstract class AbstractOpenDataBase {
       }
     } catch (PropertiesManagerException propertiesEx) {
       log.error(
-          "ERROR No se pudo consultar la configuración de email de soporte. Consulte el log técnico asociado a esta ejecución.",
+          "No se pudo consultar la configuración de correo de soporte. Revise mail.properties. Consulte el log técnico asociado a esta ejecución.",
           propertiesEx);
       return;
     }
 
     try {
       Properties props = getEmailProperties();
-      EmailData emailData = buildErrorEmailData(context, ex, tipoError);
+      EmailData emailData = buildErrorEmailData(context, ex, errorCategory.name());
 
       emailService.sendEmail(props, emailData);
 
     } catch (Exception emailEx) {
       log.error(
-          "ERROR No se pudo enviar el correo de soporte. Consulte el log técnico asociado a esta ejecución.",
+          "No se pudo enviar el correo de soporte. Revise mail.properties. Consulte el log técnico asociado a esta ejecución.",
           emailEx);
     }
   }
 
   /** Registra un fallo de notificación sin cambiar una importación ya confirmada. */
   public void handleSuccessNotificationFailure(OpenDataExecutionContext context, Throwable ex) {
-    log.error(
-        "ERROR La importación ya fue confirmada, pero no se pudo enviar el correo de confirmación. Consulte el log técnico asociado a esta ejecución.",
-        ex);
+    log.warn(
+        "La importación se confirmó, pero no se pudo enviar el correo de confirmación. Revise mail.properties.");
   }
 
   private boolean isErrorStackTraceIncluded() throws PropertiesManagerException {
@@ -507,6 +510,14 @@ public abstract class AbstractOpenDataBase {
     } catch (NumberFormatException ex) {
       return 50_000;
     }
+  }
+
+  static String getOperatorMessage(Throwable exception) {
+    return getOperatorMessage(exception, null);
+  }
+
+  static String getOperatorMessage(Throwable exception, OpenDataExecutionContext context) {
+    return ImportFailureClassifier.classify(exception, context).getOperatorMessage();
   }
 
   private static String getIncidentId(OpenDataExecutionContext context) {

@@ -91,7 +91,7 @@ public final class SessionFactoryRegistry {
               log.debug("Cerrada SessionFactory para tipo: {}", tipo);
             }
           } catch (Exception e) {
-            log.warn("No se pudo cerrar SessionFactory para tipo {}: {}", tipo, e.getMessage(), e);
+            log.warn("No se pudo cerrar SessionFactory para tipo {}: {}", tipo, e.getMessage());
           } finally {
             registry.remove(tipo);
           }

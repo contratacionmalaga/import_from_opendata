@@ -5,7 +5,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import local.jarios.common.util.Constantes;
 import local.jarios.exceptions.MiUnmarshallerException;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>Helper para crear y obtener instancias de {@link Unmarshaller}</h2>
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Juan Antonio
  */
-@Slf4j
 public final class UnmarshallerHelper {
 
   /**
@@ -60,8 +58,6 @@ public final class UnmarshallerHelper {
 
       return JAXBContext.newInstance(contextPath);
     } catch (JAXBException ex) {
-      var mensajeError = "Error crítico al obtener una instancia de JAXBContext.";
-      log.error(mensajeError, ex);
       throw new MiUnmarshallerException(ex);
     }
   }
@@ -80,8 +76,6 @@ public final class UnmarshallerHelper {
       var context = getJAXBContext();
       return context.createUnmarshaller();
     } catch (JAXBException ex) {
-      var mensajeError = "Error al crear el Unmarshaller a partir de un JAXBContext.";
-      log.error(mensajeError, ex);
       throw new MiUnmarshallerException(ex);
     }
   }

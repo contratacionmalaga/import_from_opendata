@@ -71,7 +71,11 @@ public final class FeedHelper {
         long inicioApertura = System.nanoTime();
         try (BufferedReader reader = source.openBufferedReader(nextLink)) {
           aperturaNanos += System.nanoTime() - inicioApertura;
-          log.info("Feed {}: {}", feedsParseados + 1, getFeedDisplayName(nextLink));
+          int feedNumber = feedsParseados + 1;
+          String feedName = getFeedDisplayName(nextLink);
+          context.setCurrentFeedNumber(feedNumber);
+          context.setCurrentFeedName(feedName);
+          log.info("Feed {}: {}", feedNumber, feedName);
 
           long inicioDeserializacionYMapeo = System.nanoTime();
           FeedType feedType = getFeedType(unmarshaller, reader);
@@ -140,7 +144,6 @@ public final class FeedHelper {
           LocalDateTimeHelper.getDiferenciaNanos(0, deserializacionYMapeoNanos),
           LocalDateTimeHelper.getDiferenciaNanos(0, filtradoNanos));
     } catch (Exception ex) {
-      log.error("Error durante el parseo de los ficheros feed. {}", ex.getMessage(), ex);
       throw new MiParseException(ex);
     }
   }

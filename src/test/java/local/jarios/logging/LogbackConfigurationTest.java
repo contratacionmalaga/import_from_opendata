@@ -22,7 +22,8 @@ class LogbackConfigurationTest {
           .contains("%ex{full}")
           .contains("%nopex")
           .contains("name=\"CONSOLE_ERROR\"")
-          .contains("name=\"local.jarios.core.abstracts.AbstractOpenDataBase\"");
+          .contains("name=\"local.jarios.core.abstracts.AbstractOpenDataBase\"")
+          .contains("Único punto que presenta errores de importación al operador.");
     }
   }
 }

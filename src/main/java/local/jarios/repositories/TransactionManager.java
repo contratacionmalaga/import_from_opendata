@@ -60,12 +60,11 @@ public final class TransactionManager {
       try {
 
         transaction.rollback();
-        log.warn("[rollbackTransaction] - Rollback ejecutado correctamente.");
+        log.warn("Rollback ejecutado correctamente.");
 
       } catch (Exception ex) {
 
-        String msg =
-            String.format("[rollbackTransaction] - Error haciendo rollback: %s", ex.getMessage());
+        String msg = String.format("No se pudo ejecutar el rollback: %s", ex.getMessage());
         log.error(msg, ex);
         throw new MiTransactionManagerException(msg, ex);
       }

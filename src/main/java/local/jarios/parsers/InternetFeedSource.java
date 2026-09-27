@@ -69,8 +69,7 @@ public class InternetFeedSource implements FeedSource {
    */
   private static void validateUrl(String url) throws MiUrlException {
     if (url == null || url.isBlank()) {
-      String msg = "[validateUrl] URL nula o en blanco";
-      log.error(msg);
+      String msg = "URL nula o en blanco";
       throw new MiUrlException(msg);
     }
 
@@ -78,10 +77,9 @@ public class InternetFeedSource implements FeedSource {
       URI uri = new URI(url).parseServerAuthority();
       validateHttpUri(uri);
       URL validatedUrl = uri.toURL();
-      log.debug("[validateUrl] URL válida (convertida a URL): {}", validatedUrl);
+      log.debug("URL válida: {}", validatedUrl);
     } catch (Exception e) {
-      String msg = "[validateUrl] URL inválida: " + url;
-      log.error(msg, e);
+      String msg = "URL inválida: " + url;
       throw new MiUrlException(msg, e);
     }
   }
@@ -215,12 +213,10 @@ public class InternetFeedSource implements FeedSource {
       throw lastError;
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-      String msg = "[openBufferedReader] Descarga interrumpida para URL: " + path;
-      log.error(msg, e);
+      String msg = "Descarga interrumpida para URL: " + path;
       throw new MiUrlException(msg, e);
     } catch (Exception e) {
-      String msg = "[openBufferedReader] Error al abrir BufferedReader para URL: " + path;
-      log.error(msg, e);
+      String msg = "No se pudo abrir el feed remoto: " + path;
       throw new MiUrlException(msg, e);
     }
   }

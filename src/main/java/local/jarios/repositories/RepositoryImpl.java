@@ -780,19 +780,17 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         return result;
 
       } catch (Exception ex) {
-        log.error("[{}] - Error en transacción: {}", metodo, ex.getMessage(), ex);
-
         if (transaction != null && transaction.getStatus().canRollback()) {
           try {
             transaction.rollback();
-            log.warn("[{}] - Transacción revertida debido a error", metodo);
+            log.warn("Transacción revertida tras un error en {}.", metodo);
           } catch (HibernateException rollbackEx) {
             log.error(
-                "[{}] - Error durante rollback: {}", metodo, rollbackEx.getMessage(), rollbackEx);
+                "No se pudo revertir la transacción de {}: {}", metodo, rollbackEx.getMessage(), rollbackEx);
           }
         }
 
-        throw new MiRepositoryException("[" + metodo + "] - Error en transacción", ex);
+        throw new MiRepositoryException("Error en transacción: " + metodo, ex);
       }
     }
   }

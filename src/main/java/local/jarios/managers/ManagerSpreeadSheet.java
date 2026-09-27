@@ -118,7 +118,6 @@ public class ManagerSpreeadSheet {
       return new ImportResult<>(lista, fechaGeneracion);
 
     } catch (Exception ex) {
-      log.error("[importarDesdeExcel] Error durante la importación desde URL={}", url, ex);
       throw new MiIoException("Error durante la importación desde Excel: " + url, ex);
     }
   }
