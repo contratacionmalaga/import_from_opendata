@@ -3,7 +3,6 @@ package local.jarios.common.util;
 public final class Mensajes {
 
   /** Mensaje indicando un error general en la aplicación. */
-  public static final String FINAL_ERRONEO = "Error";
 
   /** Mensaje que indica el final del log. */
   public static final String FINAL = "**** Final del log";

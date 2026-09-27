@@ -26,8 +26,6 @@ public class OpenDataPliegosLocal extends AbstractOpenDataPliegos {
 
   @Override
   protected void initVariantContext(OpenDataExecutionContext context) throws MiServiceException {
-    imprimirTitulo("LUGAR DE IMPORTACIÓN Y TIPO DE SINDICACIÓN");
-
     context.setAplicarFiltros(false);
     context.setCompararConExistentes(false);
 
@@ -37,9 +35,6 @@ public class OpenDataPliegosLocal extends AbstractOpenDataPliegos {
     context.setTipoSindicacion(tipo);
     adquirirExclusionImportacion(context);
 
-    log.info("Lugar de Importación: {}.", LugarImportacion.LOCAL);
-    log.info("Tipo de Sindicación: {}.", tipo);
-
     validarBaseDatosVaciaParaCargaLocal(tipo);
     context.getMapEntrySnapshotsFromBaseDatos().clear();
     context.setNewestEntry(null);
@@ -48,9 +43,9 @@ public class OpenDataPliegosLocal extends AbstractOpenDataPliegos {
   private void validarBaseDatosVaciaParaCargaLocal(TipoSindicacion tipo) throws MiServiceException {
     long entriesExistentes = getServicePrincipal().countEntries(tipo);
     log.info(
-        "Entries existentes en BD para carga LOCAL {}: {}",
-        tipo,
-        StringHelper.getNumeroConFormato(Math.toIntExact(entriesExistentes)));
+        "Base de datos validada: {} entries existentes para {}.",
+        StringHelper.getNumeroConFormato(Math.toIntExact(entriesExistentes)),
+        tipo);
 
     if (entriesExistentes > 0) {
       throw new MiServiceException(

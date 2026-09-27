@@ -187,7 +187,9 @@ public abstract class AbstractOpenDataBase {
 
   protected int procesar(String configDir) {
     ExitStatus status = runWithPipeline(configDir);
-    log.info(status == ExitStatus.OK ? Mensajes.FINAL_CORRECTO : Mensajes.FINAL_ERRONEO);
+    if (status == ExitStatus.OK) {
+      log.info(Mensajes.FINAL_CORRECTO);
+    }
     return status.code;
   }
 
@@ -225,6 +227,13 @@ public abstract class AbstractOpenDataBase {
       throws MiServiceException {
     initVariantContext(context);
     configurePersistirHistoricosRechazados(context);
+    log.info(
+        "Importación preparada: origen={} | tipo={} | filtros={} | actualización={} | históricos rechazados={}",
+        context.getLugarImportacion(),
+        context.getTipoSindicacion(),
+        context.isAplicarFiltros(),
+        context.isCompararConExistentes(),
+        context.isPersistirHistoricosRechazados());
   }
 
   protected void adquirirExclusionImportacion(OpenDataExecutionContext context)
@@ -237,7 +246,7 @@ public abstract class AbstractOpenDataBase {
       importLock =
           MariaDbImportLock.acquire(
               SessionFactoryRegistry.getSessionFactory(TipoConexion.PRINCIPAL), lockName);
-      log.info("Exclusión distribuida adquirida: {}", lockName);
+      log.debug("Exclusión distribuida adquirida: {}", lockName);
     } catch (RuntimeException ex) {
       throw new MiServiceException("No se pudo adquirir la exclusión distribuida: " + lockName, ex);
     }
@@ -247,7 +256,7 @@ public abstract class AbstractOpenDataBase {
     if (importLock == null) return;
     try {
       importLock.close();
-      log.info("Exclusión distribuida liberada.");
+      log.debug("Exclusión distribuida liberada.");
     } catch (RuntimeException ex) {
       log.warn("No se pudo liberar la exclusión distribuida: {}", ex.getMessage());
     } finally {
@@ -261,7 +270,6 @@ public abstract class AbstractOpenDataBase {
             PropertiesFiles.APP, PropertiesKeys.APP_PERSISTIR_HISTORICOS_RECHAZADOS);
     boolean persistir = Boolean.parseBoolean(value);
     context.setPersistirHistoricosRechazados(persistir);
-    log.info("Persistir históricos RECHAZAR por entrada: {}", persistir);
   }
 
   public final void pipelineBeforeParse(OpenDataExecutionContext context)
@@ -444,8 +452,7 @@ public abstract class AbstractOpenDataBase {
 
   private void handleFailure(OpenDataExecutionContext context, Throwable ex, String tipoError) {
     log.error(
-        "ERROR {}. Consulte el log técnico asociado a esta ejecución.",
-        getOperatorMessage(ex, tipoError),
+        "La importación se ha interrumpido. Consulte el log técnico asociado a esta ejecución.",
         ex);
 
     try {
@@ -500,15 +507,6 @@ public abstract class AbstractOpenDataBase {
     } catch (NumberFormatException ex) {
       return 50_000;
     }
-  }
-
-  private static String getOperatorMessage(Throwable ex, String tipoError) {
-    String type = tipoError == null || tipoError.isBlank() ? "Error de importación" : tipoError;
-    String message =
-        ex == null || ex.getMessage() == null || ex.getMessage().isBlank()
-            ? "sin detalle"
-            : ex.getMessage();
-    return type + ": " + message;
   }
 
   private static String getIncidentId(OpenDataExecutionContext context) {

@@ -375,6 +375,8 @@ Cada ejecución recibe un identificador único con formato `yyyyMMdd_HHmmss_<id>
 
 La consola no muestra trazas Java. Cuando una importación falla, pide consultar el log técnico de la ejecución. El correo de soporte incorpora el identificador de incidencia y el nombre exacto de su archivo de errores.
 
+Durante el parseo, la consola muestra cada feed por su nombre y, en la línea siguiente, sus contadores de entradas y bajas. La preparación de la importación se presenta en una única línea de contexto; las clases Java, números de línea, bloqueos internos y pilas de errores se reservan para los logs técnicos.
+
 Los logs se rotan por fecha y tamaño. Los archivos archivados se comprimen automáticamente; los registros operativos se conservan 30 días y los de errores 90 días.
 
 ### Correo de soporte

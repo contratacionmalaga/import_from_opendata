@@ -71,7 +71,7 @@ public final class FeedHelper {
         long inicioApertura = System.nanoTime();
         try (BufferedReader reader = source.openBufferedReader(nextLink)) {
           aperturaNanos += System.nanoTime() - inicioApertura;
-          log.debug("Parseando el feed '{}'", nextLink);
+          log.info("Feed {}: {}", feedsParseados + 1, getFeedDisplayName(nextLink));
 
           long inicioDeserializacionYMapeo = System.nanoTime();
           FeedType feedType = getFeedType(unmarshaller, reader);
@@ -86,11 +86,7 @@ public final class FeedHelper {
           List<DeletedEntry> listDeletedEntry = feed.getDeletedEntryList();
           totalDeletedEntries += listDeletedEntry.size();
           log.debug("  * Lista de DeletedEntry: {} elementos.", listDeletedEntry.size());
-          log.info(
-              "Feed parseado {}: entries={}, deletedEntries={}",
-              feedsParseados,
-              listEntry.size(),
-              listDeletedEntry.size());
+          log.info("  Entradas: {} | Deleted entries: {}", listEntry.size(), listDeletedEntry.size());
 
           feed.setEntryList(new ArrayList<>());
           context.getConjuntoFeedsFromAtoms().add(feed);
@@ -147,6 +143,15 @@ public final class FeedHelper {
       log.error("Error durante el parseo de los ficheros feed. {}", ex.getMessage(), ex);
       throw new MiParseException(ex);
     }
+  }
+
+  private static String getFeedDisplayName(String link) {
+    if (link == null || link.isBlank()) {
+      return "sin nombre";
+    }
+    String normalized = link.replace('\\', '/');
+    int lastSeparator = normalized.lastIndexOf('/');
+    return lastSeparator >= 0 ? normalized.substring(lastSeparator + 1) : normalized;
   }
 
   @SuppressWarnings("unchecked")

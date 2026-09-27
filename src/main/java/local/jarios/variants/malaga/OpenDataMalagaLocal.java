@@ -25,8 +25,6 @@ public class OpenDataMalagaLocal extends AbstractOpenDataMalaga {
 
   @Override
   protected void initVariantContext(OpenDataExecutionContext context) throws MiServiceException {
-    imprimirTitulo("LUGAR DE IMPORTACIÓN Y TIPO DE SINDICACIÓN");
-
     context.setAplicarFiltros(true);
     context.setCompararConExistentes(false);
 
@@ -36,9 +34,6 @@ public class OpenDataMalagaLocal extends AbstractOpenDataMalaga {
     context.setTipoSindicacion(tipo);
     adquirirExclusionImportacion(context);
 
-    log.info("Lugar de Importación: {}.", LugarImportacion.LOCAL);
-    log.info("Tipo de Sindicación: {}.", tipo);
-
     validarBaseDatosVaciaParaCargaLocal(tipo);
     context.getMapEntrySnapshotsFromBaseDatos().clear();
     context.setNewestEntry(null);
@@ -47,9 +42,9 @@ public class OpenDataMalagaLocal extends AbstractOpenDataMalaga {
   private void validarBaseDatosVaciaParaCargaLocal(TipoSindicacion tipo) throws MiServiceException {
     long entriesExistentes = getServicePrincipal().countEntries(tipo);
     log.info(
-        "Entries existentes en BD para carga LOCAL {}: {}",
-        tipo,
-        StringHelper.getNumeroConFormato(Math.toIntExact(entriesExistentes)));
+        "Base de datos validada: {} entries existentes para {}.",
+        StringHelper.getNumeroConFormato(Math.toIntExact(entriesExistentes)),
+        tipo);
 
     if (entriesExistentes > 0) {
       throw new MiServiceException(

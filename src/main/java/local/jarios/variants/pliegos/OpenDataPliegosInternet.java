@@ -26,8 +26,6 @@ public class OpenDataPliegosInternet extends AbstractOpenDataPliegos {
 
   @Override
   protected void initVariantContext(OpenDataExecutionContext context) throws MiServiceException {
-    imprimirTitulo("LUGAR DE IMPORTACIÓN Y TIPO DE SINDICACIÓN");
-
     context.setAplicarFiltros(false);
     context.setCompararConExistentes(true);
 
@@ -36,9 +34,6 @@ public class OpenDataPliegosInternet extends AbstractOpenDataPliegos {
     context.setLugarImportacion(LugarImportacion.INTERNET);
     context.setTipoSindicacion(tipo);
     adquirirExclusionImportacion(context);
-
-    log.info("Lugar de Importación: {}.", LugarImportacion.INTERNET);
-    log.info("Tipo de Sindicación: {}.", tipo);
 
     context.getMapEntrySnapshotsFromBaseDatos().clear();
     context
