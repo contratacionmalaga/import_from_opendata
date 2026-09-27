@@ -335,6 +335,8 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     log.info("    Entries: {}", StringHelper.getNumeroConFormato(entryCount));
     log.info(
         "    Deleted entries: {}", StringHelper.getNumeroConFormato(deletedEntriesByRef.size()));
+    logEntryFlushStrategy();
+    EntryPersistenceProgress entryProgress = new EntryPersistenceProgress(entryCount);
 
     for (Feed feed : feedSet) {
       feed.setMiLog(miLog);
@@ -344,21 +346,21 @@ public class RepositoryImpl implements Repository, AutoCloseable {
 
     persistDeletedEntries(session, miLog, deletedEntriesByRef.values());
     if (hasPreGroupedEntries) {
-      persistEntriesByFeed(session, entriesByFeed, createdAtByEntryId);
+      persistEntriesByFeed(session, entriesByFeed, createdAtByEntryId, entryProgress);
     } else {
-      persistEntries(session, entriesById.values(), createdAtByEntryId);
+      persistEntries(session, entriesById.values(), createdAtByEntryId, entryProgress);
     }
     session.flush();
     session.clear();
   }
 
   private void persistEntries(
-      Session session, Collection<Entry> entries, Map<String, LocalDateTime> createdAtByEntryId) {
+      Session session,
+      Collection<Entry> entries,
+      Map<String, LocalDateTime> createdAtByEntryId,
+      EntryPersistenceProgress entryProgress) {
     int contadorEntry = 1;
     int entryFlushWindow = getEntryFlushWindow();
-    log.info(
-        "    Ventana ORM antes de flush/clear: {} entries",
-        StringHelper.getNumeroConFormato(entryFlushWindow));
     int entriesSinceFlush = 0;
     int persistedRootsSinceFlush = 0;
 
@@ -404,20 +406,22 @@ public class RepositoryImpl implements Repository, AutoCloseable {
           entriesSinceFlush = 0;
         }
       }
+      entryProgress.entryPersisted();
     }
   }
 
   private void persistEntriesByFeed(
       Session session,
       Map<Feed, List<Entry>> entriesByFeed,
-      Map<String, LocalDateTime> createdAtByEntryId) {
+      Map<String, LocalDateTime> createdAtByEntryId,
+      EntryPersistenceProgress entryProgress) {
     for (Map.Entry<Feed, List<Entry>> feedEntries : entriesByFeed.entrySet()) {
       Feed feed = feedEntries.getKey();
       List<Entry> entries = safeList(feedEntries.getValue());
       for (Entry entry : entries) {
         entry.setFeed(feed);
       }
-      persistEntries(session, entries, createdAtByEntryId);
+      persistEntries(session, entries, createdAtByEntryId, entryProgress);
       entries.clear();
     }
   }
@@ -660,6 +664,57 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     session.flush();
     session.clear();
     return 0;
+  }
+
+  private void logEntryFlushStrategy() {
+    int entryFlushWindow = getEntryFlushWindow();
+    log.info("  Gestión de memoria ORM:");
+    if (entryFlushWindow > 0) {
+      log.info(
+          "    Flush/clear cada {} entries procesados.",
+          StringHelper.getNumeroConFormato(entryFlushWindow));
+      return;
+    }
+
+    log.info(
+        "    Flush/clear cada {} entidades persistidas (hibernate.jdbc.batch_size).",
+        StringHelper.getNumeroConFormato(getBatchSize()));
+  }
+
+  private final class EntryPersistenceProgress {
+
+    private final int totalEntries;
+    private final int percentageStep;
+    private int completedEntries;
+    private int nextPercentage;
+
+    private EntryPersistenceProgress(int totalEntries) {
+      this.totalEntries = totalEntries;
+      percentageStep = totalEntries >= 10_000 ? 1 : 10;
+      nextPercentage = percentageStep;
+    }
+
+    private void entryPersisted() {
+      if (totalEntries == 0) {
+        return;
+      }
+
+      completedEntries++;
+      int percentage = (int) ((long) completedEntries * 100 / totalEntries);
+      if (completedEntries < totalEntries && percentage < nextPercentage) {
+        return;
+      }
+
+      log.info(
+          "    Progreso de entries: {} de {} ({} %).",
+          StringHelper.getNumeroConFormato(completedEntries),
+          StringHelper.getNumeroConFormato(totalEntries),
+          StringHelper.getNumeroConFormato(percentage));
+
+      while (nextPercentage <= percentage) {
+        nextPercentage += percentageStep;
+      }
+    }
   }
 
   private static <T> List<T> safeList(List<T> list) {

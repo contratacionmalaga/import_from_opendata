@@ -44,9 +44,17 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 
 Los lanzadores seleccionan el JAR con mayor versión disponible para cada combinación de grupo y modo.
 
-## Versión 8.0.2
+## Versión 8.1.0
 
-La versión 8.0.2 mejora la lectura de la consola durante el parseo y la persistencia. Los
+La versión 8.1.0 incorpora progreso acumulado de entries durante la persistencia, con el total y
+el porcentaje procesado para toda la importación, sin reiniciarse al cambiar de feed. Las cargas
+de al menos 10.000 entries informan cada 1 %; las menores, cada 10 %. El 100 % indica que se han
+procesado todos los entries; la confirmación posterior de la transacción acredita el commit.
+
+La configuración efectiva de flush/clear se muestra una sola vez y elimina el mensaje repetido
+«Ventana ORM antes de flush/clear: 0 entries».
+
+La consola mantiene las mejoras de lectura durante el parseo y la persistencia. Los
 contadores usan formato de miles, las métricas se presentan en líneas agrupadas y las fases de
 lectura, deserialización, filtrado, transacción y perfil Hibernate quedan claramente separadas.
 
@@ -57,7 +65,7 @@ Los registros de importación de la tabla `log` recuperan `created_at`, que refl
 técnico de creación. `fecha_generacion` conserva el valor funcional del origen. Para bases ya
 existentes debe aplicarse la migración disponible en `docs/migrations/v8.0.2/`.
 
-Las notas completas están en [`docs/releases/v8.0.2.md`](docs/releases/v8.0.2.md).
+Las notas completas están en [`docs/releases/v8.1.0.md`](docs/releases/v8.1.0.md).
 
 ## Generación y publicación local de ejecutables
 
