@@ -3,6 +3,7 @@ param()
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 $repoRoot = Split-Path -Parent $PSScriptRoot
+$fixtureVersion = [string]([xml](Get-Content -Raw -LiteralPath (Join-Path $repoRoot "pom.xml"))).project.version
 $launcherPath = Join-Path $repoRoot "importar_atoms.ps1"
 $parseErrors = $null
 [System.Management.Automation.Language.Parser]::ParseFile($launcherPath, [ref]$null, [ref]$parseErrors) | Out-Null
@@ -54,7 +55,7 @@ function Invoke-RoutingCase {
     $caseDir = Join-Path $testRoot $Name
     $propertiesDir = Join-Path $caseDir "properties"
     New-Item -ItemType Directory -Force -Path $propertiesDir | Out-Null
-    foreach ($jarName in @("opendata_con_filtros-8.2.0-local.jar", "opendata_con_filtros-8.2.0-internet.jar", "opendata_sin_filtros-8.2.0-local.jar", "opendata_sin_filtros-8.2.0-internet.jar")) {
+    foreach ($jarName in @("opendata_con_filtros-$fixtureVersion-local.jar", "opendata_con_filtros-$fixtureVersion-internet.jar", "opendata_sin_filtros-$fixtureVersion-local.jar", "opendata_sin_filtros-$fixtureVersion-internet.jar")) {
         [System.IO.File]::WriteAllBytes((Join-Path $caseDir $jarName), [byte[]]@())
     }
     $databaseText = "# Configuracion de prueba`njakarta.persistence.jdbc.url=$Url`njakarta.persistence.jdbc.driver=org.mariadb.jdbc.Driver`njakarta.persistence.jdbc.user=previous_database`njakarta.persistence.jdbc.password=previous_database=clave&sin_cambios`n"

@@ -42,7 +42,30 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 | `opendata_sin_filtros-<versión>-local.jar` | Carga local completa sin filtros. |
 | `opendata_sin_filtros-<versión>-internet.jar` | Carga incremental desde Internet sin filtros. |
 
-Los lanzadores seleccionan el JAR con mayor versión disponible para cada combinación de grupo y modo.
+Si existe `active-release.properties`, los lanzadores utilizan los JAR de la versión activa
+en `versions/<versión>`. Sin ese fichero, seleccionan el JAR con mayor versión para cada grupo y modo.
+
+## Versión 8.2.1
+
+El lanzador Windows selecciona automáticamente `opendata_malaga` para `con_filtros` y
+`opendata_pliegos` para `sin_filtros`, tanto en local como en Internet. Mantiene servidor,
+puerto, usuario, contraseña y parámetros JDBC, incluidas las URLs con continuaciones.
+Con `-Grupo all` cambia de base antes de cada bloque. El destino aparece antes de confirmar
+y en los logs; `-DryRun` muestra la selección sin modificar los properties ni ejecutar Java.
+
+`-CreateSchemaFirstRun` crea el esquema en el primer bloque de cada base y utiliza `none`
+en los siguientes de esa misma base. Recrea tablas; no vacía únicamente sus filas. Para
+conservar el esquema y las vistas, mantener `validate` y preparar los datos por separado.
+En `opendata_malaga` hay dos tablas externas al modelo Java (`empresas_adjudicatarias` y
+`entry_anuncios`) que no forman parte de las 33 entidades gestionadas por Hibernate.
+
+La versión mantiene UUID v7 para las altas nuevas y conserva las identidades existentes de 8.2.0.
+La selección automática del esquema pertenece al lanzador PowerShell; el lanzador Bash y la
+ejecución directa de un JAR usan la base que esté configurada en `bd.properties`.
+
+Descarga: [Release 8.2.1](https://github.com/contratacionmalaga/import_from_opendata/releases/tag/v8.2.1).
+Notas: [`docs/releases/v8.2.1.md`](docs/releases/v8.2.1.md).
+Guía completa de comandos: [`docs/releases/v8.2.1/README.md`](docs/releases/v8.2.1/README.md).
 
 ## Versión 8.2.0
 
@@ -328,6 +351,12 @@ Carga con filtros por NIF o código postal:
 .\importar_atoms.ps1 -Grupo con_filtros -Mode internet -TipoSindicacion MAYORES
 ```
 
+Carga local de Málaga con los filtros configurados, para todos sus tipos admitidos:
+
+```powershell
+.\importar_atoms.ps1 -Grupo con_filtros -Mode local
+```
+
 Validar una ejecución sin modificar configuración ni datos:
 
 ```powershell
@@ -497,7 +526,7 @@ Para ejecutar directamente un JAR, indique siempre el directorio de configuraci�
 
 ```powershell
 java -Xms12g -Xmx12g `
-  -jar opendata_sin_filtros-8.2.0-local.jar `
+  -jar opendata_sin_filtros-8.2.1-local.jar `
   --configDir=C:\java\ejecutables\import-from-opendata-ejecutables\properties
 ```
 
