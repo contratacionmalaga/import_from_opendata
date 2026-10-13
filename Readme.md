@@ -282,6 +282,12 @@ Actualmente, `sin_filtros` solo admite `MAYORES`.
 
 El lanzador Windows es `importar_atoms.ps1`.
 
+Selecciona automáticamente la base según el grupo: `con_filtros` usa `opendata_malaga` y
+`sin_filtros` usa `opendata_pliegos`. Conserva el servidor, puerto, credenciales y parámetros
+JDBC de `bd.properties`. El destino aparece en el plan antes de confirmar y se establece
+antes de cada bloque. Con `-Grupo all` cambia de base al cambiar de grupo; `-DryRun` muestra
+los destinos sin modificar los properties ni ejecutar importaciones.
+
 ```powershell
 .\importar_atoms.ps1 `
   -Grupo sin_filtros `
@@ -299,7 +305,7 @@ Antes de ejecutar, muestra el plan completo: bloques seleccionados, origen, JAR,
 | `-DryRun` | Interruptor | Valida el plan y muestra los comandos Java sin modificar properties ni iniciar Java. |
 | `-SkipConfirmation` | Interruptor | Omite la confirmación interactiva. Solo para ejecuciones autónomas previamente configuradas. El plan y la activación quedan registrados en el log. |
 | `-ContinueOnError` | Interruptor | Continúa con el siguiente bloque si uno falla. |
-| `-CreateSchemaFirstRun` | Interruptor | Usa `create` solo en el primer bloque y `none` en los restantes. Solo para una base de datos nueva de pruebas. |
+| `-CreateSchemaFirstRun` | Interruptor | Usa `create` en el primer bloque de cada base de datos y `none` en los siguientes de esa base. Recrea tablas; no es un vaciado de filas. |
 | `-BaseDir` | Ruta | Directorio que contiene JAR, `properties` y `logs`. |
 
 ### Ejemplos de Windows
@@ -500,6 +506,11 @@ En una ejecución directa, `app.tipo_sindicacion` debe tener ya el valor correct
 ## Calidad, seguridad y documentación
 
 El proyecto dispone de pruebas unitarias, pruebas de integración configurables, comprobación de formato con Spotless y análisis de seguridad.
+
+La selección de base del lanzador Windows se comprueba con
+`./scripts/test-importar-atoms-routing.ps1`. Usa Java simulado y configuraciones temporales;
+no conecta con bases de datos reales. Incluye ambos grupos y modos, URLs JDBC continuadas,
+conservación de credenciales, `DryRun` y creación inicial de esquema por base.
 
 La documentación técnica se organiza en:
 

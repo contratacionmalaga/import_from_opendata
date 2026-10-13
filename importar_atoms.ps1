@@ -59,6 +59,11 @@ $ArtifactPorGrupo = @{
     sin_filtros = "opendata_sin_filtros"
 }
 
+$DatabasePorGrupo = @{
+    con_filtros = "opendata_malaga"
+    sin_filtros = "opendata_pliegos"
+}
+
 $TipoInfo = @{
     MAYORES = @{ LocalKey = "app.local.mayores"; InternetKey = "app.internet.mayores"; LocalSubdir = "may"; Nombre = "contratos mayores" }
     MENORES = @{ LocalKey = "app.local.menores"; InternetKey = "app.internet.menores"; LocalSubdir = "men"; Nombre = "contratos menores" }
@@ -245,6 +250,38 @@ function Set-TipoSindicacion {
     $updated | Set-Content -LiteralPath $PropertiesPath -Encoding UTF8
 }
 
+function Resolve-DatabaseUrl {
+    param([string]$Url, [string]$GrupoImportacion)
+    if ($Url -notmatch '^(?<Prefix>jdbc:(?:mariadb|postgresql)://[^/\s]+/)[^?\\/\s#]+(?<Suffix>\?.*)?$') {
+        Fail "La URL JDBC principal no tiene un formato valido para seleccionar la base de datos." "Revise jakarta.persistence.jdbc.url en $DatabasePropertiesPath. No se ha iniciado ninguna importacion."
+    }
+    $suffix = if ($Matches.ContainsKey("Suffix")) { $Matches.Suffix } else { "" }
+    return $Matches.Prefix + $DatabasePorGrupo[$GrupoImportacion] + $suffix
+}
+
+function Set-DatabaseForImport {
+    param([object]$Item)
+    $currentProperties = Read-PropertiesMap -Path $DatabasePropertiesPath
+    $currentUrl = Get-PropertyOrDefault -Properties $currentProperties -Key "jakarta.persistence.jdbc.url"
+    if ((Resolve-DatabaseUrl -Url $currentUrl -GrupoImportacion $Item.Grupo) -cne $Item.DatabaseUrl) {
+        Fail "La conexion ha cambiado desde que se preparo el plan de importacion." "Revise bd.properties y vuelva a ejecutar el lanzador."
+    }
+
+    # Solo se sustituye el nombre de la base en la linea fisica. Las continuaciones y
+    # los parametros JDBC permanecen exactamente como estaban en el fichero.
+    $content = [System.IO.File]::ReadAllText($DatabasePropertiesPath)
+    $urlPattern = '(?m)^(?<Key>[ \t]*jakarta\.persistence\.jdbc\.url[ \t]*=[ \t]*)(?<Prefix>jdbc:(?:mariadb|postgresql)://[^/\r\n]+/)[^?\\/\s#]+'
+    if ([regex]::Matches($content, $urlPattern).Count -ne 1) {
+        Fail "bd.properties debe contener una unica URL JDBC principal valida." "No se ha iniciado el bloque de importacion."
+    }
+    $databaseName = $Item.DatabaseName
+    $updated = [regex]::Replace($content, $urlPattern, [System.Text.RegularExpressions.MatchEvaluator]{
+        param($match)
+        return $match.Groups["Key"].Value + $match.Groups["Prefix"].Value + $databaseName
+    })
+    [System.IO.File]::WriteAllText($DatabasePropertiesPath, $updated, [System.Text.UTF8Encoding]::new($false))
+}
+
 function Resolve-JavaExe {
     if (Test-Path -LiteralPath $PreferredJavaExe) {
         return $PreferredJavaExe
@@ -322,12 +359,15 @@ function Assert-RequiredFiltersForFilteredRun {
 
 function Build-ImportPlan {
     $plan = New-Object System.Collections.Generic.List[object]
+    $databaseProperties = Read-PropertiesMap -Path $DatabasePropertiesPath
+    $configuredUrl = Get-PropertyOrDefault -Properties $databaseProperties -Key "jakarta.persistence.jdbc.url"
     foreach ($selectedGroup in Get-SelectedGroups) {
+        $databaseUrl = Resolve-DatabaseUrl -Url $configuredUrl -GrupoImportacion $selectedGroup
         foreach ($selectedMode in Get-SelectedModes) {
             $jarPath = Resolve-JarPath -GrupoImportacion $selectedGroup -ModoImportacion $selectedMode
             $selectedTipos = Get-SelectedTipos -GrupoImportacion $selectedGroup
             foreach ($tipo in $selectedTipos) {
-                $plan.Add([PSCustomObject]@{ Grupo = $selectedGroup; Mode = $selectedMode; Tipo = $tipo; JarPath = $jarPath })
+                $plan.Add([PSCustomObject]@{ Grupo = $selectedGroup; Mode = $selectedMode; Tipo = $tipo; JarPath = $jarPath; DatabaseName = $DatabasePorGrupo[$selectedGroup]; DatabaseUrl = $databaseUrl })
             }
         }
     }
@@ -343,7 +383,7 @@ function Get-DatabaseSummary {
     if ($url -match '^jdbc:(?<motor>mariadb|postgresql)://(?<host>[^/:?]+)(:(?<port>\d+))?/(?<db>[^?]+)') {
         $summary.Motor = if ($Matches.motor -eq "mariadb") { "MariaDB" } else { "PostgreSQL" }
         $summary.Servidor = $Matches.host
-        $summary.Puerto = if ($Matches.port) { $Matches.port } else { "por defecto" }
+        $summary.Puerto = if ($Matches.ContainsKey("port")) { $Matches.port } else { "por defecto" }
         $summary.BaseDeDatos = $Matches.db
     }
     return $summary
@@ -405,7 +445,10 @@ function Show-ImportPlanAndConfirm {
     Write-Host "- Ficheros de configuracion: $PropertiesDir"
 
     Write-Host "`nDestino de los datos" -ForegroundColor Yellow
-    Write-Host "- Base de datos: '$($db.BaseDeDatos)' en $($db.Motor), servidor $($db.Servidor), puerto $($db.Puerto)."
+    Write-Host "- Motor: $($db.Motor), servidor $($db.Servidor), puerto $($db.Puerto)."
+    foreach ($destination in ($Plan | Select-Object Grupo, DatabaseName -Unique)) {
+        Write-Host "- $($destination.Grupo): base de datos '$($destination.DatabaseName)'."
+    }
     Write-Host "- Usuario: $($db.Usuario). La contrasena no se muestra. Conexion: $DatabasePropertiesPath"
 
     Write-Host "`nEjecucion planificada" -ForegroundColor Yellow
@@ -417,6 +460,7 @@ function Show-ImportPlanAndConfirm {
         Write-Host "- Bloque $position/$($Plan.Count): $tipoNombre ($($item.Tipo)); grupo $($item.Grupo); modo $($item.Mode)."
         Write-Host "  Origen: $origin"
         Write-Host "  Ejecutable: $($item.JarPath)"
+        Write-Host "  Base de datos: $($item.DatabaseName)"
         Write-Host "  Antes de iniciar se establecera app.tipo_sindicacion=$($item.Tipo)."
     }
 
@@ -437,7 +481,7 @@ function Show-ImportPlanAndConfirm {
 
     Write-Host "`nPersistencia y recursos aplicados" -ForegroundColor Yellow
     if ($CreateSchemaFirstRun) {
-        Write-Host "- Esquema: la primera importacion usara hibernate.hbm2ddl.auto=create; las restantes usaran none. Esto puede recrear las tablas antes del primer bloque."
+        Write-Host "- Esquema: la primera importacion de cada base de datos usara hibernate.hbm2ddl.auto=create; las siguientes de esa base usaran none. Esto puede recrear las tablas antes del primer bloque de cada grupo."
     } else {
         Write-Host "- Esquema: hibernate.hbm2ddl.auto=$ddlMode. $(Get-HibernateModeMessage -ModeValue $ddlMode)"
     }
@@ -496,25 +540,29 @@ Write-Host "Identificador de ejecucion: $executionId" -ForegroundColor Cyan
 Show-ImportPlanAndConfirm -Plan $plan
 
 $failed = @()
-$executionIndex = 0
+$schemaInitializedDatabases = @{}
 foreach ($item in $plan) {
-    Log "Preparando importacion: grupo=$($item.Grupo) modo=$($item.Mode) tipo=$($item.Tipo) jar=$($item.JarPath)"
+    Log "Preparando importacion: grupo=$($item.Grupo) modo=$($item.Mode) tipo=$($item.Tipo) base=$($item.DatabaseName) jar=$($item.JarPath)"
     Write-Host "`n=== Ejecutando $($item.Grupo) / $($item.Mode) / $($item.Tipo) ===" -ForegroundColor Yellow
     Write-Host "JAR: $($item.JarPath)" -ForegroundColor DarkYellow
+    Write-Host "Base de datos: $($item.DatabaseName)" -ForegroundColor DarkYellow
     $ddlModeForRun = $null
     if ($CreateSchemaFirstRun) {
-        $ddlModeForRun = if ($executionIndex -eq 0) { "create" } else { "none" }
+        $ddlModeForRun = if ($schemaInitializedDatabases.ContainsKey($item.DatabaseName)) { "none" } else { "create" }
+        $schemaInitializedDatabases[$item.DatabaseName] = $true
     }
     if ($DryRun) {
+        Write-Host "DryRun: se seleccionaria la base de datos $($item.DatabaseName) para $($item.Grupo)" -ForegroundColor Cyan
         Write-Host "DryRun: se usaria app.tipo_sindicacion=$($item.Tipo)" -ForegroundColor Cyan
         if ($ddlModeForRun) {
             Write-Host "DryRun: se usaria hibernate.hbm2ddl.auto=$ddlModeForRun" -ForegroundColor Cyan
         }
         Write-Host "DryRun: & $JavaExe $($JavaOpts -join ' ') -Dopendata.execution.id=$executionId -Dlog.path=`"$logPath`" -jar `"$($item.JarPath)`" --configDir=`"$PropertiesDir`"" -ForegroundColor Cyan
         Log "DryRun: no se modifica app.properties ni hibernate.properties ni se ejecuta Java."
-        $executionIndex++
         continue
     }
+    Set-DatabaseForImport -Item $item
+    Log "Base de datos seleccionada: $($item.DatabaseName) para $($item.Grupo)."
     if ($ddlModeForRun) {
         Set-HibernateDdlMode -ModeValue $ddlModeForRun
         Log "hibernate.hbm2ddl.auto actualizado a $ddlModeForRun"
@@ -524,7 +572,6 @@ foreach ($item in $plan) {
     Log "app.tipo_sindicacion actualizado a $($item.Tipo)"
     & $JavaExe @JavaOpts "-Dopendata.execution.id=$executionId" "-Dlog.path=$logPath" -jar $item.JarPath "--configDir=$PropertiesDir"
     $exitCode = $LASTEXITCODE
-    $executionIndex++
     if ($exitCode -eq 0) {
         Write-Host "Importacion completada: $($item.Grupo) / $($item.Mode) / $($item.Tipo)" -ForegroundColor Green
         Log "Importacion completada: grupo=$($item.Grupo) modo=$($item.Mode) tipo=$($item.Tipo)"
