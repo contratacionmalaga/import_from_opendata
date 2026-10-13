@@ -118,9 +118,10 @@ public final class FeedHelper {
           filtradoNanos += System.nanoTime() - inicioFiltrado;
 
           if (corteAlcanzadoEnEsteFeed) {
-            log.debug(
-                "Corte incremental alcanzado en el feed {}; se sigue navegando para recoger bajas posteriores.",
+            log.info(
+                "Fin del parseo: corte incremental alcanzado en el feed {}; no se descargan más feeds.",
                 feedsParseados);
+            break;
           }
 
           if (feed.getLinkNext() == null || feed.getLinkNext().isBlank()) {
@@ -146,16 +147,15 @@ public final class FeedHelper {
       log.info("  Feeds procesados: {}", StringHelper.getNumeroConFormato(feedsParseados));
       log.info("  Entries obtenidos: {}", StringHelper.getNumeroConFormato(totalEntries));
       log.info(
-          "  Deleted entries obtenidos: {}",
-          StringHelper.getNumeroConFormato(totalDeletedEntries));
+          "  Deleted entries obtenidos: {}", StringHelper.getNumeroConFormato(totalDeletedEntries));
       log.info("  Corte incremental alcanzado: {}", alcanzadoCorteIncremental);
-      log.info("  Duración de lectura: {}", LocalDateTimeHelper.getDiferenciaNanos(0, aperturaNanos));
+      log.info(
+          "  Duración de lectura: {}", LocalDateTimeHelper.getDiferenciaNanos(0, aperturaNanos));
       log.info(
           "  Duración de deserialización y mapeo: {}",
           LocalDateTimeHelper.getDiferenciaNanos(0, deserializacionYMapeoNanos));
       log.info(
-          "  Duración de filtrado: {}",
-          LocalDateTimeHelper.getDiferenciaNanos(0, filtradoNanos));
+          "  Duración de filtrado: {}", LocalDateTimeHelper.getDiferenciaNanos(0, filtradoNanos));
     } catch (Exception ex) {
       throw new MiParseException(ex);
     }

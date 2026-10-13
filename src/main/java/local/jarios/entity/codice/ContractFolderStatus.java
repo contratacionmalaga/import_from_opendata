@@ -20,6 +20,7 @@ import local.jarios.entity.atom.Entry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
  * Entidad que representa el estado de un expediente de contratación dentro del ciclo de vida de la
@@ -41,7 +42,8 @@ public class ContractFolderStatus {
    * automáticamente al persistir.
    */
   @Id
-  @GeneratedValue(generator = "UUID")
+  @GeneratedValue
+  @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 

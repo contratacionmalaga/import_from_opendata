@@ -17,6 +17,7 @@ import local.jarios.enums.TipoSolvencia;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
  * Entidad que representa los criterios de evaluación técnica aplicados a un operador económico para
@@ -48,7 +49,8 @@ public class EvaluationCriteria {
    * persistir la entidad.
    */
   @Id
-  @GeneratedValue(generator = "UUID")
+  @GeneratedValue
+  @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 

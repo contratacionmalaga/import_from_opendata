@@ -44,7 +44,40 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 
 Los lanzadores seleccionan el JAR con mayor versión disponible para cada combinación de grupo y modo.
 
-## Versión 8.1.0
+## Versión 8.2.0
+
+Los 33 generadores de claves primarias del modelo compartido de Málaga y Pliegos usan UUID v7
+explícitos de Hibernate: 3 entidades Atom, 7 auxiliares y 23 CODICE. Se aplica a los cuatro JAR
+con/sin filtros, local/Internet. Las columnas y relaciones mantienen su mapeo UUID nativo.
+
+Las actualizaciones conservan el Entry y las entidades CODICE que siguen presentes, identificadas
+por sus claves del proveedor dentro de cada relación padre. Los hijos añadidos reciben un nuevo
+v7; los retirados se eliminan. Se conservan los identificadores externos de Atom y CODICE, el
+campo textual `Uuid.uuid`, los identificadores de documentos y los códigos de lote.
+
+Un ID nuevo y las FK que lo referencian contienen exactamente el mismo UUID v7. Los UUID v4
+existentes y sus FK se conservan: esta versión no convierte ni remapea registros anteriores.
+No se modifica la etiqueta aleatoria de ocho caracteres usada para incidentes.
+
+La comprobación real usa exclusivamente `opendata_malaga_testing` en `localhost:3306` y verifica
+los 33 IDs, los tipos SQL UUID nativos y todas las FK mapeadas, además de reimportaciones y
+actualizaciones de registros v4. Las inserciones de prueba se revierten o limpian al terminar;
+en una base no vacía se valida el esquema sin recrearlo.
+
+Notas: [`docs/releases/v8.2.0.md`](docs/releases/v8.2.0.md).
+Guía de la versión: [`docs/releases/v8.2.0/README.md`](docs/releases/v8.2.0/README.md).
+
+## Versión 8.1.1
+
+La importación incremental detiene la navegación de feeds al encontrar un entry cuyo `updated`
+es estrictamente anterior al máximo `updated` de los entries locales del tipo solicitado.
+Las fechas iguales se siguen procesando. Se conservan las bajas de los feeds ya leídos; no se
+descargan feeds posteriores al corte. Sin entries locales, se mantiene la lectura completa.
+
+La versión no requiere nuevas propiedades ni migraciones respecto a 8.1.0.
+Notas: [`docs/releases/v8.1.1.md`](docs/releases/v8.1.1.md).
+
+## Mejoras de la versión 8.1.0
 
 La versión 8.1.0 incorpora progreso acumulado de entries durante la persistencia, con el total y
 el porcentaje procesado para toda la importación, sin reiniciarse al cambiar de feed. Las cargas
@@ -458,7 +491,7 @@ Para ejecutar directamente un JAR, indique siempre el directorio de configuraci�
 
 ```powershell
 java -Xms12g -Xmx12g `
-  -jar opendata_sin_filtros-7.5.0-local.jar `
+  -jar opendata_sin_filtros-8.2.0-local.jar `
   --configDir=C:\java\ejecutables\import-from-opendata-ejecutables\properties
 ```
 

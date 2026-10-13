@@ -18,6 +18,7 @@ import local.jarios.enums.TipoDocumento;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
  * Entidad que representa una referencia documental asociada a la importación de ficheros Excel
@@ -45,7 +46,8 @@ public class DocumentReference {
    * entidad.
    */
   @Id
-  @GeneratedValue(generator = "UUID")
+  @GeneratedValue
+  @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 

@@ -14,6 +14,7 @@ import local.jarios.common.util.TamanoCampos;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
  * Entidad que representa las <b>condiciones especiales de ejecución de un contrato</b> dentro de
@@ -34,7 +35,8 @@ public class ContractExecutionRequirement {
    * Identificador único de la condición especial de ejecución. Generado automáticamente como UUID.
    */
   @Id
-  @GeneratedValue(generator = "UUID")
+  @GeneratedValue
+  @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 

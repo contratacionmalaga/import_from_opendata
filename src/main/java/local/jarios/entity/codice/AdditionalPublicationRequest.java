@@ -15,6 +15,7 @@ import local.jarios.common.util.TamanoCampos;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
  * Entidad que representa una referencia documental adicional asociada a una publicación adicional,
@@ -32,7 +33,8 @@ public class AdditionalPublicationRequest {
 
   /** Identificador único generado automáticamente como UUID. */
   @Id
-  @GeneratedValue(generator = "UUID")
+  @GeneratedValue
+  @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 

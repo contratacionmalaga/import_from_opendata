@@ -18,6 +18,7 @@ import local.jarios.common.util.TamanoCampos;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
  * Representa el estado adicional de publicación en el proceso de importación de ficheros Excel
@@ -41,7 +42,8 @@ public class AdditionalPublicationStatus {
 
   /** Identificador único universal (UUID) del estado de publicación. */
   @Id
-  @GeneratedValue(generator = "UUID")
+  @GeneratedValue
+  @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 

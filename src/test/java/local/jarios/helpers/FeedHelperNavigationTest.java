@@ -90,8 +90,7 @@ class FeedHelperNavigationTest {
   }
 
   @Test
-  void continues_after_incremental_cutoff_to_collect_deleted_entries_from_later_pages()
-      throws Exception {
+  void stops_navigation_after_an_entry_older_than_the_newest_local_entry() throws Exception {
     OpenDataExecutionContext context = new OpenDataExecutionContext();
     context.setCompararConExistentes(true);
     context.setNewestEntry(entry("cursor", "2026-09-26T10:00:00"));
@@ -104,9 +103,9 @@ class FeedHelperNavigationTest {
                 "second", atomFeedWithDeletedEntry("deleted-entry-1"))),
         context);
 
-    assertThat(context.getConjuntoFeedsFromAtoms()).hasSize(2);
+    assertThat(context.getConjuntoFeedsFromAtoms()).hasSize(1);
     assertThat(context.getMapEntriesFromAtoms()).isEmpty();
-    assertThat(context.getMapDeletedEntriesFromAtoms()).containsKey("deleted-entry-1");
+    assertThat(context.getMapDeletedEntriesFromAtoms()).isEmpty();
   }
 
   private static String atomFeed(String next) {

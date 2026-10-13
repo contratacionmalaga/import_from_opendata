@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.atom.DeletedEntry;
@@ -219,17 +220,13 @@ public class RepositoryImpl implements Repository, AutoCloseable {
               "  Entries a reemplazar: {}",
               StringHelper.getNumeroConFormato(updatedEntryIds.size()));
           long inicioConsultaReemplazos = System.nanoTime();
-          Map<String, LocalDateTime> createdAtByEntryId =
-              getCreatedAtByEntryId(session, updatedEntryIds);
+          Map<String, UUID> existingIdsByEntryId =
+              getExistingIdsByEntryId(session, updatedEntryIds);
           long finConsultaReemplazos = System.nanoTime();
-
-          long inicioBorradoReemplazos = System.nanoTime();
-          deleteExistingEntriesForUpdates(session, updatedEntryIds);
-          long finBorradoReemplazos = System.nanoTime();
 
           long inicioPersistenciaGrafo = System.nanoTime();
           persistFeedsInCurrentTransaction(
-              session, miLog, plan.feedSet(), createdAtByEntryId, plan.entriesByFeed());
+              session, miLog, plan.feedSet(), existingIdsByEntryId, plan.entriesByFeed());
           persistHistoricosEntry(session, miLog, safeList(plan.historicoList()));
 
           plan.estadistica().setMiLog(miLog);
@@ -245,9 +242,6 @@ public class RepositoryImpl implements Repository, AutoCloseable {
               "    Consulta de reemplazos: {}",
               LocalDateTimeHelper.getDiferenciaNanos(
                   inicioConsultaReemplazos, finConsultaReemplazos));
-          log.info(
-              "    Borrado de reemplazos: {}",
-              LocalDateTimeHelper.getDiferenciaNanos(inicioBorradoReemplazos, finBorradoReemplazos));
           log.info(
               "    Persistencia y flush: {}",
               LocalDateTimeHelper.getDiferenciaNanos(
@@ -323,7 +317,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       Session session,
       Log miLog,
       Set<Feed> feedSet,
-      Map<String, LocalDateTime> createdAtByEntryId,
+      Map<String, UUID> existingIdsByEntryId,
       Map<Feed, List<Entry>> entriesByFeed) {
     Map<String, DeletedEntry> deletedEntriesByRef = latestDeletedEntriesByRef(feedSet);
     boolean hasPreGroupedEntries = entriesByFeed != null && !entriesByFeed.isEmpty();
@@ -346,9 +340,9 @@ public class RepositoryImpl implements Repository, AutoCloseable {
 
     persistDeletedEntries(session, miLog, deletedEntriesByRef.values());
     if (hasPreGroupedEntries) {
-      persistEntriesByFeed(session, entriesByFeed, createdAtByEntryId, entryProgress);
+      persistEntriesByFeed(session, entriesByFeed, existingIdsByEntryId, entryProgress);
     } else {
-      persistEntries(session, entriesById.values(), createdAtByEntryId, entryProgress);
+      persistEntries(session, entriesById.values(), existingIdsByEntryId, entryProgress);
     }
     session.flush();
     session.clear();
@@ -357,7 +351,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   private void persistEntries(
       Session session,
       Collection<Entry> entries,
-      Map<String, LocalDateTime> createdAtByEntryId,
+      Map<String, UUID> existingIdsByEntryId,
       EntryPersistenceProgress entryProgress) {
     int contadorEntry = 1;
     int entryFlushWindow = getEntryFlushWindow();
@@ -365,19 +359,22 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     int persistedRootsSinceFlush = 0;
 
     for (Entry entry : entries) {
-      LocalDateTime originalCreatedAt = createdAtByEntryId.get(entry.getEntryId());
-      if (originalCreatedAt != null) {
-        entry.setCreatedAt(originalCreatedAt);
+      UUID existingId = existingIdsByEntryId.get(entry.getEntryId());
+      if (existingId != null) {
+        EntryGraphUpdater.update(session, session.find(Entry.class, existingId), entry);
+      } else {
+        session.persist(entry);
       }
-
-      session.persist(entry);
       persistedRootsSinceFlush++;
       log.debug(
           "  Persistido Entry - {} - {}",
           contadorEntry++ + "/" + entries.size(),
           entry.getEntryId());
 
-      for (ContractFolderStatus cfs : entry.getContractFolderStatusList()) {
+      for (ContractFolderStatus cfs :
+          existingId == null
+              ? entry.getContractFolderStatusList()
+              : List.<ContractFolderStatus>of()) {
         cfs.setEntry(entry);
         session.persist(cfs);
         persistedRootsSinceFlush++;
@@ -385,7 +382,9 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       }
 
       for (PreliminaryMarketConsultationStatus pmcs :
-          entry.getPreliminaryMarketConsultationStatusList()) {
+          existingId == null
+              ? entry.getPreliminaryMarketConsultationStatusList()
+              : List.<PreliminaryMarketConsultationStatus>of()) {
         pmcs.setEntry(entry);
         session.persist(pmcs);
         persistedRootsSinceFlush++;
@@ -413,7 +412,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   private void persistEntriesByFeed(
       Session session,
       Map<Feed, List<Entry>> entriesByFeed,
-      Map<String, LocalDateTime> createdAtByEntryId,
+      Map<String, UUID> existingIdsByEntryId,
       EntryPersistenceProgress entryProgress) {
     for (Map.Entry<Feed, List<Entry>> feedEntries : entriesByFeed.entrySet()) {
       Feed feed = feedEntries.getKey();
@@ -421,7 +420,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       for (Entry entry : entries) {
         entry.setFeed(feed);
       }
-      persistEntries(session, entries, createdAtByEntryId, entryProgress);
+      persistEntries(session, entries, existingIdsByEntryId, entryProgress);
       entries.clear();
     }
   }
@@ -609,9 +608,8 @@ public class RepositoryImpl implements Repository, AutoCloseable {
     return entryIds;
   }
 
-  private Map<String, LocalDateTime> getCreatedAtByEntryId(
-      Session session, Set<String> updatedEntryIds) {
-    Map<String, LocalDateTime> result = new HashMap<>();
+  private Map<String, UUID> getExistingIdsByEntryId(Session session, Set<String> updatedEntryIds) {
+    Map<String, UUID> result = new HashMap<>();
     if (updatedEntryIds == null || updatedEntryIds.isEmpty()) {
       return result;
     }
@@ -622,38 +620,15 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       List<Object[]> rows =
           session
               .createQuery(
-                  "SELECT e.entryId, e.createdAt FROM Entry e WHERE e.entryId IN :entryIds",
+                  "SELECT e.entryId, e.id FROM Entry e WHERE e.entryId IN :entryIds",
                   Object[].class)
               .setParameter("entryIds", entryIds.subList(from, to))
               .getResultList();
       for (Object[] row : rows) {
-        result.put((String) row[0], (LocalDateTime) row[1]);
+        result.put((String) row[0], (UUID) row[1]);
       }
     }
     return result;
-  }
-
-  private void deleteExistingEntriesForUpdates(Session session, Set<String> updatedEntryIds) {
-    if (updatedEntryIds == null || updatedEntryIds.isEmpty()) {
-      return;
-    }
-
-    List<String> entryIds = List.copyOf(updatedEntryIds);
-    int deleted = 0;
-
-    for (int from = 0; from < entryIds.size(); from += QUERY_CHUNK_SIZE) {
-      int to = Math.min(from + QUERY_CHUNK_SIZE, entryIds.size());
-      deleted +=
-          session
-              .createMutationQuery("DELETE FROM Entry e WHERE e.entryId IN :entryIds")
-              .setParameter("entryIds", entryIds.subList(from, to))
-              .executeUpdate();
-    }
-
-    session.flush();
-    log.info("  Entries existentes eliminadas antes de actualizar:");
-    log.info("    Solicitadas: {}", StringHelper.getNumeroConFormato(updatedEntryIds.size()));
-    log.info("    Eliminadas: {}", StringHelper.getNumeroConFormato(deleted));
   }
 
   private int flushAndClearIfBatchReached(Session session, int persistedSinceFlush, int batchSize) {
@@ -846,11 +821,14 @@ public class RepositoryImpl implements Repository, AutoCloseable {
           long finTransaccion = System.nanoTime();
           log.info("  Transacción de importación confirmada:");
           log.info(
-              "    Trabajo: {}", LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, inicioCommit));
+              "    Trabajo: {}",
+              LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, inicioCommit));
           log.info(
-              "    Commit: {}", LocalDateTimeHelper.getDiferenciaNanos(inicioCommit, finTransaccion));
+              "    Commit: {}",
+              LocalDateTimeHelper.getDiferenciaNanos(inicioCommit, finTransaccion));
           log.info(
-              "    Total: {}", LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, finTransaccion));
+              "    Total: {}",
+              LocalDateTimeHelper.getDiferenciaNanos(inicioTrabajo, finTransaccion));
         }
         return result;
 
@@ -861,7 +839,10 @@ public class RepositoryImpl implements Repository, AutoCloseable {
             log.warn("Transacción revertida tras un error en {}.", metodo);
           } catch (HibernateException rollbackEx) {
             log.error(
-                "No se pudo revertir la transacción de {}: {}", metodo, rollbackEx.getMessage(), rollbackEx);
+                "No se pudo revertir la transacción de {}: {}",
+                metodo,
+                rollbackEx.getMessage(),
+                rollbackEx);
           }
         }
 

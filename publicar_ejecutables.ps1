@@ -57,6 +57,12 @@ function Write-ReleaseManifest {
     param([string]$ReleaseDirectory, [string]$ReleaseVersion, [string]$ProjectRoot)
     $commit = "no disponible"
     try { $commit = (& git -C $ProjectRoot rev-parse HEAD 2>$null).Trim() } catch { }
+    $branch = "no disponible"
+    $workingTreeDirty = $null
+    try {
+        $branch = (& git -C $ProjectRoot branch --show-current 2>$null).Trim()
+        $workingTreeDirty = -not [string]::IsNullOrWhiteSpace((& git -C $ProjectRoot status --porcelain 2>$null | Out-String))
+    } catch { }
     $files = Get-ChildItem -LiteralPath $ReleaseDirectory -File -Recurse |
         Sort-Object FullName |
         ForEach-Object {
@@ -71,6 +77,8 @@ function Write-ReleaseManifest {
         publishedAtUtc = (Get-Date).ToUniversalTime().ToString("o")
         sourceDirectory = $ProjectRoot
         gitCommit = $commit
+        gitBranch = $branch
+        gitWorkingTreeDirty = $workingTreeDirty
         files = @($files)
     } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $ReleaseDirectory "manifest.json") -Encoding UTF8
 }
@@ -123,6 +131,8 @@ function Publish-Release {
         Copy-DirectoryContents -Source $propertiesSource -Destination (Join-Path $temporaryDirectory "properties")
         $releaseNotes = Join-Path $ProjectRoot "docs\releases\v$ReleaseVersion.md"
         if (Test-Path -LiteralPath $releaseNotes) { Copy-Item -LiteralPath $releaseNotes -Destination (Join-Path $temporaryDirectory "release-notes.md") -Force }
+        $releaseReadme = Join-Path $ProjectRoot "docs\releases\v$ReleaseVersion\README.md"
+        if (Test-Path -LiteralPath $releaseReadme) { Copy-Item -LiteralPath $releaseReadme -Destination (Join-Path $temporaryDirectory "README.md") -Force }
         $migrationDirectory = Join-Path $ProjectRoot "docs\migrations\v$ReleaseVersion"
         if (Test-Path -LiteralPath $migrationDirectory) { Copy-DirectoryContents -Source $migrationDirectory -Destination (Join-Path $temporaryDirectory "migrations") }
         Write-ReleaseManifest -ReleaseDirectory $temporaryDirectory -ReleaseVersion $ReleaseVersion -ProjectRoot $ProjectRoot

@@ -16,6 +16,7 @@ import local.jarios.helpers.ComunHelper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
  * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
@@ -30,7 +31,8 @@ public class Estadistica {
 
   /** Identificador. */
   @Id
-  @GeneratedValue(generator = "UUID")
+  @GeneratedValue
+  @UuidGenerator(style = UuidGenerator.Style.VERSION_7)
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
