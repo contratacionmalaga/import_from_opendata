@@ -1,6 +1,7 @@
 package local.jarios.database;
 
 import java.util.EnumMap;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -84,10 +85,13 @@ public final class SessionFactoryProvider {
       // 2) Construir Configuration
       Configuration configuration =
           hibernateConfigurer.buildConfiguration(resolved.hibernateProperties());
+      // Un fallo DDL debe detener el arranque, nunca dejar una reconstrucción parcial operativa.
+      configuration.setProperty("hibernate.hbm2ddl.halt_on_error", "true");
 
       // 3) Opcional: escaneo de entidades
       if (resolved.shouldScanEntities()) {
-        entityScanner.scanAndAddEntities(configuration, CONFIG_PACKAGE_NAME);
+        var entities = entityScanner.scanAndAddEntities(configuration, CONFIG_PACKAGE_NAME);
+        MariaDbSchemaReset.prepare(resolved.hibernateProperties(), entities);
         log.debug("Entidades escaneadas desde '{}'", CONFIG_PACKAGE_NAME);
       }
 
@@ -101,7 +105,7 @@ public final class SessionFactoryProvider {
           "Error leyendo configuración de properties para " + tipoConexion + ": " + ex.getMessage();
       throw new MiSessionFactoryProvider(msg, ex);
 
-    } catch (HibernateException | IllegalArgumentException ex) {
+    } catch (HibernateException | IllegalArgumentException | SQLException ex) {
       String msg = "Error creando SessionFactory para " + tipoConexion + ": " + ex.getMessage();
       throw new MiSessionFactoryProvider(msg, ex);
     }

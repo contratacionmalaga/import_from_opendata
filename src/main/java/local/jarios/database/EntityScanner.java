@@ -24,7 +24,7 @@ public class EntityScanner {
     // Constructor vacío
   }
 
-  public void scanAndAddEntities(Configuration configuration, String packageName) {
+  public Collection<Class<?>> scanAndAddEntities(Configuration configuration, String packageName) {
 
     // Usamos Reflections para escanear el paquete indicado
     var reflections = new Reflections(packageName);
@@ -39,6 +39,7 @@ public class EntityScanner {
       configuration.addAnnotatedClass(entityClass);
       log.debug("{}", entityClass.getName());
     }
+    return entities;
   }
 
   public static Set<Class<?>> findEntities(String basePackage) {

@@ -45,6 +45,24 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 Si existe `active-release.properties`, los lanzadores utilizan los JAR de la versión activa
 en `versions/<versión>`. Sin ese fichero, seleccionan el JAR con mayor versión para cada grupo y modo.
 
+## Versión 8.2.2
+
+Corrige la reconstrucción con `-CreateSchemaFirstRun` en MariaDB cuando las claves foráneas
+existentes tienen nombres distintos de los del modelo actual. Antes de recrear las tablas,
+inspecciona y retira las FK internas por sus nombres reales; conserva las tablas externas y las
+vistas. Una FK desde una tabla externa impide la reconstrucción antes de modificar restricciones.
+Los errores DDL detienen el arranque, evitando continuar sobre un esquema parcialmente recreado.
+
+Se mantienen los 33 generadores UUID v7 y la selección de Málaga/Pliegos de 8.2.1.
+La reconstrucción sigue siendo destructiva para las tablas del modelo.
+
+Las vistas de Málaga se adaptan eliminando `feed_updated_at`/`log_updated_at` de `expedientes`
+y `created_at`/`updated_at` de `vista_expedientes_importacion`, sin añadir columnas al modelo.
+SQL y reversión: [`docs/migrations/v8.2.2`](docs/migrations/v8.2.2/README.md).
+
+Guía completa: [`docs/releases/v8.2.2/README.md`](docs/releases/v8.2.2/README.md).
+Notas: [`docs/releases/v8.2.2.md`](docs/releases/v8.2.2.md).
+
 ## Versión 8.2.1
 
 El lanzador Windows selecciona automáticamente `opendata_malaga` para `con_filtros` y
