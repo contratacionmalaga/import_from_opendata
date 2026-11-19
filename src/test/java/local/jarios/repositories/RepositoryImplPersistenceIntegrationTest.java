@@ -3,8 +3,10 @@ package local.jarios.repositories;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -19,7 +21,12 @@ import local.jarios.entity.atom.Feed;
 import local.jarios.entity.auxiliares.Estadistica;
 import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.entity.auxiliares.Log;
+import local.jarios.entity.codice.AdditionalPublicationDocumentReference;
+import local.jarios.entity.codice.AdditionalPublicationStatus;
 import local.jarios.entity.codice.ContractFolderStatus;
+import local.jarios.entity.codice.NoticeInfo;
+import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
+import local.jarios.entity.codice.PreliminaryMarketConsultationStatus.Language;
 import local.jarios.entity.codice.TenderingProcess;
 import local.jarios.enums.DeletedEntryOpcion;
 import local.jarios.enums.EntryOpcion;
@@ -30,6 +37,92 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.Test;
 
 class RepositoryImplPersistenceIntegrationTest {
+
+  @Test
+  void guarda_un_cambio_de_orden_de_los_idiomas_de_una_consulta() {
+    try (SessionFactory sessionFactory = newSessionFactory()) {
+      sessionFactory.inTransaction(
+          session -> {
+            var es = new Language("es", null, null);
+            var en = new Language("en", null, null);
+            var log = new Log(LugarImportacion.LOCAL, TipoSindicacion.CONSULTAS);
+            var feed = feed("feed-consultas");
+            feed.setMiLog(log);
+            var original = consultationEntry(es, en);
+            original.setFeed(feed);
+            var consultation = original.getPreliminaryMarketConsultationStatusList().getFirst();
+            session.persist(log);
+            session.persist(feed);
+            session.persist(original);
+            session.persist(consultation);
+            session.flush();
+            session.clear();
+
+            Entry existing = session.getReference(Entry.class, original.getId());
+            var incoming = consultationEntry(en, es);
+            incoming.setFeed(existing.getFeed());
+            EntryGraphUpdater.update(session, existing, incoming);
+            session.flush();
+            session.clear();
+
+            var updated =
+                session.find(PreliminaryMarketConsultationStatus.class, consultation.getId());
+            assertThat(updated.getLanguages()).containsExactly(en, es);
+            assertThat(updated.getEntry().getPreliminaryMarketConsultationStatusList())
+                .singleElement()
+                .satisfies(item -> assertThat(item.getId()).isEqualTo(consultation.getId()));
+          });
+    }
+  }
+
+  @Test
+  void conserva_los_uuid_de_dos_anuncios_del_mismo_tipo_y_medio_al_invertir_su_orden() {
+    try (SessionFactory sessionFactory = newSessionFactory()) {
+      sessionFactory.inTransaction(
+          session -> {
+            var log = new Log(LugarImportacion.LOCAL, TipoSindicacion.MAYORES);
+            var feed = feed("feed-con-anuncios");
+            feed.setMiLog(log);
+            var original = entry("entry-anuncios", "anuncios", "original", "nif");
+            original.setFeed(feed);
+            var status = original.getContractFolderStatusList().getFirst();
+            status.setEntry(original);
+            addNotice(status, "2026-07-29");
+            addNotice(status, "2026-08-04");
+
+            session.persist(log);
+            session.persist(feed);
+            session.persist(original);
+            session.persist(status);
+            session.flush();
+            session.clear();
+
+            Entry existing = session.find(Entry.class, original.getId());
+            List<NoticeInfo> notices =
+                existing.getContractFolderStatusList().getFirst().getValideNoticeInfoList();
+            Map<LocalDate, List<UUID>> originalIds = publicationIdsByDate(notices);
+            assertThat(originalIds).containsOnlyKeys(
+                LocalDate.parse("2026-07-29"), LocalDate.parse("2026-08-04"));
+
+            var incoming = entry("entry-anuncios", "anuncios", "actualizado", "nif");
+            incoming.setFeed(existing.getFeed());
+            var newStatus = incoming.getContractFolderStatusList().getFirst();
+            for (NoticeInfo notice : notices.reversed()) {
+              addNotice(newStatus, publicationDocument(notice).getIssueDate().toString());
+            }
+
+            EntryGraphUpdater.update(session, existing, incoming);
+            session.flush();
+            session.clear();
+
+            Entry updated = session.find(Entry.class, original.getId());
+            assertThat(updated.getTitle()).isEqualTo("actualizado");
+            assertThat(publicationIdsByDate(
+                    updated.getContractFolderStatusList().getFirst().getValideNoticeInfoList()))
+                .isEqualTo(originalIds);
+          });
+    }
+  }
 
   @Test
   void replaces_existing_entry_preserving_first_created_at_inside_same_transaction()
@@ -554,6 +647,50 @@ class RepositoryImplPersistenceIntegrationTest {
     status.setIdPlataforma("platform-" + suffix);
     status.setNif(nif);
     return status;
+  }
+
+  private static Entry consultationEntry(Language... languages) {
+    var entry = entry("entry-consulta", "consulta", "Consulta", "nif");
+    entry.getContractFolderStatusList().clear();
+    var consultation = new PreliminaryMarketConsultationStatus();
+    consultation.setEntry(entry);
+    consultation.setPreliminaryMarketConsultationID("CPM-42");
+    consultation.setConsultationName("Consulta de prueba");
+    consultation.setConditionTypeCode("CPM");
+    consultation.setLanguages(languages);
+    entry.getPreliminaryMarketConsultationStatusList().add(consultation);
+    return entry;
+  }
+
+  private static void addNotice(ContractFolderStatus status, String date) {
+    var notice = new NoticeInfo();
+    notice.setNoticeTypeCode("DOC_CN");
+    notice.setContractFolderStatus(status);
+    status.getValideNoticeInfoList().add(notice);
+    var publication = new AdditionalPublicationStatus();
+    publication.setNoticeInfo(notice);
+    publication.setPublicationMediaName("BOE");
+    notice.getListAdditionalPublicationStatus().add(publication);
+    var document = new AdditionalPublicationDocumentReference();
+    document.setAdditionalPublicationStatus(publication);
+    document.setIssueDate(LocalDate.parse(date));
+    publication.getAdditionalPublicationDocumentReferenceList().add(document);
+  }
+
+  private static Map<LocalDate, List<UUID>> publicationIdsByDate(List<NoticeInfo> notices) {
+    Map<LocalDate, List<UUID>> ids = new HashMap<>();
+    for (NoticeInfo notice : notices) {
+      var document = publicationDocument(notice);
+      ids.put(document.getIssueDate(),
+          List.of(notice.getId(), document.getAdditionalPublicationStatus().getId(), document.getId()));
+    }
+    assertThat(ids).hasSameSizeAs(notices);
+    return ids;
+  }
+
+  private static AdditionalPublicationDocumentReference publicationDocument(NoticeInfo notice) {
+    return notice.getListAdditionalPublicationStatus().getFirst()
+        .getAdditionalPublicationDocumentReferenceList().getFirst();
   }
 
   private static HistoricoEntry historicoEntry(String entryId, EntryOpcion opcion) {

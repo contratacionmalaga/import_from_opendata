@@ -487,10 +487,12 @@ function Show-ImportPlanAndConfirm {
     }
     Write-Host "- Trabajo por lotes: hasta $batchSize operaciones; conexiones simultaneas maximas: $poolSize; estadisticas internas: $statistics."
     Write-Host "- Java: $($JavaOpts -join ' '). Configuracion: $RuntimePropertiesPath"
-    if ($persistRejected -eq "true") {
-        Write-Host "- Rechazos: se persistira un historico detallado por cada Entry rechazada; puede generar muchos registros."
-    } else {
-        Write-Host "- Rechazos: no se persistira historico detallado; solo se incluiran en las estadisticas."
+    if ($hasFilteredPlan) {
+        if ($persistRejected -eq "true") {
+            Write-Host "- Rechazos con filtros: se guardara un historico detallado de cada rechazo; puede generar muchos registros."
+        } else {
+            Write-Host "- Rechazos con filtros: se guardara cada version del ambito CP/NIF con su XML. Los demas rechazos se incluiran en las estadisticas."
+        }
     }
     if ($emailEnabled -eq "false") {
         Write-Host "- Email: desactivado; no se enviaran avisos de exito ni de error."

@@ -5,7 +5,7 @@ import java.util.Objects;
 import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
-import local.jarios.helpers.LocalDateTimeHelper;
+import local.jarios.helpers.AtomTimestamp;
 import local.jarios.helpers.StringHelper;
 import local.jarios.mappers.auxiliares.MapperStringFromList;
 import local.jarios.mappers.codice.MapperContractFolderStatus;
@@ -66,7 +66,7 @@ public final class MapperEntry {
         Objects.requireNonNull(
             entryType.getId().getValue(), "EntryType.getId().getValue() no puede ser null");
 
-    entry.setEntryId(StringHelper.limit(id, TamanoCampos.TAMANO_500));
+    entry.setEntryId(id);
 
     entry.setEntryIdCorto(
         StringHelper.limit(StringHelper.obtenerIdCorto(id), TamanoCampos.TAMANO_50));
@@ -80,7 +80,7 @@ public final class MapperEntry {
         StringHelper.limit(
             MapperStringFromList.getStringFromListObject(
                 Objects.requireNonNull(entryType.getTitle()).getContent()),
-            TamanoCampos.TAMANO_500));
+            TamanoCampos.TAMANO_2000));
 
     entry.setSummary(
         StringHelper.limit(
@@ -88,9 +88,9 @@ public final class MapperEntry {
                 Objects.requireNonNull(entryType.getSummary()).getContent()),
             TamanoCampos.TAMANO_2500));
 
-    entry.setUpdated(
-        LocalDateTimeHelper.getLocalDateTimeFromXmlGregorianCalendar(
-            Objects.requireNonNull(entryType.getUpdated()).getValue()));
+    var updated = AtomTimestamp.fromXml(Objects.requireNonNull(entryType.getUpdated()).getValue());
+    entry.setUpdated(updated.toLocalDateTime());
+    entry.setUpdatedOffsetSeconds(updated.getOffset().getTotalSeconds());
 
     entry.setContractFolderStatusList(
         MapperContractFolderStatus.getListContractFolderStatusFromListType(entry, entryType));

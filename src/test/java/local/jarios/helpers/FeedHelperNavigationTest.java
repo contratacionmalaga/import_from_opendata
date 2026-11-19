@@ -8,10 +8,10 @@ import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.util.Map;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
-import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.interfaces.FeedSource;
+import local.jarios.repositories.EntrySnapshot;
 import org.junit.jupiter.api.Test;
 
 class FeedHelperNavigationTest {
@@ -90,10 +90,13 @@ class FeedHelperNavigationTest {
   }
 
   @Test
-  void stops_navigation_after_an_entry_older_than_the_newest_local_entry() throws Exception {
+  void reads_later_pages_when_a_version_is_older_than_an_unrelated_snapshot() throws Exception {
     OpenDataExecutionContext context = new OpenDataExecutionContext();
     context.setCompararConExistentes(true);
-    context.setNewestEntry(entry("cursor", "2026-09-26T10:00:00"));
+    context.getMapEntrySnapshotsFromBaseDatos().put("otro",
+        new EntrySnapshot("otro", LocalDateTime.parse("2026-09-26T10:00:00")));
+    context.getMapEntrySnapshotsFromBaseDatos().put("old-entry",
+        new EntrySnapshot("old-entry", LocalDateTime.parse("2026-09-26T09:00:00")));
 
     FeedHelper.parsearFeeds(
         new InMemoryFeedSource(
@@ -103,9 +106,9 @@ class FeedHelperNavigationTest {
                 "second", atomFeedWithDeletedEntry("deleted-entry-1"))),
         context);
 
-    assertThat(context.getConjuntoFeedsFromAtoms()).hasSize(1);
-    assertThat(context.getMapEntriesFromAtoms()).isEmpty();
-    assertThat(context.getMapDeletedEntriesFromAtoms()).isEmpty();
+    assertThat(context.getConjuntoFeedsFromAtoms()).hasSize(2);
+    assertThat(context.getMapEntriesFromAtoms()).containsOnlyKeys("old-entry");
+    assertThat(context.getMapDeletedEntriesFromAtoms()).containsOnlyKeys("deleted-entry-1");
   }
 
   private static String atomFeed(String next) {
@@ -152,13 +155,6 @@ class FeedHelperNavigationTest {
         </feed>
         """
         .formatted(ref);
-  }
-
-  private static Entry entry(String entryId, String updated) {
-    Entry entry = new Entry();
-    entry.setEntryId(entryId);
-    entry.setUpdated(LocalDateTime.parse(updated));
-    return entry;
   }
 
   private record InMemoryFeedSource(String initialLink, Map<String, String> feeds)

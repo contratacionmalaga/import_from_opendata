@@ -37,7 +37,7 @@ public class HistoricoDeletedEntry {
   @Column(name = "feed_linkself", length = TamanoCampos.TAMANO_500)
   private String feedLinkSelf;
 
-  @Column(name = "ref", length = TamanoCampos.TAMANO_500)
+  @Column(name = "ref", length = TamanoCampos.TAMANO_2500)
   private String ref;
 
   @Column(name = "ref_corto", length = TamanoCampos.TAMANO_50)
@@ -48,6 +48,12 @@ public class HistoricoDeletedEntry {
 
   @Column(name = "incoming_updated")
   private LocalDateTime incomingUpdated;
+
+  @Column(name = "previous_updated_offset_seconds")
+  private Integer previousUpdatedOffsetSeconds;
+
+  @Column(name = "incoming_updated_offset_seconds")
+  private Integer incomingUpdatedOffsetSeconds;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "opcion", length = TamanoCampos.TAMANO_50)
@@ -86,6 +92,9 @@ public class HistoricoDeletedEntry {
     this.refCorto = incoming.getRefCorto();
     this.previousUpdated = deletedEntry == null ? null : deletedEntry.getUpdated();
     this.incomingUpdated = incoming.getUpdated();
+    this.previousUpdatedOffsetSeconds =
+        deletedEntry == null ? null : deletedEntry.getUpdatedOffsetSeconds();
+    this.incomingUpdatedOffsetSeconds = incoming.getUpdatedOffsetSeconds();
     this.opcion = opcion;
     this.motivo = motivo;
   }

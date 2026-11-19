@@ -10,21 +10,27 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import local.jarios.common.util.TamanoCampos;
 import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.auxiliares.AuditableCreatedAt;
 import local.jarios.entity.codice.ContractFolderStatus;
 import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
+import local.jarios.helpers.AtomIdentity;
+import local.jarios.helpers.AtomTimestamp;
 import local.jarios.interfaces.HasIdEntry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Length;
 import org.hibernate.annotations.UuidGenerator;
 
 @Getter
@@ -33,7 +39,10 @@ import org.hibernate.annotations.UuidGenerator;
 @Entity
 @Table(
     name = "entry",
-    indexes = {@Index(name = "idx_unique_entry", columnList = "entry_id", unique = true)})
+    indexes = {
+      @Index(name = "uk_entry_atom_key", columnList = "entry_atom_key", unique = true),
+      @Index(name = "idx_entry_id_corto", columnList = "entry_id_corto")
+    })
 @Slf4j
 public class Entry extends AuditableCreatedAt implements HasIdEntry<Entry> {
 
@@ -45,11 +54,14 @@ public class Entry extends AuditableCreatedAt implements HasIdEntry<Entry> {
   private UUID id;
 
   // Campos de entrada
-  @Column(name = "entry_id", nullable = false, unique = true, length = TamanoCampos.TAMANO_500)
+  @Column(name = "entry_id", nullable = false, updatable = false, length = TamanoCampos.TAMANO_2500)
   private String entryId;
 
+  @Column(name = "entry_atom_key", nullable = false, updatable = false, length = 64)
+  private String entryAtomKey;
+
   // Campos de entrada
-  @Column(name = "entry_id_corto", nullable = false, unique = true, length = TamanoCampos.TAMANO_50)
+  @Column(name = "entry_id_corto", nullable = false, length = TamanoCampos.TAMANO_50)
   private String entryIdCorto;
 
   @Column(name = "link", nullable = false, length = TamanoCampos.TAMANO_500)
@@ -58,11 +70,26 @@ public class Entry extends AuditableCreatedAt implements HasIdEntry<Entry> {
   @Column(name = "summary", columnDefinition = "TEXT")
   private String summary;
 
+  @Column(name = "xml", length = Length.LONG32)
+  private String xml;
+
   @Column(name = "title", length = TamanoCampos.TAMANO_2500)
   private String title;
 
   @Column(name = "updated", nullable = false)
   private LocalDateTime updated;
+
+  @Column(name = "updated_offset_seconds")
+  private Integer updatedOffsetSeconds;
+
+  public Instant updatedInstant() {
+    return AtomTimestamp.instant(updated, updatedOffsetSeconds);
+  }
+
+  @PrePersist
+  private void indexAtomId() {
+    entryAtomKey = AtomIdentity.key(entryId);
+  }
 
   // Relaciones
   @ManyToOne(fetch = FetchType.LAZY)
@@ -110,26 +137,24 @@ public class Entry extends AuditableCreatedAt implements HasIdEntry<Entry> {
    * @return Devuelve el identificador
    */
   public String getNifFromEntry(TipoSindicacion tipoSindicacion) {
-
-    if (tipoSindicacion == TipoSindicacion.CONSULTAS) {
-      return this.getPreliminaryMarketConsultationStatusList().stream()
-          .map(PreliminaryMarketConsultationStatus::getNif)
-          .filter(id -> id != null && !id.isBlank())
-          .findFirst()
-          .orElseThrow(
-              () ->
-                  new IllegalStateException(
-                      "No se encontró Nif asociado al entry: " + this.getEntryId()));
-    }
-
-    // No CPM: si ya tienes el id en ContractFolderStatus, úsalo directamente
-    return this.getContractFolderStatusList().stream()
-        .map(ContractFolderStatus::getNif) // probablemente String
-        .filter(id -> id != null && !id.isBlank())
-        .findFirst()
+    return findNifFromEntry(tipoSindicacion)
         .orElseThrow(
             () ->
                 new IllegalStateException(
                     "No se encontró Nif asociado al entry: " + this.getEntryId()));
+  }
+
+  public Optional<String> findNifFromEntry(TipoSindicacion tipoSindicacion) {
+    if (tipoSindicacion == TipoSindicacion.CONSULTAS) {
+      return this.getPreliminaryMarketConsultationStatusList().stream()
+          .map(PreliminaryMarketConsultationStatus::getNif)
+          .filter(id -> id != null && !id.isBlank())
+          .findFirst();
+    }
+
+    return this.getContractFolderStatusList().stream()
+        .map(ContractFolderStatus::getNif)
+        .filter(id -> id != null && !id.isBlank())
+        .findFirst();
   }
 }

@@ -36,7 +36,6 @@ public class OpenDataExecutionContext {
   @Setter private String duracionParseo;
   @Setter private LugarImportacion lugarImportacion;
   @Setter private TipoSindicacion tipoSindicacion;
-  @Setter private Entry newestEntry;
 
   // //////////////////
   // FILTROS
@@ -76,7 +75,9 @@ public class OpenDataExecutionContext {
       return;
     }
 
-    if (historicoEntry.getEntryOpcion() == EntryOpcion.RECHAZAR && !persistirHistoricosRechazados) {
+    if (historicoEntry.getEntryOpcion() == EntryOpcion.RECHAZAR
+        && historicoEntry.getXml() == null
+        && !persistirHistoricosRechazados) {
       historicosRechazadosOmitidos++;
       return;
     }

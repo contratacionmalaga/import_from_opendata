@@ -23,8 +23,18 @@ public final class TamanoCampos {
   /** Tamaño estándar para campos de 100 caracteres. */
   public static final int TAMANO_500 = 500;
 
+  /** Longitud máxima del título en la especificación de sindicación Atom. */
+  public static final int TAMANO_2000 = 2000;
+
   /** Tamaño estándar para campos de 2500 caracteres. */
   public static final int TAMANO_2500 = 2500;
+
+  /** Precisión y escala de los importes de proyectos y lotes. */
+  public static final int IMPORTE_PRECISION = 65;
+  public static final int IMPORTE_ESCALA = 30;
+
+  /** Longitud del código de moneda ISO 4217. */
+  public static final int MONEDA_LONGITUD = 3;
 
   /** Constructor privado para evitar instanciación. */
   private TamanoCampos() {}

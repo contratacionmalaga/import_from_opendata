@@ -57,14 +57,32 @@ public class ProcurementProject {
   @Column(name = "mix_contract_indicator")
   private Boolean mixContractIndicator;
 
-  @Column(name = "estimated_overall_contract_amount")
-  private Double estimatedOverallContractAmount;
+  @Column(
+      name = "estimated_overall_contract_amount",
+      precision = TamanoCampos.IMPORTE_PRECISION,
+      scale = TamanoCampos.IMPORTE_ESCALA)
+  private BigDecimal estimatedOverallContractAmount;
 
-  @Column(name = "total_amount")
-  private Double totalAmount;
+  @Column(name = "estimated_overall_contract_amount_currency", length = TamanoCampos.MONEDA_LONGITUD)
+  private String estimatedOverallContractAmountCurrency;
 
-  @Column(name = "tax_exclusive_amount")
-  private Double taxExclusiveAmount;
+  @Column(
+      name = "total_amount",
+      precision = TamanoCampos.IMPORTE_PRECISION,
+      scale = TamanoCampos.IMPORTE_ESCALA)
+  private BigDecimal totalAmount;
+
+  @Column(name = "total_amount_currency", length = TamanoCampos.MONEDA_LONGITUD)
+  private String totalAmountCurrency;
+
+  @Column(
+      name = "tax_exclusive_amount",
+      precision = TamanoCampos.IMPORTE_PRECISION,
+      scale = TamanoCampos.IMPORTE_ESCALA)
+  private BigDecimal taxExclusiveAmount;
+
+  @Column(name = "tax_exclusive_amount_currency", length = TamanoCampos.MONEDA_LONGITUD)
+  private String taxExclusiveAmountCurrency;
 
   @Column(name = "country_subentity", length = TamanoCampos.TAMANO_500)
   private String countrySubentity;

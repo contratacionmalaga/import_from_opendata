@@ -1,6 +1,6 @@
 package local.jarios.helpers;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
@@ -17,16 +17,11 @@ public final class ContextEntryState implements EntryProcessor.EntryState {
   }
 
   @Override
-  public Entry getNewestEntry() {
-    return context.getNewestEntry();
-  }
-
-  @Override
-  public Optional<LocalDateTime> getEntryUpdated(String entryId) {
+  public Optional<Instant> getEntryUpdated(String entryId) {
     Entry entry = context.getMapEntriesFromAtoms().get(entryId);
 
     if (entry != null) {
-      return Optional.ofNullable(entry.getUpdated());
+      return Optional.ofNullable(entry.updatedInstant());
     }
 
     if (!shouldCompareWithExisting()) {
@@ -34,7 +29,7 @@ public final class ContextEntryState implements EntryProcessor.EntryState {
     }
 
     return Optional.ofNullable(context.getMapEntrySnapshotsFromBaseDatos().get(entryId))
-        .map(EntrySnapshot::updated);
+        .map(EntrySnapshot::updatedInstant);
   }
 
   @Override
@@ -52,8 +47,7 @@ public final class ContextEntryState implements EntryProcessor.EntryState {
     return context.isAplicarFiltros();
   }
 
-  @Override
-  public boolean shouldCompareWithExisting() {
+  private boolean shouldCompareWithExisting() {
     return context.isCompararConExistentes();
   }
 }

@@ -17,9 +17,11 @@ import local.jarios.common.util.TamanoCampos;
 import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.entity.atom.Entry;
 import local.jarios.enums.EntryOpcion;
+import local.jarios.helpers.AtomSummary;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Length;
 import org.hibernate.annotations.UuidGenerator;
 
 @Getter
@@ -40,7 +42,7 @@ public class HistoricoEntry {
   @Column(name = "feed_linkself", length = TamanoCampos.TAMANO_500)
   private String feedLinkSelf;
 
-  @Column(name = "entry_id", length = TamanoCampos.TAMANO_500)
+  @Column(name = "entry_id", length = TamanoCampos.TAMANO_2500)
   private String entryId;
 
   @Column(name = "entry_link", length = TamanoCampos.TAMANO_500)
@@ -49,11 +51,29 @@ public class HistoricoEntry {
   @Column(name = "entry_summary", columnDefinition = "TEXT")
   private String entrySummary;
 
+  @Column(name = "xml", length = Length.LONG32)
+  private String xml;
+
+  @Column(name = "summary_expediente", columnDefinition = "TEXT")
+  private String summaryExpediente;
+
+  @Column(name = "summary_organo_contratacion", columnDefinition = "TEXT")
+  private String summaryOrganoContratacion;
+
+  @Column(name = "summary_importe", columnDefinition = "TEXT")
+  private String summaryImporte;
+
+  @Column(name = "summary_estado", columnDefinition = "TEXT")
+  private String summaryEstado;
+
   @Column(name = "entry_title", length = TamanoCampos.TAMANO_2500)
   private String entryTitle;
 
   @Column(name = "entry_updated")
   private LocalDateTime entryUpdated;
+
+  @Column(name = "entry_updated_offset_seconds")
+  private Integer entryUpdatedOffsetSeconds;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "opcion")
@@ -87,11 +107,20 @@ public class HistoricoEntry {
     this.entryId = entry.getEntryId();
     this.entryLink = entry.getLink();
     this.entrySummary = entry.getSummary();
+    this.xml = entry.getXml();
+    if (xml != null) {
+      AtomSummary summary = AtomSummary.parse(entrySummary);
+      this.summaryExpediente = summary.expediente();
+      this.summaryOrganoContratacion = summary.organoContratacion();
+      this.summaryImporte = summary.importe();
+      this.summaryEstado = summary.estado();
+    }
     this.entryTitle = entry.getTitle();
     this.entryUpdated = entry.getUpdated();
+    this.entryUpdatedOffsetSeconds = entry.getUpdatedOffsetSeconds();
     this.entryOpcion = opcion;
     this.entryMotivo = motivo;
-    this.nif = entry.getNifFromEntry(tipoSindicacion);
+    this.nif = entry.findNifFromEntry(tipoSindicacion).orElse(null);
     this.idPlataforma = entry.getIdPlataformaFromEntry(tipoSindicacion);
   }
 }

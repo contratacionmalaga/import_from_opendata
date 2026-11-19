@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -46,11 +47,23 @@ public class ProcurementProjectLot {
   @Column(name = "name", nullable = false, columnDefinition = "TEXT")
   private String name;
 
-  @Column(name = "total_amount")
-  private Double totalAmount;
+  @Column(
+      name = "total_amount",
+      precision = TamanoCampos.IMPORTE_PRECISION,
+      scale = TamanoCampos.IMPORTE_ESCALA)
+  private BigDecimal totalAmount;
 
-  @Column(name = "tax_exclusive_amount")
-  private Double taxExclusiveAmount;
+  @Column(name = "total_amount_currency", length = TamanoCampos.MONEDA_LONGITUD)
+  private String totalAmountCurrency;
+
+  @Column(
+      name = "tax_exclusive_amount",
+      precision = TamanoCampos.IMPORTE_PRECISION,
+      scale = TamanoCampos.IMPORTE_ESCALA)
+  private BigDecimal taxExclusiveAmount;
+
+  @Column(name = "tax_exclusive_amount_currency", length = TamanoCampos.MONEDA_LONGITUD)
+  private String taxExclusiveAmountCurrency;
 
   @Column(name = "country_subentity", length = TamanoCampos.TAMANO_500)
   private String countrySubentity;

@@ -191,6 +191,7 @@ class UuidV7PersistenceIntegrationTest {
         Map<Class<?>, Object> incoming = treeFixture(marker);
         Entry replacement = (Entry) incoming.get(Entry.class);
         replacement.setTitle("Actualización " + run);
+        replacement.setXml("<entry><title>Actualización " + run + "</title></entry>");
         ((DocumentReference) incoming.get(DocumentReference.class)).setFilename("actualizado.pdf");
         for (Object entity : incoming.values()) {
           try {
@@ -235,6 +236,7 @@ class UuidV7PersistenceIntegrationTest {
               }
               Entry stored = session.find(Entry.class, expected.get(Entry.class));
               assertThat(stored.getTitle()).isEqualTo(replacement.getTitle());
+              assertThat(stored.getXml()).isEqualTo(replacement.getXml());
               assertThat(stored.getEntryId()).isEqualTo(marker);
               DocumentReference document =
                   session.find(DocumentReference.class, expected.get(DocumentReference.class));
@@ -308,9 +310,10 @@ class UuidV7PersistenceIntegrationTest {
             session.flush();
             session
                 .createNativeMutationQuery(
-                    "INSERT INTO entry (id, entry_id, entry_id_corto, link, updated, created_at, updated_at, feed_id) VALUES (:id, :external, :external, :external, :time, :time, :time, :feed)")
+                    "INSERT INTO entry (id, entry_id, entry_atom_key, entry_id_corto, link, updated, created_at, updated_at, feed_id) VALUES (:id, :external, :atomKey, :external, :external, :time, :time, :time, :feed)")
                 .setParameter("id", entryId)
                 .setParameter("external", marker)
+                .setParameter("atomKey", local.jarios.helpers.AtomIdentity.key(marker))
                 .setParameter("time", LocalDateTime.now())
                 .setParameter("feed", originalFeed.getId())
                 .executeUpdate();

@@ -57,6 +57,7 @@ public final class MapperContractFolderStatus {
     }
 
     return entryType.getAny().stream()
+        .filter(JAXBElement.class::isInstance)
         .map(JAXBElement.class::cast)
         .filter(elem -> elem.getDeclaredType().equals(ContractFolderStatusType.class))
         .map(MapperContractFolderStatus::castToContractFolderStatus)
@@ -209,10 +210,7 @@ public final class MapperContractFolderStatus {
       case Constantes.IDPLATAFORMA -> entity.setIdPlataforma(limitedId);
       case Constantes.IDOCPLAT -> entity.setIdOcPlat(limitedId);
       case Constantes.NIF -> entity.setNif(limitedId);
-      case Constantes.OTROS -> {
-        entity.setOtros(limitedId);
-        entity.setNif(limitedId);
-      }
+      case Constantes.OTROS -> entity.setOtros(limitedId);
       default -> {
         // Esquema desconocido: intencionalmente ignorado.
       }

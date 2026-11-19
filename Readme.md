@@ -45,6 +45,17 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 Si existe `active-release.properties`, los lanzadores utilizan los JAR de la versión activa
 en `versions/<versión>`. Sin ese fichero, seleccionan el JAR con mayor versión para cada grupo y modo.
 
+## Versión 8.3.0
+
+- **Histórico de Málaga.** Se guarda el XML de cada versión leída dentro del ámbito postal/NIF, incluidas las versiones descartadas. El histórico desglosa el `summary` en expediente, órgano, importe y estado. `entry.xml` conserva el XML de la versión vigente.
+- **Identidad e incremental.** Se compara cada entrada por su ID Atom completo y por el instante de `updated`, con su desplazamiento horario. La lectura sigue los enlaces del feed. Los UUID de las entidades que continúan presentes se conservan y las altas usan UUID v7.
+- **Modelo CODICE.** Se conservan títulos Atom de hasta 2.000 caracteres, el NIF explícito y `OTROS` en sus respectivos campos, y los anuncios de consultas aunque falten documentos generales. Al actualizar anuncios del mismo tipo se tienen en cuenta el medio y la fecha de publicación.
+- **Importes y consultas.** Los importes de proyectos y lotes usan `BigDecimal` y guardan su moneda. Las consultas conservan la jerarquía del órgano, la dirección postal, los idiomas y el enlace de presentación de `Attachment`.
+
+En instalaciones existentes, aplicar las cuatro migraciones en ambas bases antes de arrancar con `hibernate.hbm2ddl.auto=validate`. [Orden y comandos de migración](docs/migrations/v8.3.0/README.md)
+
+La prueba conjunta con los cuatro tipos de Málaga dejó 729 expedientes vigentes. Al repetir los mismos ATOM en modo incremental se conservaron los UUID y el XML vigente y se registraron 842 observaciones adicionales en el histórico. [Guía de la 8.3.0](docs/releases/v8.3.0/README.md) · [Descargas en GitHub](https://github.com/contratacionmalaga/import_from_opendata/releases/tag/v8.3.0)
+
 ## Versión 8.2.2
 
 Corrige la reconstrucción con `-CreateSchemaFirstRun` en MariaDB cuando las claves foráneas
@@ -185,8 +196,7 @@ import-from-opendata-ejecutables/
     ├── filter.properties
     ├── hibernate.properties
     ├── mail.properties
-    ├── runtime.properties
-    └── jakarta_filtro.properties
+    └── runtime.properties
 ```
 
 En Windows, la ruta operativa predeterminada es `C:\java\ejecutables\import-from-opendata-ejecutables`. Si no existe y el script se ejecuta desde un directorio con `properties`, ese directorio se utiliza como directorio operativo.
@@ -235,7 +245,7 @@ app.persistir_historicos_rechazados=false
 app.email.enabled=false
 ```
 
-Mantenga `app.persistir_historicos_rechazados=false` durante la operación normal. Activarlo persiste un histórico por cada entrada rechazada y puede aumentar mucho el volumen almacenado.
+Con `app.persistir_historicos_rechazados=false`, `con_filtros` guarda los rechazos dentro del ámbito postal/NIF con su XML y cuenta los demás en las estadísticas. El valor `true` guarda también el detalle de los rechazos fuera del ámbito y aumenta el volumen almacenado.
 
 Para pruebas y benchmarks, desactive las notificaciones mediante `app.email.enabled=false`.
 
@@ -460,7 +470,7 @@ Ejemplos:
 - Obtiene el feed inicial configurado en `app.internet.*`.
 - Continúa la navegación por los enlaces `next`.
 - Detecta ciclos y enlaces `next` inválidos.
-- Compara con los datos existentes para decidir inserciones y actualizaciones.
+- Compara `updated` con la versión del mismo ID Atom completo. Sigue la cadena aunque un expediente de una página sea anterior a su versión guardada.
 - Aplica los reintentos y pausas definidos en `app.properties`.
 
 ## Logs, incidencias y observabilidad

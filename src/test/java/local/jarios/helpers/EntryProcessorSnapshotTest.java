@@ -2,6 +2,7 @@ package local.jarios.helpers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,14 +97,29 @@ class EntryProcessorSnapshotTest {
   }
 
   @Test
-  void processes_unknown_entry_with_the_same_updated_as_the_incremental_cursor() {
+  void compares_the_same_entry_by_instant_during_the_autumn_clock_change() {
+    Entry earlier = entry("entry-1", LocalDateTime.parse("2026-10-25T02:55:00"));
+    earlier.setUpdatedOffsetSeconds(7200);
+    Entry later = entry("entry-1", LocalDateTime.parse("2026-10-25T02:10:00"));
+    later.setUpdatedOffsetSeconds(3600);
+    FakeState state = new FakeState(Map.of());
+
+    processor(state).processEntries(List.of(earlier, later));
+
+    assertThat(state.entries).containsEntry("entry-1", later);
+    assertThat(state.historicos)
+        .extracting(HistoricoEntry::getEntryOpcion)
+        .containsExactly(EntryOpcion.INSERTAR, EntryOpcion.RECHAZAR);
+  }
+
+  @Test
+  void processes_an_unknown_entry_older_than_a_different_stored_entry() {
     LocalDateTime cursorUpdated = LocalDateTime.parse("2026-01-02T10:00:00");
-    FakeState state = new FakeState(Map.of(), entry("cursor", cursorUpdated));
+    FakeState state = new FakeState(Map.of("otro-expediente", cursorUpdated.plusDays(1)));
     Entry unknownAtCursorTime = entry("entry-unknown", cursorUpdated);
 
-    boolean reachedOlderEntry = processor(state).processEntries(List.of(unknownAtCursorTime));
+    processor(state).processEntries(List.of(unknownAtCursorTime));
 
-    assertThat(reachedOlderEntry).isFalse();
     assertThat(state.entries).containsEntry("entry-unknown", unknownAtCursorTime);
     assertThat(state.historicos)
         .extracting(HistoricoEntry::getEntryOpcion)
@@ -141,22 +157,11 @@ class EntryProcessorSnapshotTest {
 
   private static final class FakeState implements EntryProcessor.EntryState {
     private final Map<String, LocalDateTime> snapshots;
-    private final Entry newestEntry;
     private final Map<String, Entry> entries = new HashMap<>();
     private final List<HistoricoEntry> historicos = new ArrayList<>();
 
     private FakeState(Map<String, LocalDateTime> snapshots) {
-      this(snapshots, null);
-    }
-
-    private FakeState(Map<String, LocalDateTime> snapshots, Entry newestEntry) {
       this.snapshots = snapshots;
-      this.newestEntry = newestEntry;
-    }
-
-    @Override
-    public Entry getNewestEntry() {
-      return newestEntry;
     }
 
     @Override
@@ -165,17 +170,12 @@ class EntryProcessorSnapshotTest {
     }
 
     @Override
-    public boolean shouldCompareWithExisting() {
-      return true;
-    }
-
-    @Override
-    public Optional<LocalDateTime> getEntryUpdated(String entryId) {
+    public Optional<Instant> getEntryUpdated(String entryId) {
       Entry entry = entries.get(entryId);
       if (entry != null) {
-        return Optional.ofNullable(entry.getUpdated());
+        return Optional.ofNullable(entry.updatedInstant());
       }
-      return Optional.ofNullable(snapshots.get(entryId));
+      return Optional.ofNullable(AtomTimestamp.instant(snapshots.get(entryId), null));
     }
 
     @Override

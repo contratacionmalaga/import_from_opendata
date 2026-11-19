@@ -4,12 +4,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import local.jarios.entity.atom.Entry;
+import local.jarios.entity.codice.NoticeInfo;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 
@@ -27,7 +31,6 @@ final class EntryGraphUpdater {
           Map.entry("ProcurementProjectLot", List.of("lote")),
           Map.entry("TenderResult", List.of("idContract", "procurementProjectLotId", "nif")),
           Map.entry("ContractModification", List.of("contractId", "contractModificationId")),
-          Map.entry("NoticeInfo", List.of("noticeTypeCode")),
           Map.entry("AdditionalPublicationStatus", List.of("publicationMediaName")),
           Map.entry("AdditionalPublicationRequest", List.of("agencyId", "sendDateTime")),
           Map.entry("AdditionalPublicationDocumentReference", List.of("uri")),
@@ -45,9 +48,10 @@ final class EntryGraphUpdater {
   private EntryGraphUpdater() {}
 
   static Entry update(Session session, Entry existing, Entry incoming) {
-    existing.setFeed(incoming.getFeed());
-    synchronize(session, existing, incoming);
-    return existing;
+    Entry managed = Hibernate.unproxy(existing, Entry.class);
+    managed.setFeed(incoming.getFeed());
+    synchronize(session, managed, incoming);
+    return managed;
   }
 
   private static void synchronize(Session session, Object existing, Object incoming) {
@@ -78,14 +82,18 @@ final class EntryGraphUpdater {
     field.setAccessible(true);
     @SuppressWarnings("unchecked")
     Collection<Object> managed = (Collection<Object>) field.get(existing);
-    Collection<?> replacements = (Collection<?>) field.get(incoming);
+    Collection<?> incomingChildren = (Collection<?>) field.get(incoming);
+    Collection<?> replacements = incomingChildren == null ? List.of() : incomingChildren;
     if (managed == null) {
       managed = new ArrayList<>();
       field.set(existing, managed);
     }
     List<Object> unmatched = new ArrayList<>(managed);
-    for (Object replacement : replacements == null ? List.of() : replacements) {
-      Object match = findMatch(unmatched, replacement);
+    for (Object replacement : replacements) {
+      Object match =
+          replacement instanceof NoticeInfo notice
+              ? findNoticeMatch(unmatched, notice, managed, replacements)
+              : findMatch(unmatched, replacement);
       if (match == null) {
         bindParent(replacement, mappedBy, existing);
         bindChildren(replacement);
@@ -141,6 +149,48 @@ final class EntryGraphUpdater {
     }
     return null;
   }
+
+  private static NoticeInfo findNoticeMatch(
+      List<Object> candidates, NoticeInfo incoming, Collection<?> existing, Collection<?> replacements) {
+    String type = incoming.getNoticeTypeCode();
+    // Cuando el tipo se repite, el medio y la fecha distinguen las publicaciones.
+    boolean repeated =
+        hasRepeatedNoticeType(existing, type) || hasRepeatedNoticeType(replacements, type);
+    Set<PublicationKey> publications = repeated ? publicationKeys(incoming) : Set.of();
+    return candidates.stream()
+        .map(NoticeInfo.class::cast)
+        .filter(candidate -> Objects.equals(type, candidate.getNoticeTypeCode()))
+        .filter(candidate -> !repeated || publications.equals(publicationKeys(candidate)))
+        .findFirst()
+        .map(candidate -> Hibernate.unproxy(candidate, NoticeInfo.class))
+        .orElse(null);
+  }
+
+  private static boolean hasRepeatedNoticeType(Collection<?> notices, String type) {
+    return notices.stream()
+            .map(NoticeInfo.class::cast)
+            .filter(notice -> Objects.equals(type, notice.getNoticeTypeCode()))
+            .limit(2)
+            .count()
+        == 2;
+  }
+
+  private static Set<PublicationKey> publicationKeys(NoticeInfo notice) {
+    Set<PublicationKey> keys = new HashSet<>();
+    for (var publication : notice.getListAdditionalPublicationStatus()) {
+      String medium = publication.getPublicationMediaName();
+      var documents = publication.getAdditionalPublicationDocumentReferenceList();
+      if (documents.isEmpty()) {
+        keys.add(new PublicationKey(medium, null));
+      }
+      for (var document : documents) {
+        keys.add(new PublicationKey(medium, document.getIssueDate()));
+      }
+    }
+    return keys;
+  }
+
+  private record PublicationKey(String medium, LocalDate date) {}
 
   private static void bindParent(Object child, String mappedBy, Object parent)
       throws ReflectiveOperationException {

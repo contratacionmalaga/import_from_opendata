@@ -1,7 +1,7 @@
 package local.jarios.repositories;
 
 import jakarta.persistence.TypedQuery;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +28,7 @@ import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
 import local.jarios.enums.DeletedEntryOpcion;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.exceptions.MiRepositoryException;
+import local.jarios.helpers.AtomIdentity;
 import local.jarios.helpers.LocalDateTimeHelper;
 import local.jarios.helpers.StringHelper;
 import local.jarios.services.ImportPersistencePlan;
@@ -265,7 +266,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
               TypedQuery<EntrySnapshot> query =
                   session.createQuery(
                       """
-          SELECT new local.jarios.repositories.EntrySnapshot(e.entryId, e.updated)
+          SELECT new local.jarios.repositories.EntrySnapshot(e.entryId, e.updated, e.updatedOffsetSeconds)
           FROM Entry e
           JOIN e.feed f
           JOIN f.miLog l
@@ -459,6 +460,7 @@ public class RepositoryImpl implements Repository, AutoCloseable {
         existing.setFeed(incoming.getFeed());
         existing.setRefCorto(incoming.getRefCorto());
         existing.setUpdated(incoming.getUpdated());
+          existing.setUpdatedOffsetSeconds(incoming.getUpdatedOffsetSeconds());
         existing.setComment(incoming.getComment());
         persistHistoricoDeletedEntry(session, miLog, historico);
       } else {
@@ -531,24 +533,24 @@ public class RepositoryImpl implements Repository, AutoCloseable {
   }
 
   private static Entry latestEntry(Entry current, Entry candidate) {
-    if (isAfter(candidate.getUpdated(), current.getUpdated())) {
+    if (isAfter(candidate.updatedInstant(), current.updatedInstant())) {
       return candidate;
     }
     return current;
   }
 
   private static DeletedEntry latestDeletedEntry(DeletedEntry current, DeletedEntry candidate) {
-    if (isAfter(candidate.getUpdated(), current.getUpdated())) {
+    if (isAfter(candidate.updatedInstant(), current.updatedInstant())) {
       return candidate;
     }
     return current;
   }
 
   private static boolean isIncomingNewer(DeletedEntry incoming, DeletedEntry existing) {
-    return isAfter(incoming.getUpdated(), existing.getUpdated());
+    return isAfter(incoming.updatedInstant(), existing.updatedInstant());
   }
 
-  private static boolean isAfter(LocalDateTime candidate, LocalDateTime current) {
+  private static boolean isAfter(Instant candidate, Instant current) {
     if (candidate == null) {
       return false;
     }
@@ -576,11 +578,13 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       int to = Math.min(from + QUERY_CHUNK_SIZE, refList.size());
       List<DeletedEntry> deletedEntries =
           session
-              .createQuery("FROM DeletedEntry d WHERE d.ref IN :refs", DeletedEntry.class)
-              .setParameter("refs", refList.subList(from, to))
+              .createQuery("FROM DeletedEntry d WHERE d.refAtomKey IN :keys", DeletedEntry.class)
+              .setParameter("keys", refList.subList(from, to).stream().map(AtomIdentity::key).toList())
               .getResultList();
       for (DeletedEntry deletedEntry : deletedEntries) {
-        result.put(deletedEntry.getRef(), deletedEntry);
+        if (refs.contains(deletedEntry.getRef())) {
+          result.put(deletedEntry.getRef(), deletedEntry);
+        }
       }
     }
     return result;
@@ -620,12 +624,15 @@ public class RepositoryImpl implements Repository, AutoCloseable {
       List<Object[]> rows =
           session
               .createQuery(
-                  "SELECT e.entryId, e.id FROM Entry e WHERE e.entryId IN :entryIds",
+                  "SELECT e.entryId, e.id FROM Entry e WHERE e.entryAtomKey IN :atomKeys",
                   Object[].class)
-              .setParameter("entryIds", entryIds.subList(from, to))
+              .setParameter("atomKeys", entryIds.subList(from, to).stream().map(AtomIdentity::key).toList())
               .getResultList();
       for (Object[] row : rows) {
-        result.put((String) row[0], (UUID) row[1]);
+        String fullId = (String) row[0];
+        if (updatedEntryIds.contains(fullId)) {
+          result.put(fullId, (UUID) row[1]);
+        }
       }
     }
     return result;

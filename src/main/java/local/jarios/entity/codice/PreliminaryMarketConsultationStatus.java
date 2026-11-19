@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,9 @@ import local.jarios.entity.atom.Entry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Description: Importaciones de Ficheros Excel desde Internet Author: Juan Antonio Date: 04/06/2024
@@ -100,6 +103,34 @@ public class PreliminaryMarketConsultationStatus {
   @Column(name = "nif", length = TamanoCampos.TAMANO_50)
   private String nif;
 
+  // Los arrays conservan el orden al comparar los valores JSON en las actualizaciones.
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "parent_located_parties")
+  private ParentLocatedParty[] parentLocatedParties = new ParentLocatedParty[0];
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "postal_address_lines")
+  private String[] postalAddressLines = new String[0];
+
+  @Column(name = "postal_city_name", columnDefinition = "TEXT")
+  private String postalCityName;
+
+  @Column(name = "postal_zone", length = TamanoCampos.TAMANO_50)
+  private String postalZone;
+
+  @Column(name = "postal_country_code", length = TamanoCampos.TAMANO_50)
+  private String postalCountryCode;
+
+  @Column(name = "postal_country_name", columnDefinition = "TEXT")
+  private String postalCountryName;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "languages")
+  private Language[] languages = new Language[0];
+
+  @Column(name = "submission_uri", columnDefinition = "TEXT")
+  private String submissionUri;
+
   //
   //
   //
@@ -114,10 +145,6 @@ public class PreliminaryMarketConsultationStatus {
               foreignKeyDefinition =
                   "FOREIGN KEY (entry_id) REFERENCES entry(id) ON DELETE CASCADE"))
   private Entry entry;
-
-  //  @OneToOne(mappedBy = "preliminaryMarketConsultationStatus", cascade = CascadeType.ALL,
-  // orphanRemoval = true)
-  //  private Attachment attachment;
 
   @OneToMany(
       mappedBy = "generalDocumentReferencePmcs",
@@ -144,4 +171,11 @@ public class PreliminaryMarketConsultationStatus {
       cascade = CascadeType.ALL,
       orphanRemoval = true)
   private TenderingProcess tenderingProcess;
+
+  public record ParentLocatedParty(List<String> names, List<PartyIdentifier> identifiers)
+      implements Serializable {}
+
+  public record PartyIdentifier(String schemeName, String value) implements Serializable {}
+
+  public record Language(String id, String name, String localeCode) implements Serializable {}
 }

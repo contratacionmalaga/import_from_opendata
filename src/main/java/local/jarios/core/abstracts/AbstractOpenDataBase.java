@@ -40,7 +40,6 @@ import local.jarios.helpers.StringHelper;
 import local.jarios.properties.api.PropertiesManagerService;
 import local.jarios.properties.api.PropertiesManagerServiceImpl;
 import local.jarios.properties.exception.PropertiesManagerException;
-import local.jarios.repositories.EntrySnapshot;
 import local.jarios.services.ImportPersistencePlan;
 import local.jarios.services.ServicePrincipal;
 import local.jarios.services.ServicePrincipalImpl;
@@ -351,25 +350,9 @@ public abstract class AbstractOpenDataBase {
         ? null
         : mapEntries.values().stream()
             .filter(Objects::nonNull)
-            .max(Comparator.comparing(Entry::getUpdated))
+            .filter(entry -> entry.updatedInstant() != null)
+            .max(Comparator.comparing(Entry::updatedInstant))
             .orElse(null);
-  }
-
-  protected Entry obtenerUltimaEntradaSnapshot(Map<String, EntrySnapshot> snapshots) {
-    return snapshots == null
-        ? null
-        : snapshots.values().stream()
-            .filter(Objects::nonNull)
-            .max(Comparator.comparing(EntrySnapshot::updated))
-            .map(AbstractOpenDataBase::toEntryReference)
-            .orElse(null);
-  }
-
-  private static Entry toEntryReference(EntrySnapshot snapshot) {
-    Entry entry = new Entry();
-    entry.setEntryId(snapshot.entryId());
-    entry.setUpdated(snapshot.updated());
-    return entry;
   }
 
   public void sendSuccessEmail(Estadistica estadistica)

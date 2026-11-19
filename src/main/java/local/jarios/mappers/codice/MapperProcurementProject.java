@@ -1,8 +1,10 @@
 package local.jarios.mappers.codice;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
+import java.util.function.Consumer;
 import local.jarios.common.util.TamanoCampos;
 import local.jarios.entity.codice.ContractFolderStatus;
 import local.jarios.entity.codice.PreliminaryMarketConsultationStatus;
@@ -12,6 +14,7 @@ import local.jarios.helpers.StringHelper;
 import local.jarios.mappers.auxiliares.MapperStringFromList;
 import lombok.extern.slf4j.Slf4j;
 import org.dgpe.codice.common.caclib.ProcurementProjectType;
+import org.oasis.ubl.common.udt.AmountType;
 import un.unece.uncefact.data.specification.corecomponenttypeschemamodule._2.TextType;
 
 /** Description: Subtipos del modelo Codice Author: juan Date: 11/04/2024 Team: Juan Antonio */
@@ -69,17 +72,18 @@ public final class MapperProcurementProject {
               Optional.ofNullable(procurementProjectTypeVal.getBudgetAmount())
                   .ifPresent(
                       budgetAmountType -> {
-                        Optional.ofNullable(budgetAmountType.getEstimatedOverallContractAmount())
-                            .map(amount -> amount.getValue().doubleValue())
-                            .ifPresent(procurementProject::setEstimatedOverallContractAmount);
-
-                        Optional.ofNullable(budgetAmountType.getTotalAmount())
-                            .map(amount -> amount.getValue().doubleValue())
-                            .ifPresent(procurementProject::setTotalAmount);
-
-                        Optional.ofNullable(budgetAmountType.getTaxExclusiveAmount())
-                            .map(amount -> amount.getValue().doubleValue())
-                            .ifPresent(procurementProject::setTaxExclusiveAmount);
+                        mapAmount(
+                            budgetAmountType.getEstimatedOverallContractAmount(),
+                            procurementProject::setEstimatedOverallContractAmount,
+                            procurementProject::setEstimatedOverallContractAmountCurrency);
+                        mapAmount(
+                            budgetAmountType.getTotalAmount(),
+                            procurementProject::setTotalAmount,
+                            procurementProject::setTotalAmountCurrency);
+                        mapAmount(
+                            budgetAmountType.getTaxExclusiveAmount(),
+                            procurementProject::setTaxExclusiveAmount,
+                            procurementProject::setTaxExclusiveAmountCurrency);
                       });
 
               Optional.ofNullable(procurementProjectTypeVal.getRealizedLocation())
@@ -196,5 +200,30 @@ public final class MapperProcurementProject {
             });
 
     return procurementProject;
+  }
+
+  private static void mapAmount(
+      AmountType amount, Consumer<BigDecimal> setValue, Consumer<String> setCurrency) {
+    if (amount == null) {
+      return;
+    }
+
+    BigDecimal value = amount.getValue();
+    if (value != null) {
+      BigDecimal significant = value.stripTrailingZeros();
+      if (significant.scale() > TamanoCampos.IMPORTE_ESCALA
+          || (long) significant.precision() - significant.scale()
+              > TamanoCampos.IMPORTE_PRECISION - TamanoCampos.IMPORTE_ESCALA) {
+        throw new IllegalArgumentException(
+            "Importe fuera de la precisión de almacenamiento: " + value);
+      }
+    }
+
+    String currency = amount.getCurrencyID();
+    if (currency != null && currency.length() > TamanoCampos.MONEDA_LONGITUD) {
+      throw new IllegalArgumentException("Código de moneda demasiado largo: " + currency);
+    }
+    setValue.accept(value);
+    setCurrency.accept(currency);
   }
 }

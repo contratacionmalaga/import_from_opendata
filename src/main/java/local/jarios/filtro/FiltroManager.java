@@ -5,10 +5,7 @@ import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.enums.EntryOpcion;
-import local.jarios.filtro.evaluator.FiltroCodigosPostalesEvaluator;
 import local.jarios.filtro.evaluator.FiltroFechasEvaluator;
-import local.jarios.filtro.evaluator.FiltroNifsEvaluator;
-import local.jarios.filtro.interfaces.FiltroEvaluator;
 import local.jarios.filtro.interfaces.FiltroLoader;
 import local.jarios.filtro.loader.FiltroCodigosPostalesLoader;
 import local.jarios.filtro.loader.FiltroFechasLoader;
@@ -21,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FiltroManager {
 
   private final List<FiltroLoader> loaders;
-  private final List<FiltroEvaluator> evaluators;
+  private final FiltroFechasEvaluator filtroFechas = new FiltroFechasEvaluator();
 
   /** Constructor de la clase. */
   public FiltroManager() {
@@ -29,13 +26,6 @@ public class FiltroManager {
     this.loaders =
         List.of(
             new FiltroFechasLoader(), new FiltroCodigosPostalesLoader(), new FiltroNifsLoader());
-
-    // Lista de los filtros a evaluar
-    this.evaluators =
-        List.of(
-            new FiltroFechasEvaluator(),
-            new FiltroCodigosPostalesEvaluator(),
-            new FiltroNifsEvaluator());
   }
 
   /** Imprime la información de los filtros. */
@@ -80,75 +70,29 @@ public class FiltroManager {
    * @return Valor devuelto
    */
   public boolean evaluarFiltros(OpenDataExecutionContext context, Entry entry) {
-
-    boolean aplicaFiltro =
-        context.getConjuntoNifsEnFiltro() != null && !context.getConjuntoNifsEnFiltro().isEmpty();
-
-    boolean pasaAlternativos = false;
-
-    for (FiltroEvaluator evaluator : evaluators) {
-
-      boolean esAlternativo =
-          evaluator instanceof FiltroCodigosPostalesEvaluator
-              || evaluator instanceof FiltroNifsEvaluator;
-
-      // ============================
-      // 1) Filtros alternativos
-      // ============================
-      if (esAlternativo) {
-
-        // Si no hay filtros activos → se omite SOLO este tipo
-        if (!aplicaFiltro) {
-
-          log.debug("    Filtro alternativo: {}. OMITIDO", evaluator.getClass().getSimpleName());
-
-          continue;
-        }
-
-        boolean ok = evaluator.evaluar(context, entry);
-
-        log.debug(
-            "    Filtro alternativo: {}. Resultado: {}", evaluator.getClass().getSimpleName(), ok);
-
-        if (ok) {
-          pasaAlternativos = true;
-        }
-
-        continue;
-      }
-
-      // ============================
-      // 2) Filtros obligatorios
-      // ============================
-      boolean ok = evaluator.evaluar(context, entry);
-
-      log.debug(
-          "    Filtro obligatorio: {}. Resultado: {}", evaluator.getClass().getSimpleName(), ok);
-
-      if (!ok) {
-
-        String msg = "Filtro no cumplido: " + evaluator.getClass().getSimpleName();
-
-        context.addHistorico(
-            new HistoricoEntry(entry, EntryOpcion.RECHAZAR, msg, context.getTipoSindicacion()));
-
-        return false;
-      }
+    String motivo = null;
+    if (!filtroFechas.evaluar(context, entry)) {
+      motivo = "Filtro no cumplido: FiltroFechasEvaluator";
+    } else if (tieneAmbito(context) && !perteneceAlAmbito(context, entry)) {
+      motivo = "No cumple ningún filtro alternativo (CP/NIF)";
     }
-
-    // ============================
-    // 3) Validar alternativos
-    // ============================
-    if (aplicaFiltro && !pasaAlternativos) {
-
-      String msg = "No cumple ningún filtro alternativo (CP/NIF)";
-
-      context.addHistorico(
-          new HistoricoEntry(entry, EntryOpcion.RECHAZAR, msg, context.getTipoSindicacion()));
-
-      return false;
+    if (motivo == null) {
+      return true;
     }
+    context.addHistorico(
+        new HistoricoEntry(entry, EntryOpcion.RECHAZAR, motivo, context.getTipoSindicacion()));
+    return false;
+  }
 
-    return true;
+  /** El ámbito geográfico usa los NIF cargados por código postal o informados directamente. */
+  public boolean perteneceAlAmbito(OpenDataExecutionContext context, Entry entry) {
+    return tieneAmbito(context)
+        && entry.findNifFromEntry(context.getTipoSindicacion())
+            .filter(context.getConjuntoNifsEnFiltro()::contains)
+            .isPresent();
+  }
+
+  private static boolean tieneAmbito(OpenDataExecutionContext context) {
+    return context.getConjuntoNifsEnFiltro() != null && !context.getConjuntoNifsEnFiltro().isEmpty();
   }
 }

@@ -36,7 +36,6 @@ public class OpenDataMalagaLocal extends AbstractOpenDataMalaga {
 
     validarBaseDatosVaciaParaCargaLocal(tipo);
     context.getMapEntrySnapshotsFromBaseDatos().clear();
-    context.setNewestEntry(null);
   }
 
   private void validarBaseDatosVaciaParaCargaLocal(TipoSindicacion tipo) throws MiServiceException {

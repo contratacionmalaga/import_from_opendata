@@ -43,7 +43,6 @@ public final class FeedHelper {
   static void parsearFeeds(FeedSource source, OpenDataExecutionContext context)
       throws MiParseException {
 
-    boolean alcanzadoCorteIncremental = false;
     int feedsParseados = 0;
     long totalEntries = 0;
     long totalDeletedEntries = 0;
@@ -78,8 +77,11 @@ public final class FeedHelper {
           log.info("Feed {}: {}", StringHelper.getNumeroConFormato(feedNumber), feedName);
 
           long inicioDeserializacionYMapeo = System.nanoTime();
-          FeedType feedType = getFeedType(unmarshaller, reader);
-          Feed feed = MapperFeed.getFeed(feedType);
+          Feed feed =
+              context.isAplicarFiltros()
+                  ? AtomEntryXml.read(
+                      reader, unmarshaller, entry -> filtroManager.perteneceAlAmbito(context, entry))
+                  : MapperFeed.getFeed(getFeedType(unmarshaller, reader));
           deserializacionYMapeoNanos += System.nanoTime() - inicioDeserializacionYMapeo;
           feedsParseados++;
 
@@ -113,16 +115,8 @@ public final class FeedHelper {
                   new ContextEntryState(context));
 
           long inicioFiltrado = System.nanoTime();
-          boolean corteAlcanzadoEnEsteFeed = processor.processEntries(listEntry);
-          alcanzadoCorteIncremental |= corteAlcanzadoEnEsteFeed;
+          processor.processEntries(listEntry);
           filtradoNanos += System.nanoTime() - inicioFiltrado;
-
-          if (corteAlcanzadoEnEsteFeed) {
-            log.info(
-                "Fin del parseo: corte incremental alcanzado en el feed {}; no se descargan más feeds.",
-                feedsParseados);
-            break;
-          }
 
           if (feed.getLinkNext() == null || feed.getLinkNext().isBlank()) {
             log.info("Fin normal del parseo: el feed no informa enlace next.");
@@ -148,7 +142,6 @@ public final class FeedHelper {
       log.info("  Entries obtenidos: {}", StringHelper.getNumeroConFormato(totalEntries));
       log.info(
           "  Deleted entries obtenidos: {}", StringHelper.getNumeroConFormato(totalDeletedEntries));
-      log.info("  Corte incremental alcanzado: {}", alcanzadoCorteIncremental);
       log.info(
           "  Duración de lectura: {}", LocalDateTimeHelper.getDiferenciaNanos(0, aperturaNanos));
       log.info(

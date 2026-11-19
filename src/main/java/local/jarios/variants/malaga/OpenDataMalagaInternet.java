@@ -40,19 +40,9 @@ public class OpenDataMalagaInternet extends AbstractOpenDataMalaga {
         .getMapEntrySnapshotsFromBaseDatos()
         .putAll(getServicePrincipal().getEntrySnapshots(context.getTipoSindicacion()));
 
-    context.setNewestEntry(
-        obtenerUltimaEntradaSnapshot(context.getMapEntrySnapshotsFromBaseDatos()));
-
     log.info(
         "Entries existentes en BD: {}",
         StringHelper.getNumeroConFormato(context.getMapEntrySnapshotsFromBaseDatos().size()));
-
-    Entry newest = context.getNewestEntry();
-    if (newest == null) {
-      log.info("NewestEntry: null");
-    } else {
-      log.info("NewestEntry: entryId={}, updated={}", newest.getEntryId(), newest.getUpdated());
-    }
   }
 
   @Override

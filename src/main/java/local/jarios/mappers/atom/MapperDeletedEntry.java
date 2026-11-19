@@ -8,6 +8,7 @@ import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
 import local.jarios.entity.atom.Feed;
 import local.jarios.helpers.StringHelper;
+import local.jarios.helpers.AtomTimestamp;
 import lombok.extern.slf4j.Slf4j;
 import org.purl.atompub.tombstones._1.DeletedEntryType;
 import org.w3._2005.atom.EntryType;
@@ -76,15 +77,16 @@ public final class MapperDeletedEntry {
     // Verifica que no sea null
     if (deletedEntryType != null && deletedEntryType.getRef() != null) {
       String ref = deletedEntryType.getRef();
-      deleltedEntry.setRef(StringHelper.limit(ref, TamanoCampos.TAMANO_500));
+      deleltedEntry.setRef(ref);
       deleltedEntry.setRefCorto(
           StringHelper.limit(StringHelper.obtenerIdCorto(ref), TamanoCampos.TAMANO_50));
     }
 
     // Verifica que no sea null
     if (deletedEntryType != null && deletedEntryType.getWhen() != null) {
-      deleltedEntry.setUpdated(
-          deletedEntryType.getWhen().toGregorianCalendar().toZonedDateTime().toLocalDateTime());
+      var updated = AtomTimestamp.fromXml(deletedEntryType.getWhen());
+      deleltedEntry.setUpdated(updated.toLocalDateTime());
+      deleltedEntry.setUpdatedOffsetSeconds(updated.getOffset().getTotalSeconds());
     }
 
     // Verifica que no sea null

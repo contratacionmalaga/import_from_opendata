@@ -317,7 +317,11 @@ confirm_plan() {
   echo "- La importacion LOCAL exige que no haya datos previos para ese tipo; si los hay, la aplicacion deberia detenerse."
   echo "- La importacion INTERNET es incremental: compara con lo existente y puede insertar o actualizar registros."
   echo "- Si Hibernate esta en modo 'create' o 'create-drop', hay riesgo de recrear tablas y perder datos existentes."
-  echo "- Historicos de rechazados persistidos: $persist_rejected. Si estuviera en true, podria generar muchos registros."
+  if [[ "$persist_rejected" == "true" ]]; then
+    echo "- Rechazos con filtros: se guardara un historico detallado de cada rechazo; puede generar muchos registros."
+  else
+    echo "- Rechazos con filtros: se guardan las versiones del ambito CP/NIF con su XML. Los demas rechazos se cuentan en las estadisticas."
+  fi
   echo "- Reintentos HTTP para modo internet: $retries; espera base entre reintentos: $retry_delay ms."
   echo
   read -r -p "Para continuar escribe I y pulsa Enter. Cualquier otra respuesta cancela la importacion: " answer

@@ -84,7 +84,9 @@ public final class MapperProcurementProjectLot {
       ProcurementProjectLot procurementProjectLot, ProcurementProject procurementProject) {
     procurementProjectLot.setName(procurementProject.getName());
     procurementProjectLot.setTotalAmount(procurementProject.getTotalAmount());
+    procurementProjectLot.setTotalAmountCurrency(procurementProject.getTotalAmountCurrency());
     procurementProjectLot.setTaxExclusiveAmount(procurementProject.getTaxExclusiveAmount());
+    procurementProjectLot.setTaxExclusiveAmountCurrency(procurementProject.getTaxExclusiveAmountCurrency());
     procurementProjectLot.setCountrySubentity(procurementProject.getCountrySubentity());
     procurementProjectLot.setCountrySubentityCode(procurementProject.getCountrySubentityCode());
     procurementProjectLot.setCountryIdentificationCode(

@@ -37,7 +37,8 @@ app.tipo_sindicacion=CONSULTAS
 
 # Persistencia detallada de rechazos.
 # Valores permitidos: true | false
-# false: modo normal recomendado; cuenta rechazos en estadisticas pero no persiste un historico por cada Entry RECHAZAR.
+# false: guarda siempre las versiones del ambito CP/NIF en con_filtros, incluidos los rechazos.
+# Los demas rechazos solo se cuentan en las estadisticas.
 # true: modo diagnostico; persiste todos los RECHAZAR y puede generar millones de filas en historico.
 app.persistir_historicos_rechazados=false
 

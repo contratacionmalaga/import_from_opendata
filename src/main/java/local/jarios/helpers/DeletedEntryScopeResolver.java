@@ -99,6 +99,10 @@ public final class DeletedEntryScopeResolver {
     if (ref != null && allowedEntryIds.contains(ref)) {
       return true;
     }
+    if (ref != null && ref.matches("^[A-Za-z][A-Za-z0-9+.-]*:.*")) {
+      // Una referencia Atom completa no se debe asociar por el último segmento.
+      return false;
+    }
 
     String refCorto = deletedEntry.getRefCorto();
     return refCorto != null && allowedShortEntryIds.contains(refCorto);
