@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Set;
 import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
@@ -15,20 +16,60 @@ import local.jarios.entity.auxiliares.HistoricoEntry;
 import local.jarios.enums.EntryOpcion;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.interfaces.FeedSource;
+import local.jarios.repositories.EntrySnapshot;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class AtomEntryHistoryTest {
 
+  @ParameterizedTest
+  @CsvSource({"true, false", "true, true", "false, false", "false, true"})
+  void solo_la_version_que_se_persiste_lleva_la_accion_de_escritura(
+      boolean aplicarFiltros, boolean existeEnBd) throws Exception {
+    var context = malaga();
+    context.setAplicarFiltros(aplicarFiltros);
+    context.setCompararConExistentes(true);
+    if (existeEnBd) {
+      context
+          .getMapEntrySnapshotsFromBaseDatos()
+          .put(
+              "urn:test:42",
+              new EntrySnapshot("urn:test:42", LocalDateTime.parse("2026-10-09T10:00:00")));
+    }
+    String first = feed(entry("42", 10, "P2900000G", "candidato provisional"));
+    String second =
+        feed(entry("42", 11, "P2900000G", "candidato definitivo"))
+            .replace("<link rel=\"next\" href=\"https://example.test/otro.atom\"/>", "");
+    FeedHelper.parsearFeeds(
+        new Pages(Map.of("first", first, "https://example.test/otro.atom", second)), context);
+
+    assertThat(context.getListHistoricos())
+        .satisfiesExactly(
+            previous -> {
+              assertThat(previous.getEntryOpcion()).isEqualTo(EntryOpcion.RECHAZAR);
+              assertThat(previous.getEntryMotivo()).contains("antes de persistir");
+              assertThat(previous.getXml()).contains("candidato provisional");
+            },
+            selected -> {
+              assertThat(selected.getEntryOpcion())
+                  .isEqualTo(existeEnBd ? EntryOpcion.ACTUALIZAR : EntryOpcion.INSERTAR);
+              assertThat(selected.getXml()).contains("candidato definitivo");
+              assertThat(selected.getXml())
+                  .isEqualTo(context.getMapEntriesFromAtoms().get("urn:test:42").getXml());
+            });
+  }
+
   @Test
-  void conserva_las_dos_versiones_y_solo_la_mas_reciente_como_vigente()
-      throws Exception {
+  void conserva_las_dos_versiones_y_solo_la_mas_reciente_como_vigente() throws Exception {
     OpenDataExecutionContext context = malaga();
     context.setCompararConExistentes(true);
 
-    String feed = feed(
-        entry("42", 10, "P2900000G", "documento anterior")
-            + entry("42", 11, "P2900000G", "documento vigente")
-            + entry("43", 9, "P9999999Z", "fuera de Málaga"));
+    String feed =
+        feed(
+            entry("42", 10, "P2900000G", "documento anterior")
+                + entry("42", 11, "P2900000G", "documento vigente")
+                + entry("43", 9, "P9999999Z", "fuera de Málaga"));
     FeedHelper.parsearFeeds(new OneFeed(feed), context);
 
     assertThat(context.getMapEntriesFromAtoms()).containsOnlyKeys("urn:test:42");
@@ -52,6 +93,36 @@ class AtomEntryHistoryTest {
   }
 
   @Test
+  void pliegos_archiva_el_xml_de_cada_version_incluso_si_se_rechaza() throws Exception {
+    var context = new OpenDataExecutionContext();
+    context.setTipoSindicacion(TipoSindicacion.MAYORES);
+    FeedHelper.parsearFeeds(
+        new OneFeed(
+            feed(
+                entry("42", 10, "P2900000G", "documento anterior")
+                    + entry("42", 11, "P2900000G", "documento vigente"))),
+        context);
+
+    assertThat(context.getMapEntriesFromAtoms()).containsOnlyKeys("urn:test:42");
+    assertThat(context.getMapEntriesFromAtoms().get("urn:test:42").getXml())
+        .contains("<doc:extra>documento vigente</doc:extra>", "xmlns:doc=\"urn:test:documento\"")
+        .doesNotContain("documento anterior");
+    assertThat(context.getListHistoricos())
+        .satisfiesExactly(
+            alta -> {
+              assertThat(alta.getEntryOpcion()).isEqualTo(EntryOpcion.INSERTAR);
+              assertThat(alta.getXml())
+                  .isEqualTo(context.getMapEntriesFromAtoms().get("urn:test:42").getXml());
+              assertThat(alta.getSummaryExpediente()).isEqualTo("C.28;G489/2026");
+            },
+            anterior -> {
+              assertThat(anterior.getEntryOpcion()).isEqualTo(EntryOpcion.RECHAZAR);
+              assertThat(anterior.getXml()).contains("documento anterior");
+            });
+    assertThat(context.getHistoricosRechazadosOmitidos()).isZero();
+  }
+
+  @Test
   void conserva_el_historico_de_malaga_aunque_ninguna_entrada_pase_el_filtro_de_fechas()
       throws Exception {
     OpenDataExecutionContext context = malaga();
@@ -60,11 +131,14 @@ class AtomEntryHistoryTest {
         new OneFeed(feed(entry("42", 10, "P2900000G", "documento anterior"))), context);
 
     assertThat(context.getMapEntriesFromAtoms()).isEmpty();
-    assertThat(context.getListHistoricos()).singleElement().satisfies(original -> {
-      assertThat(original.getEntryOpcion()).isEqualTo(EntryOpcion.RECHAZAR);
-      assertThat(original.getEntryMotivo()).contains("FiltroFechasEvaluator");
-      assertThat(original.getXml()).contains("documento anterior");
-    });
+    assertThat(context.getListHistoricos())
+        .singleElement()
+        .satisfies(
+            original -> {
+              assertThat(original.getEntryOpcion()).isEqualTo(EntryOpcion.RECHAZAR);
+              assertThat(original.getEntryMotivo()).contains("FiltroFechasEvaluator");
+              assertThat(original.getXml()).contains("documento anterior");
+            });
   }
 
   @Test
@@ -72,9 +146,11 @@ class AtomEntryHistoryTest {
       throws Exception {
     OpenDataExecutionContext context = malaga();
     FeedHelper.parsearFeeds(
-        new OneFeed(feed(
-            entry("42", 10, "P2900000G", "primera publicación")
-                + entry("42", 10, "P2900000G", "segunda publicación"))), context);
+        new OneFeed(
+            feed(
+                entry("42", 10, "P2900000G", "primera publicación")
+                    + entry("42", 10, "P2900000G", "segunda publicación"))),
+        context);
 
     assertThat(context.getListHistoricos())
         .extracting(HistoricoEntry::getXml)
@@ -91,18 +167,25 @@ class AtomEntryHistoryTest {
     String nif = identification("NIF", "P2900000G");
     String otros = identification("OTROS", "identificador adicional");
     FeedHelper.parsearFeeds(
-        new OneFeed(feed(
-            entryWithIdentifications("42", 10, nif + otros, "NIF primero")
-                + entryWithIdentifications("43", 10, otros + nif, "OTROS primero"))), context);
+        new OneFeed(
+            feed(
+                entryWithIdentifications("42", 10, nif + otros, "NIF primero")
+                    + entryWithIdentifications("43", 10, otros + nif, "OTROS primero"))),
+        context);
 
     assertThat(context.getMapEntriesFromAtoms()).containsOnlyKeys("urn:test:42", "urn:test:43");
-    assertThat(context.getMapEntriesFromAtoms().values()).allSatisfy(entry -> {
-      assertThat(entry.getContractFolderStatusList()).singleElement().satisfies(status -> {
-        assertThat(status.getNif()).isEqualTo("P2900000G");
-        assertThat(status.getOtros()).isEqualTo("identificador adicional");
-      });
-      assertThat(entry.getXml()).contains("P2900000G", "identificador adicional");
-    });
+    assertThat(context.getMapEntriesFromAtoms().values())
+        .allSatisfy(
+            entry -> {
+              assertThat(entry.getContractFolderStatusList())
+                  .singleElement()
+                  .satisfies(
+                      status -> {
+                        assertThat(status.getNif()).isEqualTo("P2900000G");
+                        assertThat(status.getOtros()).isEqualTo("identificador adicional");
+                      });
+              assertThat(entry.getXml()).contains("P2900000G", "identificador adicional");
+            });
     assertThat(context.getListHistoricos())
         .hasSize(2)
         .allSatisfy(history -> assertThat(history.getNif()).isEqualTo("P2900000G"));
@@ -114,16 +197,20 @@ class AtomEntryHistoryTest {
     String otros = identification("OTROS", "P2900000G");
     String nifFueraDelFiltro = identification("NIF", "P9999999Z");
     FeedHelper.parsearFeeds(
-        new OneFeed(feed(
-            entryWithIdentifications("42", 10, otros, "sin NIF")
-                + entryWithIdentifications("43", 10, nifFueraDelFiltro + otros, "NIF ajeno"))), context);
+        new OneFeed(
+            feed(
+                entryWithIdentifications("42", 10, otros, "sin NIF")
+                    + entryWithIdentifications("43", 10, nifFueraDelFiltro + otros, "NIF ajeno"))),
+        context);
 
     assertThat(context.getMapEntriesFromAtoms()).isEmpty();
   }
 
   @Test
   void deja_sin_importe_el_resumen_de_consultas() {
-    assertThat(AtomSummary.parse("Id consulta: CPM-42; Órgano de Contratación: Diputación; Estado: PUB"))
+    assertThat(
+            AtomSummary.parse(
+                "Id consulta: CPM-42; Órgano de Contratación: Diputación; Estado: PUB"))
         .isEqualTo(new AtomSummary("CPM-42", "Diputación", null, "PUB"));
   }
 
@@ -169,7 +256,8 @@ class AtomEntryHistoryTest {
   private static String identification(String scheme, String value) {
     return """
         <cac:PartyIdentification><cbc:ID schemeName="%s">%s</cbc:ID></cac:PartyIdentification>
-        """.formatted(scheme, value);
+        """
+        .formatted(scheme, value);
   }
 
   private static String entryWithIdentifications(
@@ -186,7 +274,30 @@ class AtomEntryHistoryTest {
             </cac:Party></ext:LocatedContractingParty>
           </ext:ContractFolderStatus>
         </entry>
-        """.formatted(id, day, marker, identifications);
+        """
+        .formatted(id, day, marker, identifications);
+  }
+
+  private record Pages(Map<String, String> pages) implements FeedSource {
+    @Override
+    public String getInitialLink() {
+      return "first";
+    }
+
+    @Override
+    public boolean isNextLinkValid(String link) {
+      return pages.containsKey(link);
+    }
+
+    @Override
+    public String getNextLink(Feed feed) {
+      return feed.getLinkNext();
+    }
+
+    @Override
+    public BufferedReader openBufferedReader(String path) {
+      return new BufferedReader(new StringReader(pages.get(path)));
+    }
   }
 
   private record OneFeed(String xml) implements FeedSource {

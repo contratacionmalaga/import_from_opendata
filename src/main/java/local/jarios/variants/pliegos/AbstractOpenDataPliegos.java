@@ -93,7 +93,6 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
     Set<String> replacementEntryIds =
         ImportPersistencePlan.replacementEntryIdsFromHistoricos(context.getListHistoricos());
     int historicosGenerados = context.getListHistoricos().size();
-    context.getListHistoricos().clear();
 
     ImportPersistencePlan plan =
         new ImportPersistencePlan(
@@ -103,18 +102,16 @@ public abstract class AbstractOpenDataPliegos extends AbstractOpenDataBase {
             List.of(),
             context.getConjuntoFeedsFromAtoms(),
             replacementEntryIds,
-            List.of(),
+            context.getListHistoricos(),
             context.getMapFeedsToBaseDatos(),
             estadistica);
 
     String duracionPersistencia = persistirImportacionYRegistrarDuracion(plan, estadistica);
     log.info("Resumen de persistencia:");
+    log.info("  Históricos generados: {}", StringHelper.getNumeroConFormato(historicosGenerados));
+    log.info("  Históricos persistidos: {}", StringHelper.getNumeroConFormato(historicosGenerados));
     log.info(
-        "  Históricos generados: {}", StringHelper.getNumeroConFormato(historicosGenerados));
-    log.info("  Históricos persistidos: {}", StringHelper.getNumeroConFormato(0));
-    log.info(
-        "  Entries reemplazadas: {}",
-        StringHelper.getNumeroConFormato(replacementEntryIds.size()));
+        "  Entries reemplazadas: {}", StringHelper.getNumeroConFormato(replacementEntryIds.size()));
     log.info("  Duración total: {}", duracionPersistencia);
     imprimirTitulo("PRESISTENCIA FINALIZADA CORRECTAMENTE");
     return estadistica;

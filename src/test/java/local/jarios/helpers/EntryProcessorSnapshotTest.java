@@ -63,7 +63,7 @@ class EntryProcessorSnapshotTest {
   }
 
   @Test
-  void updates_entry_when_duplicate_in_memory_is_newer() {
+  void inserts_only_the_latest_version_when_a_new_entry_is_repeated() {
     FakeState state = new FakeState(Map.of());
     Entry first = entry("entry-1", LocalDateTime.parse("2026-01-01T10:00:00"));
     Entry second = entry("entry-1", LocalDateTime.parse("2026-01-02T10:00:00"));
@@ -76,7 +76,7 @@ class EntryProcessorSnapshotTest {
     assertThat(state.entries).hasSize(1);
     assertThat(state.historicos)
         .extracting(HistoricoEntry::getEntryOpcion)
-        .containsExactly(EntryOpcion.INSERTAR, EntryOpcion.ACTUALIZAR);
+        .containsExactly(EntryOpcion.RECHAZAR, EntryOpcion.INSERTAR);
   }
 
   @Test

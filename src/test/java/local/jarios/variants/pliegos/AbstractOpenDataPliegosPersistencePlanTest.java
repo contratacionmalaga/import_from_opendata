@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 class AbstractOpenDataPliegosPersistencePlanTest {
 
   @Test
-  void persist_all_uses_historicos_only_for_replacements_without_persisting_them()
+  void persist_all_passes_all_observations_and_uses_only_updates_for_replacements()
       throws Exception {
     CapturingServicePrincipal servicePrincipal = new CapturingServicePrincipal();
     TestOpenDataPliegos openData = new TestOpenDataPliegos();
@@ -45,19 +45,21 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     entry.setFeed(importFeed);
     context.setMapEntriesToBaseDatos(Map.of("entry-1", entry));
     context.setMapFeedsToBaseDatos(Map.of(importFeed, List.of(entry)));
-    context.addHistorico(historicoEntry("entry-1", EntryOpcion.ACTUALIZAR));
+    var update = historicoEntry("entry-1", EntryOpcion.ACTUALIZAR);
+    var rejected = historicoEntry("entry-1", EntryOpcion.RECHAZAR);
+    context.addHistorico(update);
+    context.addHistorico(rejected);
     context.getConjuntoFeedsFromAtoms().add(importFeed);
 
     openData.persistAll(context);
 
     assertThat(servicePrincipal.plan).isNotNull();
-    assertThat(servicePrincipal.plan.historicoList()).isEmpty();
+    assertThat(servicePrincipal.plan.historicoList()).containsExactly(update, rejected);
     assertThat(servicePrincipal.plan.replacementEntryIds()).containsExactly("entry-1");
     assertThat(servicePrincipal.plan.entriesByFeed()).containsEntry(importFeed, List.of(entry));
     assertThat(servicePrincipal.persistedEstadistica).isSameAs(servicePrincipal.plan.estadistica());
     assertThat(servicePrincipal.persistedEstadistica.getDuracionPersistencia()).isNotBlank();
     assertThat(servicePrincipal.callOrder).containsExactly("importacion", "estadistica");
-    assertThat(context.getListHistoricos()).isEmpty();
   }
 
   @Test
@@ -122,6 +124,7 @@ class AbstractOpenDataPliegosPersistencePlanTest {
     historicoEntry.setEntryId(entryId);
     historicoEntry.setEntryOpcion(opcion);
     historicoEntry.setEntryMotivo("test");
+    historicoEntry.setXml("<entry/>");
     return historicoEntry;
   }
 

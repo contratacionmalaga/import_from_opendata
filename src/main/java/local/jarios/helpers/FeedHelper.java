@@ -5,12 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
@@ -19,11 +14,9 @@ import local.jarios.exceptions.MiParseException;
 import local.jarios.exceptions.MiUnmarshallerException;
 import local.jarios.filtro.FiltroManager;
 import local.jarios.interfaces.FeedSource;
-import local.jarios.mappers.atom.MapperFeed;
 import local.jarios.parsers.InternetFeedSource;
 import local.jarios.parsers.LocalFeedSource;
 import lombok.extern.slf4j.Slf4j;
-import org.w3._2005.atom.FeedType;
 
 @Slf4j
 public final class FeedHelper {
@@ -62,6 +55,11 @@ public final class FeedHelper {
       }
 
       FiltroManager filtroManager = new FiltroManager();
+      var processor =
+          new EntryProcessor(
+              context,
+              new EntryProcessor.FiltroManagerEntryFilter(context, filtroManager),
+              new ContextEntryState(context));
 
       while (source.isNextLinkValid(nextLink)) {
         if (!enlacesVisitados.add(nextLink)) {
@@ -77,11 +75,11 @@ public final class FeedHelper {
           log.info("Feed {}: {}", StringHelper.getNumeroConFormato(feedNumber), feedName);
 
           long inicioDeserializacionYMapeo = System.nanoTime();
-          Feed feed =
-              context.isAplicarFiltros()
-                  ? AtomEntryXml.read(
-                      reader, unmarshaller, entry -> filtroManager.perteneceAlAmbito(context, entry))
-                  : MapperFeed.getFeed(getFeedType(unmarshaller, reader));
+          AtomEntryXml atom = AtomEntryXml.read(reader, unmarshaller);
+          Feed feed = atom.feed();
+          atom.capture(
+              entry ->
+                  !context.isAplicarFiltros() || filtroManager.perteneceAlAmbito(context, entry));
           deserializacionYMapeoNanos += System.nanoTime() - inicioDeserializacionYMapeo;
           feedsParseados++;
 
@@ -97,7 +95,6 @@ public final class FeedHelper {
               StringHelper.getNumeroConFormato(listEntry.size()),
               StringHelper.getNumeroConFormato(listDeletedEntry.size()));
 
-          feed.setEntryList(new ArrayList<>());
           context.getConjuntoFeedsFromAtoms().add(feed);
 
           if (!listDeletedEntry.isEmpty()) {
@@ -108,15 +105,11 @@ public final class FeedHelper {
             }
           }
 
-          var processor =
-              new EntryProcessor(
-                  context,
-                  new EntryProcessor.FiltroManagerEntryFilter(context, filtroManager),
-                  new ContextEntryState(context));
-
           long inicioFiltrado = System.nanoTime();
           processor.processEntries(listEntry);
           filtradoNanos += System.nanoTime() - inicioFiltrado;
+
+          feed.setEntryList(new ArrayList<>());
 
           if (feed.getLinkNext() == null || feed.getLinkNext().isBlank()) {
             log.info("Fin normal del parseo: el feed no informa enlace next.");
@@ -161,25 +154,6 @@ public final class FeedHelper {
     String normalized = link.replace('\\', '/');
     int lastSeparator = normalized.lastIndexOf('/');
     return lastSeparator >= 0 ? normalized.substring(lastSeparator + 1) : normalized;
-  }
-
-  @SuppressWarnings("unchecked")
-  private static FeedType getFeedType(Unmarshaller unmarshaller, BufferedReader reader)
-      throws JAXBException {
-    XMLInputFactory xmlInputFactory = XMLInputFactory.newFactory();
-    xmlInputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-    xmlInputFactory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
-
-    try {
-      XMLStreamReader xmlReader = xmlInputFactory.createXMLStreamReader(reader);
-      FeedType feedType = ((JAXBElement<FeedType>) unmarshaller.unmarshal(xmlReader)).getValue();
-      log.debug(
-          "[getFeedType] - Updated FeedType: {}",
-          feedType.getUpdated().getValue().toGregorianCalendar().toString());
-      return feedType;
-    } catch (XMLStreamException ex) {
-      throw new JAXBException("No se ha podido leer el XML ATOM de forma segura", ex);
-    }
   }
 
   private static Unmarshaller getValidUnmarshaller() throws MiUnmarshallerException {

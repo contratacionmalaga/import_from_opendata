@@ -22,28 +22,26 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 /** Conserva el elemento fuente completo, incluidas las extensiones ajenas al modelo Java. */
-final class AtomEntryXml {
+record AtomEntryXml(Feed feed, Element root) {
   private static final String ATOM = "http://www.w3.org/2005/Atom";
   private static final List<String> XML_ATTRIBUTES = List.of("base", "lang", "space");
 
-  private AtomEntryXml() {}
-
-  static Feed read(Reader input, Unmarshaller unmarshaller, Predicate<Entry> archivar)
-      throws Exception {
+  static AtomEntryXml read(Reader input, Unmarshaller unmarshaller) throws Exception {
     var factory = DocumentBuilderFactory.newDefaultNSInstance();
     factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     var document = factory.newDocumentBuilder().parse(new InputSource(input));
     var feedType = (FeedType) ((JAXBElement<?>) unmarshaller.unmarshal(document)).getValue();
-    Feed feed = MapperFeed.getFeed(feedType);
+    return new AtomEntryXml(MapperFeed.getFeed(feedType), document.getDocumentElement());
+  }
 
+  void capture(Predicate<Entry> archivar) throws Exception {
     var transformerFactory = TransformerFactory.newDefaultInstance();
     transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     var transformer = transformerFactory.newTransformer();
     transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 
-    Element root = document.getDocumentElement();
     List<Entry> entries = feed.getEntryList();
     int index = 0;
     for (Node node = root.getFirstChild(); node != null; node = node.getNextSibling()) {
@@ -63,7 +61,6 @@ final class AtomEntryXml {
     if (index != entries.size()) {
       throw new IllegalStateException("No coinciden las entradas XML y las entradas mapeadas");
     }
-    return feed;
   }
 
   private static String serialize(Element source, Element root, Transformer transformer)
@@ -74,7 +71,8 @@ final class AtomEntryXml {
       Node attribute = attributes.item(i);
       if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attribute.getNamespaceURI())
           && !copy.hasAttributeNS(attribute.getNamespaceURI(), attribute.getLocalName())) {
-        copy.setAttributeNS(attribute.getNamespaceURI(), attribute.getNodeName(), attribute.getNodeValue());
+        copy.setAttributeNS(
+            attribute.getNamespaceURI(), attribute.getNodeName(), attribute.getNodeValue());
       }
     }
     for (String attribute : XML_ATTRIBUTES) {

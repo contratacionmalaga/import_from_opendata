@@ -2,7 +2,9 @@ package local.jarios.helpers;
 
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import local.jarios.common.util.Mensajes;
@@ -19,6 +21,7 @@ public final class EntryProcessor {
   private final OpenDataExecutionContext context;
   private final EntryFilter filter;
   private final EntryState state;
+  private final Map<String, HistoricoEntry> selectedHistory = new HashMap<>();
 
   public EntryProcessor(OpenDataExecutionContext context, EntryFilter filter, EntryState state) {
     this.context = Objects.requireNonNull(context, "context");
@@ -60,10 +63,7 @@ public final class EntryProcessor {
     if (existingUpdatedOpt.isEmpty()) {
       log.debug("entryId={} | ENTRY NUEVO. Se inserta.", entry.getEntryId());
 
-      state.putEntry(entryId, entry);
-      state.addHistorico(
-          new HistoricoEntry(
-              entry, EntryOpcion.INSERTAR, Mensajes.ENTRY_NUEVO, context.getTipoSindicacion()));
+      select(entry, EntryOpcion.INSERTAR, Mensajes.ENTRY_NUEVO);
       return;
     }
 
@@ -95,10 +95,28 @@ public final class EntryProcessor {
             "Se ACTUALIZA el Entry en el MapEntriesFromAtoms. Fecha(EntryEnMemoria) - '%s' isAfter Fecha(EntryEnMap) - '%s'.",
             incomingUpdated, existingUpdated);
 
-    state.putEntry(incoming.getEntryId(), incoming);
-    state.addHistorico(
-        new HistoricoEntry(incoming, EntryOpcion.ACTUALIZAR, motivo, context.getTipoSindicacion()));
+    select(incoming, EntryOpcion.ACTUALIZAR, motivo);
     log.debug("{}", motivo);
+  }
+
+  private void select(Entry entry, EntryOpcion action, String reason) {
+    String id = entry.getEntryId();
+    HistoricoEntry previous = selectedHistory.get(id);
+    if (previous != null) {
+      action = previous.getEntryOpcion();
+      reason =
+          action == EntryOpcion.INSERTAR
+              ? Mensajes.ENTRY_NUEVO
+              : "Versión más reciente de la ejecución, posterior a la versión en base de datos.";
+      previous.setEntryOpcion(EntryOpcion.RECHAZAR);
+      previous.setEntryMotivo(
+          "Versión sustituida antes de persistir por otra más reciente en la misma ejecución (%s)."
+              .formatted(entry.updatedInstant()));
+    }
+    state.putEntry(id, entry);
+    var history = new HistoricoEntry(entry, action, reason, context.getTipoSindicacion());
+    state.addHistorico(history);
+    selectedHistory.put(id, history);
   }
 
   @FunctionalInterface

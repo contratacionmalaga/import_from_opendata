@@ -45,6 +45,10 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 Si existe `active-release.properties`, los lanzadores utilizan los JAR de la versión activa
 en `versions/<versión>`. Sin ese fichero, seleccionan el JAR con mayor versión para cada grupo y modo.
 
+## Versión 8.4.0
+
+Málaga y Pliegos guardan en el histórico el XML de cada observación dentro de su ámbito de importación. Si el mismo expediente aparece en varias páginas, solo la versión que se guarda como vigente recibe `INSERTAR` o `ACTUALIZAR`. Pliegos aplica esta misma regla a los ATOM que lee sin filtro en LOCAL e INTERNET. [Notas de la versión](docs/releases/v8.4.0.md) · [Descargas en GitHub](https://github.com/contratacionmalaga/import_from_opendata/releases/tag/v8.4.0)
+
 ## Versión 8.3.0
 
 - **Histórico de Málaga.** Se guarda el XML de cada versión leída dentro del ámbito postal/NIF, incluidas las versiones descartadas. El histórico desglosa el `summary` en expediente, órgano, importe y estado. `entry.xml` conserva el XML de la versión vigente.

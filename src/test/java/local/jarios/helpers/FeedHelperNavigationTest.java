@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.Feed;
+import local.jarios.enums.EntryOpcion;
 import local.jarios.exceptions.MiParseException;
 import local.jarios.interfaces.FeedSource;
 import local.jarios.repositories.EntrySnapshot;
@@ -93,10 +94,14 @@ class FeedHelperNavigationTest {
   void reads_later_pages_when_a_version_is_older_than_an_unrelated_snapshot() throws Exception {
     OpenDataExecutionContext context = new OpenDataExecutionContext();
     context.setCompararConExistentes(true);
-    context.getMapEntrySnapshotsFromBaseDatos().put("otro",
-        new EntrySnapshot("otro", LocalDateTime.parse("2026-09-26T10:00:00")));
-    context.getMapEntrySnapshotsFromBaseDatos().put("old-entry",
-        new EntrySnapshot("old-entry", LocalDateTime.parse("2026-09-26T09:00:00")));
+    context
+        .getMapEntrySnapshotsFromBaseDatos()
+        .put("otro", new EntrySnapshot("otro", LocalDateTime.parse("2026-09-26T10:00:00")));
+    context
+        .getMapEntrySnapshotsFromBaseDatos()
+        .put(
+            "old-entry",
+            new EntrySnapshot("old-entry", LocalDateTime.parse("2026-09-26T09:00:00")));
 
     FeedHelper.parsearFeeds(
         new InMemoryFeedSource(
@@ -108,6 +113,16 @@ class FeedHelperNavigationTest {
 
     assertThat(context.getConjuntoFeedsFromAtoms()).hasSize(2);
     assertThat(context.getMapEntriesFromAtoms()).containsOnlyKeys("old-entry");
+    assertThat(context.getMapEntriesFromAtoms().get("old-entry").getXml())
+        .contains("<id>old-entry</id>", "<updated>2026-09-26T09:59:59Z</updated>");
+    assertThat(context.getListHistoricos())
+        .singleElement()
+        .satisfies(
+            actualizacion -> {
+              assertThat(actualizacion.getEntryOpcion()).isEqualTo(EntryOpcion.ACTUALIZAR);
+              assertThat(actualizacion.getXml())
+                  .isEqualTo(context.getMapEntriesFromAtoms().get("old-entry").getXml());
+            });
     assertThat(context.getMapDeletedEntriesFromAtoms()).containsOnlyKeys("deleted-entry-1");
   }
 
