@@ -45,6 +45,10 @@ Las releases publicadas incluyen los cuatro JAR operativos:
 Si existe `active-release.properties`, los lanzadores utilizan los JAR de la versión activa
 en `versions/<versión>`. Sin ese fichero, seleccionan el JAR con mayor versión para cada grupo y modo.
 
+## Versión 8.4.1
+
+Las importaciones INTERNET de Málaga y Pliegos recuperan el corte por el `updated` máximo del tipo en la base. Procesan completa la primera página cuyos registros son todos anteriores al máximo y terminan ahí. [Notas de la versión](docs/releases/v8.4.1.md) · [Descargas en GitHub](https://github.com/contratacionmalaga/import_from_opendata/releases/tag/v8.4.1)
+
 ## Versión 8.4.0
 
 Málaga y Pliegos guardan en el histórico el XML de cada observación dentro de su ámbito de importación. Si el mismo expediente aparece en varias páginas, solo la versión que se guarda como vigente recibe `INSERTAR` o `ACTUALIZAR`. Pliegos aplica esta misma regla a los ATOM que lee sin filtro en LOCAL e INTERNET. [Notas de la versión](docs/releases/v8.4.0.md) · [Descargas en GitHub](https://github.com/contratacionmalaga/import_from_opendata/releases/tag/v8.4.0)
@@ -474,7 +478,9 @@ Ejemplos:
 - Obtiene el feed inicial configurado en `app.internet.*`.
 - Continúa la navegación por los enlaces `next`.
 - Detecta ciclos y enlaces `next` inválidos.
-- Compara `updated` con la versión del mismo ID Atom completo. Sigue la cadena aunque un expediente de una página sea anterior a su versión guardada.
+- Compara `updated` con la versión del mismo ID Atom completo para decidir qué versión guardar.
+- Calcula el `updated` máximo al inicio a partir de los expedientes del tipo seleccionado en la base. Tras procesar una página con entradas o avisos de retirada, corta si todas sus fechas son estrictamente anteriores a ese máximo. Continúa si hay una fecha igual, posterior o desconocida, o si la página está vacía. Si el tipo carece de fechas almacenadas, sigue toda la cadena.
+- El corte presupone que las páginas de la fuente avanzan de lo más reciente a lo más antiguo. Las páginas posteriores quedan fuera de la carga y de su histórico. El filtro de fechas se aplica por separado.
 - Aplica los reintentos y pausas definidos en `app.properties`.
 
 ## Logs, incidencias y observabilidad

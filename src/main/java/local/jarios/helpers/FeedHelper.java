@@ -1,11 +1,15 @@
 package local.jarios.helpers;
 
 import java.io.BufferedReader;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import javax.xml.bind.Unmarshaller;
+import local.jarios.core.enums.LugarImportacion;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.DeletedEntry;
 import local.jarios.entity.atom.Entry;
@@ -16,6 +20,7 @@ import local.jarios.filtro.FiltroManager;
 import local.jarios.interfaces.FeedSource;
 import local.jarios.parsers.InternetFeedSource;
 import local.jarios.parsers.LocalFeedSource;
+import local.jarios.repositories.EntrySnapshot;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -45,6 +50,7 @@ public final class FeedHelper {
     Set<String> enlacesVisitados = new HashSet<>();
 
     try {
+      Instant limiteIncremental = resolveIncrementalCutoff(context);
       var unmarshaller = getValidUnmarshaller();
       log.info("Obtención de objeto Unmarshaller correctamente.");
 
@@ -115,6 +121,15 @@ public final class FeedHelper {
             log.info("Fin normal del parseo: el feed no informa enlace next.");
             break;
           }
+          if (limiteIncremental != null
+              && isPageOlderThan(listEntry, listDeletedEntry, limiteIncremental)) {
+            log.info(
+                "Corte incremental para {} tras {}: toda la página es anterior al máximo updated de la BD ({}).",
+                context.getTipoSindicacion(),
+                feedName,
+                limiteIncremental);
+            break;
+          }
 
           nextLink = source.getNextLink(feed);
           if (source.isMissingNextLinkTerminal(nextLink)) {
@@ -145,6 +160,29 @@ public final class FeedHelper {
     } catch (Exception ex) {
       throw new MiParseException(ex);
     }
+  }
+
+  private static Instant resolveIncrementalCutoff(OpenDataExecutionContext context) {
+    if (context.getLugarImportacion() != LugarImportacion.INTERNET) {
+      return null;
+    }
+    return context.getMapEntrySnapshotsFromBaseDatos().values().stream()
+        .map(EntrySnapshot::updatedInstant)
+        .filter(Objects::nonNull)
+        .max(Comparator.naturalOrder())
+        .orElse(null);
+  }
+
+  private static boolean isPageOlderThan(
+      List<Entry> entries, List<DeletedEntry> deletedEntries, Instant limit) {
+    return (!entries.isEmpty() || !deletedEntries.isEmpty())
+        && entries.stream().allMatch(entry -> isOlderThan(entry.updatedInstant(), limit))
+        && deletedEntries.stream()
+            .allMatch(entry -> entry != null && isOlderThan(entry.updatedInstant(), limit));
+  }
+
+  private static boolean isOlderThan(Instant timestamp, Instant limit) {
+    return timestamp != null && timestamp.isBefore(limit);
   }
 
   private static String getFeedDisplayName(String link) {

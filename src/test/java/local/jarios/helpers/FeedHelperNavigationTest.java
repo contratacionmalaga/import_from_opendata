@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.util.Map;
+import local.jarios.core.enums.LugarImportacion;
+import local.jarios.core.enums.TipoSindicacion;
 import local.jarios.core.pipeline.context.OpenDataExecutionContext;
 import local.jarios.entity.atom.Feed;
 import local.jarios.enums.EntryOpcion;
@@ -14,6 +16,8 @@ import local.jarios.exceptions.MiParseException;
 import local.jarios.interfaces.FeedSource;
 import local.jarios.repositories.EntrySnapshot;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class FeedHelperNavigationTest {
 
@@ -93,15 +97,16 @@ class FeedHelperNavigationTest {
   @Test
   void reads_later_pages_when_a_version_is_older_than_an_unrelated_snapshot() throws Exception {
     OpenDataExecutionContext context = new OpenDataExecutionContext();
+    context.setLugarImportacion(LugarImportacion.LOCAL);
     context.setCompararConExistentes(true);
     context
         .getMapEntrySnapshotsFromBaseDatos()
-        .put("otro", new EntrySnapshot("otro", LocalDateTime.parse("2026-09-26T10:00:00")));
+        .put("otro", new EntrySnapshot("otro", LocalDateTime.parse("2026-09-26T10:00:00"), 0));
     context
         .getMapEntrySnapshotsFromBaseDatos()
         .put(
             "old-entry",
-            new EntrySnapshot("old-entry", LocalDateTime.parse("2026-09-26T09:00:00")));
+            new EntrySnapshot("old-entry", LocalDateTime.parse("2026-09-26T09:00:00"), 0));
 
     FeedHelper.parsearFeeds(
         new InMemoryFeedSource(
@@ -124,6 +129,56 @@ class FeedHelperNavigationTest {
                   .isEqualTo(context.getMapEntriesFromAtoms().get("old-entry").getXml());
             });
     assertThat(context.getMapDeletedEntriesFromAtoms()).containsOnlyKeys("deleted-entry-1");
+  }
+
+  @ParameterizedTest
+  @EnumSource(
+      value = TipoSindicacion.class,
+      names = {"MAYORES", "MENORES", "ENCARGOS", "CONSULTAS"})
+  void internet_stops_after_processing_the_first_strictly_older_page(TipoSindicacion tipo)
+      throws Exception {
+    var context = new OpenDataExecutionContext();
+    context.setLugarImportacion(LugarImportacion.INTERNET);
+    context.setTipoSindicacion(tipo);
+    context.setCompararConExistentes(true);
+    var snapshots = context.getMapEntrySnapshotsFromBaseDatos();
+    snapshots.put(
+        "cursor", new EntrySnapshot("cursor", LocalDateTime.parse("2026-09-26T12:00:00"), 7200));
+    snapshots.put(
+        "boundary", new EntrySnapshot("boundary", LocalDateTime.parse("2026-09-26T09:00:00"), 0));
+
+    FeedHelper.parsearFeeds(
+        new InMemoryFeedSource(
+            "first",
+            Map.of(
+                "first", atomFeedWithEntry("equal", "new", "2026-09-26T11:00:00"),
+                "equal", atomFeedWithEntry("withdrawal", "cursor", "2026-09-26T10:00:00"),
+                "withdrawal",
+                    atomFeedWithDeletedEntry("recent-withdrawal")
+                        .replace("</feed>", "<link rel=\"next\" href=\"old\"/></feed>"),
+                "old", atomFeedWithEntry("must-not-open", "boundary", "2026-09-26T09:30:00"))),
+        context);
+
+    assertThat(context.getConjuntoFeedsFromAtoms()).hasSize(4);
+    assertThat(context.getMapEntriesFromAtoms()).containsOnlyKeys("new", "boundary");
+    assertThat(context.getMapDeletedEntriesFromAtoms()).containsOnlyKeys("recent-withdrawal");
+    assertThat(context.getListHistoricos())
+        .extracting(h -> h.getEntryOpcion())
+        .containsExactly(EntryOpcion.INSERTAR, EntryOpcion.RECHAZAR, EntryOpcion.ACTUALIZAR);
+  }
+
+  @Test
+  void internet_reads_all_pages_when_the_type_has_no_saved_timestamp() throws Exception {
+    var context = new OpenDataExecutionContext();
+    context.setLugarImportacion(LugarImportacion.INTERNET);
+    FeedHelper.parsearFeeds(
+        new InMemoryFeedSource(
+            "first",
+            Map.of(
+                "first", atomFeedWithEntry("second", "first-id", "2026-09-26T10:00:00"),
+                "second", atomFeedWithEntry(null, "second-id", "2026-09-26T09:00:00"))),
+        context);
+    assertThat(context.getMapEntriesFromAtoms()).containsOnlyKeys("first-id", "second-id");
   }
 
   private static String atomFeed(String next) {
